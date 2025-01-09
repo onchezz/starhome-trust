@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Navbar from "@/components/Navbar";
 
 interface Property {
   id: number;
@@ -55,51 +56,54 @@ const Properties = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">Available Properties</h1>
-      <ScrollArea className="h-[800px] w-full rounded-md border p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <Card key={property.id} className="overflow-hidden">
-              <img
-                src={property.imageUrl}
-                alt={property.title}
-                className="w-full h-48 object-cover"
-              />
-              <CardHeader>
-                <CardTitle>{property.title}</CardTitle>
-                <CardDescription>{property.location}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between mb-4">
-                  <span className="text-2xl font-bold text-primary">
-                    {formatPrice(property.price)}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div className="text-center">
-                    <p className="font-semibold">{property.bedrooms}</p>
-                    <p className="text-muted-foreground">Beds</p>
+    <div className="min-h-screen">
+      <Navbar />
+      <div className="container mx-auto py-24">
+        <h1 className="text-4xl font-bold mb-8 text-center">Available Properties</h1>
+        <ScrollArea className="h-[800px] w-full rounded-md border p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {properties.map((property) => (
+              <Card key={property.id} className="overflow-hidden">
+                <img
+                  src={property.imageUrl}
+                  alt={property.title}
+                  className="w-full h-48 object-cover"
+                />
+                <CardHeader>
+                  <CardTitle>{property.title}</CardTitle>
+                  <CardDescription>{property.location}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between mb-4">
+                    <span className="text-2xl font-bold text-primary">
+                      {formatPrice(property.price)}
+                    </span>
                   </div>
-                  <div className="text-center">
-                    <p className="font-semibold">{property.bathrooms}</p>
-                    <p className="text-muted-foreground">Baths</p>
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="text-center">
+                      <p className="font-semibold">{property.bedrooms}</p>
+                      <p className="text-muted-foreground">Beds</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-semibold">{property.bathrooms}</p>
+                      <p className="text-muted-foreground">Baths</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-semibold">{property.sqft}</p>
+                      <p className="text-muted-foreground">Sq Ft</p>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="font-semibold">{property.sqft}</p>
-                    <p className="text-muted-foreground">Sq Ft</p>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md">
-                  View Details
-                </button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
+                </CardContent>
+                <CardFooter>
+                  <button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md">
+                    View Details
+                  </button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 };
