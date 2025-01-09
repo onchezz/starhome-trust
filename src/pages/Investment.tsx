@@ -2,7 +2,10 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Users, TrendingUp, Building, DollarSign } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Users, TrendingUp, Building, DollarSign, Wallet } from "lucide-react";
+import { useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const investmentProperties = [
   {
@@ -14,7 +17,9 @@ const investmentProperties = [
     investors: 45,
     minInvestment: 25000,
     roi: "12%",
-    type: "Commercial"
+    type: "Commercial",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+    description: "Prime commercial property in downtown LA featuring retail spaces and office units. High-traffic location with excellent growth potential."
   },
   {
     id: 2,
@@ -25,7 +30,9 @@ const investmentProperties = [
     investors: 78,
     minInvestment: 50000,
     roi: "15%",
-    type: "Residential"
+    type: "Residential",
+    image: "https://images.unsplash.com/photo-1481253127861-534498168948",
+    description: "Luxury residential complex with premium amenities, located in Miami's most sought-after neighborhood."
   },
   {
     id: 3,
@@ -36,7 +43,9 @@ const investmentProperties = [
     investors: 120,
     minInvestment: 100000,
     roi: "18%",
-    type: "Mixed-Use"
+    type: "Mixed-Use",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+    description: "Modern tech park featuring office spaces, research facilities, and innovative workspace solutions."
   }
 ];
 
@@ -51,6 +60,16 @@ const Investment = () => {
 
   const calculateProgress = (current: number, total: number) => {
     return (current / total) * 100;
+  };
+
+  const [expandedCards, setExpandedCards] = useState<number[]>([]);
+
+  const toggleCard = (id: number) => {
+    setExpandedCards(prev => 
+      prev.includes(id) 
+        ? prev.filter(cardId => cardId !== id)
+        : [...prev, id]
+    );
   };
 
   return (
@@ -111,6 +130,11 @@ const Investment = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {investmentProperties.map((property) => (
             <Card key={property.id} className="overflow-hidden">
+              <img 
+                src={property.image} 
+                alt={property.title}
+                className="w-full h-48 object-cover"
+              />
               <CardHeader>
                 <CardTitle>{property.title}</CardTitle>
                 <p className="text-sm text-gray-500">{property.location}</p>
@@ -144,7 +168,32 @@ const Investment = () => {
                     </div>
                   </div>
 
-                  <Button className="w-full">Invest Now</Button>
+                  <Collapsible open={expandedCards.includes(property.id)}>
+                    <CollapsibleTrigger asChild>
+                      <Button 
+                        className="w-full"
+                        onClick={() => toggleCard(property.id)}
+                      >
+                        {expandedCards.includes(property.id) ? 'Hide Details' : 'Invest Now'}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-4 mt-4">
+                      <p className="text-sm text-gray-600">{property.description}</p>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Investment Amount</label>
+                        <Input 
+                          type="number" 
+                          placeholder={`Minimum ${formatCurrency(property.minInvestment)}`}
+                          min={property.minInvestment}
+                          step={1000}
+                        />
+                      </div>
+                      <Button className="w-full" variant="secondary">
+                        <Wallet className="mr-2 h-4 w-4" />
+                        Connect Wallet
+                      </Button>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               </CardContent>
             </Card>
