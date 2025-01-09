@@ -28,7 +28,7 @@ const propertyDetails = {
     "https://images.unsplash.com/photo-1466721591366-2d5fba72006d",
     "https://images.unsplash.com/photo-1493962853295-0fd70327578a"
   ],
-  coordinates: [-118.2437, 34.0522] // Los Angeles coordinates
+  coordinates: [-118.2437, 34.0522] as [number, number] // Type assertion to ensure it's a tuple
 };
 
 const PropertyDetails = () => {
