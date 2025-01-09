@@ -1,5 +1,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
 interface Property {
@@ -95,9 +97,9 @@ const Properties = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md">
-                    View Details
-                  </button>
+                  <Link to={`/properties/${property.id}`} className="w-full">
+                    <Button className="w-full">View Details</Button>
+                  </Link>
                 </CardFooter>
               </Card>
             ))}
