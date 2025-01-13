@@ -3,50 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-
-interface Property {
-  id: number;
-  title: string;
-  location: string;
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  sqft: number;
-  imageUrl: string;
-}
-
-const properties: Property[] = [
-  {
-    id: 1,
-    title: "Modern Downtown Apartment",
-    location: "123 Downtown Ave, Los Angeles",
-    price: 750000,
-    bedrooms: 2,
-    bathrooms: 2,
-    sqft: 1200,
-    imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
-  },
-  {
-    id: 2,
-    title: "Luxury Beach House",
-    location: "456 Ocean Drive, Miami",
-    price: 1500000,
-    bedrooms: 4,
-    bathrooms: 3,
-    sqft: 2800,
-    imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
-  },
-  {
-    id: 3,
-    title: "Suburban Family Home",
-    location: "789 Maple Street, Seattle",
-    price: 950000,
-    bedrooms: 3,
-    bathrooms: 2.5,
-    sqft: 2200,
-    imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
-  }
-];
+import propertiesData from "@/data/properties.json";
 
 const Properties = () => {
   const formatPrice = (price: number) => {
@@ -64,10 +21,10 @@ const Properties = () => {
         <h1 className="text-4xl font-bold mb-8 text-center">Available Properties</h1>
         <ScrollArea className="h-[800px] w-full rounded-md border p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map((property) => (
+            {propertiesData.properties.map((property) => (
               <Card key={property.id} className="overflow-hidden">
                 <img
-                  src={property.imageUrl}
+                  src={property.images[0]}
                   alt={property.title}
                   className="w-full h-48 object-cover"
                 />
@@ -78,21 +35,17 @@ const Properties = () => {
                 <CardContent>
                   <div className="flex justify-between mb-4">
                     <span className="text-2xl font-bold text-primary">
-                      {formatPrice(property.price)}
+                      {formatPrice(property.totalInvestment)}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="text-center">
-                      <p className="font-semibold">{property.bedrooms}</p>
-                      <p className="text-muted-foreground">Beds</p>
+                      <p className="font-semibold">{property.investors}</p>
+                      <p className="text-muted-foreground">Investors</p>
                     </div>
                     <div className="text-center">
-                      <p className="font-semibold">{property.bathrooms}</p>
-                      <p className="text-muted-foreground">Baths</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-semibold">{property.sqft}</p>
-                      <p className="text-muted-foreground">Sq Ft</p>
+                      <p className="font-semibold">{property.roi}</p>
+                      <p className="text-muted-foreground">Expected ROI</p>
                     </div>
                   </div>
                 </CardContent>
