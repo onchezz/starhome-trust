@@ -39,8 +39,8 @@ export const PropertyInvestment = ({ propertyId }: PropertyInvestmentProps) => {
       <h2 className="text-xl font-semibold mb-4">Investment Details</h2>
       <div className="space-y-4">
         <div className="flex justify-between">
-          <span className="text-gray-600">Minimum Investment</span>
-          <span className="font-semibold">{formatPrice(investment.minAmount)}</span>
+          <span className="text-gray-600">Asking Price</span>
+          <span className="font-semibold">{formatPrice(property.askingPrice)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Current Investors</span>
