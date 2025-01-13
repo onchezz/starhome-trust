@@ -6,12 +6,37 @@ import { useToast } from "@/components/ui/use-toast";
 const ContactForm = () => {
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you as soon as possible.",
-    });
+    const formData = new FormData(e.target as HTMLFormElement);
+    
+    try {
+      const response = await fetch("https://formsubmit.co/brianonchezz@gmail.com", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message sent!",
+          description: "We'll get back to you as soon as possible.",
+        });
+        (e.target as HTMLFormElement).reset();
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -37,19 +62,20 @@ const ContactForm = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Your Name
                   </label>
-                  <Input placeholder="John Doe" required />
+                  <Input name="name" placeholder="John Doe" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Email
                   </label>
-                  <Input type="email" placeholder="john@example.com" required />
+                  <Input name="email" type="email" placeholder="john@example.com" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Your Message
                   </label>
                   <Textarea
+                    name="message"
                     placeholder="Tell us about your investment goals..."
                     className="min-h-[150px]"
                     required

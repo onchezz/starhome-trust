@@ -1,69 +1,101 @@
-# Welcome to your Lovable project
+# Starhomes - Real Estate Investment Platform
 
-## Project info
+## Overview
 
-**URL**: https://lovable.dev/projects/6c914053-56fe-4fcf-ba88-d88dd89c266b
+Starhomes is a modern real estate investment platform that allows users to explore, invest in, and manage property investments globally. Built with cutting-edge technologies, it provides a seamless experience for property investment and management.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Property Exploration**: Browse through a curated list of premium real estate investments
+- **Investment Management**: Track and manage your property investments
+- **Viewing Scheduler**: Book property viewings at your convenience
+- **Direct Communication**: Contact property managers and investment advisors
+- **Investment Analytics**: View detailed ROI projections and investment metrics
+- **Responsive Design**: Fully responsive interface that works on all devices
 
-**Use Lovable**
+## Technology Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6c914053-56fe-4fcf-ba88-d88dd89c266b) and start prompting.
+This project is built with modern web technologies:
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend Framework**: React with TypeScript
+- **Build Tool**: Vite
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **State Management**: React Query
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **Form Handling**: React Hook Form
+- **Notifications**: Sonner Toast
 
-**Use your preferred IDE**
+## Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js (v14 or higher)
+- npm or yarn package manager
 
-Follow these steps:
+### Installation
 
+1. Clone the repository:
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
+```
 
-# Step 2: Navigate to the project directory.
+2. Navigate to the project directory:
+```sh
 cd <YOUR_PROJECT_NAME>
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. Install dependencies:
+```sh
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Start the development server:
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+├── components/     # Reusable UI components
+├── pages/         # Page components and routes
+├── data/          # Static data and configurations
+├── hooks/         # Custom React hooks
+├── lib/           # Utility functions and helpers
+└── providers/     # Context providers
+```
 
-**Use GitHub Codespaces**
+## Key Components
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **PropertyInvestment**: Handles investment details and purchase actions
+- **PropertySchedule**: Manages property viewing appointments
+- **ContactForm**: Handles user inquiries and communication
+- **PropertyHighlights**: Displays key property features
+- **PropertyMap**: Shows property location using interactive maps
 
-## What technologies are used for this project?
+## Contact
 
-This project is built with .
+For inquiries and support, contact us at:
+- Email: brianonchezz@gmail.com
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+The application can be deployed through:
+1. Lovable's built-in deployment feature
+2. Manual deployment to platforms like Netlify
+3. Custom domain setup (documentation available)
 
-Simply open [Lovable](https://lovable.dev/projects/6c914053-56fe-4fcf-ba88-d88dd89c266b) and click on Share -> Publish.
+## Contributing
 
-## I want to use a custom domain - is that possible?
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
