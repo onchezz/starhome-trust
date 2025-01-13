@@ -11,7 +11,7 @@ import { SimilarProperties } from "@/components/property/SimilarProperties";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Building2, Car, Info } from "lucide-react";
+import { Building2, Car, Info, Bed, Bath, Maximize } from "lucide-react";
 
 interface Property {
   id: string;
@@ -40,6 +40,10 @@ interface Property {
   status: string;
   interestedClients: number;
   annualGrowthRate: number;
+  area: number;
+  bedrooms: number;
+  bathrooms: number;
+  parkingSpaces: number;
 }
 
 const PropertyDetails = () => {
@@ -93,6 +97,38 @@ const PropertyDetails = () => {
 
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">About This Property</h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <Bed className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <div className="font-semibold">{property.bedrooms}</div>
+                    <div className="text-sm text-gray-600">Bedrooms</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Bath className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <div className="font-semibold">{property.bathrooms}</div>
+                    <div className="text-sm text-gray-600">Bathrooms</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Car className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <div className="font-semibold">{property.parkingSpaces}</div>
+                    <div className="text-sm text-gray-600">Parking</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Maximize className="w-5 h-5 text-gray-600" />
+                  <div>
+                    <div className="font-semibold">{property.area}</div>
+                    <div className="text-sm text-gray-600">Sq Ft</div>
+                  </div>
+                </div>
+              </div>
+
               <p className="text-gray-600 whitespace-pre-line mb-6">{property.description}</p>
               
               <Separator className="my-6" />
@@ -118,26 +154,6 @@ const PropertyDetails = () => {
                     <p>Interested Clients: {property.interestedClients}</p>
                   </div>
                 </div>
-              </div>
-            </Card>
-
-            {/* New Image Gallery Section */}
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Property Gallery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {property.images.map((image, index) => (
-                  <div 
-                    key={index} 
-                    className="aspect-square relative cursor-pointer overflow-hidden rounded-lg"
-                    onClick={() => setSelectedImage(image)}
-                  >
-                    <img
-                      src={image}
-                      alt={`${property.title} - View ${index + 1}`}
-                      className="object-cover w-full h-full hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                ))}
               </div>
             </Card>
 
