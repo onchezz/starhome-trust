@@ -1,17 +1,11 @@
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Menu, X, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useStarknetkitConnectModal, StarknetkitConnector } from "starknetkit";
 import { useConnect, useAccount, useDisconnect } from "@starknet-react/core";
-import WalletActions from "./WalletActions";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import NavigationLinks from "./navbar/NavigationLinks";
+import WalletDropdown from "./navbar/WalletDropdown";
+import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,104 +75,29 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            {navigation.map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                {item.label}
-              </Link>
-            ))}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>Invest</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleGoogleSignIn}>
-                  {address ? "Add Google Account" : "Sign in with Google"}
-                </DropdownMenuItem>
-                {!address ? (
-                  <DropdownMenuItem onClick={handleConnectWallet}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Connect Wallet
-                  </DropdownMenuItem>
-                ) : (
-                  <>
-                    <div className="p-2 text-sm text-gray-500">
-                      {address.slice(0, 6)}...{address.slice(-4)}
-                    </div>
-                    <div className="p-2">
-                      <WalletActions />
-                    </div>
-                    <DropdownMenuItem onClick={handleDisconnect}>
-                      Disconnect
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NavigationLinks
+              items={navigation}
+              className="text-gray-600 hover:text-gray-900"
+            />
+            <WalletDropdown
+              address={address}
+              handleGoogleSignIn={handleGoogleSignIn}
+              handleConnectWallet={handleConnectWallet}
+              handleDisconnect={handleDisconnect}
+            />
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button variant="ghost" size="icon" onClick={toggleMenu}>
-              {isOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </Button>
-          </div>
+          {/* Mobile Menu */}
+          <MobileMenu
+            isOpen={isOpen}
+            toggleMenu={toggleMenu}
+            navigation={navigation}
+            address={address}
+            handleGoogleSignIn={handleGoogleSignIn}
+            handleConnectWallet={handleConnectWallet}
+            handleDisconnect={handleDisconnect}
+          />
         </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden py-4">
-            <div className="flex flex-col space-y-4">
-              {navigation.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className="text-gray-600 hover:text-gray-900"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="w-full">Invest</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={handleGoogleSignIn}>
-                    {address ? "Add Google Account" : "Sign in with Google"}
-                  </DropdownMenuItem>
-                  {!address ? (
-                    <DropdownMenuItem onClick={handleConnectWallet}>
-                      <Wallet className="mr-2 h-4 w-4" />
-                      Connect Wallet
-                    </DropdownMenuItem>
-                  ) : (
-                    <>
-                      <div className="p-2 text-sm text-gray-500">
-                        {address.slice(0, 6)}...{address.slice(-4)}
-                      </div>
-                      <div className="p-2">
-                        <WalletActions />
-                      </div>
-                      <DropdownMenuItem onClick={handleDisconnect}>
-                        Disconnect
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   );
