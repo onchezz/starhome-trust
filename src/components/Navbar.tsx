@@ -8,7 +8,6 @@ import WalletDropdown from "./navbar/WalletDropdown";
 import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const { connect, connectors } = useConnect();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
@@ -54,10 +53,6 @@ const Navbar = () => {
     }
   };
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
   const navigation = [
     { label: "Properties", href: "/properties", isPage: true },
     { label: "Investment", href: "/investment", isPage: true },
@@ -93,8 +88,6 @@ const Navbar = () => {
 
           {/* Mobile Menu */}
           <MobileMenu
-            isOpen={isOpen}
-            toggleMenu={toggleMenu}
             navigation={navigation}
             address={address}
             handleGoogleSignIn={handleGoogleSignIn}
