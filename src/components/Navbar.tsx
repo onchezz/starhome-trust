@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import NavigationLinks from "./navbar/NavigationLinks";
 import WalletDropdown from "./navbar/WalletDropdown";
 import MobileMenu from "./navbar/MobileMenu";
+import { Home } from "lucide-react";
 
 const Navbar = () => {
   const { connect, connectors } = useConnect();
@@ -62,24 +63,25 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50">
+      <div className="max-w-[2520px] mx-auto">
+        <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
           <Link 
             to="/" 
-            className="text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            className="flex items-center space-x-2"
           >
-            StarHomes
+            <Home className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+              StarHomes
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex flex-1 justify-end items-center">
-            <div className="flex-1 mx-8">
-              <NavigationLinks
-                items={navigation}
-                className="text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 px-3 py-1 rounded-md"
-              />
-            </div>
+          <div className="hidden md:flex items-center space-x-8">
+            <NavigationLinks
+              items={navigation}
+              className="text-gray-600 hover:text-gray-900 transition-colors px-3 py-1 rounded-md"
+            />
             <WalletDropdown
               address={address}
               handleGoogleSignIn={handleGoogleSignIn}

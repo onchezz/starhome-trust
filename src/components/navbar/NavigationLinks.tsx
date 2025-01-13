@@ -14,7 +14,7 @@ interface NavigationLinksProps {
 
 const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) => {
   return (
-    <div className="flex w-full justify-between">
+    <div className="flex items-center space-x-6">
       {items.map((item) => (
         item.isPage ? (
           <Link
