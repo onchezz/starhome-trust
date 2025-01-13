@@ -1,109 +1,204 @@
 {
   "properties": [
     {
-      "id": 1,
+      "id": "P001",
       "title": "Modern Downtown Penthouse",
-      "location": "Los Angeles, CA",
-      "totalInvestment": 2500000,
-      "currentInvestment": 1875000,
-      "investors": 25,
-      "minInvestment": 25000,
-      "roi": "12%",
-      "type": "Residential",
+      "description": "Luxurious penthouse featuring floor-to-ceiling windows, gourmet kitchen, and panoramic city views. Building amenities include 24/7 concierge, fitness center, and rooftop pool.",
+      "location": {
+        "address": "888 Grand Avenue",
+        "city": "Los Angeles",
+        "state": "CA",
+        "country": "USA",
+        "latitude": 34.0522,
+        "longitude": -118.2437
+      },
+      "price": 2500000,
+      "askingPrice": 2750000,
+      "currency": "USD",
+      "area": 2200,
       "bedrooms": 3,
       "bathrooms": 2.5,
-      "squareFeet": 2200,
-      "yearBuilt": 2020,
+      "parkingSpaces": 2,
+      "propertyType": "Penthouse",
+      "status": "For Sale",
+      "interestedClients": 25,
+      "annualGrowthRate": 12.5,
+      "features": [
+        "Floor-to-ceiling Windows",
+        "Smart Home System",
+        "Private Elevator",
+        "Wine Cellar",
+        "Chef's Kitchen"
+      ],
       "images": [
         "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Luxurious penthouse featuring floor-to-ceiling windows, gourmet kitchen, and panoramic city views. Building amenities include 24/7 concierge, fitness center, and rooftop pool."
+      "videoTour": "https://example.com/penthouse-tour.mp4",
+      "agent": {
+        "name": "Sarah Johnson",
+        "phone": "+1-310-555-0123",
+        "email": "sarah.j@realestate.com",
+        "profileImage": "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+      },
+      "dateListed": "2024-02-15",
+      "amenities": {
+        "hasGarden": false,
+        "hasSwimmingPool": true,
+        "petFriendly": true,
+        "wheelchairAccessible": true
+      }
     },
     {
-      "id": 2,
+      "id": "P002",
       "title": "Beachfront Luxury Villa",
-      "location": "Miami, FL",
-      "totalInvestment": 4500000,
-      "currentInvestment": 3375000,
-      "investors": 40,
-      "minInvestment": 50000,
-      "roi": "15%",
-      "type": "Residential",
+      "description": "Stunning beachfront villa with private beach access, infinity pool, and guest house. Features include smart home technology, wine cellar, and outdoor kitchen.",
+      "location": {
+        "address": "123 Ocean Drive",
+        "city": "Miami",
+        "state": "FL",
+        "country": "USA",
+        "latitude": 25.7617,
+        "longitude": -80.1918
+      },
+      "price": 4500000,
+      "askingPrice": 4750000,
+      "currency": "USD",
+      "area": 4500,
       "bedrooms": 5,
       "bathrooms": 4,
-      "squareFeet": 4500,
-      "yearBuilt": 2019,
+      "parkingSpaces": 3,
+      "propertyType": "Villa",
+      "status": "For Sale",
+      "interestedClients": 40,
+      "annualGrowthRate": 15.2,
+      "features": [
+        "Private Beach Access",
+        "Infinity Pool",
+        "Guest House",
+        "Outdoor Kitchen",
+        "Smart Home Technology"
+      ],
       "images": [
         "https://images.unsplash.com/photo-1481253127861-534498168948",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Stunning beachfront villa with private beach access, infinity pool, and guest house. Features include smart home technology, wine cellar, and outdoor kitchen."
+      "videoTour": "https://example.com/villa-tour.mp4",
+      "agent": {
+        "name": "Michael Chen",
+        "phone": "+1-305-555-0456",
+        "email": "michael.c@realestate.com",
+        "profileImage": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
+      },
+      "dateListed": "2024-01-30",
+      "amenities": {
+        "hasGarden": true,
+        "hasSwimmingPool": true,
+        "petFriendly": true,
+        "wheelchairAccessible": true
+      }
     },
     {
-      "id": 3,
+      "id": "P003",
       "title": "Downtown Office Complex",
-      "location": "Austin, TX",
-      "totalInvestment": 8000000,
-      "currentInvestment": 6000000,
-      "investors": 85,
-      "minInvestment": 100000,
-      "roi": "18%",
-      "type": "Commercial",
+      "description": "Class A office building in prime downtown location. Features modern amenities, covered parking, and LEED certification. Excellent investment opportunity with strong tenant mix.",
+      "location": {
+        "address": "456 Business Avenue",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "latitude": 30.2672,
+        "longitude": -97.7431
+      },
+      "price": 8000000,
+      "askingPrice": 8500000,
+      "currency": "USD",
+      "area": 15000,
       "bedrooms": 0,
       "bathrooms": 8,
-      "squareFeet": 15000,
-      "yearBuilt": 2021,
+      "parkingSpaces": 50,
+      "propertyType": "Commercial",
+      "status": "For Sale",
+      "interestedClients": 85,
+      "annualGrowthRate": 18.7,
+      "features": [
+        "LEED Certified",
+        "24/7 Security",
+        "Conference Facilities",
+        "Covered Parking",
+        "High-speed Internet"
+      ],
       "images": [
         "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Class A office building in prime downtown location. Features modern amenities, covered parking, and LEED certification. Excellent investment opportunity with strong tenant mix."
+      "videoTour": "https://example.com/office-tour.mp4",
+      "agent": {
+        "name": "David Wilson",
+        "phone": "+1-512-555-0789",
+        "email": "david.w@realestate.com",
+        "profileImage": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7"
+      },
+      "dateListed": "2024-02-01",
+      "amenities": {
+        "hasGarden": false,
+        "hasSwimmingPool": false,
+        "petFriendly": false,
+        "wheelchairAccessible": true
+      }
     },
     {
-      "id": 4,
-      "title": "Retail Shopping Center",
-      "location": "Phoenix, AZ",
-      "totalInvestment": 6500000,
-      "currentInvestment": 4875000,
-      "investors": 60,
-      "minInvestment": 75000,
-      "roi": "14%",
-      "type": "Commercial",
-      "bedrooms": 0,
-      "bathrooms": 6,
-      "squareFeet": 25000,
-      "yearBuilt": 2018,
-      "images": [
-        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-        "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
-        "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
-      ],
-      "description": "Well-established shopping center with national anchor tenants. High-traffic location with ample parking. Recent renovations and strong lease agreements in place."
-    },
-    {
-      "id": 5,
+      "id": "P004",
       "title": "Mixed-Use Development",
-      "location": "Seattle, WA",
-      "totalInvestment": 12000000,
-      "currentInvestment": 9000000,
-      "investors": 120,
-      "minInvestment": 100000,
-      "roi": "16%",
-      "type": "Mixed-Use",
+      "description": "Modern mixed-use development featuring retail spaces, luxury apartments, and office suites. Prime location near public transit with sustainable design features.",
+      "location": {
+        "address": "789 Urban Street",
+        "city": "Seattle",
+        "state": "WA",
+        "country": "USA",
+        "latitude": 47.6062,
+        "longitude": -122.3321
+      },
+      "price": 12000000,
+      "askingPrice": 12500000,
+      "currency": "USD",
+      "area": 45000,
       "bedrooms": 45,
       "bathrooms": 52,
-      "squareFeet": 45000,
-      "yearBuilt": 2022,
+      "parkingSpaces": 100,
+      "propertyType": "Mixed-Use",
+      "status": "For Sale",
+      "interestedClients": 120,
+      "annualGrowthRate": 16.3,
+      "features": [
+        "Retail Spaces",
+        "Luxury Apartments",
+        "Office Suites",
+        "Public Transit Access",
+        "Sustainable Design"
+      ],
       "images": [
         "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Modern mixed-use development featuring retail spaces, luxury apartments, and office suites. Prime location near public transit with sustainable design features."
+      "videoTour": "https://example.com/mixed-use-tour.mp4",
+      "agent": {
+        "name": "Emily Zhang",
+        "phone": "+1-206-555-0321",
+        "email": "emily.z@realestate.com",
+        "profileImage": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2"
+      },
+      "dateListed": "2024-01-15",
+      "amenities": {
+        "hasGarden": true,
+        "hasSwimmingPool": true,
+        "petFriendly": true,
+        "wheelchairAccessible": true
+      }
     }
   ]
 }
