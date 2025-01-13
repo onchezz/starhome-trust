@@ -45,6 +45,7 @@ interface Property {
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const foundProperty = propertiesData.properties.find(
@@ -120,6 +121,26 @@ const PropertyDetails = () => {
               </div>
             </Card>
 
+            {/* New Image Gallery Section */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Property Gallery</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {property.images.map((image, index) => (
+                  <div 
+                    key={index} 
+                    className="aspect-square relative cursor-pointer overflow-hidden rounded-lg"
+                    onClick={() => setSelectedImage(image)}
+                  >
+                    <img
+                      src={image}
+                      alt={`${property.title} - View ${index + 1}`}
+                      className="object-cover w-full h-full hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </Card>
+
             <PropertyMap location={property.location} />
             
             <Card className="p-6">
@@ -163,6 +184,22 @@ const PropertyDetails = () => {
           <SimilarProperties currentPropertyId={property.id} />
         </div>
       </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="max-w-4xl w-full">
+            <img
+              src={selectedImage}
+              alt="Property view"
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
