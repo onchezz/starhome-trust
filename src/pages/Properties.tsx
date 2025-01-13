@@ -30,11 +30,11 @@ const Properties = () => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = 
       property.title.toLowerCase().includes(searchLower) ||
-      property.location.toLowerCase().includes(searchLower);
+      `${property.location.city}, ${property.location.state}`.toLowerCase().includes(searchLower);
 
     const matchesPrice = 
-      property.totalInvestment >= filters.priceRange[0] &&
-      property.totalInvestment <= filters.priceRange[1];
+      property.price >= filters.priceRange[0] &&
+      property.price <= filters.priceRange[1];
 
     const matchesBedrooms = 
       filters.bedrooms === "any" || 
@@ -46,7 +46,7 @@ const Properties = () => {
 
     const matchesType = 
       filters.propertyType === "any" || 
-      property.type === filters.propertyType;
+      property.propertyType === filters.propertyType;
 
     return matchesSearch && matchesPrice && matchesBedrooms && matchesBathrooms && matchesType;
   });
@@ -75,7 +75,7 @@ const Properties = () => {
                     variant="secondary" 
                     className="absolute top-4 right-4 bg-green-500 text-white hover:bg-green-600"
                   >
-                    For Sale
+                    {property.status}
                   </Badge>
                   <img
                     src={property.images[0]}
@@ -84,22 +84,24 @@ const Properties = () => {
                   />
                   <CardHeader>
                     <CardTitle>{property.title}</CardTitle>
-                    <CardDescription>{property.location}</CardDescription>
+                    <CardDescription>
+                      {property.location.city}, {property.location.state}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-between mb-4">
                       <span className="text-2xl font-bold text-primary">
-                        {formatPrice(property.totalInvestment)}
+                        {formatPrice(property.price)}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="text-center">
-                        <p className="font-semibold">{property.investors}</p>
-                        <p className="text-muted-foreground">Investors</p>
+                        <p className="font-semibold">{property.interestedClients}</p>
+                        <p className="text-muted-foreground">Interested Clients</p>
                       </div>
                       <div className="text-center">
-                        <p className="font-semibold">{property.roi}</p>
-                        <p className="text-muted-foreground">Expected ROI</p>
+                        <p className="font-semibold">{property.annualGrowthRate}%</p>
+                        <p className="text-muted-foreground">Annual Growth</p>
                       </div>
                     </div>
                   </CardContent>

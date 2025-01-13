@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import propertiesData from "@/data/properties.json";
+import { Link } from "react-router-dom";
 
 interface SimilarPropertiesProps {
-  currentPropertyId: number;
+  currentPropertyId: string;  // Changed from number to string to match the data
 }
 
 export const SimilarProperties = ({ currentPropertyId }: SimilarPropertiesProps) => {
@@ -22,20 +23,24 @@ export const SimilarProperties = ({ currentPropertyId }: SimilarPropertiesProps)
           .filter(p => p.id !== currentPropertyId)
           .slice(0, 3)
           .map(similarProperty => (
-            <Card key={similarProperty.id} className="overflow-hidden">
-              <img
-                src={similarProperty.images[0]}
-                alt={similarProperty.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold">{similarProperty.title}</h3>
-                <p className="text-sm text-gray-600">{similarProperty.location}</p>
-                <div className="mt-2 font-bold text-primary">
-                  {formatPrice(similarProperty.totalInvestment)}
+            <Link to={`/properties/${similarProperty.id}`} key={similarProperty.id}>
+              <Card className="overflow-hidden">
+                <img
+                  src={similarProperty.images[0]}
+                  alt={similarProperty.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="font-semibold">{similarProperty.title}</h3>
+                  <p className="text-sm text-gray-600">
+                    {similarProperty.location.city}, {similarProperty.location.state}
+                  </p>
+                  <div className="mt-2 font-bold text-primary">
+                    {formatPrice(similarProperty.price)}
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           ))}
       </div>
     </div>

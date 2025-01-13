@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { Card } from "@/components/ui/card";
 import propertiesData from "@/data/properties.json";
 import { PropertyHero } from "@/components/property/PropertyHero";
 import { PropertyHighlights } from "@/components/property/PropertyHighlights";
@@ -11,29 +10,34 @@ import { PropertySchedule } from "@/components/property/PropertySchedule";
 import { SimilarProperties } from "@/components/property/SimilarProperties";
 
 interface Property {
-  id: number;
+  id: string;
   title: string;
-  location: string;
-  totalInvestment: number;
-  currentInvestment: number;
-  investors: number;
-  minInvestment: number;
-  roi: string;
-  type: string;
+  location: {
+    city: string;
+    state: string;
+    address: string;
+    country: string;
+    latitude: number;
+    longitude: number;
+  };
+  price: number;
+  askingPrice: number;
   images: string[];
   description: string;
+  interestedClients: number;
+  annualGrowthRate: number;
 }
 
 const PropertyDetails = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
 
   useEffect(() => {
     const foundProperty = propertiesData.properties.find(
-      (p) => p.id === Number(id)
+      (p) => p.id === id
     );
     if (foundProperty) {
-      setProperty(foundProperty);
+      setProperty(foundProperty as Property);
     }
   }, [id]);
 
@@ -47,9 +51,9 @@ const PropertyDetails = () => {
       
       <PropertyHero 
         title={property.title}
-        location={property.location}
+        location={`${property.location.city}, ${property.location.state}`}
         images={property.images}
-        totalInvestment={property.totalInvestment}
+        totalInvestment={property.price}
       />
 
       <div className="container mx-auto px-4">
@@ -57,19 +61,19 @@ const PropertyDetails = () => {
           <div className="lg:col-span-2 space-y-8">
             <PropertyHighlights />
 
-            <Card className="p-6">
+            <div className="p-6 bg-white rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">About This Property</h2>
               <p className="text-gray-600 whitespace-pre-line">{property.description}</p>
-            </Card>
+            </div>
 
             <PropertyMap location={property.location} />
           </div>
 
           <div className="space-y-8">
             <PropertyInvestment
-              minInvestment={property.minInvestment}
-              investors={property.investors}
-              roi={property.roi}
+              minInvestment={property.price}
+              investors={property.interestedClients}
+              roi={`${property.annualGrowthRate}%`}
             />
             <PropertySchedule />
           </div>
