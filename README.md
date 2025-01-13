@@ -104,7 +104,7 @@ npm run dev
 
 1. Navigate to the contract directory:
 ```sh
-cd lib/starhomes
+cd contracts
 ```
 
 2. Build the contract:
@@ -125,10 +125,9 @@ project/
 │   ├── components/   # React components
 │   ├── pages/        # Page components
 │   └── providers/    # Context providers
-└── lib/
-    └── starhomes/    # Smart contract code
-        ├── src/      # Contract source files
-        └── tests/    # Contract test files
+└── contracts/        # Smart contract code
+    ├── src/          # Contract source files
+    └── tests/        # Contract test files
 ```
 
 ## Contact
