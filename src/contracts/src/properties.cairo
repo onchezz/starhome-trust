@@ -1,6 +1,25 @@
+use starknet::ContractAddress;
+use starknet::class_hash::ClassHash;
+use openzeppelin::token::erc20::interface::IERC20;
+use openzeppelin::upgrades::upgradeable::Upgradeable;
+use openzeppelin::access::ownable::Ownable;
+
+#[starknet::interface]
+trait IPropertyContract<TContractState> {
+    fn list_property(ref self: TContractState, price: u256, total_shares: u256, payment_token: ContractAddress) -> u256;
+    fn invest_in_property(ref self: TContractState, property_id: u256, shares_to_buy: u256);
+    fn get_property(self: @TContractState, property_id: u256) -> Property;
+    fn get_investment(self: @TContractState, property_id: u256, investor: ContractAddress) -> Investment;
+    fn upgrade(ref self: TContractState, new_class_hash: ClassHash);
+}
+
 #[starknet::contract]
 mod PropertyContract {
-    use starknet::ContractAddress;
+    use super::ContractAddress;
+    use super::ClassHash;
+    use super::IERC20;
+    use super::Upgradeable;
+    use super::Ownable;
     use starknet::get_caller_address;
     use array::ArrayTrait;
     use option::OptionTrait;
@@ -13,6 +32,7 @@ mod PropertyContract {
         PropertyListed: PropertyListed,
         PropertySold: PropertySold,
         InvestmentMade: InvestmentMade,
+        Upgraded: Upgraded
     }
 
     #[derive(Drop, starknet::Event)]
@@ -20,6 +40,7 @@ mod PropertyContract {
         property_id: u256,
         owner: ContractAddress,
         price: u256,
+        payment_token: ContractAddress,
         timestamp: u64,
     }
 
@@ -41,11 +62,17 @@ mod PropertyContract {
         timestamp: u64,
     }
 
+    #[derive(Drop, starknet::Event)]
+    struct Upgraded {
+        class_hash: ClassHash,
+    }
+
     #[derive(Copy, Drop, Serde, starknet::Store)]
     struct Property {
         id: u256,
         owner: ContractAddress,
         price: u256,
+        payment_token: ContractAddress,
         total_shares: u256,
         available_shares: u256,
         is_active: bool,
@@ -80,6 +107,7 @@ mod PropertyContract {
             ref self: ContractState,
             price: u256,
             total_shares: u256,
+            payment_token: ContractAddress,
         ) -> u256 {
             let caller = get_caller_address();
             let property_id = self.next_property_id.read();
@@ -89,6 +117,7 @@ mod PropertyContract {
                 id: property_id,
                 owner: caller,
                 price,
+                payment_token,
                 total_shares,
                 available_shares: total_shares,
                 is_active: true,
@@ -104,6 +133,7 @@ mod PropertyContract {
                 property_id,
                 owner: caller,
                 price,
+                payment_token,
                 timestamp: starknet::get_block_timestamp(),
             }));
 
@@ -123,6 +153,14 @@ mod PropertyContract {
             // Calculate investment amount
             let share_price = property.price / property.total_shares;
             let investment_amount = share_price * shares_to_buy;
+
+            // Transfer tokens from investor to contract
+            IERC20::transfer_from(
+                property.payment_token,
+                caller,
+                property.owner,
+                investment_amount
+            );
 
             // Update property shares
             property.available_shares = property.available_shares - shares_to_buy;
@@ -157,17 +195,17 @@ mod PropertyContract {
         ) -> Investment {
             self.property_investments.read((property_id, investor))
         }
-    }
-}
 
-#[starknet::interface]
-trait IPropertyContract<TContractState> {
-    fn list_property(ref self: TContractState, price: u256, total_shares: u256) -> u256;
-    fn invest_in_property(ref self: TContractState, property_id: u256, shares_to_buy: u256);
-    fn get_property(self: @TContractState, property_id: u256) -> Property;
-    fn get_investment(
-        self: @TContractState,
-        property_id: u256,
-        investor: ContractAddress
-    ) -> Investment;
+        fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
+            // Only owner can upgrade
+            let caller = get_caller_address();
+            assert(caller == self.owner.read(), 'Caller is not the owner');
+            
+            // Emit event before upgrading
+            self.emit(Event::Upgraded(Upgraded { class_hash: new_class_hash }));
+            
+            // Perform the upgrade
+            Upgradeable::upgrade(new_class_hash);
+        }
+    }
 }
