@@ -9,7 +9,3 @@ openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", ta
 [[target.starknet-contract]]
 sierra = true
 casm = true
-
-[tool.sncast]
-account = "katana"
-url = "http://127.0.0.1:5050"

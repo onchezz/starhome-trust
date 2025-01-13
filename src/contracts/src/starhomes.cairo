@@ -5,7 +5,7 @@ use openzeppelin::upgrades::upgradeable::Upgradeable;
 use openzeppelin::access::ownable::Ownable;
 
 #[starknet::interface]
-trait IPropertyContract<TContractState> {
+trait IStarhomesContract<TContractState> {
     fn list_property(ref self: TContractState, price: u256, total_shares: u256, payment_token: ContractAddress) -> u256;
     fn invest_in_property(ref self: TContractState, property_id: u256, shares_to_buy: u256);
     fn get_property(self: @TContractState, property_id: u256) -> Property;
@@ -14,7 +14,7 @@ trait IPropertyContract<TContractState> {
 }
 
 #[starknet::contract]
-mod PropertyContract {
+mod StarhomesContract {
     use super::ContractAddress;
     use super::ClassHash;
     use super::IERC20;
@@ -102,7 +102,7 @@ mod PropertyContract {
     }
 
     #[external(v0)]
-    impl PropertyContractImpl of super::IPropertyContract<ContractState> {
+    impl StarhomesContractImpl of super::IStarhomesContract<ContractState> {
         fn list_property(
             ref self: ContractState,
             price: u256,
