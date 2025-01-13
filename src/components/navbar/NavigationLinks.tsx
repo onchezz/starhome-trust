@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,23 +16,39 @@ interface NavigationLinksProps {
 
 const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleAnchorClick = (href: string) => {
-    // If we're not on the home page, navigate there first
-    if (location.pathname !== '/') {
-      window.location.href = href;
-      return;
-    }
-
-    // Extract the section ID from the href
-    const sectionId = href.split('#')[1];
-    const element = document.getElementById(sectionId);
+  const handleAnchorClick = async (href: string) => {
+    console.log("Handling anchor click for:", href);
     
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+    // If we're not on the home page, navigate to home first
+    if (location.pathname !== '/') {
+      console.log("Not on home page, navigating to:", href);
+      // Use navigate and then handle the scroll after the navigation
+      navigate('/');
+      // Wait for a brief moment to ensure the navigation has completed
+      setTimeout(() => {
+        const sectionId = href.split('#')[1];
+        console.log("Scrolling to section:", sectionId);
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    } else {
+      // If we're already on the home page, just scroll
+      const sectionId = href.split('#')[1];
+      console.log("Already on home page, scrolling to:", sectionId);
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
     }
 
     // Call the onClick handler if provided
