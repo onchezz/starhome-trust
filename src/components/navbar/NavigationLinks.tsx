@@ -21,37 +21,32 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
   const handleAnchorClick = async (href: string) => {
     console.log("Handling anchor click for:", href);
     
-    // If we're not on the home page, navigate to home first
-    if (location.pathname !== '/') {
-      console.log("Not on home page, navigating to:", href);
-      // Use navigate and then handle the scroll after the navigation
-      navigate('/');
-      // Wait for a brief moment to ensure the navigation has completed
-      setTimeout(() => {
-        const sectionId = href.split('#')[1];
-        console.log("Scrolling to section:", sectionId);
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      }, 100);
-    } else {
-      // If we're already on the home page, just scroll
-      const sectionId = href.split('#')[1];
-      console.log("Already on home page, scrolling to:", sectionId);
+    const sectionId = href.split('#')[1];
+    
+    const scrollToSection = () => {
+      console.log("Attempting to scroll to section:", sectionId);
       const element = document.getElementById(sectionId);
       if (element) {
+        console.log("Found element, scrolling into view");
         element.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
         });
+      } else {
+        console.log("Element not found:", sectionId);
       }
+    };
+
+    if (location.pathname !== '/') {
+      console.log("Not on home page, navigating home first");
+      navigate('/');
+      // Wait for navigation and component mount
+      setTimeout(scrollToSection, 300);
+    } else {
+      console.log("Already on home page, scrolling directly");
+      scrollToSection();
     }
 
-    // Call the onClick handler if provided
     if (onClick) {
       onClick();
     }
@@ -77,7 +72,6 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
           </div>
         );
 
-        // Different styling for pages vs non-pages (Contact Us, About Us)
         const linkStyles = item.isPage
           ? cn(
               className,
@@ -102,17 +96,13 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
             {linkContent}
           </Link>
         ) : (
-          <a
+          <button
             key={item.label}
-            href={item.href}
             className={linkStyles}
-            onClick={(e) => {
-              e.preventDefault();
-              handleAnchorClick(item.href);
-            }}
+            onClick={() => handleAnchorClick(item.href)}
           >
             {linkContent}
-          </a>
+          </button>
         );
       })}
     </div>
