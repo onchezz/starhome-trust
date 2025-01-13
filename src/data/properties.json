@@ -2,54 +2,108 @@
   "properties": [
     {
       "id": 1,
-      "title": "Downtown Commercial Complex",
+      "title": "Modern Downtown Penthouse",
       "location": "Los Angeles, CA",
-      "totalInvestment": 5000000,
-      "currentInvestment": 3750000,
-      "investors": 45,
+      "totalInvestment": 2500000,
+      "currentInvestment": 1875000,
+      "investors": 25,
       "minInvestment": 25000,
       "roi": "12%",
-      "type": "Commercial",
+      "type": "Residential",
+      "bedrooms": 3,
+      "bathrooms": 2.5,
+      "squareFeet": 2200,
+      "yearBuilt": 2020,
       "images": [
         "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Prime commercial property in downtown LA featuring retail spaces and office units. High-traffic location with excellent growth potential."
+      "description": "Luxurious penthouse featuring floor-to-ceiling windows, gourmet kitchen, and panoramic city views. Building amenities include 24/7 concierge, fitness center, and rooftop pool."
     },
     {
       "id": 2,
-      "title": "Luxury Apartment Building",
+      "title": "Beachfront Luxury Villa",
       "location": "Miami, FL",
-      "totalInvestment": 8000000,
-      "currentInvestment": 6000000,
-      "investors": 78,
+      "totalInvestment": 4500000,
+      "currentInvestment": 3375000,
+      "investors": 40,
       "minInvestment": 50000,
       "roi": "15%",
       "type": "Residential",
+      "bedrooms": 5,
+      "bathrooms": 4,
+      "squareFeet": 4500,
+      "yearBuilt": 2019,
       "images": [
         "https://images.unsplash.com/photo-1481253127861-534498168948",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Luxury residential complex with premium amenities, located in Miami's most sought-after neighborhood."
+      "description": "Stunning beachfront villa with private beach access, infinity pool, and guest house. Features include smart home technology, wine cellar, and outdoor kitchen."
     },
     {
       "id": 3,
-      "title": "Tech Park Development",
+      "title": "Downtown Office Complex",
       "location": "Austin, TX",
-      "totalInvestment": 12000000,
-      "currentInvestment": 9600000,
-      "investors": 120,
+      "totalInvestment": 8000000,
+      "currentInvestment": 6000000,
+      "investors": 85,
       "minInvestment": 100000,
       "roi": "18%",
-      "type": "Mixed-Use",
+      "type": "Commercial",
+      "bedrooms": 0,
+      "bathrooms": 8,
+      "squareFeet": 15000,
+      "yearBuilt": 2021,
       "images": [
         "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
         "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
         "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
       ],
-      "description": "Modern tech park featuring office spaces, research facilities, and innovative workspace solutions."
+      "description": "Class A office building in prime downtown location. Features modern amenities, covered parking, and LEED certification. Excellent investment opportunity with strong tenant mix."
+    },
+    {
+      "id": 4,
+      "title": "Retail Shopping Center",
+      "location": "Phoenix, AZ",
+      "totalInvestment": 6500000,
+      "currentInvestment": 4875000,
+      "investors": 60,
+      "minInvestment": 75000,
+      "roi": "14%",
+      "type": "Commercial",
+      "bedrooms": 0,
+      "bathrooms": 6,
+      "squareFeet": 25000,
+      "yearBuilt": 2018,
+      "images": [
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+        "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
+        "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
+      ],
+      "description": "Well-established shopping center with national anchor tenants. High-traffic location with ample parking. Recent renovations and strong lease agreements in place."
+    },
+    {
+      "id": 5,
+      "title": "Mixed-Use Development",
+      "location": "Seattle, WA",
+      "totalInvestment": 12000000,
+      "currentInvestment": 9000000,
+      "investors": 120,
+      "minInvestment": 100000,
+      "roi": "16%",
+      "type": "Mixed-Use",
+      "bedrooms": 45,
+      "bathrooms": 52,
+      "squareFeet": 45000,
+      "yearBuilt": 2022,
+      "images": [
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+        "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
+        "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
+      ],
+      "description": "Modern mixed-use development featuring retail spaces, luxury apartments, and office suites. Prime location near public transit with sustainable design features."
     }
   ]
 }
