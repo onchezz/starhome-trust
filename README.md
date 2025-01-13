@@ -2,9 +2,49 @@
 
 ## Overview
 
-Starhomes is a modern real estate investment platform that allows users to explore, invest in, and manage property investments globally. Built with cutting-edge technologies, it provides a seamless experience for property investment and management.
+Starhomes is a modern real estate investment platform that combines web3 technology with traditional real estate investments. Built on StarkNet, it enables fractional property ownership and transparent investment management through smart contracts.
 
-## Features
+## Smart Contract Architecture
+
+The Starhomes smart contract (`StarhomesContract`) is built on StarkNet using Cairo 2.0 and implements the following key features:
+
+### Core Features
+
+1. **Property Listing**
+   - Property owners can list their properties with customizable parameters
+   - Supports fractional ownership through share-based system
+   - Configurable payment tokens (ERC20) for investment
+
+2. **Investment Management**
+   - Users can purchase shares in listed properties
+   - Automatic payment processing through ERC20 tokens
+   - Real-time tracking of available shares
+
+3. **Upgradability**
+   - Contract implements OpenZeppelin's upgradeable pattern
+   - Allows for future improvements while maintaining data
+   - Secure upgrade process controlled by contract owner
+
+### Contract Functions
+
+```cairo
+// List a new property for investment
+fn list_property(price: u256, total_shares: u256, payment_token: ContractAddress) -> u256
+
+// Invest in an existing property
+fn invest_in_property(property_id: u256, shares_to_buy: u256)
+
+// Query property details
+fn get_property(property_id: u256) -> Property
+
+// Query investment details
+fn get_investment(property_id: u256, investor: ContractAddress) -> Investment
+
+// Upgrade contract implementation
+fn upgrade(new_class_hash: ClassHash)
+```
+
+## Web Features
 
 - **Property Exploration**: Browse through a curated list of premium real estate investments
 - **Investment Management**: Track and manage your property investments
@@ -15,17 +55,20 @@ Starhomes is a modern real estate investment platform that allows users to explo
 
 ## Technology Stack
 
-This project is built with modern web technologies:
-
-- **Frontend Framework**: React with TypeScript
+### Frontend
+- **Framework**: React with TypeScript
 - **Build Tool**: Vite
 - **UI Components**: shadcn/ui
 - **Styling**: Tailwind CSS
 - **State Management**: React Query
 - **Icons**: Lucide React
 - **Charts**: Recharts
-- **Form Handling**: React Hook Form
-- **Notifications**: Sonner Toast
+
+### Smart Contract
+- **Language**: Cairo 2.0
+- **Network**: StarkNet
+- **Dependencies**: OpenZeppelin Contracts
+- **Testing**: Integrated test suite
 
 ## Getting Started
 
@@ -33,6 +76,7 @@ This project is built with modern web technologies:
 
 - Node.js (v14 or higher)
 - npm or yarn package manager
+- Scarb (for smart contract development)
 
 ### Installation
 
@@ -56,45 +100,41 @@ npm install
 npm run dev
 ```
 
+### Smart Contract Development
+
+1. Navigate to the contract directory:
+```sh
+cd lib/starhomes
+```
+
+2. Build the contract:
+```sh
+scarb build
+```
+
+3. Run tests:
+```sh
+scarb test
+```
+
 ## Project Structure
 
 ```
-src/
-├── components/     # Reusable UI components
-├── pages/         # Page components and routes
-├── data/          # Static data and configurations
-├── hooks/         # Custom React hooks
-├── lib/           # Utility functions and helpers
-└── providers/     # Context providers
+project/
+├── src/              # Frontend application code
+│   ├── components/   # React components
+│   ├── pages/        # Page components
+│   └── providers/    # Context providers
+└── lib/
+    └── starhomes/    # Smart contract code
+        ├── src/      # Contract source files
+        └── tests/    # Contract test files
 ```
-
-## Key Components
-
-- **PropertyInvestment**: Handles investment details and purchase actions
-- **PropertySchedule**: Manages property viewing appointments
-- **ContactForm**: Handles user inquiries and communication
-- **PropertyHighlights**: Displays key property features
-- **PropertyMap**: Shows property location using interactive maps
 
 ## Contact
 
 For inquiries and support, contact us at:
 - Email: brianonchezz@gmail.com
-
-## Deployment
-
-The application can be deployed through:
-1. Lovable's built-in deployment feature
-2. Manual deployment to platforms like Netlify
-3. Custom domain setup (documentation available)
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
 
 ## License
 
