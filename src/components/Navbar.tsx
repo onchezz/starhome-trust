@@ -2,22 +2,49 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Menu, X, Wallet, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useStarknetkitConnectModal } from "starknetkit";
+import { useConnect, useAccount } from "@starknet-react/core";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
+  const { toast } = useToast();
+  const { starknetkitConnectModal } = useStarknetkitConnectModal({ connectors });
 
   const handleGoogleSignIn = () => {
     console.log("Signing in with Google");
   };
 
-  const handleConnectWallet = () => {
-    console.log("Connecting wallet");
+  const handleConnectWallet = async () => {
+    try {
+      console.log("Connecting StarkNet wallet");
+      const { connector } = await starknetkitConnectModal();
+      if (!connector) {
+        console.log("No connector selected");
+        return;
+      }
+      
+      await connect({ connector });
+      toast({
+        title: "Wallet Connected",
+        description: `Connected to ${address?.slice(0, 6)}...${address?.slice(-4)}`,
+      });
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast({
+        variant: "destructive",
+        title: "Connection Failed",
+        description: "Failed to connect wallet. Please try again.",
+      });
+    }
   };
 
   const menuItems = [
@@ -58,12 +85,18 @@ const Navbar = () => {
             ))}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button>Invest Now</Button>
+                <Button>
+                  {address ? (
+                    <span>{`${address.slice(0, 6)}...${address.slice(-4)}`}</span>
+                  ) : (
+                    "Invest Now"
+                  )}
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
                 <DropdownMenuItem onClick={handleConnectWallet}>
                   <Wallet className="mr-2 h-4 w-4" />
-                  Connect Wallet
+                  {address ? "Connected" : "Connect Wallet"}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -127,12 +160,18 @@ const Navbar = () => {
               ))}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="w-full">Invest Now</Button>
+                  <Button className="w-full">
+                    {address ? (
+                      <span>{`${address.slice(0, 6)}...${address.slice(-4)}`}</span>
+                    ) : (
+                      "Invest Now"
+                    )}
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuItem onClick={handleConnectWallet}>
                     <Wallet className="mr-2 h-4 w-4" />
-                    Connect Wallet
+                    {address ? "Connected" : "Connect Wallet"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleGoogleSignIn}>
                     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
