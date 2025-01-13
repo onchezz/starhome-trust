@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { PropertySearch } from "@/components/property/PropertySearch";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { Badge } from "@/components/ui/badge";
+import { ChevronDown, ChevronUp, Filter, Search } from "lucide-react";
 import propertiesData from "@/data/properties.json";
 import { useState } from "react";
 
@@ -17,6 +18,8 @@ const Properties = () => {
     bathrooms: "any",
     propertyType: "any",
   });
+  const [showSearch, setShowSearch] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -57,13 +60,47 @@ const Properties = () => {
       <div className="container mx-auto py-24">
         <h1 className="text-4xl font-bold mb-8 text-center">Available Properties</h1>
         
-        <PropertySearch 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+        {/* Mobile Search and Filter Buttons */}
+        <div className="md:hidden flex gap-2 mb-4">
+          <Button 
+            variant="outline" 
+            className="flex-1 flex items-center justify-center gap-2"
+            onClick={() => setShowSearch(!showSearch)}
+          >
+            <Search className="h-4 w-4" />
+            Search
+            {showSearch ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+          <Button 
+            variant="outline" 
+            className="flex-1 flex items-center justify-center gap-2"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+            {showFilters ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
 
-        <div className="flex gap-6">
-          <div className="w-80 flex-shrink-0">
+        {/* Search Bar - Desktop always visible, Mobile collapsible */}
+        <div className={`md:block ${showSearch ? 'block' : 'hidden'}`}>
+          <PropertySearch 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Filters - Desktop always visible, Mobile collapsible */}
+          <div className={`md:block md:w-80 md:flex-shrink-0 ${showFilters ? 'block' : 'hidden'}`}>
             <PropertyFilters onFilterChange={setFilters} />
           </div>
           
