@@ -77,3 +77,38 @@
     scroll-behavior: smooth;
   }
 }
+
+/* Custom drawer animation from top */
+@keyframes drawer-in-from-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes drawer-out-to-top {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.drawer-content[data-state='open'] {
+  animation: drawer-in-from-top 0.3s ease-out;
+}
+
+.drawer-content[data-state='closed'] {
+  animation: drawer-out-to-top 0.3s ease-out;
+}
+
+.drawer-content {
+  --tw-translate-y: 0;
+  --tw-translate-x: 0;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y));
+  top: 0;
+  bottom: auto !important;
+}

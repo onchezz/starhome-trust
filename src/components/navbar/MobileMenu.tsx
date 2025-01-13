@@ -27,7 +27,7 @@ const MobileMenu = ({
             <Menu className="h-6 w-6" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="bg-white">
+        <DrawerContent className="drawer-content bg-white">
           <DrawerHeader>
             <DrawerTitle>Menu</DrawerTitle>
           </DrawerHeader>
