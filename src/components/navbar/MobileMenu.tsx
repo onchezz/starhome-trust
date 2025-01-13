@@ -36,8 +36,8 @@ const MobileMenu = ({
           align="end"
         >
           <div className="flex flex-col space-y-4">
-            <div className="text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent mb-2">
-              StarHomes
+            <div className="text-xl mb-2">
+              Home
             </div>
             <NavigationLinks
               items={navigation}
