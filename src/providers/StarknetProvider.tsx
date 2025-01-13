@@ -12,6 +12,7 @@ export default function StarknetProvider({ children }: { children: React.ReactNo
       options: {
         dappName: "Starhomes",
         projectId: "starhomes-project",
+        url: "https://web.argent.xyz"
       },
       inAppBrowserOptions: {},
     })
@@ -23,6 +24,7 @@ export default function StarknetProvider({ children }: { children: React.ReactNo
       options: {
         dappName: "Starhomes",
         projectId: "starhomes-project",
+        url: "https://web.argent.xyz"
       }
     })
   ];

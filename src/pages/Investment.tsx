@@ -7,6 +7,9 @@ import { Users, TrendingUp, Building, DollarSign, Wallet, ExternalLink } from "l
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useConnect, useAccount } from "@starknet-react/core";
+import { useStarknetkitConnectModal } from "starknetkit";
+import { toast } from "sonner";
 
 const investmentProperties = [
   {
@@ -51,9 +54,12 @@ const investmentProperties = [
 ];
 
 const Investment = () => {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{ [key: number]: string }>({});
+  
+  const { address } = useAccount();
+  const { connect } = useConnect();
+  const { starknetkitConnectModal } = useStarknetkitConnectModal();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -67,13 +73,40 @@ const Investment = () => {
     return (current / total) * 100;
   };
 
-  const handleConnectWallet = () => {
-    console.log("Connecting wallet");
-    setIsWalletConnected(true);
+  const handleConnectWallet = async () => {
+    try {
+      console.log("Connecting StarkNet wallet");
+      const { connector } = await starknetkitConnectModal();
+      
+      if (!connector) {
+        console.log("No connector selected");
+        return;
+      }
+
+      await connect({ connector });
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error("Failed to connect wallet");
+    }
   };
 
-  const handleInvest = (propertyId: number) => {
-    console.log(`Investing ${investmentAmounts[propertyId]} in property ${propertyId}`);
+  const handleInvest = async (propertyId: number) => {
+    try {
+      const amount = investmentAmounts[propertyId];
+      console.log(`Investing ${amount} in property ${propertyId}`);
+      
+      if (!amount || isNaN(Number(amount))) {
+        toast.error("Please enter a valid investment amount");
+        return;
+      }
+
+      // Here you would implement the actual transaction logic
+      toast.success("Investment transaction initiated");
+      
+    } catch (error) {
+      console.error("Investment error:", error);
+      toast.error("Investment failed");
+    }
   };
 
   const handleAmountChange = (propertyId: number, value: string) => {
@@ -186,7 +219,9 @@ const Investment = () => {
                       onOpenChange={(open) => setExpandedCardId(open ? property.id : null)}
                     >
                       <CollapsibleTrigger asChild>
-                        <Button className="w-full">Invest Now</Button>
+                        <Button className="w-full">
+                          {address ? 'Invest Now' : 'Connect Wallet'}
+                        </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="mt-4 space-y-4">
                         <Input
@@ -198,10 +233,10 @@ const Investment = () => {
                         />
                         <Button 
                           className="w-full"
-                          onClick={isWalletConnected ? () => handleInvest(property.id) : handleConnectWallet}
+                          onClick={address ? () => handleInvest(property.id) : handleConnectWallet}
                         >
                           <Wallet className="mr-2 h-4 w-4" />
-                          {isWalletConnected ? 'Invest' : 'Connect Wallet'}
+                          {address ? 'Invest' : 'Connect Wallet'}
                         </Button>
                       </CollapsibleContent>
                     </Collapsible>
