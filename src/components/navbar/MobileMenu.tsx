@@ -31,20 +31,23 @@ const MobileMenu = ({
       </div>
 
       {isOpen && (
-        <div className="md:hidden py-4">
-          <div className="flex flex-col space-y-4">
-            <NavigationLinks
-              items={navigation}
-              className="text-gray-600 hover:text-gray-900"
-              onClick={() => toggleMenu()}
-            />
-            <WalletDropdown
-              address={address}
-              handleGoogleSignIn={handleGoogleSignIn}
-              handleConnectWallet={handleConnectWallet}
-              handleDisconnect={handleDisconnect}
-              className="w-full"
-            />
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-md" onClick={toggleMenu} />
+          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white/95 p-6 shadow-lg">
+            <div className="flex flex-col space-y-4">
+              <NavigationLinks
+                items={navigation}
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => toggleMenu()}
+              />
+              <WalletDropdown
+                address={address}
+                handleGoogleSignIn={handleGoogleSignIn}
+                handleConnectWallet={handleConnectWallet}
+                handleDisconnect={handleDisconnect}
+                className="w-full"
+              />
+            </div>
           </div>
         </div>
       )}

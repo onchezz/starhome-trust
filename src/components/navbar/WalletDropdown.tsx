@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Wallet } from "lucide-react";
+import { Wallet, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,16 @@ const WalletDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className={className}>Invest</Button>
+        <Button className={className} variant={address ? "default" : "outline"}>
+          {address ? (
+            <>
+              <Check className="mr-2 h-4 w-4" />
+              Connected
+            </>
+          ) : (
+            "Invest"
+          )}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem onClick={handleGoogleSignIn}>
