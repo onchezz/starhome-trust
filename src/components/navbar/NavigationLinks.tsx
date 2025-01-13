@@ -17,6 +17,30 @@ interface NavigationLinksProps {
 const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) => {
   const location = useLocation();
 
+  const handleAnchorClick = (href: string) => {
+    // If we're not on the home page, navigate there first
+    if (location.pathname !== '/') {
+      window.location.href = href;
+      return;
+    }
+
+    // Extract the section ID from the href
+    const sectionId = href.split('#')[1];
+    const element = document.getElementById(sectionId);
+    
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Call the onClick handler if provided
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <div className="flex items-center space-x-6">
       {items.map((item) => {
@@ -66,7 +90,10 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
             key={item.label}
             href={item.href}
             className={linkStyles}
-            onClick={onClick}
+            onClick={(e) => {
+              e.preventDefault();
+              handleAnchorClick(item.href);
+            }}
           >
             {linkContent}
           </a>
