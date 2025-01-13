@@ -1,5 +1,6 @@
 import { Mail, Search, Phone } from "lucide-react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 const Resources = () => {
   const resources = [
@@ -60,10 +61,12 @@ const Resources = () => {
                   {resource.title}
                 </h3>
                 <p className="text-gray-600 mb-4">{resource.description}</p>
-                <Button variant="outline" className="w-full">
-                  <resource.icon className="w-4 h-4 mr-2" />
-                  Learn More
-                </Button>
+                <Link to="/blogs">
+                  <Button variant="outline" className="w-full">
+                    <resource.icon className="w-4 h-4 mr-2" />
+                    Learn More
+                  </Button>
+                </Link>
               </div>
             </div>
           ))}

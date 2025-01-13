@@ -1,0 +1,37 @@
+{
+  "blogs": [
+    {
+      "id": 1,
+      "title": "How Starhomes Facilitated My International Property Investment Journey",
+      "category": "Success Stories",
+      "description": "Discover how Starhomes transformed my approach to investing in properties around the globe through cryptocurrency.",
+      "image": "/lovable-uploads/4588ce76-db27-4a83-b57b-bc6cab99a4d0.png",
+      "content": "Learn about the journey of successful investors who used Starhomes to diversify their portfolio and achieve their investment goals.",
+      "author": "John Smith",
+      "date": "2024-03-15",
+      "readTime": "5 min"
+    },
+    {
+      "id": 2,
+      "title": "Your Complete Guide to Investing in Global Properties",
+      "category": "Investment Guide",
+      "description": "An essential resource for first-time investors looking to explore the global real estate market.",
+      "image": "/lovable-uploads/4588ce76-db27-4a83-b57b-bc6cab99a4d0.png",
+      "content": "A comprehensive guide covering everything you need to know about global property investment.",
+      "author": "Sarah Johnson",
+      "date": "2024-03-14",
+      "readTime": "8 min"
+    },
+    {
+      "id": 3,
+      "title": "Strategies for Successful Property Investment with Cryptocurrency",
+      "category": "Crypto Investment",
+      "description": "Learn innovative investment techniques that take advantage of the latest crypto trends to maximize your property gains.",
+      "image": "/lovable-uploads/4588ce76-db27-4a83-b57b-bc6cab99a4d0.png",
+      "content": "Explore the intersection of cryptocurrency and real estate investment.",
+      "author": "Michael Chen",
+      "date": "2024-03-13",
+      "readTime": "6 min"
+    }
+  ]
+}

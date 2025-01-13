@@ -9,6 +9,7 @@ import Properties from "./pages/Properties";
 import PropertyDetails from "./pages/PropertyDetails";
 import Investment from "./pages/Investment";
 import InvestmentDetails from "./pages/InvestmentDetails";
+import Blogs from "./pages/Blogs";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/properties/:id" element={<PropertyDetails />} />
             <Route path="/investment" element={<Investment />} />
             <Route path="/investment/:id" element={<InvestmentDetails />} />
+            <Route path="/blogs" element={<Blogs />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
