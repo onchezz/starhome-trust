@@ -59,9 +59,9 @@ const Navbar = () => {
   };
 
   const navigation = [
-    { label: "Home", href: "/", isPage: true },
     { label: "Properties", href: "/properties", isPage: true },
     { label: "Investment", href: "/investment", isPage: true },
+    { label: "Blogs", href: "/blogs", isPage: true },
     { label: "Contact Us", href: "/#contact" },
     { label: "About Us", href: "/#about" },
   ];

@@ -1,7 +1,18 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="min-h-screen pt-16 flex items-center bg-gradient-to-br from-white to-blue-50">
       <div className="container mx-auto px-4">
@@ -16,10 +27,20 @@ const Hero = () => {
               cryptocurrency, ensuring a seamless and innovative process.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg">
-                Get Started Today
-              </Button>
-              <Button size="lg" variant="outline">
+              <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button size="lg">Get Started Today</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => navigate("/properties")}>
+                    Browse Properties
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/investment")}>
+                    Start Investing
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button size="lg" variant="outline" onClick={() => navigate("/blogs")}>
                 Learn More <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
