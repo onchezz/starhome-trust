@@ -3,7 +3,10 @@ import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAccount } from "@starknet-react/core";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 // This would typically come from an API/database
 const propertyDetails = {
@@ -35,6 +38,8 @@ const PropertyDetails = () => {
   const { id } = useParams();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const { address } = useAccount();
+  const [investmentAmount, setInvestmentAmount] = useState("");
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -65,6 +70,14 @@ const PropertyDetails = () => {
     }).format(price);
   };
 
+  const handleBuyNow = () => {
+    if (!address) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+    toast.success("Purchase initiated");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -90,6 +103,14 @@ const PropertyDetails = () => {
               <p className="text-4xl font-bold text-primary mb-6">
                 {formatPrice(propertyDetails.price)}
               </p>
+
+              <Button 
+                onClick={handleBuyNow} 
+                className="w-full mb-6"
+                size="lg"
+              >
+                Buy Now
+              </Button>
 
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center p-3 bg-gray-100 rounded-lg">

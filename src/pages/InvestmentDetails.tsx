@@ -4,9 +4,18 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Building, DollarSign, TrendingUp, AlertTriangle, FileText, MapPin, Home, Ruler } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { useAccount } from "@starknet-react/core";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
+  const { address } = useAccount();
+  const [investmentAmount, setInvestmentAmount] = useState("");
+
   console.log("Investment ID:", id);
 
   // This would typically come from an API call using the ID
@@ -57,7 +66,8 @@ const InvestmentDetails = () => {
       "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
       "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
       "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
-    ]
+    ],
+    minAmount: 25000
   };
 
   const formatCurrency = (amount: number) => {
@@ -66,6 +76,21 @@ const InvestmentDetails = () => {
       currency: 'USD',
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const handleInvest = () => {
+    if (!address) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+    
+    if (!investmentAmount || isNaN(Number(investmentAmount))) {
+      toast.error("Please enter a valid investment amount");
+      return;
+    }
+
+    console.log("Investing amount:", investmentAmount);
+    toast.success("Investment initiated");
   };
 
   return (
@@ -84,6 +109,32 @@ const InvestmentDetails = () => {
               />
             ))}
           </div>
+
+          {/* Investment Action */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-6 w-6" />
+                Invest Now
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label>Investment Amount</Label>
+                  <Input
+                    type="number"
+                    value={investmentAmount}
+                    onChange={(e) => setInvestmentAmount(e.target.value)}
+                    placeholder={`Min. ${formatCurrency(investment.minAmount)}`}
+                  />
+                </div>
+                <Button onClick={handleInvest} className="w-full">
+                  Invest Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Basic Property Details */}
           <Card>

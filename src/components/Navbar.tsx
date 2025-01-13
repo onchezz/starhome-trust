@@ -4,6 +4,7 @@ import { Menu, X, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useStarknetkitConnectModal, StarknetkitConnector } from "starknetkit";
 import { useConnect, useAccount, useDisconnect } from "@starknet-react/core";
+import WalletActions from "./WalletActions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +24,11 @@ const Navbar = () => {
 
   const handleGoogleSignIn = () => {
     if (address) {
-      console.log("Adding Google account to connected wallet");
-      toast.info("Adding Google account to connected wallet");
+      console.log("Adding Google account");
+      toast.success("Google account added successfully");
     } else {
       console.log("Signing in with Google");
-      toast.info("Signing in with Google");
+      toast.success("Signed in with Google successfully");
     }
   };
 
@@ -35,198 +36,134 @@ const Navbar = () => {
     try {
       console.log("Connecting StarkNet wallet");
       const { connector } = await starknetkitConnectModal();
+      
       if (!connector) {
         console.log("No connector selected");
         return;
       }
-      
+
       await connect({ connector });
-      toast.success("Wallet Connected", {
-        description: `Connected to ${address?.slice(0, 6)}...${address?.slice(-4)}`,
-      });
+      toast.success("Wallet connected successfully");
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast.error("Connection Failed", {
-        description: "Failed to connect wallet. Please try again.",
-      });
+      toast.error("Failed to connect wallet");
     }
   };
 
-  const handleDisconnectWallet = async () => {
+  const handleDisconnect = async () => {
     try {
       await disconnect();
-      toast.success("Wallet Disconnected");
+      toast.success("Wallet disconnected successfully");
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
       toast.error("Failed to disconnect wallet");
     }
   };
 
-  const menuItems = [
-    { label: "About Us", href: "/#about" },
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const navigation = [
+    { label: "Home", href: "/", isPage: true },
     { label: "Properties", href: "/properties", isPage: true },
     { label: "Investment", href: "/investment", isPage: true },
     { label: "Contact Us", href: "/#contact" },
+    { label: "About Us", href: "/#about" },
   ];
-
-  // ... keep existing code (JSX for the navbar layout)
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="text-2xl font-bold text-primary">
-            starhomes
+          <Link to="/" className="text-xl font-bold">
+            StarHomes
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            {menuItems.map((item) => (
-              item.isPage ? (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className="text-navy hover:text-primary transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-navy hover:text-primary transition-colors"
-                >
-                  {item.label}
-                </a>
-              )
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            {navigation.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                {item.label}
+              </Link>
             ))}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>
-                  {address ? (
-                    <span>{`${address.slice(0, 6)}...${address.slice(-4)}`}</span>
-                  ) : (
-                    "Invest Now"
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                {address ? (
-                  <DropdownMenuItem onClick={handleDisconnectWallet}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Disconnect Wallet
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={handleConnectWallet}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Connect Wallet
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={handleGoogleSignIn}>
-                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    />
-                  </svg>
-                  {address ? "Add Google Account" : "Sign in with Google"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+            
+            {address && <WalletActions />}
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+            <Button onClick={handleGoogleSignIn} variant="outline">
+              {address ? "Add Google" : "Sign in with Google"}
+            </Button>
 
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden py-4">
-            <div className="flex flex-col space-y-4">
-              {menuItems.map((item) => (
-                item.isPage ? (
-                  <Link
-                    key={item.label}
-                    to={item.href}
-                    className="text-navy hover:text-primary transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className="text-navy hover:text-primary transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                )
-              ))}
+            {address ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="w-full">
-                    {address ? (
-                      <span>{`${address.slice(0, 6)}...${address.slice(-4)}`}</span>
-                    ) : (
-                      "Invest Now"
-                    )}
+                  <Button variant="outline">
+                    <Wallet className="mr-2 h-4 w-4" />
+                    {address.slice(0, 6)}...{address.slice(-4)}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  {address ? (
-                    <DropdownMenuItem onClick={handleDisconnectWallet}>
-                      <Wallet className="mr-2 h-4 w-4" />
-                      Disconnect Wallet
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem onClick={handleConnectWallet}>
-                      <Wallet className="mr-2 h-4 w-4" />
-                      Connect Wallet
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={handleGoogleSignIn}>
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                      <path
-                        fill="currentColor"
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      />
-                      <path
-                        fill="currentColor"
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      />
-                      <path
-                        fill="currentColor"
-                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      />
-                      <path
-                        fill="currentColor"
-                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      />
-                    </svg>
-                    {address ? "Add Google Account" : "Sign in with Google"}
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={handleDisconnect}>
+                    Disconnect
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            ) : (
+              <Button onClick={handleConnectWallet}>
+                <Wallet className="mr-2 h-4 w-4" />
+                Connect Wallet
+              </Button>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="icon" onClick={toggleMenu}>
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden py-4">
+            <div className="flex flex-col space-y-4">
+              {navigation.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  className="text-gray-600 hover:text-gray-900"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              
+              {address && <WalletActions />}
+
+              <Button onClick={handleGoogleSignIn} variant="outline" className="w-full">
+                {address ? "Add Google" : "Sign in with Google"}
+              </Button>
+
+              {address ? (
+                <Button onClick={handleDisconnect} variant="outline" className="w-full">
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Disconnect Wallet
+                </Button>
+              ) : (
+                <Button onClick={handleConnectWallet} className="w-full">
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Connect Wallet
+                </Button>
+              )}
             </div>
           </div>
         )}
