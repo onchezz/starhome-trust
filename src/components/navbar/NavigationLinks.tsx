@@ -43,10 +43,10 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
             to={item.href}
             className={cn(
               className,
-              "relative group",
-              "after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:-bottom-1 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left",
-              isActive && "text-primary after:scale-x-100",
-              "hover:animate-pulse"
+              "relative group px-4 py-2 rounded-md border-2 border-transparent",
+              "transition-all duration-300",
+              "hover:border-primary hover:animate-pulse",
+              isActive && "text-primary border-primary"
             )}
             onClick={onClick}
           >
@@ -58,10 +58,10 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
             href={item.href}
             className={cn(
               className,
-              "relative group",
-              "after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:-bottom-1 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left",
-              isActive && "text-primary after:scale-x-100",
-              "hover:animate-pulse"
+              "relative group px-4 py-2 rounded-md border-2 border-transparent",
+              "transition-all duration-300",
+              "hover:border-primary hover:animate-pulse",
+              isActive && "text-primary border-primary"
             )}
             onClick={onClick}
           >
