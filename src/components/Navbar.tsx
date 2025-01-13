@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Menu, X, Wallet, ExternalLink } from "lucide-react";
+import { Menu, X, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useStarknetkitConnectModal } from "starknetkit";
+import { useStarknetkitConnectModal, StarknetkitConnector } from "starknetkit";
 import { useConnect, useAccount, useDisconnect } from "@starknet-react/core";
 import {
   DropdownMenu,
@@ -17,7 +17,9 @@ const Navbar = () => {
   const { connect, connectors } = useConnect();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { starknetkitConnectModal } = useStarknetkitConnectModal({ connectors });
+  const { starknetkitConnectModal } = useStarknetkitConnectModal({
+    connectors: connectors as StarknetkitConnector[]
+  });
 
   const handleGoogleSignIn = () => {
     if (address) {
@@ -66,6 +68,8 @@ const Navbar = () => {
     { label: "Investment", href: "/investment", isPage: true },
     { label: "Contact Us", href: "/#contact" },
   ];
+
+  // ... keep existing code (JSX for the navbar layout)
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b">
