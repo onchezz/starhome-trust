@@ -27,11 +27,13 @@ const MobileMenu = ({
             <Menu className="h-6 w-6" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="drawer-content bg-white">
-          <DrawerHeader>
-            <DrawerTitle>Menu</DrawerTitle>
+        <DrawerContent className="drawer-content">
+          <DrawerHeader className="border-b pb-4">
+            <DrawerTitle className="text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent">
+              StarHomes
+            </DrawerTitle>
           </DrawerHeader>
-          <div className="px-6 pb-6 flex flex-col space-y-4">
+          <div className="px-6 py-4 flex flex-col space-y-4">
             <NavigationLinks
               items={navigation}
               className="text-gray-600 hover:text-gray-900 border border-transparent hover:border-gray-200 px-3 py-2 rounded-md block"
