@@ -73,11 +73,13 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
-            <NavigationLinks
-              items={navigation}
-              className="text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 px-3 py-1 rounded-md"
-            />
+          <div className="hidden md:flex flex-1 justify-end items-center">
+            <div className="flex-1 mx-8">
+              <NavigationLinks
+                items={navigation}
+                className="text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 px-3 py-1 rounded-md"
+              />
+            </div>
             <WalletDropdown
               address={address}
               handleGoogleSignIn={handleGoogleSignIn}

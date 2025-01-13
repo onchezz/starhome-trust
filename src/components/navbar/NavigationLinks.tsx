@@ -14,7 +14,7 @@ interface NavigationLinksProps {
 
 const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) => {
   return (
-    <>
+    <div className="flex w-full justify-between">
       {items.map((item) => (
         item.isPage ? (
           <Link
@@ -36,7 +36,7 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
           </a>
         )
       ))}
-    </>
+    </div>
   );
 };
 
