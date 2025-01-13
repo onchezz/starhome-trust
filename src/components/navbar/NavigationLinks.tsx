@@ -37,17 +37,26 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
           </div>
         );
 
+        // Different styling for pages vs non-pages (Contact Us, About Us)
+        const linkStyles = item.isPage
+          ? cn(
+              className,
+              "relative px-4 py-2 rounded-md border-2",
+              isActive ? "border-primary text-primary" : "border-transparent",
+              "transition-all duration-300"
+            )
+          : cn(
+              className,
+              "relative px-4 py-2 rounded-md border-2 border-transparent",
+              "transition-all duration-300",
+              "hover:border-primary hover:animate-pulse"
+            );
+
         return item.isPage ? (
           <Link
             key={item.label}
             to={item.href}
-            className={cn(
-              className,
-              "relative group px-4 py-2 rounded-md border-2 border-transparent",
-              "transition-all duration-300",
-              "hover:border-primary hover:animate-pulse",
-              isActive && "text-primary border-primary"
-            )}
+            className={linkStyles}
             onClick={onClick}
           >
             {linkContent}
@@ -56,13 +65,7 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
           <a
             key={item.label}
             href={item.href}
-            className={cn(
-              className,
-              "relative group px-4 py-2 rounded-md border-2 border-transparent",
-              "transition-all duration-300",
-              "hover:border-primary hover:animate-pulse",
-              isActive && "text-primary border-primary"
-            )}
+            className={linkStyles}
             onClick={onClick}
           >
             {linkContent}
