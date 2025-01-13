@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import NavigationLinks from "./NavigationLinks";
 import WalletDropdown from "./WalletDropdown";
 import {
@@ -7,6 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 interface MobileMenuProps {
   navigation: Array<{ label: string; href: string; isPage?: boolean }>;
@@ -23,12 +24,18 @@ const MobileMenu = ({
   handleConnectWallet,
   handleDisconnect,
 }: MobileMenuProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="md:hidden">
-      <DropdownMenu>
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <Menu className="h-6 w-6" />
+            {isOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
