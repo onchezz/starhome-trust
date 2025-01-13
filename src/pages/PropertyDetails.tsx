@@ -123,11 +123,7 @@ const PropertyDetails = () => {
           </div>
 
           <div className="space-y-8">
-            <PropertyInvestment
-              minInvestment={property.price}
-              investors={property.interestedClients}
-              roi={`${property.annualGrowthRate}%`}
-            />
+            <PropertyInvestment propertyId={property.id} />
             <PropertySchedule />
           </div>
         </div>
