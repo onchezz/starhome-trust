@@ -7,21 +7,24 @@ import BlogDetails from "@/pages/BlogDetails";
 import Investment from "@/pages/Investment";
 import InvestmentDetails from "@/pages/InvestmentDetails";
 import { Toaster } from "@/components/ui/sonner";
+import StarknetProvider from "@/providers/StarknetProvider";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/properties" element={<Properties />} />
-        <Route path="/properties/:id" element={<PropertyDetails />} />
-        <Route path="/blogs" element={<Blogs />} />
-        <Route path="/blogs/:id" element={<BlogDetails />} />
-        <Route path="/investment" element={<Investment />} />
-        <Route path="/investment/:id" element={<InvestmentDetails />} />
-      </Routes>
-      <Toaster />
-    </Router>
+    <StarknetProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/properties/:id" element={<PropertyDetails />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blogs/:id" element={<BlogDetails />} />
+          <Route path="/investment" element={<Investment />} />
+          <Route path="/investment/:id" element={<InvestmentDetails />} />
+        </Routes>
+        <Toaster />
+      </Router>
+    </StarknetProvider>
   );
 }
 
