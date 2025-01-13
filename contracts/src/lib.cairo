@@ -1,1 +1,1 @@
-mod StarhomesContract;
+mod starhomes_contract;
