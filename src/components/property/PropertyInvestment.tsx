@@ -13,11 +13,6 @@ export const PropertyInvestment = ({ propertyId }: PropertyInvestmentProps) => {
   // Find the property data
   const property = propertiesData.properties.find(p => p.id === propertyId);
   
-  // Find the corresponding investment data
-  const investment = investmentsData.investments.find(
-    i => i.propertyId === parseInt(propertyId.replace('P', ''))
-  );
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -30,7 +25,7 @@ export const PropertyInvestment = ({ propertyId }: PropertyInvestmentProps) => {
     toast.success("Proceeding to payment...");
   };
 
-  if (!property || !investment) {
+  if (!property) {
     return null;
   }
 
@@ -43,20 +38,12 @@ export const PropertyInvestment = ({ propertyId }: PropertyInvestmentProps) => {
           <span className="font-semibold">{formatPrice(property.askingPrice)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600">Current Investors</span>
-          <span className="font-semibold">{investment.totalInvestors}</span>
+          <span className="text-gray-600">Interested Clients</span>
+          <span className="font-semibold">{property.interestedClients}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600">Expected ROI</span>
-          <span className="font-semibold text-green-600">{investment.returns.projected}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Historical ROI</span>
-          <span className="font-semibold text-blue-600">{investment.returns.historical}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Total Investment Required</span>
-          <span className="font-semibold">{formatPrice(investment.totalAmount)}</span>
+          <span className="text-gray-600">Annual Growth Rate</span>
+          <span className="font-semibold text-green-600">{property.annualGrowthRate}%</span>
         </div>
         <Button 
           className="w-full flex items-center justify-center gap-2" 
