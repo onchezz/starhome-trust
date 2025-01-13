@@ -36,9 +36,6 @@ const MobileMenu = ({
           align="end"
         >
           <div className="flex flex-col space-y-4">
-            <div className="text-xl mb-2">
-              Home
-            </div>
             <NavigationLinks
               items={navigation}
               className="text-gray-600 hover:text-gray-900 border border-transparent hover:border-gray-200 px-3 py-2 rounded-md block"
