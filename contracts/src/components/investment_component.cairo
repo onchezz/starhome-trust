@@ -1,74 +1,58 @@
 use starknet::ContractAddress;
 
-#[starknet::interface]
-pub trait IInvestmentManager<TContractState> {
-    fn invest(ref self: TContractState, property_id: u256, shares: u256);
-    fn get_investment(self: @TContractState, property_id: u256, investor: ContractAddress) -> Investment;
+#[derive(Drop, starknet::Event)]
+struct InvestmentMade {
+    property_id: u256,
+    investor: ContractAddress,
+    shares: u256
 }
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
-pub struct Investment {
+#[derive(Drop, Serde, Copy)]
+struct Investment {
+    property_id: u256,
     investor: ContractAddress,
-    shares: u256,
-    timestamp: u64,
+    shares: u256
 }
 
 #[starknet::component]
-pub mod investment_component {
-    use super::{Investment, IInvestmentManager};
-    use starknet::ContractAddress;
-    use starknet::get_caller_address;
-    use starknet::get_block_timestamp;
+mod investment_component {
+    use starknet::{ContractAddress, get_caller_address};
+    use super::{Investment, InvestmentMade};
 
     #[storage]
     struct Storage {
-        investments: LegacyMap::<(u256, ContractAddress), Investment>,
-        investment_count: LegacyMap::<u256, u32>,
+        investments: LegacyMap<(u256, ContractAddress), Investment>,
     }
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    pub enum Event {
+    enum Event {
         InvestmentMade: InvestmentMade,
     }
 
-    #[derive(Drop, starknet::Event)]
-    pub struct InvestmentMade {
-        property_id: u256,
-        investor: ContractAddress,
-        shares: u256,
-        timestamp: u64,
-    }
-
     #[embeddable_as(InvestmentManager)]
-    impl InvestmentManagerImpl<
+    pub impl InvestmentImpl<
         TContractState, +HasComponent<TContractState>
-    > of IInvestmentManager<ComponentState<TContractState>> {
+    > of super::IInvestmentManager<ComponentState<TContractState>> {
         fn invest(
             ref self: ComponentState<TContractState>,
             property_id: u256,
-            shares: u256,
+            shares: u256
         ) {
             let caller = get_caller_address();
-            let timestamp = get_block_timestamp();
-
+            
             let investment = Investment {
+                property_id,
                 investor: caller,
-                shares,
-                timestamp,
+                shares
             };
 
             self.investments.write((property_id, caller), investment);
-            self.investment_count.write(
-                property_id,
-                self.investment_count.read(property_id) + 1
-            );
 
             self.emit(Event::InvestmentMade(InvestmentMade {
                 property_id,
                 investor: caller,
-                shares,
-                timestamp,
+                shares
             }));
         }
 
@@ -80,4 +64,10 @@ pub mod investment_component {
             self.investments.read((property_id, investor))
         }
     }
+}
+
+#[starknet::interface]
+trait IInvestmentManager<TContractState> {
+    fn invest(ref self: TContractState, property_id: u256, shares: u256);
+    fn get_investment(self: @TContractState, property_id: u256, investor: ContractAddress) -> Investment;
 }

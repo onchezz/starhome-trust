@@ -6,7 +6,7 @@ use zeroable::Zeroable;
 use debug::PrintTrait;
 
 use starhomes::starhomes::{
-    StarhomesContract, IStarhomesContractDispatcher, IStarhomesContractDispatcherTrait
+    Starhomes, IStarhomesDispatcher, IStarhomesDispatcherTrait
 };
 
 fn create_address(value: felt252) -> ContractAddress {
@@ -19,7 +19,7 @@ fn test_list_property() {
     let payment_token = create_address(123);
     set_caller_address(owner);
 
-    let contract = StarhomesContract::constructor();
+    let mut contract = Starhomes::constructor(owner);
 
     let price: u256 = 1000;
     let total_shares: u256 = 100;
@@ -42,7 +42,7 @@ fn test_invest_in_property() {
     let payment_token = create_address(123);
     
     set_caller_address(owner);
-    let contract = StarhomesContract::constructor();
+    let mut contract = Starhomes::constructor(owner);
 
     let price: u256 = 1000;
     let total_shares: u256 = 100;

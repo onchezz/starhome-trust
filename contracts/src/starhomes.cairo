@@ -1,9 +1,14 @@
 use starknet::{ContractAddress, ClassHash};
-use components::property_component;
-use components::investment_component;
+use openzeppelin::access::ownable::OwnableComponent;
+use openzeppelin::upgrades::interface::IUpgradeable;
+use openzeppelin::upgrades::UpgradeableComponent;
+use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
+
+use components::property_component::{Property, PropertyComponent};
+use components::investment_component::{Investment, InvestmentComponent};
 
 #[starknet::interface]
-trait IStarhomesContract<TContractState> {
+trait IStarhomes<TContractState> {
     fn list_property(ref self: TContractState, price: u256, total_shares: u256, payment_token: ContractAddress) -> u256;
     fn invest_in_property(ref self: TContractState, property_id: u256, shares_to_buy: u256);
     fn get_property(self: @TContractState, property_id: u256) -> Property;
@@ -12,59 +17,68 @@ trait IStarhomesContract<TContractState> {
 }
 
 #[starknet::contract]
-mod StarhomesContract {
-    use super::{ContractAddress, ClassHash};
+mod Starhomes {
+    use super::{Property, Investment, ContractAddress, ClassHash, IERC20Dispatcher};
     use starknet::get_caller_address;
-    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
-    use openzeppelin::upgrades::upgradeable::Upgradeable;
-    use components::property_component;
-    use components::investment_component;
+    use openzeppelin::access::ownable::OwnableComponent;
+    use openzeppelin::upgrades::UpgradeableComponent;
 
-    component!(path: property_component, storage: properties, event: PropertyEvent);
-    component!(path: investment_component, storage: investments, event: InvestmentEvent);
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+    component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
+    component!(path: PropertyComponent, storage: properties, event: PropertyEvent);
+    component!(path: InvestmentComponent, storage: investments, event: InvestmentEvent);
 
+    // External implementations
     #[abi(embed_v0)]
-    impl PropertyImpl = property_component::PropertyManager<ContractState>;
+    impl OwnableMixinImpl = OwnableComponent::OwnableMixinImpl<ContractState>;
     #[abi(embed_v0)]
-    impl InvestmentImpl = investment_component::InvestmentManager<ContractState>;
+    impl PropertyImpl = PropertyComponent::PropertyManager<ContractState>;
+    #[abi(embed_v0)]
+    impl InvestmentImpl = InvestmentComponent::InvestmentManager<ContractState>;
+
+    // Internal implementations
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
+    impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
 
     #[storage]
     struct Storage {
-        owner: ContractAddress,
         #[substorage(v0)]
-        properties: property_component::Storage,
+        ownable: OwnableComponent::Storage,
         #[substorage(v0)]
-        investments: investment_component::Storage,
+        upgradeable: UpgradeableComponent::Storage,
+        #[substorage(v0)]
+        properties: PropertyComponent::Storage,
+        #[substorage(v0)]
+        investments: InvestmentComponent::Storage,
     }
 
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
-        Upgraded: Upgraded,
         #[flat]
-        PropertyEvent: property_component::Event,
+        OwnableEvent: OwnableComponent::Event,
         #[flat]
-        InvestmentEvent: investment_component::Event,
-    }
-
-    #[derive(Drop, starknet::Event)]
-    struct Upgraded {
-        class_hash: ClassHash,
+        UpgradeableEvent: UpgradeableComponent::Event,
+        #[flat]
+        PropertyEvent: PropertyComponent::Event,
+        #[flat]
+        InvestmentEvent: InvestmentComponent::Event,
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState) {
-        self.owner.write(get_caller_address());
+    fn constructor(ref self: ContractState, owner: ContractAddress) {
+        self.ownable.initializer(owner);
     }
 
-    #[external(v0)]
-    impl StarhomesContractImpl of super::IStarhomesContract<ContractState> {
+    #[abi(embed_v0)]
+    impl Starhomes of super::IStarhomes<ContractState> {
         fn list_property(
             ref self: ContractState,
             price: u256,
             total_shares: u256,
             payment_token: ContractAddress,
         ) -> u256 {
+            self.ownable.assert_only_owner();
             self.properties.add_property(price, total_shares, payment_token)
         }
 
@@ -81,9 +95,8 @@ mod StarhomesContract {
             let investment_amount = share_price * shares_to_buy;
 
             let caller = get_caller_address();
-            IERC20Dispatcher { contract_address: property.payment_token }.transfer_from(
-                caller, property.owner, investment_amount
-            );
+            let token = IERC20Dispatcher { contract_address: property.payment_token };
+            token.transfer_from(caller, property.owner, investment_amount);
 
             self.investments.invest(property_id, shares_to_buy);
         }
@@ -101,12 +114,8 @@ mod StarhomesContract {
         }
 
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
-            let caller = get_caller_address();
-            assert(caller == self.owner.read(), 'Caller is not the owner');
-            
-            self.emit(Event::Upgraded(Upgraded { class_hash: new_class_hash }));
-            
-            Upgradeable::upgrade(new_class_hash);
+            self.ownable.assert_only_owner();
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }
