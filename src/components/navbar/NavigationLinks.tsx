@@ -16,14 +16,25 @@ const NavigationLinks = ({ items, className, onClick }: NavigationLinksProps) =>
   return (
     <>
       {items.map((item) => (
-        <Link
-          key={item.label}
-          to={item.href}
-          className={className}
-          onClick={onClick}
-        >
-          {item.label}
-        </Link>
+        item.isPage ? (
+          <Link
+            key={item.label}
+            to={item.href}
+            className={className}
+            onClick={onClick}
+          >
+            {item.label}
+          </Link>
+        ) : (
+          <a
+            key={item.label}
+            href={item.href}
+            className={className}
+            onClick={onClick}
+          >
+            {item.label}
+          </a>
+        )
       ))}
     </>
   );

@@ -61,6 +61,7 @@ const Navbar = () => {
   const navigation = [
     { label: "Home", href: "/", isPage: true },
     { label: "Properties", href: "/properties", isPage: true },
+    { label: "Investment", href: "/investment", isPage: true },
     { label: "Contact Us", href: "/#contact" },
     { label: "About Us", href: "/#about" },
   ];
@@ -69,7 +70,10 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="text-xl font-bold">
+          <Link 
+            to="/" 
+            className="text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          >
             StarHomes
           </Link>
 
@@ -77,7 +81,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             <NavigationLinks
               items={navigation}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             />
             <WalletDropdown
               address={address}
