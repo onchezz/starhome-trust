@@ -67,7 +67,6 @@ const Navbar = () => {
   const navigation = [
     { label: "Home", href: "/", isPage: true },
     { label: "Properties", href: "/properties", isPage: true },
-    { label: "Investment", href: "/investment", isPage: true },
     { label: "Contact Us", href: "/#contact" },
     { label: "About Us", href: "/#about" },
   ];
@@ -92,33 +91,34 @@ const Navbar = () => {
               </Link>
             ))}
 
-            <Button onClick={handleGoogleSignIn} variant="outline">
-              {address ? "Add Google" : "Sign in with Google"}
-            </Button>
-
-            {address ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>Invest</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleGoogleSignIn}>
+                  {address ? "Add Google Account" : "Sign in with Google"}
+                </DropdownMenuItem>
+                {!address ? (
+                  <DropdownMenuItem onClick={handleConnectWallet}>
                     <Wallet className="mr-2 h-4 w-4" />
-                    {address.slice(0, 6)}...{address.slice(-4)}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <div className="p-2">
-                    <WalletActions />
-                  </div>
-                  <DropdownMenuItem onClick={handleDisconnect}>
-                    Disconnect
+                    Connect Wallet
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button onClick={handleConnectWallet}>
-                <Wallet className="mr-2 h-4 w-4" />
-                Connect Wallet
-              </Button>
-            )}
+                ) : (
+                  <>
+                    <div className="p-2 text-sm text-gray-500">
+                      {address.slice(0, 6)}...{address.slice(-4)}
+                    </div>
+                    <div className="p-2">
+                      <WalletActions />
+                    </div>
+                    <DropdownMenuItem onClick={handleDisconnect}>
+                      Disconnect
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile menu button */}
@@ -148,26 +148,34 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              <Button onClick={handleGoogleSignIn} variant="outline" className="w-full">
-                {address ? "Add Google" : "Sign in with Google"}
-              </Button>
-
-              {address ? (
-                <>
-                  <div className="p-2">
-                    <WalletActions />
-                  </div>
-                  <Button onClick={handleDisconnect} variant="outline" className="w-full">
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Disconnect Wallet
-                  </Button>
-                </>
-              ) : (
-                <Button onClick={handleConnectWallet} className="w-full">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  Connect Wallet
-                </Button>
-              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="w-full">Invest</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={handleGoogleSignIn}>
+                    {address ? "Add Google Account" : "Sign in with Google"}
+                  </DropdownMenuItem>
+                  {!address ? (
+                    <DropdownMenuItem onClick={handleConnectWallet}>
+                      <Wallet className="mr-2 h-4 w-4" />
+                      Connect Wallet
+                    </DropdownMenuItem>
+                  ) : (
+                    <>
+                      <div className="p-2 text-sm text-gray-500">
+                        {address.slice(0, 6)}...{address.slice(-4)}
+                      </div>
+                      <div className="p-2">
+                        <WalletActions />
+                      </div>
+                      <DropdownMenuItem onClick={handleDisconnect}>
+                        Disconnect
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         )}
