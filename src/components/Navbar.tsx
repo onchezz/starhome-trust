@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useStarknetkitConnectModal, StarknetkitConnector } from "starknetkit";
 import { useConnect, useAccount, useDisconnect } from "@starknet-react/core";
@@ -7,6 +6,15 @@ import NavigationLinks from "./navbar/NavigationLinks";
 import WalletDropdown from "./navbar/WalletDropdown";
 import MobileMenu from "./navbar/MobileMenu";
 import { Home } from "lucide-react";
+
+const navigation = [
+  { label: "Home", href: "/", isPage: true },
+  { label: "Properties", href: "/properties", isPage: true },
+  { label: "Investment", href: "/investment", isPage: true },
+  { label: "Blogs", href: "/blogs", isPage: true },
+  { label: "Contact Us", href: "/#contact" },
+  { label: "About Us", href: "/#about" },
+];
 
 const Navbar = () => {
   const { connect, connectors } = useConnect();
@@ -53,15 +61,6 @@ const Navbar = () => {
       toast.error("Failed to disconnect wallet");
     }
   };
-
-  const navigation = [
-    { label: "Home", href: "/", isPage: true },
-    { label: "Properties", href: "/properties", isPage: true },
-    { label: "Investment", href: "/investment", isPage: true },
-    { label: "Blogs", href: "/blogs", isPage: true },
-    { label: "Contact Us", href: "/#contact" },
-    { label: "About Us", href: "/#about" },
-  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50">

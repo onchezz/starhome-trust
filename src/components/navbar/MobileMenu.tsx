@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import NavigationLinks from "./NavigationLinks";
 import WalletDropdown from "./WalletDropdown";
+import MobileMenuItems from "./MobileMenuItems";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,10 @@ const MobileMenu = ({
 }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <div className="md:hidden">
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -43,17 +47,16 @@ const MobileMenu = ({
           align="end"
         >
           <div className="flex flex-col space-y-4">
-            <NavigationLinks
-              items={navigation}
-              className="text-gray-600 hover:text-gray-900 border border-transparent hover:border-gray-200 px-3 py-2 rounded-md block"
-            />
-            <WalletDropdown
-              address={address}
-              handleGoogleSignIn={handleGoogleSignIn}
-              handleConnectWallet={handleConnectWallet}
-              handleDisconnect={handleDisconnect}
-              className="w-full"
-            />
+            <MobileMenuItems items={navigation} onClick={handleClose} />
+            <div className="pt-2 border-t border-gray-200">
+              <WalletDropdown
+                address={address}
+                handleGoogleSignIn={handleGoogleSignIn}
+                handleConnectWallet={handleConnectWallet}
+                handleDisconnect={handleDisconnect}
+                className="w-full"
+              />
+            </div>
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
