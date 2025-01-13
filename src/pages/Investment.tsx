@@ -232,7 +232,7 @@ const Investment = () => {
                           min={property.minInvestment}
                         />
                         <Button 
-                          className="w-full"
+                          className="w-full bg-primary hover:bg-primary/90"
                           onClick={address ? () => handleInvest(property.id) : handleConnectWallet}
                         >
                           <Wallet className="mr-2 h-4 w-4" />
