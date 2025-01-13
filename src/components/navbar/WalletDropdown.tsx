@@ -27,9 +27,9 @@ const WalletDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button 
-          className={className} 
+          className={`${className} ${!address ? 'bg-[#0066FF] text-white hover:bg-[#0066FF]/90' : ''}`}
           variant={address ? "default" : "outline"}
-          style={{ backgroundColor: address ? "#0066FF" : "transparent" }}
+          style={{ backgroundColor: address ? "#0066FF" : undefined }}
         >
           {address ? (
             <>
