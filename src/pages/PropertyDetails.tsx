@@ -45,13 +45,16 @@ const PropertyDetails = () => {
     return <div>Loading...</div>;
   }
 
+  // Format the location as a string
+  const formattedLocation = `${property.location.address}, ${property.location.city}, ${property.location.state}`;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       <PropertyHero 
         title={property.title}
-        location={`${property.location.city}, ${property.location.state}`}
+        location={formattedLocation}
         images={property.images}
         totalInvestment={property.price}
       />
