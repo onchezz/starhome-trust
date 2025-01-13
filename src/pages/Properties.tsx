@@ -3,9 +3,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import { PropertySearch } from "@/components/property/PropertySearch";
+import { Badge } from "@/components/ui/badge";
 import propertiesData from "@/data/properties.json";
+import { useState } from "react";
 
 const Properties = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -14,15 +19,35 @@ const Properties = () => {
     }).format(price);
   };
 
+  const filteredProperties = propertiesData.properties.filter((property) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      property.title.toLowerCase().includes(searchLower) ||
+      property.location.toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto py-24">
         <h1 className="text-4xl font-bold mb-8 text-center">Available Properties</h1>
+        
+        <PropertySearch 
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+
         <ScrollArea className="h-[800px] w-full rounded-md border p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {propertiesData.properties.map((property) => (
-              <Card key={property.id} className="overflow-hidden">
+            {filteredProperties.map((property) => (
+              <Card key={property.id} className="overflow-hidden relative">
+                <Badge 
+                  variant="secondary" 
+                  className="absolute top-4 right-4 bg-green-500 text-white hover:bg-green-600"
+                >
+                  For Sale
+                </Badge>
                 <img
                   src={property.images[0]}
                   alt={property.title}
