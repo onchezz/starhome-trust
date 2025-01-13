@@ -2,9 +2,16 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Search } from "lucide-react";
 import blogsData from "@/data/blogs.json";
+import { Link } from "react-router-dom";
 
 const categories = ["All", "Success Stories", "Investment Guide", "Crypto Investment"];
 
@@ -13,9 +20,11 @@ const Blogs = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredBlogs = blogsData.blogs.filter((blog) => {
-    const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       blog.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || blog.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All" || blog.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -29,7 +38,8 @@ const Blogs = () => {
             Explore Insights and Strategies for Real Estate Investment
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Stay informed with the latest trends in global property and cryptocurrency investments
+            Stay informed with the latest trends in global property and
+            cryptocurrency investments
           </p>
         </div>
 
@@ -82,7 +92,9 @@ const Blogs = () => {
                 <div className="text-sm text-gray-500">
                   By {blog.author} • {new Date(blog.date).toLocaleDateString()}
                 </div>
-                <Button variant="outline">Read More</Button>
+                <Link to={`/blogs/${blog.id}`}>
+                  <Button variant="outline">Read More</Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
