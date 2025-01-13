@@ -1,0 +1,43 @@
+{
+  "properties": [
+    {
+      "id": 1,
+      "title": "Downtown Commercial Complex",
+      "location": "Los Angeles, CA",
+      "totalInvestment": 5000000,
+      "currentInvestment": 3750000,
+      "investors": 45,
+      "minInvestment": 25000,
+      "roi": "12%",
+      "type": "Commercial",
+      "image": "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+      "description": "Prime commercial property in downtown LA featuring retail spaces and office units. High-traffic location with excellent growth potential."
+    },
+    {
+      "id": 2,
+      "title": "Luxury Apartment Building",
+      "location": "Miami, FL",
+      "totalInvestment": 8000000,
+      "currentInvestment": 6000000,
+      "investors": 78,
+      "minInvestment": 50000,
+      "roi": "15%",
+      "type": "Residential",
+      "image": "https://images.unsplash.com/photo-1481253127861-534498168948",
+      "description": "Luxury residential complex with premium amenities, located in Miami's most sought-after neighborhood."
+    },
+    {
+      "id": 3,
+      "title": "Tech Park Development",
+      "location": "Austin, TX",
+      "totalInvestment": 12000000,
+      "currentInvestment": 9600000,
+      "investors": 120,
+      "minInvestment": 100000,
+      "roi": "18%",
+      "type": "Mixed-Use",
+      "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+      "description": "Modern tech park featuring office spaces, research facilities, and innovative workspace solutions."
+    }
+  ]
+}

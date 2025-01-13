@@ -3,24 +3,30 @@ import { useState } from "react";
 import { Menu, X, Wallet, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useStarknetkitConnectModal } from "starknetkit";
-import { useConnect, useAccount } from "@starknet-react/core";
+import { useConnect, useAccount, useDisconnect } from "@starknet-react/core";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { connect, connectors } = useConnect();
   const { address } = useAccount();
-  const { toast } = useToast();
+  const { disconnect } = useDisconnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal({ connectors });
 
   const handleGoogleSignIn = () => {
-    console.log("Signing in with Google");
+    if (address) {
+      console.log("Adding Google account to connected wallet");
+      toast.info("Adding Google account to connected wallet");
+    } else {
+      console.log("Signing in with Google");
+      toast.info("Signing in with Google");
+    }
   };
 
   const handleConnectWallet = async () => {
@@ -33,17 +39,24 @@ const Navbar = () => {
       }
       
       await connect({ connector });
-      toast({
-        title: "Wallet Connected",
+      toast.success("Wallet Connected", {
         description: `Connected to ${address?.slice(0, 6)}...${address?.slice(-4)}`,
       });
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast({
-        variant: "destructive",
-        title: "Connection Failed",
+      toast.error("Connection Failed", {
         description: "Failed to connect wallet. Please try again.",
       });
+    }
+  };
+
+  const handleDisconnectWallet = async () => {
+    try {
+      await disconnect();
+      toast.success("Wallet Disconnected");
+    } catch (error) {
+      console.error("Error disconnecting wallet:", error);
+      toast.error("Failed to disconnect wallet");
     }
   };
 
@@ -94,10 +107,17 @@ const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuItem onClick={handleConnectWallet}>
-                  <Wallet className="mr-2 h-4 w-4" />
-                  {address ? "Connected" : "Connect Wallet"}
-                </DropdownMenuItem>
+                {address ? (
+                  <DropdownMenuItem onClick={handleDisconnectWallet}>
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Disconnect Wallet
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={handleConnectWallet}>
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Connect Wallet
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
@@ -117,7 +137,7 @@ const Navbar = () => {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Sign in with Google
+                  {address ? "Add Google Account" : "Sign in with Google"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -169,10 +189,17 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  <DropdownMenuItem onClick={handleConnectWallet}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    {address ? "Connected" : "Connect Wallet"}
-                  </DropdownMenuItem>
+                  {address ? (
+                    <DropdownMenuItem onClick={handleDisconnectWallet}>
+                      <Wallet className="mr-2 h-4 w-4" />
+                      Disconnect Wallet
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={handleConnectWallet}>
+                      <Wallet className="mr-2 h-4 w-4" />
+                      Connect Wallet
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleGoogleSignIn}>
                     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                       <path
@@ -192,7 +219,7 @@ const Navbar = () => {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                       />
                     </svg>
-                    Sign in with Google
+                    {address ? "Add Google Account" : "Sign in with Google"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

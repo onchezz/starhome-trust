@@ -1,0 +1,49 @@
+{
+  "investments": [
+    {
+      "id": 1,
+      "propertyId": 1,
+      "totalInvestors": 45,
+      "totalAmount": 3750000,
+      "minAmount": 25000,
+      "maxAmount": 500000,
+      "status": "active",
+      "startDate": "2024-01-01",
+      "endDate": "2024-12-31",
+      "returns": {
+        "projected": "12%",
+        "historical": "10.5%"
+      }
+    },
+    {
+      "id": 2,
+      "propertyId": 2,
+      "totalInvestors": 78,
+      "totalAmount": 6000000,
+      "minAmount": 50000,
+      "maxAmount": 750000,
+      "status": "active",
+      "startDate": "2024-02-01",
+      "endDate": "2025-01-31",
+      "returns": {
+        "projected": "15%",
+        "historical": "13.2%"
+      }
+    },
+    {
+      "id": 3,
+      "propertyId": 3,
+      "totalInvestors": 120,
+      "totalAmount": 9600000,
+      "minAmount": 100000,
+      "maxAmount": 1000000,
+      "status": "active",
+      "startDate": "2024-03-01",
+      "endDate": "2025-02-28",
+      "returns": {
+        "projected": "18%",
+        "historical": "16.5%"
+      }
+    }
+  ]
+}
