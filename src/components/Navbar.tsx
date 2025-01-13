@@ -91,8 +91,6 @@ const Navbar = () => {
                 {item.label}
               </Link>
             ))}
-            
-            {address && <WalletActions />}
 
             <Button onClick={handleGoogleSignIn} variant="outline">
               {address ? "Add Google" : "Sign in with Google"}
@@ -107,6 +105,9 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
+                  <div className="p-2">
+                    <WalletActions />
+                  </div>
                   <DropdownMenuItem onClick={handleDisconnect}>
                     Disconnect
                   </DropdownMenuItem>
@@ -146,18 +147,21 @@ const Navbar = () => {
                   {item.label}
                 </Link>
               ))}
-              
-              {address && <WalletActions />}
 
               <Button onClick={handleGoogleSignIn} variant="outline" className="w-full">
                 {address ? "Add Google" : "Sign in with Google"}
               </Button>
 
               {address ? (
-                <Button onClick={handleDisconnect} variant="outline" className="w-full">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  Disconnect Wallet
-                </Button>
+                <>
+                  <div className="p-2">
+                    <WalletActions />
+                  </div>
+                  <Button onClick={handleDisconnect} variant="outline" className="w-full">
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Disconnect Wallet
+                  </Button>
+                </>
               ) : (
                 <Button onClick={handleConnectWallet} className="w-full">
                   <Wallet className="mr-2 h-4 w-4" />
