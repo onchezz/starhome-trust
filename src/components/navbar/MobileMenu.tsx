@@ -32,12 +32,12 @@ const MobileMenu = ({
 
       {isOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="fixed inset-0 bg-white/80 backdrop-blur-md" onClick={toggleMenu} />
-          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white p-6 shadow-xl">
-            <div className="flex flex-col space-y-4">
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={toggleMenu} />
+          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-lg">
+            <div className="flex flex-col space-y-4 p-6">
               <NavigationLinks
                 items={navigation}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-600 hover:text-gray-900 border border-transparent hover:border-gray-200 px-3 py-2 rounded-md block"
                 onClick={() => toggleMenu()}
               />
               <WalletDropdown

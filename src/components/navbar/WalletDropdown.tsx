@@ -26,14 +26,21 @@ const WalletDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className={className} variant={address ? "default" : "outline"}>
+        <Button 
+          className={className} 
+          variant={address ? "default" : "outline"}
+          style={{ backgroundColor: address ? "#0066FF" : "transparent" }}
+        >
           {address ? (
             <>
               <Check className="mr-2 h-4 w-4" />
-              Connected
+              Disconnect
             </>
           ) : (
-            "Invest"
+            <>
+              <Wallet className="mr-2 h-4 w-4" />
+              Invest
+            </>
           )}
         </Button>
       </DropdownMenuTrigger>

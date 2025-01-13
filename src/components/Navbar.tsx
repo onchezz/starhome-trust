@@ -81,7 +81,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             <NavigationLinks
               items={navigation}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 px-3 py-1 rounded-md"
             />
             <WalletDropdown
               address={address}
