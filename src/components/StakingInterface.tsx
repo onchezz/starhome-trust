@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
-import { useStakingContract } from '../hooks/useStakingContract';
 import { useAccount } from '@starknet-react/core';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { useToast } from './ui/use-toast';
+import { useStakingRead } from '../hooks/useStakingRead';
+import { useStakingWrite } from '../hooks/useStakingWrite';
 
 export function StakingInterface() {
   const [amount, setAmount] = useState('');
   const { address } = useAccount();
+  const { rewards, isLoadingRewards } = useStakingRead();
   const { 
-    rewards,
-    isLoadingRewards,
     stake,
     withdraw,
     claimRewards,
     loading,
-  } = useStakingContract();
-  const { toast } = useToast();
+  } = useStakingWrite();
 
   const handleStake = async () => {
     try {
