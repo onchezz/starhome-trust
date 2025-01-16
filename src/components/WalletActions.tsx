@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Send, QrCode, Repeat } from "lucide-react";
+import { Send, QrCode, Repeat, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,9 +14,11 @@ import { Label } from "@/components/ui/label";
 import { useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
+import { useTokenBalances } from "@/hooks/useTokenBalances";
 
 const WalletActions = () => {
   const { address } = useAccount();
+  const { balances, isLoading } = useTokenBalances();
   const [sendAmount, setSendAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [swapAmount, setSwapAmount] = useState("");
@@ -35,6 +38,42 @@ const WalletActions = () => {
 
   return (
     <div className="flex gap-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="icon">
+            <Wallet className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Wallet Balances</DialogTitle>
+            <DialogDescription>
+              Your current token balances
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {isLoading ? (
+              <p className="text-sm text-gray-500">Loading balances...</p>
+            ) : (
+              <>
+                <div className="flex justify-between">
+                  <span>ETH</span>
+                  <span>{balances.ETH?.formatted || "0"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>USDT</span>
+                  <span>{balances.USDT?.formatted || "0"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>STRK</span>
+                  <span>{balances.STRK?.formatted || "0"}</span>
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="icon">
