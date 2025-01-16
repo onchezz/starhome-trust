@@ -1,0 +1,104 @@
+[
+  {
+    "type": "impl",
+    "name": "AssetStakingContract",
+    "interface_name": "starhomes::asset_staking::IAssetStakingContract"
+  },
+  {
+    "type": "interface",
+    "name": "starhomes::asset_staking::IAssetStakingContract",
+    "items": [
+      {
+        "type": "function",
+        "name": "change_staking_tokens",
+        "inputs": [
+          {
+            "name": "staking_token_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "reward_token_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "set_reward_amount",
+        "inputs": [
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "set_reward_duration",
+        "inputs": [
+          {
+            "name": "duration",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "stake",
+        "inputs": [
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "withdraw",
+        "inputs": [
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_rewards",
+        "inputs": [
+          {
+            "name": "account",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "claim_rewards",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  }
+]
