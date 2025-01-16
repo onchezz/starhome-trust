@@ -1,7 +1,7 @@
 import { useContract } from '@starknet-react/core';
 import { useState } from 'react';
 import { Contract } from 'starknet';
-import stakingAbi from '../data/abi.json';
+import stakingAbi from '../data/abi';
 
 export const STAKING_CONTRACT_ADDRESS = '0x06711323c3dae0c666a108be21ded892463c1abe08ed77157ff19fb343de7800';
 

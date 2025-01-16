@@ -1,4 +1,4 @@
-[
+const abi =[
   {
     "type": "impl",
     "name": "AssetStakingContract",
@@ -101,4 +101,6 @@
       }
     ]
   }
-]
+] as const;
+
+export default abi;
