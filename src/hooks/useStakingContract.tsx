@@ -1,59 +1,10 @@
-import { useContract, useSendTransaction } from "@starknet-react/core";
+import { useContract, useReadContract, useSendTransaction, useAccount } from "@starknet-react/core";
 import { Contract } from "starknet";
-import type { Abi } from "starknet";
+import abi from "../data/abi";
+import { toast } from "sonner";
 
 // Contract address for the staking contract
 export const STAKING_CONTRACT_ADDRESS = "0x06711323c3dae0c666a108be21ded892463c1abe08ed77157ff19fb343de7800";
-
-const abi = [
-  {
-    type: "function",
-    name: "stake",
-    state_mutability: "external",
-    inputs: [
-      {
-        name: "amount",
-        type: "core::integer::u256"
-      }
-    ],
-    outputs: []
-  },
-  {
-    type: "function",
-    name: "withdraw",
-    state_mutability: "external",
-    inputs: [
-      {
-        name: "amount",
-        type: "core::integer::u256"
-      }
-    ],
-    outputs: []
-  },
-  {
-    type: "function",
-    name: "get_rewards",
-    state_mutability: "view",
-    inputs: [
-      {
-        name: "account",
-        type: "core::starknet::contract_address::ContractAddress"
-      }
-    ],
-    outputs: [
-      {
-        type: "core::integer::u256"
-      }
-    ]
-  },
-  {
-    type: "function",
-    name: "claim_rewards",
-    state_mutability: "external",
-    inputs: [],
-    outputs: []
-  }
-] as const satisfies Abi;
 
 export function useStakingContract() {
   const { contract } = useContract({
@@ -61,11 +12,32 @@ export function useStakingContract() {
     abi
   });
 
-  const { send: stake, isPending: isStakePending } = useSendTransaction({
+  const { address } = useAccount();
+
+  // Read Operations
+  const { data: rewards, isPending: isLoadingRewards } = useReadContract({
+    functionName: "get_rewards",
+    args: address ? [address] : undefined,
+    address: STAKING_CONTRACT_ADDRESS,
+    abi,
+    watch: true,
+    enabled: !!address
+  });
+
+  // Write Operations
+  const { send: sendStake, isPending: isStakePending } = useSendTransaction({
     calls: contract ? [] : undefined
   });
 
-  const handleStake = async (amount: bigint) => {
+  const { send: sendWithdraw, isPending: isWithdrawPending } = useSendTransaction({
+    calls: contract ? [] : undefined
+  });
+
+  const { send: sendClaimRewards, isPending: isClaimRewardsPending } = useSendTransaction({
+    calls: contract ? [] : undefined
+  });
+
+  const stake = async (amount: bigint) => {
     console.log("Staking amount:", amount);
     if (!contract) {
       console.error("Contract not initialized");
@@ -73,19 +45,74 @@ export function useStakingContract() {
     }
 
     try {
-      await stake([
+      await sendStake([
         contract.populate("stake", [amount])
       ]);
-      console.log("Stake transaction sent successfully");
+      toast.success("Stake transaction sent successfully");
     } catch (error) {
       console.error("Staking error:", error);
+      toast.error("Failed to stake tokens");
+      throw error;
+    }
+  };
+
+  const withdraw = async (amount: bigint) => {
+    console.log("Withdrawing amount:", amount);
+    if (!contract) {
+      console.error("Contract not initialized");
+      return;
+    }
+
+    try {
+      await sendWithdraw([
+        contract.populate("withdraw", [amount])
+      ]);
+      toast.success("Withdrawal transaction sent successfully");
+    } catch (error) {
+      console.error("Withdrawal error:", error);
+      toast.error("Failed to withdraw tokens");
+      throw error;
+    }
+  };
+
+  const claimRewards = async () => {
+    console.log("Claiming rewards");
+    if (!contract) {
+      console.error("Contract not initialized");
+      return;
+    }
+
+    try {
+      await sendClaimRewards([
+        contract.populate("claim_rewards", [])
+      ]);
+      toast.success("Claim rewards transaction sent successfully");
+    } catch (error) {
+      console.error("Claim rewards error:", error);
+      toast.error("Failed to claim rewards");
       throw error;
     }
   };
 
   return {
+    // Contract instance
     contract,
-    handleStake,
-    isStakePending
+    
+    // Read operations
+    rewards,
+    isLoadingRewards,
+    
+    // Write operations
+    stake,
+    withdraw,
+    claimRewards,
+    
+    // Loading states
+    isStakePending,
+    isWithdrawPending,
+    isClaimRewardsPending,
+    
+    // Combined loading state
+    loading: isStakePending || isWithdrawPending || isClaimRewardsPending || isLoadingRewards
   };
 }

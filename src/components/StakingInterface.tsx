@@ -8,79 +8,41 @@ import { useToast } from './ui/use-toast';
 export function StakingInterface() {
   const [amount, setAmount] = useState('');
   const { address } = useAccount();
-  const { loading, error, stake, withdraw, getRewards, claimRewards } = useStakingContract();
+  const { 
+    rewards,
+    isLoadingRewards,
+    stake,
+    withdraw,
+    claimRewards,
+    loading,
+  } = useStakingContract();
   const { toast } = useToast();
 
   const handleStake = async () => {
     try {
-      await stake(Number(amount));
-      toast({
-        title: 'Success',
-        description: `Successfully staked ${amount} tokens`,
-      });
+      const bigIntAmount = BigInt(Number(amount) * (10 ** 18)); // Convert to proper decimals
+      await stake(bigIntAmount);
+      setAmount('');
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to stake tokens',
-        variant: 'destructive',
-      });
+      console.error("Stake error:", err);
     }
   };
 
   const handleWithdraw = async () => {
     try {
-      await withdraw(Number(amount));
-      toast({
-        title: 'Success',
-        description: `Successfully withdrawn ${amount} tokens`,
-      });
+      const bigIntAmount = BigInt(Number(amount) * (10 ** 18)); // Convert to proper decimals
+      await withdraw(bigIntAmount);
+      setAmount('');
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to withdraw tokens',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleGetRewards = async () => {
-    if (!address) {
-      toast({
-        title: 'Error',
-        description: 'Please connect your wallet first',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    try {
-      const rewards = await getRewards(address);
-      toast({
-        title: 'Rewards',
-        description: `Your current rewards: ${rewards}`,
-      });
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to get rewards',
-        variant: 'destructive',
-      });
+      console.error("Withdraw error:", err);
     }
   };
 
   const handleClaimRewards = async () => {
     try {
       await claimRewards();
-      toast({
-        title: 'Success',
-        description: 'Successfully claimed rewards',
-      });
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to claim rewards',
-        variant: 'destructive',
-      });
+      console.error("Claim rewards error:", err);
     }
   };
 
@@ -89,49 +51,49 @@ export function StakingInterface() {
       <h2 className="text-xl font-bold text-gray-900">Staking Interface</h2>
       
       <div className="space-y-4">
+        <div className="p-4 bg-gray-50 rounded-lg">
+          <p className="text-sm text-gray-600">Your Current Rewards</p>
+          <p className="text-lg font-bold">
+            {isLoadingRewards ? 'Loading...' : `${rewards || '0'} tokens`}
+          </p>
+        </div>
+
         <Input
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Enter amount"
           className="w-full"
+          disabled={loading}
         />
 
         <div className="grid grid-cols-2 gap-2">
           <Button 
             onClick={handleStake} 
-            disabled={loading || !amount}
+            disabled={loading || !amount || !address}
           >
-            Stake
+            {loading ? 'Processing...' : 'Stake'}
           </Button>
           <Button 
             onClick={handleWithdraw} 
-            disabled={loading || !amount}
+            disabled={loading || !amount || !address}
             variant="outline"
           >
-            Withdraw
+            {loading ? 'Processing...' : 'Withdraw'}
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <Button 
-            onClick={handleGetRewards} 
-            disabled={loading}
-            variant="secondary"
-          >
-            Get Rewards
-          </Button>
-          <Button 
-            onClick={handleClaimRewards} 
-            disabled={loading}
-            variant="secondary"
-          >
-            Claim Rewards
-          </Button>
-        </div>
+        <Button 
+          onClick={handleClaimRewards} 
+          disabled={loading || !address || !rewards}
+          variant="secondary"
+          className="w-full"
+        >
+          {loading ? 'Processing...' : 'Claim Rewards'}
+        </Button>
 
-        {error && (
-          <p className="text-red-500 text-sm">{error}</p>
+        {!address && (
+          <p className="text-sm text-red-500">Please connect your wallet to interact with the staking contract.</p>
         )}
       </div>
     </div>
