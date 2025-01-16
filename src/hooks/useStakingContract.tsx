@@ -37,7 +37,7 @@ export function useStakingContract() {
     calls: contract ? [] : undefined
   });
 
-  const stake = async (amount: bigint) => {
+  const handleStake = async (amount: bigint) => {
     console.log("Staking amount:", amount);
     if (!contract) {
       console.error("Contract not initialized");
@@ -103,7 +103,7 @@ export function useStakingContract() {
     isLoadingRewards,
     
     // Write operations
-    stake,
+    handleStake,
     withdraw,
     claimRewards,
     
