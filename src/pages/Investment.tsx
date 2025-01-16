@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
+import { useStakingContract } from "@/hooks/useStakingContract";
 
 const investmentProperties = [
   {
@@ -60,6 +61,7 @@ const Investment = () => {
   const { address } = useAccount();
   const { connect } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal();
+  const { handleStake, isStakePending } = useStakingContract();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -100,7 +102,10 @@ const Investment = () => {
         return;
       }
 
-      // Here you would implement the actual transaction logic
+      // Convert amount to BigInt for contract interaction
+      const amountBigInt = BigInt(Number(amount) * (10 ** 18)); // Assuming 18 decimals
+      await handleStake(amountBigInt);
+      
       toast.success("Investment transaction initiated");
       
     } catch (error) {
@@ -120,9 +125,6 @@ const Investment = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="container mx-auto py-24">
-        <h1 className="text-4xl font-bold mb-8 text-center">Investment Opportunities</h1>
-        
-        {/* Investment Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -170,7 +172,6 @@ const Investment = () => {
           </Card>
         </div>
 
-        {/* Investment Properties */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {investmentProperties.map((property) => (
             <Card key={property.id} className="overflow-hidden">
@@ -219,8 +220,11 @@ const Investment = () => {
                       onOpenChange={(open) => setExpandedCardId(open ? property.id : null)}
                     >
                       <CollapsibleTrigger asChild>
-                        <Button className="w-full">
-                          {address ? 'Invest Now' : 'Connect Wallet'}
+                        <Button 
+                          className="w-full"
+                          disabled={isStakePending}
+                        >
+                          {isStakePending ? 'Processing...' : address ? 'Invest Now' : 'Connect Wallet'}
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="mt-4 space-y-4">
@@ -230,13 +234,21 @@ const Investment = () => {
                           value={investmentAmounts[property.id] || ''}
                           onChange={(e) => handleAmountChange(property.id, e.target.value)}
                           min={property.minInvestment}
+                          disabled={isStakePending}
                         />
                         <Button 
                           className="w-full bg-primary hover:bg-primary/90"
                           onClick={address ? () => handleInvest(property.id) : handleConnectWallet}
+                          disabled={isStakePending}
                         >
-                          <Wallet className="mr-2 h-4 w-4" />
-                          {address ? 'Invest' : 'Connect Wallet'}
+                          {isStakePending ? (
+                            <>Processing...</>
+                          ) : (
+                            <>
+                              <Wallet className="mr-2 h-4 w-4" />
+                              {address ? 'Invest' : 'Connect Wallet'}
+                            </>
+                          )}
                         </Button>
                       </CollapsibleContent>
                     </Collapsible>
