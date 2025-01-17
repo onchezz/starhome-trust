@@ -50,3 +50,10 @@ export interface Property {
   paymentToken: string;
   timestamp: number;
 }
+
+export interface Investor {
+  investorAddress: string;
+  names: string;
+  investorId: string;
+  timestamp: number;
+}
