@@ -18,8 +18,9 @@ export function StakingInterface() {
 
   const handleStake = async () => {
     try {
-      const bigIntAmount = BigInt(Number(amount) * (10 ** 18)); // Convert to proper decimals
-      await stake(bigIntAmount);
+      const bigIntAmount = BigInt(Number(amount) * (10 ** 18));
+      // Pass propertyId and amount as required by the contract
+      await stake("1", bigIntAmount); // Using "1" as default propertyId
       setAmount('');
     } catch (err) {
       console.error("Stake error:", err);
@@ -28,8 +29,9 @@ export function StakingInterface() {
 
   const handleWithdraw = async () => {
     try {
-      const bigIntAmount = BigInt(Number(amount) * (10 ** 18)); // Convert to proper decimals
-      await withdraw(bigIntAmount);
+      const bigIntAmount = BigInt(Number(amount) * (10 ** 18));
+      // Pass propertyId, amount, and tokenAddress as required
+      await withdraw("1", bigIntAmount, "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7");
       setAmount('');
     } catch (err) {
       console.error("Withdraw error:", err);
@@ -38,7 +40,8 @@ export function StakingInterface() {
 
   const handleClaimRewards = async () => {
     try {
-      await claimRewards();
+      // Pass propertyId as required
+      await claimRewards("1");
     } catch (err) {
       console.error("Claim rewards error:", err);
     }

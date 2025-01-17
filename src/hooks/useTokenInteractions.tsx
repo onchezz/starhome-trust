@@ -1,6 +1,6 @@
 import { useContract, useSendTransaction, useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
-import { Contract } from "starknet";
+import { Call } from "starknet";
 
 export const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
 
@@ -25,22 +25,6 @@ export function useTokenInteractions(tokenAddress: string) {
         outputs: [{ type: "core::bool" }],
         state_mutability: "external",
       },
-      {
-        name: "allowance",
-        type: "function",
-        inputs: [
-          {
-            name: "owner",
-            type: "core::starknet::contract_address::ContractAddress",
-          },
-          {
-            name: "spender",
-            type: "core::starknet::contract_address::ContractAddress",
-          },
-        ],
-        outputs: [{ type: "core::integer::u256" }],
-        state_mutability: "view",
-      }
     ] as const,
     address: tokenAddress as `0x${string}`
   });
@@ -54,7 +38,7 @@ export function useTokenInteractions(tokenAddress: string) {
     }
 
     try {
-      const calls = [{
+      const calls: Call[] = [{
         contractAddress: tokenAddress,
         entrypoint: "approve",
         calldata: [CONTRACT_ADDRESS, amount.toString()]

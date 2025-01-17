@@ -2,6 +2,7 @@ import { useContract, useSendTransaction } from "@starknet-react/core";
 import { STAKING_CONTRACT_ADDRESS } from "./useStakingContract";
 import abi from "../data/abi";
 import { toast } from "sonner";
+import { Uint256 } from "starknet";
 
 export function useStakingWrite() {
   const { contract } = useContract({
@@ -29,9 +30,11 @@ export function useStakingWrite() {
     }
 
     try {
-      await sendStake([
-        contract.populate("invest_in_property", [propertyId, amount])
-      ]);
+      await sendStake([{
+        contractAddress: STAKING_CONTRACT_ADDRESS,
+        entrypoint: "invest_in_property",
+        calldata: [propertyId, amount]
+      }]);
       toast.success("Stake transaction sent successfully");
     } catch (error) {
       console.error("Staking error:", error);
@@ -48,9 +51,11 @@ export function useStakingWrite() {
     }
 
     try {
-      await sendWithdraw([
-        contract.populate("list_property_for_investment", [propertyId, amount, tokenAddress])
-      ]);
+      await sendWithdraw([{
+        contractAddress: STAKING_CONTRACT_ADDRESS,
+        entrypoint: "list_property_for_investment",
+        calldata: [propertyId, amount, tokenAddress]
+      }]);
       toast.success("Withdrawal transaction sent successfully");
     } catch (error) {
       console.error("Withdrawal error:", error);
@@ -67,9 +72,11 @@ export function useStakingWrite() {
     }
 
     try {
-      await sendClaimRewards([
-        contract.populate("get_property", [propertyId])
-      ]);
+      await sendClaimRewards([{
+        contractAddress: STAKING_CONTRACT_ADDRESS,
+        entrypoint: "get_property",
+        calldata: [propertyId]
+      }]);
       toast.success("Claim rewards transaction sent successfully");
     } catch (error) {
       console.error("Claim rewards error:", error);
