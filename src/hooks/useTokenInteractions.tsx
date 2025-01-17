@@ -1,6 +1,6 @@
 import { useContract, useSendTransaction, useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
-import { Call } from "starknet";
+import { BigNumberish, Call } from "starknet";
 
 export const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
 
@@ -31,7 +31,7 @@ export function useTokenInteractions(tokenAddress: string) {
 
   const { send: sendApprove } = useSendTransaction();
 
-  const approveSpending = async (amount: bigint) => {
+  const approveSpending = async (amount: BigNumberish) => {
     if (!tokenContract || !address) {
       console.error("Token contract or address not available");
       return;
@@ -41,7 +41,7 @@ export function useTokenInteractions(tokenAddress: string) {
       const calls: Call[] = [{
         contractAddress: tokenAddress,
         entrypoint: "approve",
-        calldata: [CONTRACT_ADDRESS, amount.toString()]
+        calldata: [CONTRACT_ADDRESS, amount]
       }];
 
       await sendApprove({ calls });

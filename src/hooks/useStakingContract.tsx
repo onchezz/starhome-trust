@@ -1,4 +1,5 @@
 import { useContract, useReadContract, useSendTransaction, useAccount } from "@starknet-react/core";
+import { BigNumberish } from "starknet";
 import abi from "../data/abi";
 import { toast } from "sonner";
 
@@ -22,18 +23,18 @@ export function useStakingContract() {
   });
 
   const { send: sendStake, isPending: isStakePending } = useSendTransaction({
-    calls: contract ? [] : undefined
+    calls: []
   });
 
   const { send: sendWithdraw, isPending: isWithdrawPending } = useSendTransaction({
-    calls: contract ? [] : undefined
+    calls: []
   });
 
   const { send: sendClaimRewards, isPending: isClaimRewardsPending } = useSendTransaction({
-    calls: contract ? [] : undefined
+    calls: []
   });
 
-  const handleStake = async (propertyId: string, amount: bigint) => {
+  const handleStake = async (propertyId: string, amount: BigNumberish) => {
     console.log("Staking amount:", amount, "for property:", propertyId);
     if (!contract) {
       console.error("Contract not initialized");
@@ -41,9 +42,11 @@ export function useStakingContract() {
     }
 
     try {
-      await sendStake([
-        contract.populate("invest_in_property", [propertyId, amount])
-      ]);
+      await sendStake([{
+        contractAddress: STAKING_CONTRACT_ADDRESS,
+        entrypoint: "invest_in_property",
+        calldata: [BigInt(propertyId), amount]
+      }]);
       toast.success("Stake transaction sent successfully");
     } catch (error) {
       console.error("Staking error:", error);
@@ -52,7 +55,7 @@ export function useStakingContract() {
     }
   };
 
-  const withdraw = async (propertyId: string, amount: bigint, tokenAddress: string) => {
+  const withdraw = async (propertyId: string, amount: BigNumberish, tokenAddress: string) => {
     console.log("Withdrawing amount:", amount);
     if (!contract) {
       console.error("Contract not initialized");
@@ -60,9 +63,11 @@ export function useStakingContract() {
     }
 
     try {
-      await sendWithdraw([
-        contract.populate("list_property_for_investment", [propertyId, amount, tokenAddress])
-      ]);
+      await sendWithdraw([{
+        contractAddress: STAKING_CONTRACT_ADDRESS,
+        entrypoint: "list_property_for_investment",
+        calldata: [BigInt(propertyId), amount, tokenAddress]
+      }]);
       toast.success("Withdrawal transaction sent successfully");
     } catch (error) {
       console.error("Withdrawal error:", error);
@@ -79,9 +84,11 @@ export function useStakingContract() {
     }
 
     try {
-      await sendClaimRewards([
-        contract.populate("get_property", [propertyId])
-      ]);
+      await sendClaimRewards([{
+        contractAddress: STAKING_CONTRACT_ADDRESS,
+        entrypoint: "get_property",
+        calldata: [BigInt(propertyId)]
+      }]);
       toast.success("Claim rewards transaction sent successfully");
     } catch (error) {
       console.error("Claim rewards error:", error);

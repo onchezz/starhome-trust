@@ -103,8 +103,8 @@ const Investment = () => {
       }
 
       // Convert amount to BigInt for contract interaction
-      const amountBigInt = BigInt(Number(amount) * (10 ** 18)); // Assuming 18 decimals
-      await handleStake(amountBigInt);
+      const amountBigInt = BigInt(Number(amount) * (10 ** 18));
+      await handleStake(propertyId.toString(), amountBigInt);
       
       toast.success("Investment transaction initiated");
       
