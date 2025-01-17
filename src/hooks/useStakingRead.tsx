@@ -6,7 +6,7 @@ export function useStakingRead() {
   const { address } = useAccount();
 
   const { data: rewards, isPending: isLoadingRewards } = useReadContract({
-    functionName: "get_rewards",
+    functionName: "get_property",
     args: address ? [address] : undefined,
     address: STAKING_CONTRACT_ADDRESS,
     abi,

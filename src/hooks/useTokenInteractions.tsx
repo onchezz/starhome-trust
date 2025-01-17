@@ -1,9 +1,9 @@
 import { useContract, useSendTransaction, useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 
-const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
+export const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
 
-export function useTokenInteractions(tokenAddress: string) {
+export function useTokenInteractions(tokenAddress: `0x${string}`) {
   const { address } = useAccount();
 
   const { contract: tokenContract } = useContract({
@@ -44,7 +44,7 @@ export function useTokenInteractions(tokenAddress: string) {
     address: tokenAddress
   });
 
-  const { send: sendApprove, isPending: isApprovePending } = useSendTransaction();
+  const { send: sendApprove } = useSendTransaction();
 
   const approveSpending = async (amount: bigint) => {
     if (!tokenContract || !address) {
@@ -55,7 +55,11 @@ export function useTokenInteractions(tokenAddress: string) {
     try {
       await sendApprove({
         calls: [
-          tokenContract.populate("approve", [CONTRACT_ADDRESS, amount])
+          {
+            contractAddress: tokenAddress,
+            entrypoint: "approve",
+            calldata: [CONTRACT_ADDRESS, amount.toString()]
+          }
         ]
       });
       toast.success("Approval transaction sent");
@@ -67,6 +71,6 @@ export function useTokenInteractions(tokenAddress: string) {
 
   return {
     approveSpending,
-    isApprovePending
+    tokenContract
   };
 }

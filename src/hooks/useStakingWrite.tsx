@@ -30,7 +30,7 @@ export function useStakingWrite() {
 
     try {
       await sendStake([
-        contract.populate("stake", [amount])
+        contract.populate("invest_in_property", [amount])
       ]);
       toast.success("Stake transaction sent successfully");
     } catch (error) {
@@ -49,7 +49,7 @@ export function useStakingWrite() {
 
     try {
       await sendWithdraw([
-        contract.populate("withdraw", [amount])
+        contract.populate("list_property_for_investment", [amount])
       ]);
       toast.success("Withdrawal transaction sent successfully");
     } catch (error) {
@@ -68,7 +68,7 @@ export function useStakingWrite() {
 
     try {
       await sendClaimRewards([
-        contract.populate("claim_rewards", [])
+        contract.populate("get_property", [])
       ]);
       toast.success("Claim rewards transaction sent successfully");
     } catch (error) {

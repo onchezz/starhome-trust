@@ -1,10 +1,8 @@
 import { useContract, useReadContract, useSendTransaction, useAccount } from "@starknet-react/core";
-import { Contract } from "starknet";
 import abi from "../data/abi";
 import { toast } from "sonner";
 
-// Contract address for the staking contract
-export const STAKING_CONTRACT_ADDRESS = "0x06711323c3dae0c666a108be21ded892463c1abe08ed77157ff19fb343de7800";
+export const STAKING_CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
 
 export function useStakingContract() {
   const { contract } = useContract({
@@ -14,9 +12,8 @@ export function useStakingContract() {
 
   const { address } = useAccount();
 
-  // Read Operations
   const { data: rewards, isPending: isLoadingRewards } = useReadContract({
-    functionName: "get_rewards",
+    functionName: "get_property",
     args: address ? [address] : undefined,
     address: STAKING_CONTRACT_ADDRESS,
     abi,
@@ -24,7 +21,6 @@ export function useStakingContract() {
     enabled: !!address
   });
 
-  // Write Operations
   const { send: sendStake, isPending: isStakePending } = useSendTransaction({
     calls: contract ? [] : undefined
   });
@@ -46,7 +42,7 @@ export function useStakingContract() {
 
     try {
       await sendStake([
-        contract.populate("stake", [amount])
+        contract.populate("invest_in_property", [amount])
       ]);
       toast.success("Stake transaction sent successfully");
     } catch (error) {
@@ -65,7 +61,7 @@ export function useStakingContract() {
 
     try {
       await sendWithdraw([
-        contract.populate("withdraw", [amount])
+        contract.populate("list_property_for_investment", [amount])
       ]);
       toast.success("Withdrawal transaction sent successfully");
     } catch (error) {
@@ -84,7 +80,7 @@ export function useStakingContract() {
 
     try {
       await sendClaimRewards([
-        contract.populate("claim_rewards", [])
+        contract.populate("get_property", [])
       ]);
       toast.success("Claim rewards transaction sent successfully");
     } catch (error) {
@@ -95,24 +91,15 @@ export function useStakingContract() {
   };
 
   return {
-    // Contract instance
     contract,
-    
-    // Read operations
     rewards,
     isLoadingRewards,
-    
-    // Write operations
     handleStake,
     withdraw,
     claimRewards,
-    
-    // Loading states
     isStakePending,
     isWithdrawPending,
     isClaimRewardsPending,
-    
-    // Combined loading state
     loading: isStakePending || isWithdrawPending || isClaimRewardsPending || isLoadingRewards
   };
 }
