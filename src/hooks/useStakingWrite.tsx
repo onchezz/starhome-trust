@@ -21,8 +21,8 @@ export function useStakingWrite() {
     calls: contract ? [] : undefined
   });
 
-  const stake = async (amount: bigint) => {
-    console.log("Staking amount:", amount);
+  const stake = async (propertyId: string, amount: bigint) => {
+    console.log("Staking amount:", amount, "for property:", propertyId);
     if (!contract) {
       console.error("Contract not initialized");
       return;
@@ -30,7 +30,7 @@ export function useStakingWrite() {
 
     try {
       await sendStake([
-        contract.populate("invest_in_property", [amount])
+        contract.populate("invest_in_property", [propertyId, amount])
       ]);
       toast.success("Stake transaction sent successfully");
     } catch (error) {
@@ -40,7 +40,7 @@ export function useStakingWrite() {
     }
   };
 
-  const withdraw = async (amount: bigint) => {
+  const withdraw = async (propertyId: string, amount: bigint, tokenAddress: string) => {
     console.log("Withdrawing amount:", amount);
     if (!contract) {
       console.error("Contract not initialized");
@@ -49,7 +49,7 @@ export function useStakingWrite() {
 
     try {
       await sendWithdraw([
-        contract.populate("list_property_for_investment", [amount])
+        contract.populate("list_property_for_investment", [propertyId, amount, tokenAddress])
       ]);
       toast.success("Withdrawal transaction sent successfully");
     } catch (error) {
@@ -59,8 +59,8 @@ export function useStakingWrite() {
     }
   };
 
-  const claimRewards = async () => {
-    console.log("Claiming rewards");
+  const claimRewards = async (propertyId: string) => {
+    console.log("Claiming rewards for property:", propertyId);
     if (!contract) {
       console.error("Contract not initialized");
       return;
@@ -68,7 +68,7 @@ export function useStakingWrite() {
 
     try {
       await sendClaimRewards([
-        contract.populate("get_property", [])
+        contract.populate("get_property", [propertyId])
       ]);
       toast.success("Claim rewards transaction sent successfully");
     } catch (error) {

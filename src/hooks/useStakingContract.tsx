@@ -12,9 +12,9 @@ export function useStakingContract() {
 
   const { address } = useAccount();
 
-  const { data: rewards, isPending: isLoadingRewards } = useReadContract({
-    functionName: "get_property",
-    args: address ? [address] : undefined,
+  const { data: properties, isPending: isLoadingProperties } = useReadContract({
+    functionName: "get_properties",
+    args: [],
     address: STAKING_CONTRACT_ADDRESS,
     abi,
     watch: true,
@@ -33,8 +33,8 @@ export function useStakingContract() {
     calls: contract ? [] : undefined
   });
 
-  const handleStake = async (amount: bigint) => {
-    console.log("Staking amount:", amount);
+  const handleStake = async (propertyId: string, amount: bigint) => {
+    console.log("Staking amount:", amount, "for property:", propertyId);
     if (!contract) {
       console.error("Contract not initialized");
       return;
@@ -42,7 +42,7 @@ export function useStakingContract() {
 
     try {
       await sendStake([
-        contract.populate("invest_in_property", [amount])
+        contract.populate("invest_in_property", [propertyId, amount])
       ]);
       toast.success("Stake transaction sent successfully");
     } catch (error) {
@@ -52,7 +52,7 @@ export function useStakingContract() {
     }
   };
 
-  const withdraw = async (amount: bigint) => {
+  const withdraw = async (propertyId: string, amount: bigint, tokenAddress: string) => {
     console.log("Withdrawing amount:", amount);
     if (!contract) {
       console.error("Contract not initialized");
@@ -61,7 +61,7 @@ export function useStakingContract() {
 
     try {
       await sendWithdraw([
-        contract.populate("list_property_for_investment", [amount])
+        contract.populate("list_property_for_investment", [propertyId, amount, tokenAddress])
       ]);
       toast.success("Withdrawal transaction sent successfully");
     } catch (error) {
@@ -71,8 +71,8 @@ export function useStakingContract() {
     }
   };
 
-  const claimRewards = async () => {
-    console.log("Claiming rewards");
+  const claimRewards = async (propertyId: string) => {
+    console.log("Claiming rewards for property:", propertyId);
     if (!contract) {
       console.error("Contract not initialized");
       return;
@@ -80,7 +80,7 @@ export function useStakingContract() {
 
     try {
       await sendClaimRewards([
-        contract.populate("get_property", [])
+        contract.populate("get_property", [propertyId])
       ]);
       toast.success("Claim rewards transaction sent successfully");
     } catch (error) {
@@ -92,14 +92,14 @@ export function useStakingContract() {
 
   return {
     contract,
-    rewards,
-    isLoadingRewards,
+    properties,
+    isLoadingProperties,
     handleStake,
     withdraw,
     claimRewards,
     isStakePending,
     isWithdrawPending,
     isClaimRewardsPending,
-    loading: isStakePending || isWithdrawPending || isClaimRewardsPending || isLoadingRewards
+    loading: isStakePending || isWithdrawPending || isClaimRewardsPending || isLoadingProperties
   };
 }

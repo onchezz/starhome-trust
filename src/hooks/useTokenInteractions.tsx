@@ -1,9 +1,10 @@
 import { useContract, useSendTransaction, useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
+import { Contract } from "starknet";
 
 export const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
 
-export function useTokenInteractions(tokenAddress: `0x${string}`) {
+export function useTokenInteractions(tokenAddress: string) {
   const { address } = useAccount();
 
   const { contract: tokenContract } = useContract({
@@ -41,7 +42,7 @@ export function useTokenInteractions(tokenAddress: `0x${string}`) {
         state_mutability: "view",
       }
     ] as const,
-    address: tokenAddress
+    address: tokenAddress as `0x${string}`
   });
 
   const { send: sendApprove } = useSendTransaction();
@@ -53,15 +54,13 @@ export function useTokenInteractions(tokenAddress: `0x${string}`) {
     }
 
     try {
-      await sendApprove({
-        calls: [
-          {
-            contractAddress: tokenAddress,
-            entrypoint: "approve",
-            calldata: [CONTRACT_ADDRESS, amount.toString()]
-          }
-        ]
-      });
+      const calls = [{
+        contractAddress: tokenAddress,
+        entrypoint: "approve",
+        calldata: [CONTRACT_ADDRESS, amount.toString()]
+      }];
+
+      await sendApprove({ calls });
       toast.success("Approval transaction sent");
     } catch (error) {
       console.error("Approval error:", error);
