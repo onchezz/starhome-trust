@@ -1,4 +1,4 @@
-import { useContract, useSendTransaction, useAccount } from "@starknet-react/core";
+import { useContract, useSendTransaction } from "@starknet-react/core";
 import { toast } from "sonner";
 import { Property } from "../types/property";
 import abi from "../data/abi";
@@ -6,8 +6,6 @@ import abi from "../data/abi";
 const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
 
 export function useStarhomesWrite() {
-  const { address } = useAccount();
-  
   const { contract } = useContract({
     address: CONTRACT_ADDRESS,
     abi
@@ -16,15 +14,15 @@ export function useStarhomesWrite() {
   const { sendTransaction } = useSendTransaction();
 
   const listPropertyForSale = async (property: Property, tokenAddress: string) => {
-    if (!contract || !address) {
-      console.error("Contract or address not available");
+    if (!contract) {
+      console.error("Contract not available");
       return;
     }
 
     try {
       console.log("Listing property for sale:", { property, tokenAddress });
       
-      const calls = contract.populateTransaction("list_property_for_sale", [
+      const calls = await contract.populateTransaction("list_property_for_sale", [
         property,
         tokenAddress
       ]);

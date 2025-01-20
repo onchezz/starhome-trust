@@ -9,6 +9,20 @@ export interface Location {
   longitude: BigNumberish;
 }
 
+export interface Agent {
+  name: BigNumberish;
+  phone: BigNumberish;
+  email: BigNumberish;
+  profile_image: BigNumberish;
+}
+
+export interface Amenities {
+  has_garden: boolean;
+  has_swimming_pool: boolean;
+  pet_friendly: boolean;
+  wheelchair_accessible: boolean;
+}
+
 export interface Property {
   id: BigNumberish;
   isInvestment: boolean;
@@ -30,12 +44,17 @@ export interface Property {
   features_id: BigNumberish;
   images_id: BigNumberish;
   video_tour: BigNumberish;
-  agent_id: BigNumberish;
+  agent: Agent;
   date_listed: BigNumberish;
-  has_garden: boolean;
-  has_swimming_pool: boolean;
-  pet_friendly: boolean;
-  wheelchair_accessible: boolean;
+  amenities: Amenities;
   payment_token: string;
+  timestamp: BigNumberish;
+}
+
+export interface Investor {
+  investor_address: string;
+  names: BigNumberish;
+  investor_id: BigNumberish;
+  Investor_id: BigNumberish;
   timestamp: BigNumberish;
 }

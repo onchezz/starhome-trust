@@ -1,5 +1,6 @@
 import { useContract, useSendTransaction } from "@starknet-react/core";
 import { toast } from "sonner";
+import { Abi } from "starknet";
 
 const ERC20_ABI = [
   {
@@ -37,13 +38,14 @@ const ERC20_ABI = [
         type: "felt"
       }
     ],
-    type: "function"
+    type: "function",
+    state_mutability: "external"
   }
-];
+] as Abi;
 
 export function useTokenInteractions(tokenAddress: string) {
   const { contract } = useContract({
-    address: tokenAddress as `0x${string}`,
+    address: tokenAddress,
     abi: ERC20_ABI
   });
 
@@ -58,7 +60,7 @@ export function useTokenInteractions(tokenAddress: string) {
     try {
       console.log("Approving token:", { spender, amount });
       
-      const calls = contract.populateTransaction("approve", [
+      const calls = await contract.populateTransaction("approve", [
         spender,
         amount
       ]);
