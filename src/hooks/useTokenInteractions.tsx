@@ -1,5 +1,6 @@
-import { useContract, useSendTransaction } from "@starknet-react/core";
+import { useContract } from "@starknet-react/core";
 import { toast } from "sonner";
+import { Call } from "starknet";
 import { Abi } from "starknet";
 
 const ERC20_ABI = [
@@ -45,11 +46,9 @@ const ERC20_ABI = [
 
 export function useTokenInteractions(tokenAddress: string) {
   const { contract } = useContract({
-    address: tokenAddress,
+    address: tokenAddress as `0x${string}`,
     abi: ERC20_ABI
   });
-
-  const { sendTransaction } = useSendTransaction();
 
   const approveToken = async (spender: string, amount: string) => {
     if (!contract) {
@@ -60,12 +59,13 @@ export function useTokenInteractions(tokenAddress: string) {
     try {
       console.log("Approving token:", { spender, amount });
       
-      const calls = await contract.populateTransaction("approve", [
-        spender,
-        amount
-      ]);
+      const calls: Call[] = [{
+        contractAddress: tokenAddress as `0x${string}`,
+        entrypoint: "approve",
+        calldata: [spender, amount]
+      }];
 
-      await sendTransaction({ calls });
+      await contract.invoke("approve", [spender, amount]);
       toast.success("Token approved successfully");
     } catch (error) {
       console.error("Error approving token:", error);
