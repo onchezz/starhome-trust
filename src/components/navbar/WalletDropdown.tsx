@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import WalletActions from "../WalletActions";
-import { useTokenBalances } from "@/hooks/useTokenBalances";
+import { useTokenBalances } from "@/hooks/staker/useTokenBalances";
 import { Link } from "react-router-dom";
 
 interface WalletDropdownProps {
@@ -30,8 +30,10 @@ const WalletDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          className={`${className} ${!address ? 'bg-[#0066FF] text-white hover:bg-[#0066FF]/90' : ''}`}
+        <Button
+          className={`${className} ${
+            !address ? "bg-[#0066FF] text-white hover:bg-[#0066FF]/90" : ""
+          }`}
           variant={address ? "default" : "outline"}
           style={{ backgroundColor: address ? "#0066FF" : undefined }}
         >

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStarhomesWrite } from "@/hooks/useStarhomesWrite";
+import { useStarhomesWrite } from "@/hooks/staker/useStarhomesWrite";
 import { PropertyBasicInfo } from "@/components/property/PropertyBasicInfo";
 import { PropertyLocation } from "@/components/property/PropertyLocation";
 import { PropertyAmenities } from "@/components/property/PropertyAmenities";
