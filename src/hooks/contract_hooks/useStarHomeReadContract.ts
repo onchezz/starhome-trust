@@ -8,7 +8,7 @@ import {
   ContractName,
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldReadConfig,
-} from "@/utils/scaffold-stark/contract";
+} from "@/utils/starhomes/contract";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
 
 export const useStarHomeReadContract = <

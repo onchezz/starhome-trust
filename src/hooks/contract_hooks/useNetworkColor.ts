@@ -1,4 +1,4 @@
-import { ChainWithAttributes } from "@/utils/scaffold-stark";
+import { ChainWithAttributes } from "@/utils/starhomes";
 import { useTargetNetwork } from "./useTargetNetwork";
 import { useTheme } from "next-themes";
 

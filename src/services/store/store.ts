@@ -1,4 +1,4 @@
-import { ChainWithAttributes } from "@/utils/scaffold-stark";
+import { ChainWithAttributes } from "@/utils/starhomes";
 import scaffoldConfig from "scaffold.config";
 import { create } from "zustand";
 

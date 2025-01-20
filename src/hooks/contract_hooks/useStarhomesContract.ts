@@ -3,7 +3,7 @@
 import { Contract, Abi } from "starknet";
 import { useProvider, useAccount } from "@starknet-react/core";
 import { useMemo } from "react";
-import { ContractName } from "@/utils/scaffold-stark/contract";
+import { ContractName } from "@/utils/starhomes/contract";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
 
 export const useStarHomesContract = <TContractName extends ContractName>({

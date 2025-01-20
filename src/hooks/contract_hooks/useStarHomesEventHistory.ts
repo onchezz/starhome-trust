@@ -13,12 +13,12 @@ import { devnet } from "@starknet-react/chains";
 import { useProvider } from "@starknet-react/core";
 import { hash, RpcProvider } from "starknet";
 import { events as starknetEvents, CallData } from "starknet";
-import { ContractAbi, ContractName,UseScaffoldEventHistoryConfig } from "@/utils/scaffold-stark/contract";
+import { ContractAbi, ContractName,UseScaffoldEventHistoryConfig } from "@/utils/starhomes/contract";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
-import { composeEventFilterKeys } from "@/utils/scaffold-stark/eventKeyFilter";
-import { parseEventData } from "@/utils/scaffold-stark/eventsData";
+import { composeEventFilterKeys } from "@/utils/starhomes/eventKeyFilter";
+import { parseEventData } from "@/utils/starhomes/eventsData";
 import scaffoldConfig from "scaffold.config";
-import { replacer } from "@/utils/scaffold-stark/common";
+import { replacer } from "@/utils/starhomes/common";
 
 
 const MAX_KEYS_COUNT = 16;

@@ -6,7 +6,7 @@ import {
   ContractName,
   Contract,
   contracts,
-} from "@/utils/scaffold-stark/contract";
+} from "@/utils/starhomes/contract";
 import { BlockIdentifier } from "starknet";
 import { useProvider } from "@starknet-react/core";
 

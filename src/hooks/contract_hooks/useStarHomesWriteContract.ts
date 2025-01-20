@@ -7,12 +7,12 @@ import {
   ContractName,
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldWriteConfig,
-} from "@/utils/scaffold-stark/contract";
+} from "@/utils/starhomes/contract";
 import { useSendTransaction, useNetwork, Abi } from "@starknet-react/core";
 // import { notification } from "~~/utils/scaffold-stark";
 import { Contract as StarknetJsContract } from "starknet";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
-import { notification } from "@/utils/scaffold-stark";
+import { notification } from "@/utils/starhomes";
 import { Console } from "console";
 
 

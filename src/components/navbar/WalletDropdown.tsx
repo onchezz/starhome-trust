@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import WalletActions from "../WalletActions";
-import { useTokenBalances } from "@/hooks/staker/useTokenBalances";
+// import { useTokenBalances } from "@/hooks/staker/useTokenBalances";
 import { Link } from "react-router-dom";
 
 interface WalletDropdownProps {
@@ -25,7 +25,8 @@ const WalletDropdown = ({
   handleDisconnect,
   className,
 }: WalletDropdownProps) => {
-  const { balances, isLoading } = useTokenBalances();
+  // const { balances, isLoading } = useTokenBalances();
+  //  const { balances, isLoading } = useStrkBalance();
 
   return (
     <DropdownMenu>
@@ -72,7 +73,7 @@ const WalletDropdown = ({
             <div className="p-2 text-sm text-gray-500">
               {address.slice(0, 6)}...{address.slice(-4)}
             </div>
-            {isLoading ? (
+            {/* {isLoading ? (
               <div className="p-2 text-sm">Loading balances...</div>
             ) : (
               <div className="p-2 space-y-2">
@@ -89,7 +90,7 @@ const WalletDropdown = ({
                   <span>{balances.STRK?.formatted || "0"}</span>
                 </div>
               </div>
-            )}
+            )} */}
             <div className="p-2">
               <WalletActions />
             </div>

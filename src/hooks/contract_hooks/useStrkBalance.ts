@@ -9,7 +9,7 @@ type UseScaffoldStrkBalanceProps = {
   address?: Address | string;
 };
 
-const useSStrkBalance = ({ address }: UseScaffoldStrkBalanceProps) => {
+const useStrkBalance = ({ address }: UseScaffoldStrkBalanceProps) => {
   const { data: deployedContract } = useDeployedContractInfo("Strk");
 
   const { data, ...props } = useReadContract({
@@ -32,4 +32,4 @@ const useSStrkBalance = ({ address }: UseScaffoldStrkBalanceProps) => {
   };
 };
 
-export default useSStrkBalance;
+export default useStrkBalance;
