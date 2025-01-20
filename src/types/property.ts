@@ -1,40 +1,41 @@
 import { BigNumberish } from "starknet";
 
 export interface Location {
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  latitude: string;
-  longitude: string;
+  address: BigNumberish;
+  city: BigNumberish;
+  state: BigNumberish;
+  country: BigNumberish;
+  latitude: BigNumberish;
+  longitude: BigNumberish;
 }
 
 export interface Property {
-  id: string;
-  title: string;
-  description: string;
+  id: BigNumberish;
+  isInvestment: boolean;
+  title: BigNumberish;
+  description: BigNumberish;
   location: Location;
   price: BigNumberish;
   owner: string;
-  askingPrice: BigNumberish;
-  currency: string;
+  asking_price: BigNumberish;
+  currency: BigNumberish;
   area: BigNumberish;
   bedrooms: BigNumberish;
   bathrooms: BigNumberish;
-  parkingSpaces: BigNumberish;
-  propertyType: string;
-  status: string;
-  interestedClients: BigNumberish;
-  annualGrowthRate: BigNumberish;
-  featuresId: string;
-  imagesId: string;
-  videoTour: string;
-  agentId: string;
-  dateListed: string;
-  hasGarden: boolean;
-  hasSwimmingPool: boolean;
-  petFriendly: boolean;
-  wheelchairAccessible: boolean;
-  assetToken: string;
-  isInvestment: boolean;
+  parking_spaces: BigNumberish;
+  property_type: BigNumberish;
+  status: BigNumberish;
+  interested_clients: BigNumberish;
+  annual_growth_rate: BigNumberish;
+  features_id: BigNumberish;
+  images_id: BigNumberish;
+  video_tour: BigNumberish;
+  agent_id: BigNumberish;
+  date_listed: BigNumberish;
+  has_garden: boolean;
+  has_swimming_pool: boolean;
+  pet_friendly: boolean;
+  wheelchair_accessible: boolean;
+  payment_token: string;
+  timestamp: BigNumberish;
 }

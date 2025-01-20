@@ -24,12 +24,12 @@ export function useStarhomesWrite() {
     try {
       console.log("Listing property for sale:", { property, tokenAddress });
       
-      const calls = contract.populateTransaction.list_property_for_sale(
+      const calls = contract.populateTransaction("list_property_for_sale", [
         property,
         tokenAddress
-      );
+      ]);
 
-      await sendTransaction({ transactions: calls });
+      await sendTransaction({ calls });
       toast.success("Property listed successfully");
     } catch (error) {
       console.error("Error listing property:", error);
