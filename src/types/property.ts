@@ -5,27 +5,12 @@ export interface Location {
   city: string;
   state: string;
   country: string;
-  latitude: number;
-  longitude: number;
-}
-
-export interface Agent {
-  name: string;
-  phone: string;
-  email: string;
-  profileImage: string;
-}
-
-export interface Amenities {
-  hasGarden: boolean;
-  hasSwimmingPool: boolean;
-  petFriendly: boolean;
-  wheelchairAccessible: boolean;
+  latitude: string;
+  longitude: string;
 }
 
 export interface Property {
   id: string;
-  isInvestment: boolean;
   title: string;
   description: string;
   location: Location;
@@ -44,16 +29,12 @@ export interface Property {
   featuresId: string;
   imagesId: string;
   videoTour: string;
-  agent: Agent;
+  agentId: string;
   dateListed: string;
-  amenities: Amenities;
-  paymentToken: string;
-  timestamp: number;
-}
-
-export interface Investor {
-  investorAddress: string;
-  names: string;
-  investorId: string;
-  timestamp: number;
+  hasGarden: boolean;
+  hasSwimmingPool: boolean;
+  petFriendly: boolean;
+  wheelchairAccessible: boolean;
+  assetToken: string;
+  isInvestment: boolean;
 }

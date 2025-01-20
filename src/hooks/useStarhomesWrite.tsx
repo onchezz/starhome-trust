@@ -1,6 +1,6 @@
 import { useContract, useSendTransaction, useAccount } from "@starknet-react/core";
-import { Property } from "../types/property";
 import { toast } from "sonner";
+import { Property } from "../types/property";
 import abi from "../data/abi";
 
 const CONTRACT_ADDRESS = "0x018830450ae57c3cf9207bb7eba2e3b7c4451c22bd72612284a925a483641369";
@@ -13,7 +13,7 @@ export function useStarhomesWrite() {
     abi
   });
 
-  const { execute: sendTransaction } = useSendTransaction();
+  const { sendTransaction } = useSendTransaction();
 
   const listPropertyForSale = async (property: Property, tokenAddress: string) => {
     if (!contract || !address) {
@@ -22,11 +22,14 @@ export function useStarhomesWrite() {
     }
 
     try {
-      await sendTransaction({
-        contractAddress: CONTRACT_ADDRESS,
-        entrypoint: "list_property_for_sale",
-        calldata: [property, tokenAddress]
-      });
+      console.log("Listing property for sale:", { property, tokenAddress });
+      
+      const calls = contract.populateTransaction.list_property_for_sale(
+        property,
+        tokenAddress
+      );
+
+      await sendTransaction({ transactions: calls });
       toast.success("Property listed successfully");
     } catch (error) {
       console.error("Error listing property:", error);
@@ -35,32 +38,7 @@ export function useStarhomesWrite() {
     }
   };
 
-  const listPropertyForInvestment = async (
-    price: bigint,
-    totalShares: bigint,
-    paymentToken: string
-  ) => {
-    if (!contract || !address) {
-      console.error("Contract or address not available");
-      return;
-    }
-
-    try {
-      await sendTransaction({
-        contractAddress: CONTRACT_ADDRESS,
-        entrypoint: "list_property_for_investment",
-        calldata: [price, totalShares, paymentToken]
-      });
-      toast.success("Investment property listed successfully");
-    } catch (error) {
-      console.error("Error listing investment property:", error);
-      toast.error("Failed to list investment property");
-      throw error;
-    }
-  };
-
   return {
     listPropertyForSale,
-    listPropertyForInvestment,
   };
 }

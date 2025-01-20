@@ -82,18 +82,43 @@ export default function AddProperty() {
         return;
       }
 
+      console.log("Form values:", values);
+
       const property = {
-        ...values,
-        owner: address,
-        agent_id: address, // Using the connected wallet address as agent_id
+        id: Date.now().toString(), // Generate a temporary ID
+        title: values.title,
+        description: values.description,
+        location: {
+          address: values.location_address,
+          city: values.city,
+          state: values.state,
+          country: values.country,
+          latitude: values.latitude,
+          longitude: values.longitude,
+        },
         price: BigInt(values.price),
-        asking_price: BigInt(values.asking_price),
+        owner: address,
+        askingPrice: BigInt(values.asking_price),
+        currency: values.currency,
         area: BigInt(values.area),
         bedrooms: BigInt(values.bedrooms),
         bathrooms: BigInt(values.bathrooms),
-        parking_spaces: BigInt(values.parking_spaces),
-        interested_clients: BigInt(values.interested_clients),
-        annual_growth_rate: BigInt(values.annual_growth_rate),
+        parkingSpaces: BigInt(values.parking_spaces),
+        propertyType: values.property_type,
+        status: values.status,
+        interestedClients: BigInt(values.interested_clients),
+        annualGrowthRate: BigInt(values.annual_growth_rate),
+        featuresId: values.features_id,
+        imagesId: values.images_id,
+        videoTour: values.video_tour,
+        agentId: address,
+        dateListed: values.date_listed,
+        hasGarden: values.has_garden,
+        hasSwimmingPool: values.has_swimming_pool,
+        petFriendly: values.pet_friendly,
+        wheelchairAccessible: values.wheelchair_accessible,
+        assetToken: values.asset_token,
+        isInvestment: values.is_investment,
       };
 
       await listPropertyForSale(property, values.asset_token);
