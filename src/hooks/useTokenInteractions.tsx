@@ -56,13 +56,13 @@ export function useTokenInteractions(tokenAddress: string) {
       },
     ] as const,
     functionName: "allowance",
-    address: tokenAddress,
+    address: tokenAddress as `0x${string}`,
     args: [address || "0x0", CONTRACT_ADDRESS],
     watch: true,
     enabled: !!address
   });
 
-  const { send: sendTransaction } = useSendTransaction();
+  const { execute: sendTransaction } = useSendTransaction();
 
   const approveSpending = async (amount: BigNumberish) => {
     if (!tokenContract || !address) {
@@ -72,11 +72,9 @@ export function useTokenInteractions(tokenAddress: string) {
 
     try {
       await sendTransaction({
-        calls: [{
-          contractAddress: tokenAddress,
-          entrypoint: "approve",
-          calldata: [CONTRACT_ADDRESS, amount]
-        }]
+        contractAddress: tokenAddress as `0x${string}`,
+        entrypoint: "approve",
+        calldata: [CONTRACT_ADDRESS, amount]
       });
       toast.success("Approval transaction sent");
     } catch (error) {

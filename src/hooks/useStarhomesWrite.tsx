@@ -13,7 +13,7 @@ export function useStarhomesWrite() {
     abi
   });
 
-  const { send: sendTransaction, isPending } = useSendTransaction();
+  const { execute: sendTransaction } = useSendTransaction();
 
   const listPropertyForSale = async (property: Property, tokenAddress: string) => {
     if (!contract || !address) {
@@ -23,11 +23,9 @@ export function useStarhomesWrite() {
 
     try {
       await sendTransaction({
-        calls: [{
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: "list_property_for_sale",
-          calldata: [property, tokenAddress]
-        }]
+        contractAddress: CONTRACT_ADDRESS,
+        entrypoint: "list_property_for_sale",
+        calldata: [property, tokenAddress]
       });
       toast.success("Property listed successfully");
     } catch (error) {
@@ -49,11 +47,9 @@ export function useStarhomesWrite() {
 
     try {
       await sendTransaction({
-        calls: [{
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: "list_property_for_investment",
-          calldata: [price, totalShares, paymentToken]
-        }]
+        contractAddress: CONTRACT_ADDRESS,
+        entrypoint: "list_property_for_investment",
+        calldata: [price, totalShares, paymentToken]
       });
       toast.success("Investment property listed successfully");
     } catch (error) {
@@ -63,55 +59,8 @@ export function useStarhomesWrite() {
     }
   };
 
-  const investInProperty = async (propertyId: string, amount: bigint) => {
-    if (!contract || !address) {
-      console.error("Contract or address not available");
-      return;
-    }
-
-    try {
-      await sendTransaction({
-        calls: [{
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: "invest_in_property",
-          calldata: [propertyId, amount]
-        }]
-      });
-      toast.success("Investment successful");
-    } catch (error) {
-      console.error("Error investing in property:", error);
-      toast.error("Failed to invest in property");
-      throw error;
-    }
-  };
-
-  const registerInvestor = async (investor: Investor) => {
-    if (!contract || !address) {
-      console.error("Contract or address not available");
-      return;
-    }
-
-    try {
-      await sendTransaction({
-        calls: [{
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: "register_investor",
-          calldata: [investor]
-        }]
-      });
-      toast.success("Investor registered successfully");
-    } catch (error) {
-      console.error("Error registering investor:", error);
-      toast.error("Failed to register investor");
-      throw error;
-    }
-  };
-
   return {
     listPropertyForSale,
     listPropertyForInvestment,
-    investInProperty,
-    registerInvestor,
-    isPending
   };
 }
