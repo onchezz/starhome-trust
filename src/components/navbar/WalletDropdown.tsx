@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Wallet, Check } from "lucide-react";
+import { Wallet, Check, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import WalletActions from "../WalletActions";
 import { useTokenBalances } from "@/hooks/useTokenBalances";
+import { Link } from "react-router-dom";
 
 interface WalletDropdownProps {
   address: string | undefined;
@@ -51,6 +52,14 @@ const WalletDropdown = ({
         <DropdownMenuItem onClick={handleGoogleSignIn}>
           {address ? "Add Google Account" : "Sign in with Google"}
         </DropdownMenuItem>
+        {address && (
+          <DropdownMenuItem asChild>
+            <Link to="/add-property" className="flex items-center">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Property
+            </Link>
+          </DropdownMenuItem>
+        )}
         {!address ? (
           <DropdownMenuItem onClick={handleConnectWallet}>
             <Wallet className="mr-2 h-4 w-4" />
