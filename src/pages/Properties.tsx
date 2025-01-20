@@ -31,14 +31,33 @@ export default function Properties() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties?.map((property: any, index: number) => (
-              <Card key={index}>
+              <Card key={index} className="overflow-hidden">
                 <CardHeader>
-                  <CardTitle>{property.title}</CardTitle>
+                  <CardTitle>{property.title || `Property ${property.id}`}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-500">{property.description}</p>
-                  <div className="mt-4">
-                    <p className="font-semibold">Price: {property.price.toString()} ETH</p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-500">{property.description}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Price:</span>
+                      <span>{property.price} ETH</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Location:</span>
+                      <span>{property.location.city}, {property.location.state}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Bedrooms:</span>
+                      <span>{property.bedrooms}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Bathrooms:</span>
+                      <span>{property.bathrooms}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Area:</span>
+                      <span>{property.area} sq ft</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
