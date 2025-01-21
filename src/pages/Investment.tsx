@@ -23,11 +23,12 @@ import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useStakingContract } from "@/hooks/staker/useStakingContract";
 import { useInvestmentData } from "@/hooks/useInvestmentData";
+import { formatUnits } from "ethers";
 
 const Investment = () => {
-  const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
-    [key: number]: string;
+    [key: string]: string;
   }>({});
 
   const { connect } = useConnect();
@@ -35,12 +36,13 @@ const Investment = () => {
   const { handleStake, isStakePending } = useStakingContract();
   const { properties, balances, isLoading, address } = useInvestmentData();
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: string | number) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       maximumFractionDigits: 0,
-    }).format(amount);
+    }).format(numAmount);
   };
 
   const calculateProgress = (current: number, total: number) => {
@@ -64,7 +66,7 @@ const Investment = () => {
     }
   };
 
-  const handleInvest = async (propertyId: number) => {
+  const handleInvest = async (propertyId: string) => {
     try {
       const amount = investmentAmounts[propertyId];
       console.log(`Investing ${amount} in property ${propertyId}`);
@@ -74,9 +76,8 @@ const Investment = () => {
         return;
       }
 
-      // Convert amount to BigInt for contract interaction
-      const amountBigInt = BigInt(Number(amount) * 10 ** 18);
-      await handleStake(propertyId.toString(), amountBigInt);
+      const amountBigInt = BigInt(Math.floor(Number(amount) * 10 ** 18));
+      await handleStake(propertyId, amountBigInt);
 
       toast.success("Investment transaction initiated");
     } catch (error) {
@@ -85,7 +86,7 @@ const Investment = () => {
     }
   };
 
-  const handleAmountChange = (propertyId: number, value: string) => {
+  const handleAmountChange = (propertyId: string, value: string) => {
     setInvestmentAmounts((prev) => ({
       ...prev,
       [propertyId]: value,
@@ -114,9 +115,11 @@ const Investment = () => {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{balances.ETH.balance} ETH</div>
+              <div className="text-2xl font-bold">
+                {formatUnits(balances.ETH.value || 0n, 18)} ETH
+              </div>
               <p className="text-xs text-muted-foreground">
-                ${(Number(balances.ETH.balance) * balances.ETH.price).toFixed(2)}
+                ${((Number(formatUnits(balances.ETH.value || 0n, 18))) * balances.ETH.price).toFixed(2)}
               </p>
             </CardContent>
           </Card>
@@ -126,9 +129,11 @@ const Investment = () => {
               <Wallet className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{balances.STRK.balance} STRK</div>
+              <div className="text-2xl font-bold">
+                {formatUnits(balances.STRK.value || 0n, 18)} STRK
+              </div>
               <p className="text-xs text-muted-foreground">
-                ${(Number(balances.STRK.balance) * balances.STRK.price).toFixed(2)}
+                ${((Number(formatUnits(balances.STRK.value || 0n, 18))) * balances.STRK.price).toFixed(2)}
               </p>
             </CardContent>
           </Card>
@@ -149,7 +154,7 @@ const Investment = () => {
             <CardContent>
               <div className="text-2xl font-bold">
                 {formatCurrency(
-                  properties.reduce((acc, prop) => acc + Number(prop.price), 0)
+                  properties.reduce((acc, prop) => acc + Number(formatUnits(BigInt(prop.price.toString()), 18)), 0)
                 )}
               </div>
             </CardContent>
@@ -158,7 +163,7 @@ const Investment = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {properties.map((property) => (
-            <Card key={property.id} className="overflow-hidden">
+            <Card key={property.id.toString()} className="overflow-hidden">
               <img
                 src={property.images_id.toString()}
                 alt={property.title.toString()}
@@ -167,7 +172,7 @@ const Investment = () => {
               <CardHeader>
                 <CardTitle>{property.title.toString()}</CardTitle>
                 <p className="text-sm text-gray-500">
-                  {property.location.city}, {property.location.state}
+                  {property.city}, {property.state}
                 </p>
               </CardHeader>
               <CardContent>
@@ -176,45 +181,42 @@ const Investment = () => {
                     <div className="flex justify-between text-sm mb-2">
                       <span>Investment Progress</span>
                       <span>
-                        {formatCurrency(property.currentInvestment)} of{" "}
-                        {formatCurrency(property.totalInvestment)}
+                        {formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.4)} of{" "}
+                        {formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)))}
                       </span>
                     </div>
                     <Progress
-                      value={calculateProgress(
-                        property.currentInvestment,
-                        property.totalInvestment
-                      )}
+                      value={40}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-500">Number of Investors</p>
-                      <p className="font-semibold">{property.investors}</p>
+                      <p className="font-semibold">0</p>
                     </div>
                     <div>
                       <p className="text-gray-500">Minimum Investment</p>
                       <p className="font-semibold">
-                        {formatCurrency(property.minInvestment)}
+                        {formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.1)}
                       </p>
                     </div>
                     <div>
                       <p className="text-gray-500">Expected ROI</p>
-                      <p className="font-semibold">{property.roi}</p>
+                      <p className="font-semibold">{property.annual_growth_rate.toString()}%</p>
                     </div>
                     <div>
                       <p className="text-gray-500">Property Type</p>
-                      <p className="font-semibold">{property.type}</p>
+                      <p className="font-semibold">{property.property_type.toString()}</p>
                     </div>
                   </div>
 
                   <div className="flex gap-2">
                     <Collapsible
                       className="flex-1"
-                      open={expandedCardId === property.id}
+                      open={expandedCardId === property.id.toString()}
                       onOpenChange={(open) =>
-                        setExpandedCardId(open ? property.id : null)
+                        setExpandedCardId(open ? property.id.toString() : null)
                       }
                     >
                       <CollapsibleTrigger asChild>
@@ -229,21 +231,19 @@ const Investment = () => {
                       <CollapsibleContent className="mt-4 space-y-4">
                         <Input
                           type="number"
-                          placeholder={`Min. ${formatCurrency(
-                            property.minInvestment
-                          )}`}
-                          value={investmentAmounts[property.id] || ""}
+                          placeholder={`Min. ${formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.1)}`}
+                          value={investmentAmounts[property.id.toString()] || ""}
                           onChange={(e) =>
-                            handleAmountChange(property.id, e.target.value)
+                            handleAmountChange(property.id.toString(), e.target.value)
                           }
-                          min={property.minInvestment}
+                          min={Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.1}
                           disabled={isStakePending}
                         />
                         <Button
                           className="w-full bg-primary hover:bg-primary/90"
                           onClick={
                             address
-                              ? () => handleInvest(property.id)
+                              ? () => handleInvest(property.id.toString())
                               : handleConnectWallet
                           }
                           disabled={isStakePending}
