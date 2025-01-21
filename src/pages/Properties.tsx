@@ -179,9 +179,6 @@ const Properties = () => {
               ))}
             </div>
           </ScrollArea>
-          <div>
-            <AddPropertyPage />
-          </div>
         </div>
       </div>
     </div>

@@ -7,23 +7,20 @@ import {
   useContract,
   useAccount,
 } from "@starknet-react/core";
-import { starhomesContract, universalErc20Abi, universalEthAddress, universalStrkAddress, usdTTokenAddress } from "@/lib/constants";
-// xport const STAKING_CONTRACT_ADDRESS = "0x06711323c3dae0c666a108be21ded892463c1abe08ed77157ff19fb343de7800";
+import {
+  starhomesContract,
+  universalEthAddress,
+  universalStrkAddress,
+  usdTTokenAddress,
+} from "@/lib/constants";
+import { universalErc20Abi } from "@/data/universalTokenabi";
+
 export const tokenAddresses = {
   USDT: usdTTokenAddress,
   STRK: universalStrkAddress,
   ETH: universalEthAddress,
 } as const;
-// starhomesContract,
-//   usdcTokenAddress,
-//   usdTTokenAddress,
-//   devnetEthClassHash,
-//   devnetStrkClassHash,
-//   universalEthAddress,
-//   sepoliaMainnetEthClassHash,
-//   universalStrkAddress,
-//   sepoliaMainnetStrkClassHash,
-//   universalErc20Abi,
+
 export type TokenSymbol = keyof typeof tokenAddresses;
 
 export function useTokenApprove(amount: bigint) {
@@ -32,7 +29,6 @@ export function useTokenApprove(amount: bigint) {
   // Approve tokens
   const { contract } = useContract({
     abi: universalErc20Abi,
-    
     address: tokenAddresses.STRK,
   });
   const { send: approveToken, error: approveError } = useSendTransaction({
@@ -50,6 +46,56 @@ export function useTokenApprove(amount: bigint) {
     approveError,
   };
 }
+
+export function useReadTokenAllowance(amount: bigint) {
+  const { address } = useAccount();
+
+  // Approve tokens
+  const { contract } = useContract({
+    abi: universalErc20Abi,
+    address: tokenAddresses.STRK,
+  });
+  const { send: readTokenAllowance, error: readTokenAllowanceError } =
+    useSendTransaction({
+      calls:
+        contract && address
+          ? [contract.populate("allowance", [starhomesContract, address])]
+          : undefined, // Default to 0, will be overridden
+    });
+
+  return {
+    readTokenAllowance,
+    readTokenAllowanceError,
+  };
+}
+
+export function useIncreaseTokenAllowance(amount: bigint) {
+  const { address } = useAccount();
+
+  // Approve tokens
+  const { contract } = useContract({
+    abi: universalErc20Abi,
+    address: tokenAddresses.STRK,
+  });
+  const { send: increaseTokenAllowance, error: increaseTokenAllowanceError } =
+    useSendTransaction({
+      calls:
+        contract && address
+          ? [
+              contract.populate("increase_allowance", [
+                starhomesContract,
+                amount,
+              ]),
+            ]
+          : undefined, // Default to 0, will be overridden
+    });
+
+  return {
+    increaseTokenAllowance,
+    increaseTokenAllowanceError,
+  };
+}
+
 export function useTokenBalances() {
   const { address } = useAccount();
 
@@ -73,13 +119,12 @@ export function useTokenBalances() {
     watch: true,
     enabled: !!address,
   });
- 
+
   console.log("USDT Balance:", usdtBalance?.formatted);
   console.log("STRK Balance:", strkBalance?.formatted);
   console.log("ETH Balance:", ethBalance?.formatted);
 
   return {
-   
     balances: {
       USDT: usdtBalance,
       STRK: strkBalance,
@@ -89,4 +134,3 @@ export function useTokenBalances() {
     isLoading: isLoadingUsdt || isLoadingStrk || isLoadingEth,
   };
 }
-
