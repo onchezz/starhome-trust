@@ -1,5 +1,6 @@
-import { ByteArray, ContractAddress } from "starknet";
+import { ByteArray } from "starknet";
 
+// Using string for ContractAddress since we'll convert it when sending to contract
 export interface Property {
   id: string;
   title: string;
@@ -11,7 +12,7 @@ export interface Property {
   latitude: string;
   longitude: string;
   price: bigint;
-  owner: ContractAddress;
+  owner: string; // ContractAddress as string
   asking_price: bigint;
   currency: string;
   area: number;
@@ -25,12 +26,12 @@ export interface Property {
   features_id: string;
   images_id: string;
   video_tour: string;
-  agent_id: ContractAddress;
+  agent_id: string; // ContractAddress as string
   date_listed: number;
   has_garden: boolean;
   has_swimming_pool: boolean;
   pet_friendly: boolean;
   wheelchair_accessible: boolean;
-  asset_token: ContractAddress;
+  asset_token: string; // ContractAddress as string
   is_investment: boolean;
 }

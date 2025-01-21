@@ -15,7 +15,7 @@ const CreateProperty = () => {
   const { address } = useAccount();
   const { handleListProperty, isPending } = usePropertyWrite();
   const [formData, setFormData] = useState<Partial<Property>>({
-    owner: address,
+    owner: address?.toString(),
     is_investment: false,
   });
 
@@ -34,6 +34,13 @@ const CreateProperty = () => {
   };
 
   const handleInputChange = (field: keyof Property, value: any) => {
+    // Convert numeric inputs to the correct type
+    if (["price", "asking_price", "interested_clients", "annual_growth_rate"].includes(field)) {
+      value = BigInt(value);
+    } else if (["area", "bedrooms", "bathrooms", "parking_spaces", "date_listed"].includes(field)) {
+      value = Number(value);
+    }
+    
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -61,19 +68,18 @@ const CreateProperty = () => {
                   <Input
                     type="number"
                     required
-                    value={formData.price || ""}
-                    onChange={(e) => handleInputChange("price", BigInt(e.target.value))}
+                    value={typeof formData.price === 'bigint' ? formData.price.toString() : ''}
+                    onChange={(e) => handleInputChange("price", e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Description</Label>
                   <Textarea
                     required
-                    value={formData.description || ""}
+                    value={formData.description?.toString() || ""}
                     onChange={(e) => handleInputChange("description", e.target.value)}
                   />
                 </div>
-                {/* Add more form fields for other property attributes */}
                 <div className="flex items-center space-x-2">
                   <Switch
                     checked={formData.is_investment}
