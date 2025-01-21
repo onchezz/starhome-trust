@@ -5,7 +5,7 @@ import { shortString } from 'starknet';
 
 export const usePropertyWrite = () => {
   const { sendAsync: listPropertyAsync, isPending } = useStarHomeWriteContract({
-    functionName: "list_property",
+    functionName: "list_property_for_sale",
   });
 
   const handleListProperty = async (property: Property) => {

@@ -5,14 +5,17 @@ import type { Abi } from "starknet";
 
 const CONTRACT_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
-// Extract function names from ABI
-type ContractFunction = typeof ABI[number] extends { name: infer Name } ? Name : never;
+// Extract function names from the interface section of the ABI
+type ContractFunction = Extract<
+  typeof ABI[number],
+  { type: "function" }
+>["name"];
 
 export const useStarHomeReadContract = ({ 
   functionName, 
   args = [] 
 }: { 
-  functionName: ContractFunction, 
+  functionName: ContractFunction;
   args?: any[] 
 }) => {
   const { contract } = useContract({

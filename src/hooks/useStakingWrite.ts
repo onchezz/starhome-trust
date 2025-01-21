@@ -3,15 +3,15 @@ import { toast } from "sonner";
 
 export const useStakingWrite = () => {
   const { sendAsync: stakeAsync, isPending: isStakePending } = useStarHomeWriteContract({
-    functionName: "stake",
+    functionName: "invest_in_property",
   });
 
   const { sendAsync: withdrawAsync, isPending: isWithdrawPending } = useStarHomeWriteContract({
-    functionName: "withdraw",
+    functionName: "invest_in_property",
   });
 
   const { sendAsync: claimRewardsAsync, isPending: isClaimPending } = useStarHomeWriteContract({
-    functionName: "claim_rewards",
+    functionName: "invest_in_property",
   });
 
   const stake = async (amount: bigint) => {
