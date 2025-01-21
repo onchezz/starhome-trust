@@ -1,7 +1,8 @@
 import * as chains from "@starknet-react/chains";
 
 import { useEffect, useState } from "react";
-import scaffoldConfig from "starhomes.config";
+import starhomesConfig from "starhomes.config";
+
 import { StarkProfile } from "starknet";
 
 type network = "mainnet" | "sepolia" | "devnet";
@@ -9,14 +10,14 @@ type network = "mainnet" | "sepolia" | "devnet";
 const shouldUseProfile = () => {
   const set = new Set(["mainnet", "sepolia"]);
   return (
-    set.has(scaffoldConfig.targetNetworks[0].network) &&
-    (scaffoldConfig.targetNetworks[0].network as network) !==
+    set.has(starhomesConfig.targetNetworks[0].network) &&
+    (starhomesConfig.targetNetworks[0].network as network) !==
       chains.devnet.network
   );
 };
 
 const starknetIdApiBaseUrl =
-  (scaffoldConfig.targetNetworks[0].network as network) ===
+  (starhomesConfig.targetNetworks[0].network as network) ===
   chains.mainnet.network
     ? "https://api.starknet.id"
     : "https://sepolia.api.starknet.id";
@@ -68,9 +69,7 @@ export const fetchProfileFromApi = async (address: string) => {
 };
 
 // this hook is a workaround, basically a re-implement of the starknet react hook with conditional rendering.
-export const useScaffoldStarkProfile = (
-  address: chains.Address | undefined
-) => {
+export const useStarkNetworkProfile = (address: chains.Address | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState<StarkProfile | undefined>();
   const isEnabled = shouldUseProfile();

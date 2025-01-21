@@ -2,7 +2,8 @@ import { useGlobalState } from "@/services/store/store";
 import { ChainWithAttributes } from "@/utils/starhomes";
 import { useAccount } from "@starknet-react/core";
 import { useEffect } from "react";
-import scaffoldConfig from "starhomes.config";
+import starhomesConfig from "starhomes.config";
+
 
 
 /**
@@ -16,7 +17,7 @@ export function useTargetNetwork(): { targetNetwork: ChainWithAttributes } {
   );
 
   useEffect(() => {
-    const newSelectedNetwork = scaffoldConfig.targetNetworks.find(
+    const newSelectedNetwork = starhomesConfig.targetNetworks.find(
       (targetNetwork) => targetNetwork.id === chainId,
     );
     if (newSelectedNetwork && newSelectedNetwork.id !== targetNetwork.id) {

@@ -17,8 +17,8 @@ import { Console } from "console";
 
 
 
-export const useStarHomesWriteContract = <
-Starhomes_abi extends Abi,
+export const useStarHomesTokensContract = <
+  TAbi extends Abi,
   TContractName extends ContractName,
   TFunctionName extends ExtractAbiFunctionNamesScaffold<
     ContractAbi<TContractName>,
@@ -28,7 +28,7 @@ Starhomes_abi extends Abi,
   contractName,
   functionName,
   args,
-}: UseScaffoldWriteConfig<Starhomes_abi, TContractName, TFunctionName>) => {
+}: UseScaffoldWriteConfig<TAbi, TContractName, TFunctionName>) => {
   const { data: deployedContractData } = useDeployedContractInfo(contractName);
   const { chain } = useNetwork();
   const sendTxnWrapper = useTransactor();
@@ -39,7 +39,7 @@ Starhomes_abi extends Abi,
 
   const sendContractWriteTx = useCallback(
     async (params?: {
-      args?: UseScaffoldWriteConfig<Starhomes_abi, TContractName, TFunctionName>["args"];
+      args?: UseScaffoldWriteConfig<TAbi, TContractName, TFunctionName>["args"];
     }) => {
       // if no args supplied, use the one supplied from hook
       let newArgs = params?.args;

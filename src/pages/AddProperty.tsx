@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStarhomesWrite } from "@/hooks/staker/useStarhomesWrite";
+import { useStarHomesWriteContract } from "../hooks/contract_hooks/useStarHomesWriteContract";
 import { PropertyBasicInfo } from "@/components/property/PropertyBasicInfo";
 import { PropertyLocation } from "@/components/property/PropertyLocation";
 import { PropertyAmenities } from "@/components/property/PropertyAmenities";
@@ -37,7 +37,7 @@ const propertyFormSchema = z.object({
 export default function AddProperty() {
   const navigate = useNavigate();
   const { address } = useAccount();
-  const { listPropertyForSale } = useStarhomesWrite();
+  const { listPropertyForSale } = useStarHomesWriteContract();
 
   const form = useForm<z.infer<typeof propertyFormSchema>>({
     resolver: zodResolver(propertyFormSchema),

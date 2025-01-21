@@ -1,4 +1,4 @@
-const abi =[
+const Starhomes_abi =[
   {
     "type": "impl",
     "name": "StarhomesContractImpl",
@@ -876,4 +876,4 @@ const abi =[
   }
 ] as const;
 
-export default abi;
+export default Starhomes_abi;

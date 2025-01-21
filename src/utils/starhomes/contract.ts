@@ -2,10 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-wrapper-object-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import scaffoldConfig from "~~/scaffold.config";
-// import deployedContractsData from "~~/contracts/deployedContracts";
-// import predeployedContracts from "~~/contracts/predeployedContracts";
-// import configExternalContracts from "~~/contracts/configExternalContracts";
+
 import type {
   Abi,
   ExtractAbiEventNames,
