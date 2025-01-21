@@ -1,7 +1,7 @@
 import { Chain } from "@starknet-react/chains";
 import { supportedChains as chains } from "./supportedChains";
 
-export type ScaffoldConfig = {
+export type starhomesConfig = {
   targetNetworks: readonly Chain[];
   pollingInterval: number;
   onlyLocalBurnerWallet: boolean;
@@ -10,7 +10,7 @@ export type ScaffoldConfig = {
   autoConnectTTL: number;
 };
 
-const scaffoldConfig = {
+const starhomesConfig = {
   targetNetworks: [chains.sepolia],
   // Only show the Burner Wallet when running on devnet
   onlyLocalBurnerWallet: false,
@@ -25,6 +25,6 @@ const scaffoldConfig = {
    */
   autoConnectTTL: 60000,
   walletAutoConnect: true,
-} as const satisfies ScaffoldConfig;
+} as const satisfies starhomesConfig;
 
-export default scaffoldConfig;
+export default starhomesConfig;

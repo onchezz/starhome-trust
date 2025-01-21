@@ -1,5 +1,5 @@
 import { ChainWithAttributes } from "@/utils/starhomes";
-import scaffoldConfig from "scaffold.config";
+import scaffoldConfig from "starhomes.config";
 import { create } from "zustand";
 
 

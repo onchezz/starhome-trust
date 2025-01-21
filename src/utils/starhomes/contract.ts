@@ -46,7 +46,7 @@ import {
   isCairoU256,
   parseGenericType,
 } from "./types";
-import scaffoldConfig from "scaffold.config";
+import starhomesConfig from "starhomes.config";
 import predeployedContracts from "../contracts/predeployedContracts";
 import configExternalContracts from "../contracts/configExternalContracts";
 import { feltToHex } from "./common";
@@ -58,7 +58,7 @@ type AddExternalFlag<T> = {
 };
 
 type ConfiguredChainId =
-  (typeof scaffoldConfig)["targetNetworks"][0]["network"];
+  (typeof starhomesConfig)["targetNetworks"][0]["network"];
 export type InheritedFunctions = { readonly [key: string]: string };
 
 type Contracts = ContractsDeclaration[ConfiguredChainId];
@@ -650,7 +650,7 @@ const encodeParamsWithType = (
         );
 
         const isDevnet =
-          scaffoldConfig.targetNetworks[0].network.toString() === "devnet";
+          starhomesConfig.targetNetworks[0].network.toString() === "devnet";
 
         if (isReadArgsParsing) return new CairoCustomEnum(parsedVariant);
 

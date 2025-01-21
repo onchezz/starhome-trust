@@ -17,7 +17,7 @@ import { ContractAbi, ContractName,UseScaffoldEventHistoryConfig } from "@/utils
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
 import { composeEventFilterKeys } from "@/utils/starhomes/eventKeyFilter";
 import { parseEventData } from "@/utils/starhomes/eventsData";
-import scaffoldConfig from "scaffold.config";
+import scaffoldConfig from "starhomes.config";
 import { replacer } from "@/utils/starhomes/common";
 
 

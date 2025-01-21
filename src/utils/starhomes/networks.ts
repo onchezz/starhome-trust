@@ -1,6 +1,6 @@
 // import scaffoldConfig from "~~/scaffold.config";
 import { devnet, sepolia, mainnet, Chain } from "@starknet-react/chains";
-import scaffoldConfig from "scaffold.config";
+import starhomesConfig from "starhomes.config";
 export const chains = {
   devnet,
   sepolia,
@@ -100,7 +100,7 @@ export function getBlockExplorerLink(network: Chain) {
 }
 
 export function getTargetNetworks(): ChainWithAttributes[] {
-  return scaffoldConfig.targetNetworks.map((targetNetwork) => ({
+  return starhomesConfig.targetNetworks.map((targetNetwork) => ({
     ...targetNetwork,
   }));
 }

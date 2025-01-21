@@ -1,10 +1,11 @@
-import scaffoldConfig from "~~/scaffold.config";
+
 import {
   jsonRpcProvider,
   publicProvider,
   starknetChainId,
 } from "@starknet-react/core";
 import * as chains from "@starknet-react/chains";
+import scaffoldConfig from "starhomes.config";
 
 const containsDevnet = (networks: readonly chains.Chain[]) => {
   return (

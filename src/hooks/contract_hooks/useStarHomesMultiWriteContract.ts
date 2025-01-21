@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTargetNetwork } from "./useTargetNetwork";
 import {
   Contract,
@@ -7,15 +8,16 @@ import {
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldArgsParam,
   UseScaffoldWriteConfig,
-} from "~~/utils/scaffold-stark/contract";
+} from "@/utils/starhomes/contract";
 import { useSendTransaction, useNetwork, Abi } from "@starknet-react/core";
 import {
   Contract as StarknetJsContract,
   InvocationsDetails,
   Call,
 } from "starknet";
-import { notification } from "~~/utils/scaffold-stark";
+
 import { useTransactor } from "./useTransactor";
+import { notification } from "@/utils/starhomes";
 
 function isRawCall(value: Call | any): value is Call {
   return "entrypoint" in value;
@@ -92,6 +94,7 @@ export const useScaffoldMultiWriteContract = <
           sendTransactionInstance.sendAsync(parsedCalls),
         );
       } catch (e: any) {
+        console.log(e)
         throw e;
       } finally {
         // setIsMining(false);

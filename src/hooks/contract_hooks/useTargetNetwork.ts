@@ -2,7 +2,7 @@ import { useGlobalState } from "@/services/store/store";
 import { ChainWithAttributes } from "@/utils/starhomes";
 import { useAccount } from "@starknet-react/core";
 import { useEffect } from "react";
-import scaffoldConfig from "scaffold.config";
+import scaffoldConfig from "starhomes.config";
 
 
 /**

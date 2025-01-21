@@ -4,7 +4,7 @@ import { useConnect } from "@starknet-react/core";
 
 import { BurnerConnector, burnerAccounts } from "@scaffold-stark/stark-burner";
 import { LAST_CONNECTED_TIME_LOCALSTORAGE_KEY } from "@/utils/Constants";
-import scaffoldConfig from "scaffold.config";
+import scaffoldConfig from "starhomes.config";
 // import { LAST_CONNECTED_TIME_LOCALSTORAGE_KEY } from "~~/utils/Constants";
 
 /**

@@ -1,4 +1,6 @@
-import scaffoldConfig from "~~/scaffold.config";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import scaffoldConfig from "starhomes.config";
 
 export const fetchPriceFromCoingecko = async (
   symbol: string,

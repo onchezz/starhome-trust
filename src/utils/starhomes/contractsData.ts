@@ -1,4 +1,4 @@
-import scaffoldConfig from "../../../scaffold.config";
+import scaffoldConfig from "../../../starhomes.config";
 import { contracts } from "./contract";
 
 
