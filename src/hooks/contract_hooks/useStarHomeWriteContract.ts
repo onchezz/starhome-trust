@@ -16,7 +16,8 @@ export const useStarHomeWriteContract = ({ functionName }: { functionName: Contr
     address: CONTRACT_ADDRESS,
   });
 
-  const { execute: send, isPending } = useSendTransaction();
+  // Updated to use the correct properties from useSendTransaction
+  const { sendTransaction, isPending } = useSendTransaction();
 
   const sendAsync = async ({ args }: { args: any[] }) => {
     if (!contract) {
@@ -25,7 +26,7 @@ export const useStarHomeWriteContract = ({ functionName }: { functionName: Contr
 
     console.log(`Calling ${functionName} with args:`, args);
     const call = contract.populate(functionName, args);
-    const result = await send({ calls: [call] });
+    const result = await sendTransaction({ calls: [call] });
     console.log(`${functionName} result:`, result);
     return result;
   };
