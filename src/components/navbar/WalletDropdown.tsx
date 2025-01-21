@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Wallet, Check } from "lucide-react";
+import { Wallet, Check, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,6 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import WalletActions from "../WalletActions";
+import { useTokenBalances } from "@/hooks/useTokenBalances";
+import { Link } from "react-router-dom";
 
 interface WalletDropdownProps {
   address: string | undefined;
@@ -23,6 +25,8 @@ const WalletDropdown = ({
   handleDisconnect,
   className,
 }: WalletDropdownProps) => {
+  const { balances, isLoading } = useTokenBalances();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,7 +48,7 @@ const WalletDropdown = ({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="w-56">
         <DropdownMenuItem onClick={handleGoogleSignIn}>
           {address ? "Add Google Account" : "Sign in with Google"}
         </DropdownMenuItem>
@@ -58,9 +62,33 @@ const WalletDropdown = ({
             <div className="p-2 text-sm text-gray-500">
               {address.slice(0, 6)}...{address.slice(-4)}
             </div>
+            {isLoading ? (
+              <div className="p-2 text-sm text-gray-500">Loading balances...</div>
+            ) : (
+              <div className="p-2 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>ETH</span>
+                  <span>{balances.ETH?.formatted || "0"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>USDT</span>
+                  <span>{balances.USDT?.formatted || "0"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>STRK</span>
+                  <span>{balances.STRK?.formatted || "0"}</span>
+                </div>
+              </div>
+            )}
             <div className="p-2">
               <WalletActions />
             </div>
+            <Link to="/create-property">
+              <DropdownMenuItem>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Property
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem onClick={handleDisconnect}>
               Disconnect
             </DropdownMenuItem>
