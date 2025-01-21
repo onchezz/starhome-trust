@@ -1,13 +1,22 @@
 import { useContract } from "@starknet-react/core";
 import { ABI } from "@/data/starhomes_abi";
 import { useQuery } from "@tanstack/react-query";
-import { Contract } from "starknet";
+import type { Abi } from "starknet";
 
 const CONTRACT_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
-export const useStarHomeReadContract = ({ functionName, args = [] }: { functionName: string, args?: any[] }) => {
+// Extract function names from ABI
+type ContractFunction = typeof ABI[number] extends { name: infer Name } ? Name : never;
+
+export const useStarHomeReadContract = ({ 
+  functionName, 
+  args = [] 
+}: { 
+  functionName: ContractFunction, 
+  args?: any[] 
+}) => {
   const { contract } = useContract({
-    abi: ABI,
+    abi: ABI as Abi,
     address: CONTRACT_ADDRESS,
   });
 
