@@ -1,17 +1,17 @@
 import { useScaffoldWriteContract } from '../contract_hooks/useStarHomesWriteContract';
 import { toast } from 'sonner';
+import { BigNumberish } from 'starknet';
 
 export const useStakingWrite = () => {
-  const { writeAsync: stake, isPending: isStakePending } = useScaffoldWriteContract({
+  const { writeAsync: investAsync, isPending: isStakePending } = useScaffoldWriteContract({
     contractName: "StarhomesContract",
     functionName: "invest_in_property",
-    args: ["0", "0"], // Default args, will be replaced when calling
   });
 
-  const handleStake = async (propertyId: string, amount: bigint) => {
+  const handleStake = async (propertyId: string, amount: BigNumberish) => {
     try {
       console.log("Staking:", { propertyId, amount });
-      await stake({ args: [propertyId, amount] });
+      await investAsync({ args: [propertyId, amount] });
       toast.success("Investment successful!");
     } catch (error) {
       console.error("Staking error:", error);
@@ -20,14 +20,14 @@ export const useStakingWrite = () => {
     }
   };
 
-  const withdraw = async (propertyId: string, amount: bigint) => {
-    // TODO: Implement withdraw functionality
+  const withdraw = async (propertyId: string, amount: BigNumberish) => {
     console.log("Withdraw:", { propertyId, amount });
+    // TODO: Implement withdraw functionality
   };
 
   const claimRewards = async (propertyId: string) => {
-    // TODO: Implement claim rewards functionality
     console.log("Claim rewards:", { propertyId });
+    // TODO: Implement claim rewards functionality
   };
 
   return {

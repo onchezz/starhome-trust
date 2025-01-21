@@ -12,6 +12,11 @@ export default function Properties() {
 
   console.log("Rendered properties:", properties);
 
+  const formatBigNumber = (value: any) => {
+    if (!value) return "0";
+    return value.toString();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -38,37 +43,35 @@ export default function Properties() {
                   <Card key={index} className="overflow-hidden">
                     <CardHeader>
                       <CardTitle>
-                        {property.title ||
-                          `Property ${property.id || index + 1}`}
+                        {formatBigNumber(property.title) || `Property ${formatBigNumber(property.id) || index + 1}`}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
                         <p className="text-sm text-gray-500">
-                          {property.description || "No description available"}
+                          {formatBigNumber(property.description) || "No description available"}
                         </p>
                         <div className="flex justify-between items-center">
                           <span className="font-medium">Price:</span>
-                          <span>{property.price || 0} ETH</span>
+                          <span>{formatBigNumber(property.price)} ETH</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="font-medium">Location:</span>
                           <span>
-                            {property.location?.city || "N/A"},{" "}
-                            {property.location?.state || "N/A"}
+                            {formatBigNumber(property.city)}, {formatBigNumber(property.state)}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="font-medium">Bedrooms:</span>
-                          <span>{property.bedrooms || 0}</span>
+                          <span>{formatBigNumber(property.bedrooms)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="font-medium">Bathrooms:</span>
-                          <span>{property.bathrooms || 0}</span>
+                          <span>{formatBigNumber(property.bathrooms)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="font-medium">Area:</span>
-                          <span>{property.area || 0} sq ft</span>
+                          <span>{formatBigNumber(property.area)} sq ft</span>
                         </div>
                       </div>
                     </CardContent>
