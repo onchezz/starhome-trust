@@ -18,55 +18,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useConnect, useAccount } from "@starknet-react/core";
+import { useConnect } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useStakingContract } from "@/hooks/staker/useStakingContract";
-
-const investmentProperties = [
-  {
-    id: 1,
-    title: "Downtown Commercial Complex",
-    location: "Los Angeles, CA",
-    totalInvestment: 5000000,
-    currentInvestment: 3750000,
-    investors: 45,
-    minInvestment: 25000,
-    roi: "12%",
-    type: "Commercial",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    description:
-      "Prime commercial property in downtown LA featuring retail spaces and office units. High-traffic location with excellent growth potential.",
-  },
-  {
-    id: 2,
-    title: "Luxury Apartment Building",
-    location: "Miami, FL",
-    totalInvestment: 8000000,
-    currentInvestment: 6000000,
-    investors: 78,
-    minInvestment: 50000,
-    roi: "15%",
-    type: "Residential",
-    image: "https://images.unsplash.com/photo-1481253127861-534498168948",
-    description:
-      "Luxury residential complex with premium amenities, located in Miami's most sought-after neighborhood.",
-  },
-  {
-    id: 3,
-    title: "Tech Park Development",
-    location: "Austin, TX",
-    totalInvestment: 12000000,
-    currentInvestment: 9600000,
-    investors: 120,
-    minInvestment: 100000,
-    roi: "18%",
-    type: "Mixed-Use",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-    description:
-      "Modern tech park featuring office spaces, research facilities, and innovative workspace solutions.",
-  },
-];
+import { useInvestmentData } from "@/hooks/useInvestmentData";
 
 const Investment = () => {
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
@@ -74,10 +30,10 @@ const Investment = () => {
     [key: number]: string;
   }>({});
 
-  const { address } = useAccount();
   const { connect } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal();
   const { handleStake, isStakePending } = useStakingContract();
+  const { properties, balances, isLoading, address } = useInvestmentData();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -136,6 +92,17 @@ const Investment = () => {
     }));
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="container mx-auto py-24">
+          <div className="text-center">Loading investment properties...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -143,61 +110,65 @@ const Investment = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Properties
-              </CardTitle>
-              <Building className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {investmentProperties.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Investors
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">243</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average ROI</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">15%</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Investment
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">ETH Balance</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$25M</div>
+              <div className="text-2xl font-bold">{balances.ETH.balance} ETH</div>
+              <p className="text-xs text-muted-foreground">
+                ${(Number(balances.ETH.balance) * balances.ETH.price).toFixed(2)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">STRK Balance</CardTitle>
+              <Wallet className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{balances.STRK.balance} STRK</div>
+              <p className="text-xs text-muted-foreground">
+                ${(Number(balances.STRK.balance) * balances.STRK.price).toFixed(2)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Properties</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{properties.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatCurrency(
+                  properties.reduce((acc, prop) => acc + Number(prop.price), 0)
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {investmentProperties.map((property) => (
+          {properties.map((property) => (
             <Card key={property.id} className="overflow-hidden">
               <img
-                src={property.image}
-                alt={property.title}
+                src={property.images_id.toString()}
+                alt={property.title.toString()}
                 className="w-full h-48 object-cover"
               />
               <CardHeader>
-                <CardTitle>{property.title}</CardTitle>
-                <p className="text-sm text-gray-500">{property.location}</p>
+                <CardTitle>{property.title.toString()}</CardTitle>
+                <p className="text-sm text-gray-500">
+                  {property.location.city}, {property.location.state}
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
