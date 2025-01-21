@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
-import { useTokenBalances } from "@/hooks/staker/useTokenBalances";
+import { useTokenBalances } from "@/hooks/useTokenBalances";
 
 const WalletActions = () => {
   const { address } = useAccount();
@@ -47,7 +47,9 @@ const WalletActions = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Wallet Balances</DialogTitle>
-            <DialogDescription>Your current token balances</DialogDescription>
+            <DialogDescription>
+              Your current token balances
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {isLoading ? (
@@ -120,9 +122,7 @@ const WalletActions = () => {
           <div className="flex justify-center p-4">
             <QRCodeSVG value={address} size={200} />
           </div>
-          <p className="text-center text-sm text-gray-500 break-all">
-            {address}
-          </p>
+          <p className="text-center text-sm text-gray-500 break-all">{address}</p>
         </DialogContent>
       </Dialog>
 

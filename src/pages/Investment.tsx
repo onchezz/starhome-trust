@@ -18,31 +18,72 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useConnect } from "@starknet-react/core";
+import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
-import { useStakingContract } from "@/hooks/staker/useStakingContract";
-import { useInvestmentData } from "@/hooks/useInvestmentData";
-import { formatUnits } from "ethers";
+// import { useStakingContract } from "@/hooks/useStakingContract";
+
+const investmentProperties = [
+  {
+    id: 1,
+    title: "Downtown Commercial Complex",
+    location: "Los Angeles, CA",
+    totalInvestment: 5000000,
+    currentInvestment: 3750000,
+    investors: 45,
+    minInvestment: 25000,
+    roi: "12%",
+    type: "Commercial",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+    description:
+      "Prime commercial property in downtown LA featuring retail spaces and office units. High-traffic location with excellent growth potential.",
+  },
+  {
+    id: 2,
+    title: "Luxury Apartment Building",
+    location: "Miami, FL",
+    totalInvestment: 8000000,
+    currentInvestment: 6000000,
+    investors: 78,
+    minInvestment: 50000,
+    roi: "15%",
+    type: "Residential",
+    image: "https://images.unsplash.com/photo-1481253127861-534498168948",
+    description:
+      "Luxury residential complex with premium amenities, located in Miami's most sought-after neighborhood.",
+  },
+  {
+    id: 3,
+    title: "Tech Park Development",
+    location: "Austin, TX",
+    totalInvestment: 12000000,
+    currentInvestment: 9600000,
+    investors: 120,
+    minInvestment: 100000,
+    roi: "18%",
+    type: "Mixed-Use",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+    description:
+      "Modern tech park featuring office spaces, research facilities, and innovative workspace solutions.",
+  },
+];
 
 const Investment = () => {
-  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+  const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
-    [key: string]: string;
+    [key: number]: string;
   }>({});
 
+  const { address } = useAccount();
   const { connect } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal();
-  const { handleStake, isStakePending } = useStakingContract();
-  const { properties, balances, isLoading, address } = useInvestmentData();
 
-  const formatCurrency = (amount: string | number) => {
-    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       maximumFractionDigits: 0,
-    }).format(numAmount);
+    }).format(amount);
   };
 
   const calculateProgress = (current: number, total: number) => {
@@ -66,7 +107,7 @@ const Investment = () => {
     }
   };
 
-  const handleInvest = async (propertyId: string) => {
+  const handleInvest = async (propertyId: number) => {
     try {
       const amount = investmentAmounts[propertyId];
       console.log(`Investing ${amount} in property ${propertyId}`);
@@ -76,8 +117,10 @@ const Investment = () => {
         return;
       }
 
-      const amountBigInt = BigInt(Math.floor(Number(amount) * 10 ** 18));
-      await handleStake(propertyId, amountBigInt);
+      // Convert amount to BigInt for contract interaction
+      const amountBigInt = BigInt(Number(amount) * 10 ** 18);
+      // Assuming 18 decimals
+      // await handleStake(amountBigInt);
 
       toast.success("Investment transaction initiated");
     } catch (error) {
@@ -86,23 +129,12 @@ const Investment = () => {
     }
   };
 
-  const handleAmountChange = (propertyId: string, value: string) => {
+  const handleAmountChange = (propertyId: number, value: string) => {
     setInvestmentAmounts((prev) => ({
       ...prev,
       [propertyId]: value,
     }));
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="container mx-auto py-24">
-          <div className="text-center">Loading investment properties...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -111,69 +143,61 @@ const Investment = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">ETH Balance</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatUnits(balances.ETH.value || 0n, 18)} ETH
-              </div>
-              <p className="text-xs text-muted-foreground">
-                ${((Number(formatUnits(balances.ETH.value || 0n, 18))) * balances.ETH.price).toFixed(2)}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">STRK Balance</CardTitle>
-              <Wallet className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatUnits(balances.STRK.value || 0n, 18)} STRK
-              </div>
-              <p className="text-xs text-muted-foreground">
-                ${((Number(formatUnits(balances.STRK.value || 0n, 18))) * balances.STRK.price).toFixed(2)}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Properties</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Properties
+              </CardTitle>
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{properties.length}</div>
+              <div className="text-2xl font-bold">
+                {investmentProperties.length}
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Investors
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">243</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Average ROI</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(
-                  properties.reduce((acc, prop) => acc + Number(formatUnits(BigInt(prop.price.toString()), 18)), 0)
-                )}
-              </div>
+              <div className="text-2xl font-bold">15%</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Investment
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">$25M</div>
             </CardContent>
           </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {properties.map((property) => (
-            <Card key={property.id.toString()} className="overflow-hidden">
+          {investmentProperties.map((property) => (
+            <Card key={property.id} className="overflow-hidden">
               <img
-                src={property.images_id.toString()}
-                alt={property.title.toString()}
+                src={property.image}
+                alt={property.title}
                 className="w-full h-48 object-cover"
               />
               <CardHeader>
-                <CardTitle>{property.title.toString()}</CardTitle>
-                <p className="text-sm text-gray-500">
-                  {property.city}, {property.state}
-                </p>
+                <CardTitle>{property.title}</CardTitle>
+                <p className="text-sm text-gray-500">{property.location}</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -181,81 +205,78 @@ const Investment = () => {
                     <div className="flex justify-between text-sm mb-2">
                       <span>Investment Progress</span>
                       <span>
-                        {formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.4)} of{" "}
-                        {formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)))}
+                        {formatCurrency(property.currentInvestment)} of{" "}
+                        {formatCurrency(property.totalInvestment)}
                       </span>
                     </div>
                     <Progress
-                      value={40}
+                      value={calculateProgress(
+                        property.currentInvestment,
+                        property.totalInvestment
+                      )}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-500">Number of Investors</p>
-                      <p className="font-semibold">0</p>
+                      <p className="font-semibold">{property.investors}</p>
                     </div>
                     <div>
                       <p className="text-gray-500">Minimum Investment</p>
                       <p className="font-semibold">
-                        {formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.1)}
+                        {formatCurrency(property.minInvestment)}
                       </p>
                     </div>
                     <div>
                       <p className="text-gray-500">Expected ROI</p>
-                      <p className="font-semibold">{property.annual_growth_rate.toString()}%</p>
+                      <p className="font-semibold">{property.roi}</p>
                     </div>
                     <div>
                       <p className="text-gray-500">Property Type</p>
-                      <p className="font-semibold">{property.property_type.toString()}</p>
+                      <p className="font-semibold">{property.type}</p>
                     </div>
                   </div>
 
                   <div className="flex gap-2">
                     <Collapsible
                       className="flex-1"
-                      open={expandedCardId === property.id.toString()}
+                      open={expandedCardId === property.id}
                       onOpenChange={(open) =>
-                        setExpandedCardId(open ? property.id.toString() : null)
+                        setExpandedCardId(open ? property.id : null)
                       }
                     >
                       <CollapsibleTrigger asChild>
-                        <Button className="w-full" disabled={isStakePending}>
-                          {isStakePending
-                            ? "Processing..."
-                            : address
-                            ? "Invest Now"
-                            : "Connect Wallet"}
+                        <Button className="w-full">
+                          {address ? "Invest Now" : "invest in this property"}
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="mt-4 space-y-4">
                         <Input
                           type="number"
-                          placeholder={`Min. ${formatCurrency(Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.1)}`}
-                          value={investmentAmounts[property.id.toString()] || ""}
+                          placeholder={`Min. ${formatCurrency(
+                            property.minInvestment
+                          )}`}
+                          value={investmentAmounts[property.id] || ""}
                           onChange={(e) =>
-                            handleAmountChange(property.id.toString(), e.target.value)
+                            handleAmountChange(property.id, e.target.value)
                           }
-                          min={Number(formatUnits(BigInt(property.price.toString()), 18)) * 0.1}
-                          disabled={isStakePending}
+                          min={property.minInvestment}
                         />
                         <Button
                           className="w-full bg-primary hover:bg-primary/90"
                           onClick={
                             address
-                              ? () => handleInvest(property.id.toString())
+                              ? () => handleInvest(property.id)
                               : handleConnectWallet
                           }
-                          disabled={isStakePending}
                         >
-                          {isStakePending ? (
-                            <>Processing...</>
-                          ) : (
+                          {
                             <>
                               <Wallet className="mr-2 h-4 w-4" />
                               {address ? "Invest" : "Connect Wallet"}
                             </>
-                          )}
+                          }
                         </Button>
                       </CollapsibleContent>
                     </Collapsible>
