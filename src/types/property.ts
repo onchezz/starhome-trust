@@ -28,7 +28,10 @@ export interface Property {
   isInvestment: boolean;
   title: BigNumberish;
   description: BigNumberish;
-  location: Location;
+  location_address: BigNumberish;
+  city: BigNumberish;
+  state: BigNumberish;
+  country: BigNumberish;
   price: BigNumberish;
   owner: string;
   asking_price: BigNumberish;
@@ -44,7 +47,7 @@ export interface Property {
   features_id: BigNumberish;
   images_id: BigNumberish;
   video_tour: BigNumberish;
-  agent: Agent;
+  agent_id: string;
   date_listed: BigNumberish;
   amenities: Amenities;
   payment_token: string;

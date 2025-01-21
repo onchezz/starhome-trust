@@ -9,13 +9,12 @@ export function StakingInterface() {
   const [amount, setAmount] = useState("");
   const { address } = useAccount();
   const { rewards, isLoadingRewards } = useStakingRead();
-  const { stake, withdraw, claimRewards, loading } = useStakingWrite();
+  const { handleStake, withdraw, claimRewards, loading } = useStakingWrite();
 
-  const handleStake = async () => {
+  const handleStakeSubmit = async () => {
     try {
       const bigIntAmount = BigInt(Number(amount) * 10 ** 18);
-      // Pass propertyId and amount as required by the contract
-      await stake("1", bigIntAmount); // Using "1" as default propertyId
+      await handleStake("1", bigIntAmount); // Using "1" as default propertyId
       setAmount("");
     } catch (err) {
       console.error("Stake error:", err);
@@ -25,12 +24,7 @@ export function StakingInterface() {
   const handleWithdraw = async () => {
     try {
       const bigIntAmount = BigInt(Number(amount) * 10 ** 18);
-      // Pass propertyId, amount, and tokenAddress as required
-      await withdraw(
-        "1",
-        bigIntAmount,
-        "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
-      );
+      await withdraw("1", bigIntAmount);
       setAmount("");
     } catch (err) {
       console.error("Withdraw error:", err);
@@ -39,7 +33,6 @@ export function StakingInterface() {
 
   const handleClaimRewards = async () => {
     try {
-      // Pass propertyId as required
       await claimRewards("1");
     } catch (err) {
       console.error("Claim rewards error:", err);
@@ -69,7 +62,7 @@ export function StakingInterface() {
 
         <div className="grid grid-cols-2 gap-2">
           <Button
-            onClick={handleStake}
+            onClick={handleStakeSubmit}
             disabled={loading || !amount || !address}
           >
             {loading ? "Processing..." : "Stake"}

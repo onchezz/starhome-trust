@@ -3,7 +3,7 @@ import { parseParamWithType } from '@/utils/starhomes/contract';
 import { Property } from '@/types/property';
 
 export const useStakingRead = () => {
-  const { data: properties, isLoading } = useStarHomeReadContract({
+  const { data: properties, isLoading: isLoadingRewards } = useStarHomeReadContract({
     contractName: "StarhomesContract",
     functionName: "get_investment_properties",
     args: [],
@@ -18,8 +18,12 @@ export const useStakingRead = () => {
     }, {}) as Property;
   });
 
+  const rewards = "0"; // TODO: Implement actual rewards calculation
+
   return {
     properties: parsedProperties || [],
-    isLoading,
+    isLoading: isLoadingRewards,
+    rewards,
+    isLoadingRewards
   };
 };
