@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { BigNumberish } from 'starknet';
 
 export const useStakingWrite = () => {
-  const { writeAsync: investAsync, isPending: isStakePending } = useScaffoldWriteContract({
+  const { sendAsync: investAsync, isPending: isStakePending } = useScaffoldWriteContract({
     contractName: "StarhomesContract",
     functionName: "invest_in_property",
   });

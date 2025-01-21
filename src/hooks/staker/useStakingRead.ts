@@ -1,9 +1,10 @@
-import { useStarhomesContract } from '../contract_hooks/useStarhomesContract';
+import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 import { parseParamWithType } from '@/utils/starhomes/contract';
 import { Property } from '@/types/property';
 
 export const useStakingRead = () => {
-  const { data: properties, isLoading: isLoadingRewards } = useStarhomesContract({
+  const { data: properties, isLoading } = useStarHomeReadContract({
+    contractName: "StarhomesContract",
     functionName: "get_investment_properties",
   });
 
@@ -20,8 +21,8 @@ export const useStakingRead = () => {
 
   return {
     properties: parsedProperties || [],
-    isLoading: isLoadingRewards,
+    isLoading,
     rewards,
-    isLoadingRewards
+    isLoadingRewards: isLoading
   };
 };

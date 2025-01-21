@@ -1,9 +1,10 @@
-import { useStarhomesContract } from '../contract_hooks/useStarhomesContract';
+import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 import { parseParamWithType } from '@/utils/starhomes/contract';
 import { Property } from '@/types/property';
 
 export const usePropertiesRead = () => {
-  const { data: properties, isLoading } = useStarhomesContract({
+  const { data: properties, isLoading } = useStarHomeReadContract({
+    contractName: "StarhomesContract",
     functionName: "get_sale_properties",
   });
 

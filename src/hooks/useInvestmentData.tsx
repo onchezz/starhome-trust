@@ -15,16 +15,13 @@ export const useInvestmentData = () => {
   const ethBalance = useEthBalance({ address });
   const strkBalance = useStrkBalance({ address });
 
-  // Read investment properties from contract
   const { data: rawProperties, isLoading: isLoadingProperties } = useStarHomeReadContract({
     contractName: "StarhomesContract",
     functionName: "get_investment_properties",
-    args: [],
   });
 
   console.log("Raw properties from contract:", rawProperties);
 
-  // Parse property data
   const parsedProperties = rawProperties?.map((property: any) => {
     return Object.keys(property).reduce((acc: any, key) => {
       acc[key] = parseParamWithType(property[key]?.type || 'core::felt252', property[key], true);
@@ -34,7 +31,6 @@ export const useInvestmentData = () => {
 
   console.log("Decoded properties:", parsedProperties);
 
-  // Setup price polling
   useEffect(() => {
     const id = priceService.getNextId();
     priceService.startPolling(id, setEthPrice, setStrkPrice);
@@ -44,7 +40,6 @@ export const useInvestmentData = () => {
     };
   }, []);
 
-  // Format balances for display
   const formattedBalances = {
     ETH: {
       value: ethBalance?.value || 0n,

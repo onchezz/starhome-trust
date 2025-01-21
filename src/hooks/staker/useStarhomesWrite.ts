@@ -2,7 +2,7 @@ import { useScaffoldWriteContract } from '../contract_hooks/useStarHomesWriteCon
 import { toast } from 'sonner';
 
 export const useStarhomesWrite = () => {
-  const { writeAsync: listPropertyAsync, isPending } = useScaffoldWriteContract({
+  const { sendAsync: listPropertyAsync, isPending } = useScaffoldWriteContract({
     contractName: "StarhomesContract",
     functionName: "list_property",
   });
