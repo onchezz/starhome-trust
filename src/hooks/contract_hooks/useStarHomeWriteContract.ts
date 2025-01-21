@@ -1,6 +1,8 @@
-import { useContract, useSendTransaction } from "@starknet-react/core";
+import { useContract } from "@starknet-react/core";
 import { ABI } from "@/data/starhomes_abi";
 import type { Abi } from "starknet";
+import { useMemo } from "react";
+import { Contract } from "starknet";
 
 const CONTRACT_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
@@ -16,9 +18,6 @@ export const useStarHomeWriteContract = ({ functionName }: { functionName: Contr
     address: CONTRACT_ADDRESS,
   });
 
-  // Updated to use the correct properties from useSendTransaction
-  const { sendTransaction, isPending } = useSendTransaction();
-
   const sendAsync = async ({ args }: { args: any[] }) => {
     if (!contract) {
       throw new Error("Contract not initialized");
@@ -26,13 +25,19 @@ export const useStarHomeWriteContract = ({ functionName }: { functionName: Contr
 
     console.log(`Calling ${functionName} with args:`, args);
     const call = contract.populate(functionName, args);
-    const result = await sendTransaction({ calls: [call] });
-    console.log(`${functionName} result:`, result);
-    return result;
+    
+    try {
+      const response = await contract.execute(call);
+      console.log(`${functionName} result:`, response);
+      return response;
+    } catch (error) {
+      console.error(`Error executing ${functionName}:`, error);
+      throw error;
+    }
   };
 
   return {
     sendAsync,
-    isPending,
+    isPending: false, // We'll handle loading state manually since we're using direct contract execution
   };
 };
