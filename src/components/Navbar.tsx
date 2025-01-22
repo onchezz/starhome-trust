@@ -24,16 +24,6 @@ const Navbar = () => {
     connectors: connectors as StarknetkitConnector[]
   });
 
-  const handleGoogleSignIn = () => {
-    if (address) {
-      console.log("Adding Google account");
-      toast.success("Google account added successfully");
-    } else {
-      console.log("Signing in with Google");
-      toast.success("Signed in with Google successfully");
-    }
-  };
-
   const handleConnectWallet = async () => {
     try {
       console.log("Connecting StarkNet wallet");
@@ -84,7 +74,6 @@ const Navbar = () => {
             />
             <WalletDropdown
               address={address}
-              handleGoogleSignIn={handleGoogleSignIn}
               handleConnectWallet={handleConnectWallet}
               handleDisconnect={handleDisconnect}
             />
@@ -94,7 +83,6 @@ const Navbar = () => {
           <MobileMenu
             navigation={navigation}
             address={address}
-            handleGoogleSignIn={handleGoogleSignIn}
             handleConnectWallet={handleConnectWallet}
             handleDisconnect={handleDisconnect}
           />

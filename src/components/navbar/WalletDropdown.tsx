@@ -12,7 +12,6 @@ import { Link } from "react-router-dom";
 
 interface WalletDropdownProps {
   address: string | undefined;
-  handleGoogleSignIn: () => void;
   handleConnectWallet: () => void;
   handleDisconnect: () => void;
   className?: string;
@@ -20,7 +19,6 @@ interface WalletDropdownProps {
 
 const WalletDropdown = ({
   address,
-  handleGoogleSignIn,
   handleConnectWallet,
   handleDisconnect,
   className,
@@ -34,11 +32,12 @@ const WalletDropdown = ({
           className={`${className} ${!address ? 'bg-[#0066FF] text-white hover:bg-[#0066FF]/90' : ''}`}
           variant={address ? "default" : "outline"}
           style={{ backgroundColor: address ? "#0066FF" : undefined }}
+          onClick={!address ? handleConnectWallet : undefined}
         >
           {address ? (
             <>
               <Check className="mr-2 h-4 w-4" />
-              Disconnect
+              Connected
             </>
           ) : (
             <>
@@ -48,53 +47,48 @@ const WalletDropdown = ({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuItem onClick={handleGoogleSignIn}>
-          {address ? "Add Google Account" : "Sign in with Google"}
-        </DropdownMenuItem>
-        {!address ? (
-          <DropdownMenuItem onClick={handleConnectWallet}>
-            <Wallet className="mr-2 h-4 w-4" />
-            Connect Wallet
-          </DropdownMenuItem>
-        ) : (
-          <>
-            <div className="p-2 text-sm text-gray-500">
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </div>
-            {isLoading ? (
-              <div className="p-2 text-sm text-gray-500">Loading balances...</div>
-            ) : (
-              <div className="p-2 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>ETH</span>
-                  <span>{balances.ETH?.formatted || "0"}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>USDT</span>
-                  <span>{balances.USDT?.formatted || "0"}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>STRK</span>
-                  <span>{balances.STRK?.formatted || "0"}</span>
-                </div>
+      {address && (
+        <DropdownMenuContent className="w-56">
+          <div className="p-2 text-sm text-gray-500">
+            {address.slice(0, 6)}...{address.slice(-4)}
+          </div>
+          {isLoading ? (
+            <div className="p-2 text-sm text-gray-500">Loading balances...</div>
+          ) : (
+            <div className="p-2 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>ETH</span>
+                <span>{Number(balances.ETH?.formatted || 0).toFixed(4)}</span>
               </div>
-            )}
-            <div className="p-2">
-              <WalletActions />
+              <div className="flex justify-between text-sm">
+                <span>USDT</span>
+                <span>{Number(balances.USDT?.formatted || 0).toFixed(4)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>STRK</span>
+                <span>{Number(balances.STRK?.formatted || 0).toFixed(4)}</span>
+              </div>
             </div>
-            <Link to="/create-property">
-              <DropdownMenuItem>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Property
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuItem onClick={handleDisconnect}>
-              Disconnect
+          )}
+          <div className="p-2">
+            <WalletActions />
+          </div>
+          <Link to="/profile">
+            <DropdownMenuItem>
+              View Profile
             </DropdownMenuItem>
-          </>
-        )}
-      </DropdownMenuContent>
+          </Link>
+          <Link to="/create-property">
+            <DropdownMenuItem>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Property
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem onClick={handleDisconnect}>
+            Disconnect
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      )}
     </DropdownMenu>
   );
 };
