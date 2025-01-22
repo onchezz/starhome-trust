@@ -15,6 +15,7 @@ import { useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { useTokenBalances } from "@/hooks/useTokenBalances";
+import { Card } from "./ui/card";
 
 const WalletActions = () => {
   const { address } = useAccount();
@@ -23,6 +24,11 @@ const WalletActions = () => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [swapAmount, setSwapAmount] = useState("");
   const [swapToken, setSwapToken] = useState("ETH");
+
+  const formatBalance = (balance: any) => {
+    if (!balance) return "0.0000";
+    return Number(balance.formatted).toFixed(4);
+  };
 
   const handleSend = () => {
     console.log("Sending", sendAmount, "to", recipientAddress);
@@ -47,30 +53,28 @@ const WalletActions = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Wallet Balances</DialogTitle>
-            <DialogDescription>
-              Your current token balances
-            </DialogDescription>
+            <DialogDescription>Your current token balances</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <Card className="p-4">
             {isLoading ? (
               <p className="text-sm text-gray-500">Loading balances...</p>
             ) : (
-              <>
-                <div className="flex justify-between">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
                   <span>ETH</span>
-                  <span>{balances.ETH?.formatted || "0"}</span>
+                  <span className="font-mono">{formatBalance(balances.ETH)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span>USDT</span>
-                  <span>{balances.USDT?.formatted || "0"}</span>
+                  <span className="font-mono">{formatBalance(balances.USDT)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span>STRK</span>
-                  <span>{balances.STRK?.formatted || "0"}</span>
+                  <span className="font-mono">{formatBalance(balances.STRK)}</span>
                 </div>
-              </>
+              </div>
             )}
-          </div>
+          </Card>
         </DialogContent>
       </Dialog>
 
