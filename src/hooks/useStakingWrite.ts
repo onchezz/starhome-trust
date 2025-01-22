@@ -1,22 +1,22 @@
 import { useStarHomeWriteContract } from './contract_hooks/useStarHomeWriteContract';
 
 export const useStakingWrite = () => {
-  const { write: stake, loading: stakeLoading } = useStarHomeWriteContract({
+  const { sendAsync: stake, isPending: stakeLoading } = useStarHomeWriteContract({
     functionName: 'stake',
   });
 
-  const { write: withdraw, loading: withdrawLoading } = useStarHomeWriteContract({
+  const { sendAsync: withdraw, isPending: withdrawLoading } = useStarHomeWriteContract({
     functionName: 'withdraw',
   });
 
-  const { write: claimRewards, loading: claimLoading } = useStarHomeWriteContract({
+  const { sendAsync: claimRewards, isPending: claimLoading } = useStarHomeWriteContract({
     functionName: 'claim_rewards',
   });
 
   return {
-    stake,
-    withdraw,
-    claimRewards,
+    stake: ({ args }: { args: any[] }) => stake({ args }),
+    withdraw: ({ args }: { args: any[] }) => withdraw({ args }),
+    claimRewards: ({ args }: { args: any[] }) => claimRewards({ args }),
     loading: stakeLoading || withdrawLoading || claimLoading,
   };
 };

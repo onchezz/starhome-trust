@@ -1,28 +1,18 @@
 import { Abi, useContract } from "@starknet-react/core";
 import { useQuery } from "@tanstack/react-query";
-import { starhomesContract } from "@/utils/constants";
-
-type AbiInterface = Extract<
-  typeof starhomesContract[number],
-  { type: "interface"; name: "starhomes::interface::IStarhomesContract" }
->;
-
-type AbiFunctions = AbiInterface extends { items: Array<infer Item> }
-  ? Item extends { name: string }
-    ? Item["name"]
-    : string
-  : string;
+import { starhomes_abi } from "@/data/starhomes_abi";
+import { CONTRACT_ADDRESS } from "@/utils/constants";
 
 export const useStarHomeReadContract = ({ 
   functionName, 
   args = [] 
 }: { 
-  functionName: AbiFunctions;
+  functionName: string;
   args?: any[] 
 }) => {
   const { contract } = useContract({
-    abi: starhomesContract as unknown as Abi,
-    address: starhomesContract,
+    abi: starhomes_abi as Abi,
+    address: CONTRACT_ADDRESS,
   });
 
   return useQuery({

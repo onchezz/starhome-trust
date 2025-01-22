@@ -13,7 +13,7 @@ const Profile = () => {
   const { balances, isLoading } = useTokenBalances();
 
   // Fetch user assets using the contract hook
-  const { data: userAssets } = useStarHomeReadContract({
+  const { data: userAssets, isLoading: assetsLoading } = useStarHomeReadContract({
     functionName: 'get_user_assets',
     args: [address],
   });
@@ -32,7 +32,7 @@ const Profile = () => {
     isVerified: true,
     isInvestor: true,
     isAgent: true,
-    assets: userAssets || [],
+    assets: Array.isArray(userAssets) ? userAssets : [],
   };
 
   return (
@@ -143,7 +143,9 @@ const Profile = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {userData.assets.length === 0 ? (
+                {assetsLoading ? (
+                  <p>Loading assets...</p>
+                ) : userData.assets.length === 0 ? (
                   <p className="text-gray-500">No assets found</p>
                 ) : (
                   userData.assets.map((asset: any) => (
