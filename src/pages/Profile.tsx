@@ -5,23 +5,34 @@ import { useTokenBalances } from "@/hooks/useTokenBalances";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, Building2, Wallet } from "lucide-react";
+import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
 
 const Profile = () => {
   const { address } = useAccount();
   const { balances, isLoading } = useTokenBalances();
+
+  // Fetch user assets using the contract hook
+  const { data: userAssets } = useStarHomeReadContract({
+    functionName: 'get_user_assets',
+    args: [address],
+  });
 
   const formatBalance = (balance: any) => {
     if (!balance) return "0.0000";
     return Number(balance.formatted).toFixed(4);
   };
 
-  // Dummy user data - in a real app this would come from your backend
+  // Dummy user data
   const userData = {
     name: "John Doe",
     email: "john.doe@example.com",
+    phone: "+1 (555) 123-4567",
     profileImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
     isVerified: true,
+    isInvestor: true,
+    isAgent: true,
+    assets: userAssets || [],
   };
 
   return (
@@ -34,12 +45,26 @@ const Profile = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 Profile Details
-                {userData.isVerified && (
-                  <Badge variant="secondary" className="ml-2">
-                    <Check className="w-3 h-3 mr-1" />
-                    Verified
-                  </Badge>
-                )}
+                <div className="flex gap-2">
+                  {userData.isVerified && (
+                    <Badge variant="secondary">
+                      <Check className="w-3 h-3 mr-1" />
+                      Verified
+                    </Badge>
+                  )}
+                  {userData.isInvestor && (
+                    <Badge variant="outline">
+                      <Wallet className="w-3 h-3 mr-1" />
+                      Investor
+                    </Badge>
+                  )}
+                  {userData.isAgent && (
+                    <Badge>
+                      <Building2 className="w-3 h-3 mr-1" />
+                      Agent
+                    </Badge>
+                  )}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -53,6 +78,7 @@ const Profile = () => {
                   <div>
                     <h3 className="font-medium">{userData.name}</h3>
                     <p className="text-sm text-gray-500">{userData.email}</p>
+                    <p className="text-sm text-gray-500">{userData.phone}</p>
                   </div>
                 </div>
                 <div>
@@ -106,6 +132,33 @@ const Profile = () => {
                 <Link to="/create-user">
                   <Button className="w-full">Update Profile</Button>
                 </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* User Assets Card */}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>My Assets</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {userData.assets.length === 0 ? (
+                  <p className="text-gray-500">No assets found</p>
+                ) : (
+                  userData.assets.map((asset: any) => (
+                    <div key={asset.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <h4 className="font-medium">{asset.name}</h4>
+                        <p className="text-sm text-gray-500">{asset.type}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">${asset.value}</p>
+                        <p className="text-sm text-gray-500">ROI: {asset.roi}%</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
