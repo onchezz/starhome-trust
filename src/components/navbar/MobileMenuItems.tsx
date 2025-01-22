@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
@@ -21,7 +21,7 @@ const MobileMenuItems = ({ items, onClick }: MobileMenuItemsProps) => {
           <div className="flex items-center justify-between w-full group">
             <span>{item.label}</span>
             {item.isPage && (
-              <ChevronDown 
+              <ChevronDown
                 className={cn(
                   "h-4 w-4 transition-transform duration-200",
                   "text-gray-400 group-hover:text-gray-600"

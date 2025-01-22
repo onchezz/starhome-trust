@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Filter, Search } from "lucide-react";
 import propertiesData from "@/data/properties.json";
 import { useState } from "react";
-import { AddPropertyPage } from "@/components/property";
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,6 +76,7 @@ const Properties = () => {
         <h1 className="text-4xl font-bold mb-8 text-center">
           Available Properties
         </h1>
+        
 
         {/* Mobile Search and Filter Buttons */}
         <div className="md:hidden flex gap-2 mb-4">

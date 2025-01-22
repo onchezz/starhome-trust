@@ -1,4 +1,7 @@
-const starhomesContract = "0x032974461adde24e64bf4dbacf77308dfa2c58c8aca40ad86c69ee512690e278" as const;
+// const starhomesContract = "0x032974461adde24e64bf4dbacf77308dfa2c58c8aca40ad86c69ee512690e278" as const;
+
+
+const starhomesContract = "0x0568f7130f1dc0ee20fa52ce9038ad0e023248270fd5d7d3ae27dc427eed8a95" as const;
 
 // Eth
 const universalEthAddress =
@@ -14,8 +17,14 @@ const universalStrkAddress =
   "0x02Ab8758891E84b968fF11361789070c6B1Af2dF618D6D2f4a78b0757573C6eB"as const;
 
 export const LAST_CONNECTED_TIME_LOCALSTORAGE_KEY = "lastConnectedTime";
-
+const tokenOptions = [
+  { symbol: "USDC", address: usdcTokenAddress },
+  { symbol: "USDT", address: usdTTokenAddress },
+  { symbol: "ETH", address: universalEthAddress },
+  { symbol: "STRK", address: universalStrkAddress },
+];
 export {
+  tokenOptions,
   starhomesContract,
   usdcTokenAddress,
   usdTTokenAddress,

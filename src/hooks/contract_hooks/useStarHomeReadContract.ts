@@ -1,26 +1,37 @@
-import { useContract } from "@starknet-react/core";
-import { ABI } from "@/data/starhomes_abi";
+import { Abi, useContract } from "@starknet-react/core";
+// import { starhomesContract } from "@/data/starhomes_abi";
 import { useQuery } from "@tanstack/react-query";
-import type { Abi } from "starknet";
-
-const CONTRACT_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
+import { starhomesContract } from "@/utils/constants";
 
 // Extract function names from the interface section of the ABI
-type ContractFunction = Extract<
-  typeof ABI[number],
-  { type: "interface", name: "starhomes::interface::IStarhomesContract" }
->["items"][number]["name"];
+// type ContractFunction = Extract<
+//   typeof ABI[number],
+//   { type: "interface", name: "starhomes::interface::IStarhomesContract" }
+// >["items"][number]["name"];
+// First attempt to extract interface functions
+type AbiInterface = Extract<
+  typeof starhomesContract[number],
+  { type: "interface"; name: "starhomes::interface::IStarhomesContract" }
+>;
+
+type AbiFunctions = AbiInterface extends { items: Array<infer Item> }
+  ? Item extends { name: string }
+    ? Item["name"]
+    : string
+  : string;
+ 
+
 
 export const useStarHomeReadContract = ({ 
   functionName, 
   args = [] 
 }: { 
-  functionName: ContractFunction;
-  args?: any[] 
+  functionName: AbiFunctions;
+  args?: never[] 
 }) => {
   const { contract } = useContract({
-    abi: ABI as Abi,
-    address: CONTRACT_ADDRESS,
+    abi: starhomesContract as Abi,
+    address: starhomesContract,
   });
 
   return useQuery({

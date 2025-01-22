@@ -4,6 +4,7 @@ pub mod messages {
 }
 pub mod models {
     pub mod property_models;
+    pub mod investment_model;
     pub mod user_models;
     pub mod contract_events;
 }

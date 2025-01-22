@@ -12,7 +12,7 @@ import {
   universalEthAddress,
   universalStrkAddress,
   usdTTokenAddress,
-} from "@/lib/constants";
+} from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
 
 export const tokenAddresses = {

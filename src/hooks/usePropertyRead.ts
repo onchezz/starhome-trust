@@ -3,11 +3,11 @@ import { Property } from '@/types/property';
 
 export const usePropertyRead = () => {
   const { data: properties, isLoading, error } = useStarHomeReadContract({
-    functionName: "get_properties",
+    functionName: "get_sale_properties",
   });
 
   const { data: investmentProperties, isLoading: isLoadingInvestments } = useStarHomeReadContract({
-    functionName: "get_properties",
+    functionName: "get_investment_properties",
   });
 
   console.log("Sale properties:", properties);

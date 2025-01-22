@@ -1,12 +1,13 @@
 #[starknet::contract]
 pub mod StarhomesContract {
     use starhomes::components::staking_component::AssetStakingComponent;
-    use starhomes::components::staking_component::AssetStakingComponent::StakingPrivateFunctions;
+    // use starhomes::components::staking_component::AssetStakingComponent::StakingPrivateFunctions;
     use starhomes::components::property_component::PropertyComponent;
     use starhomes::components::user_component::UsersComponent;
     use starhomes::interface::starhomes_interface::*;
     use core::option::Option;
     use starhomes::models::property_models::Property;
+    use starhomes::models::investment_model::InvestmentAsset;
     use starhomes::messages::errors::Errors;
     // use starhomes::messages::success::Messages;
     // use starknet::storage::StoragePathEntry;
@@ -34,10 +35,11 @@ pub mod StarhomesContract {
     component!(path: PropertyComponent, storage: properties, event: PropertyComponentEvent);
 
 
-    #[abi(embed_v0)]
-    impl PropertyComponentImpl =
-        PropertyComponent::PropertyComponentImpl<ContractState>;
+    impl PropertyComponentImpl = PropertyComponent::PropertyComponentImpl<ContractState>;
     impl PropertyPrivateFunctions = PropertyComponent::PropertyFunctions<ContractState>;
+
+    impl AssetStakingComponentImpl = AssetStakingComponent::StakeAssetImpl<ContractState>;
+    impl StakingPrivateFunctions = AssetStakingComponent::StakingPrivateFunctions<ContractState>;
 
 
     #[abi(embed_v0)]
@@ -50,8 +52,7 @@ pub mod StarhomesContract {
 
     // Upgradeable
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
-    // #[abi(embed_v0)]
-    // impl PropertyInternalImpl = PropertyComponent::PropertyPrivateFunctions<ContractState>;
+    
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
@@ -94,25 +95,30 @@ pub mod StarhomesContract {
 
     #[abi(embed_v0)]
     impl StarhomesContractImpl of IStarhomesContract<ContractState> {
-        // fn list_property(ref self: ContractState, property: Property) -> felt252 {
-        //     let agent_id = property.agent_id.clone();
-        //     let isRegistered = self.users_data.is_agent_registered(agent_id);
-        //     assert(isRegistered, Errors::AGENT_NOT_REGISTERED);
-        //     self.properties.list_property(property, is_investment)
-        //     // PropertyComponentImpl::list_property(ref self, property, property_description)
-        // }
-        // fn invest_in_property(ref self: ContractState, investment_id: u256, amount: u256) {
-        //     self.properties.invest_in_property(investment_id, amount);
-        // }
-        // fn get_property(self: @ContractState, property_id: felt252) -> Property {
-        //     self.properties.get_property_by_id(property_id)
-        // }
-        // fn get_sale_properties(self: @ContractState) -> Array<Property> {
-        //     self.properties.get_sale_properties()
-        // }
-        // fn get_investment_properties(self: @ContractState) -> Array<Property> {
-        //     self.properties.get_investment_properties()
-        // }
+        fn list_property(ref self: ContractState, property: Property) -> felt252 {
+            let agent_id = property.agent_id.clone();
+            let isRegistered = self.users_data.is_agent_registered(agent_id);
+            assert(isRegistered, Errors::AGENT_NOT_REGISTERED);
+            self.properties.list_property(property)
+        }
+        fn list_investment_property(ref self: ContractState, investment_asset: InvestmentAsset) {
+            self.stake_to_property.initialize_asset_staking_token(investment_asset.investment_token,investment_asset.id)
+        }
+
+        fn invest_in_property(ref self: ContractState, investment_id: u256, amount: u256) {// self.properties.invest_in_property(investment_id, amount);
+        }
+        fn get_property(self: @ContractState, property_id: felt252) -> Property {
+            self.properties.get_property_by_id(property_id)
+        }
+        fn get_sale_properties(self: @ContractState) -> Array<Property> {
+            self.properties.get_sale_properties()
+        }
+        fn get_investment_properties(self: @ContractState) -> Array<InvestmentAsset> {
+            self.properties.get_investment_properties()
+        }
+        fn get_investment(self: @ContractState, investment_id: felt252) -> InvestmentAsset {
+            self.properties.get_investment_by_id(investment_id)
+        }
         fn version(self: @ContractState) -> u64 {
             self.version.read()
         }
@@ -124,7 +130,6 @@ pub mod StarhomesContract {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             // Only owner can upgrade
             self.ownable.assert_only_owner();
-            // assert(caller == self.contract_owner.read(), 'Caller is not the owner');
             let contract_version = self.version.read();
             self.version.write(contract_version + 1);
 

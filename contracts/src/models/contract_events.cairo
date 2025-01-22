@@ -9,6 +9,14 @@ pub struct PropertyListed {
     pub payment_token: ContractAddress,
     pub timestamp: u64,
 }
+#[derive(Copy, Drop, starknet::Event)]
+pub struct InvestmentListed {
+    pub investment_id: felt252,
+    pub owner: ContractAddress,
+    pub asset_price: u256,
+    pub payment_token: ContractAddress,
+    pub timestamp: u64,
+}
 
 #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
 pub struct PropertySold {

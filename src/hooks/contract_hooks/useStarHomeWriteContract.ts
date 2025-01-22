@@ -1,21 +1,33 @@
-import { useContract } from "@starknet-react/core";
-import { ABI } from "@/data/starhomes_abi";
-import type { Abi } from "starknet";
-import { useMemo } from "react";
-import { Contract } from "starknet";
 
-const CONTRACT_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Abi, useContract, useSendTransaction } from "@starknet-react/core";
+import { starhomes_abi } from "@/data/starhomes_abi";
+// import type { Abi, Call } from "starknet";
+import { starhomesContract } from "@/utils/constants";
 
-// Extract function names from the interface section of the ABI
-type ContractFunction = Extract<
-  typeof ABI[number],
-  { type: "interface", name: "starhomes::interface::IStarhomesContract" }
->["items"][number]["name"];
+// First attempt to extract interface functions
+type AbiInterface = Extract<
+  typeof starhomes_abi[number],
+  { type: "interface"; name: "starhomes::interface::IStarhomesContract" }
+>;
 
-export const useStarHomeWriteContract = ({ functionName }: { functionName: ContractFunction }) => {
+type AbiFunctions = AbiInterface extends { items: Array<infer Item> }
+  ? Item extends { name: string }
+    ? Item["name"]
+    : string
+  : string;
+
+// Fallback to allowing any string if type extraction fails
+type ContractFunction = AbiFunctions | string;
+
+export const useStarHomeWriteContract = ({
+  functionName,
+}: {
+  functionName: ContractFunction;
+}) => {
   const { contract } = useContract({
-    abi: ABI as Abi,
-    address: CONTRACT_ADDRESS,
+    abi: starhomes_abi as Abi,
+    address: starhomesContract,
   });
 
   const sendAsync = async ({ args }: { args: any[] }) => {

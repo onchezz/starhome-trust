@@ -4,7 +4,7 @@ use starhomes::messages::errors::Errors;
 pub mod AssetStakingComponent {
     use starhomes::models::contract_events::{Deposit, Withdrawal, RewardsFinished};
     // use core::starknet::event::EventEmitter;
-    use starhomes::interfaces::asset_staking::IAssetStakingTrait;
+    use starhomes::interfaces::asset_staking::IStakeAssetTrait;
     use starknet::storage::StoragePathEntry;
     use core::num::traits::Zero;
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp, get_contract_address};
@@ -56,15 +56,15 @@ pub mod AssetStakingComponent {
     #[embeddable_as(StakeAsset)]
     pub impl StakeAssetImpl<
         TContractState, +HasComponent<TContractState>,
-    > of IAssetStakingTrait<ComponentState<TContractState>> {
-        fn initialize_property_token(
+    > of IStakeAssetTrait<ComponentState<TContractState>> {
+        fn initialize_asset_staking_token(
             ref self: ComponentState<TContractState>,
             token_address: ContractAddress,
             property_id: felt252,
         ) {
             let _staking_token: IERC20Dispatcher = self.staking_token.entry(property_id).read();
-            // assert( staking_token.address == '', '');
-            self._initialize_property_stake_token(token_address, property_id);
+
+            self._initialize_property_staking_token(token_address, property_id);
         }
         fn stake(
             ref self: ComponentState<TContractState>, property_id: felt252, amount: u256,
@@ -194,7 +194,7 @@ pub mod AssetStakingComponent {
         TContractState, +HasComponent<TContractState>,
     > of StakingPrivateFunctionsTrait<TContractState> {
         // call this function every time a user (including owner) performs a state-modifying action
-        fn _initialize_property_stake_token(
+        fn _initialize_property_staking_token(
             ref self: ComponentState<TContractState>,
             token_address: ContractAddress,
             property_id: felt252,

@@ -21,7 +21,6 @@ import {
 import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
-// import { useStakingContract } from "@/hooks/useStakingContract";
 
 const investmentProperties = [
   {

@@ -1,39 +1,36 @@
+import { transformToStarknetProperty } from '@/types/starknet_types/propertyStartknetTypes';
 import { useStarHomeWriteContract } from './contract_hooks/useStarHomeWriteContract';
 import { Property } from '@/types/property';
+import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { shortString } from 'starknet';
 
+
+
 export const usePropertyWrite = () => {
-  const { sendAsync: listPropertyAsync, isPending } = useStarHomeWriteContract({
-    functionName: "list_property_for_sale",
+  const {address} = useAccount();
+  const { sendData: listPropertyAsync, isPending } = useStarHomeWriteContract({
+    functionName: "list_property",
   });
 
   const handleListProperty = async (property: Property) => {
     try {
       console.log("Listing property:", property);
-      
-      // Convert strings to felt252 (short string)
-      const serializedProperty = {
-        ...property,
-        id: shortString.encodeShortString(property.id),
-        title: shortString.encodeShortString(property.title),
-        description: property.description, // ByteArray handled by contract
-        location_address: shortString.encodeShortString(property.location_address),
-        city: shortString.encodeShortString(property.city),
-        state: shortString.encodeShortString(property.state),
-        country: shortString.encodeShortString(property.country),
-        latitude: shortString.encodeShortString(property.latitude.toString()),
-        longitude: shortString.encodeShortString(property.longitude.toString()),
-        currency: shortString.encodeShortString(property.currency),
-        property_type: shortString.encodeShortString(property.property_type),
-        status: shortString.encodeShortString(property.status),
-        features_id: shortString.encodeShortString(property.features_id),
-        images_id: shortString.encodeShortString(property.images_id),
-        video_tour: shortString.encodeShortString(property.video_tour),
-      };
+      function getAddressLine(fullAddress) {
+  // Split the address by commas and trim whitespace
+  const parts = fullAddress.split(',').map(part => part.trim());
+
+  // The first part is usually the address line
+  const addressLine = parts[0].toString;
+console.log("address:", addressLine);
+  return addressLine;
+}
+
+   const  writePropery = transformToStarknetProperty(property)        
+      console.log("Listing property:", writePropery);
 
       const tx = await listPropertyAsync({
-        args: [serializedProperty],
+        args: [writePropery],
       });
 
       console.log("Property listed successfully:", tx);
@@ -41,7 +38,7 @@ export const usePropertyWrite = () => {
       return tx;
     } catch (error) {
       console.error("Error listing property:", error);
-      toast.error("Failed to list property");
+      toast.error("Failed to list property" ,error);
       throw error;
     }
   };

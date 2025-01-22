@@ -8,6 +8,8 @@ import Investment from "@/pages/Investment";
 import InvestmentDetails from "@/pages/InvestmentDetails";
 import { Toaster } from "@/components/ui/sonner";
 import StarknetProvider from "@/providers/StarknetProvider";
+import CreateProperty from "@/pages/CreateProperty";
+// import CreateProperty from "@/pages/CreateUserProperty";
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
           <Route path="/blogs/:id" element={<BlogDetails />} />
           <Route path="/investment" element={<Investment />} />
           <Route path="/investment/:id" element={<InvestmentDetails />} />
+          <Route path="/create-property" element={<CreateProperty />} />
         </Routes>
         <Toaster />
       </Router>

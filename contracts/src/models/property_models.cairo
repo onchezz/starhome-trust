@@ -55,15 +55,13 @@ pub struct Property {
     pub pet_friendly: bool,
     pub wheelchair_accessible: bool,
     pub asset_token: ContractAddress,
-    pub is_investment: bool,
-    // pub timestamp: u64,
 }
 
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
-pub struct PropertyIds {
-    pub property_id: felt252,
-}
+// #[derive(Copy, Drop, Serde, starknet::Store)]
+// pub struct PropertyIds {
+//     pub property_id: felt252,
+// }
 
 
 #[derive(Copy, Drop, Serde, starknet::Store)]

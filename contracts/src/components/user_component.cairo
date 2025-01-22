@@ -47,22 +47,8 @@ pub mod UsersComponent {
             investor
         }
         fn register_investor(
-            ref self: ComponentState<TContractState>,
-            investor_name: felt252,
-            investor_email: felt252,
-            investor_phone: felt252,
-            investor_address: felt252,
+            ref self: ComponentState<TContractState>, investor: Investor,
         ) -> felt252 {
-            let caller = get_caller_address();
-            let investor = Investor {
-                investor_address: caller,
-                name: investor_name,
-                email: investor_email,
-                phone: investor_phone,
-                address: investor_address,
-                is_authorized: false,
-                timestamp: starknet::get_block_timestamp(),
-            };
             self.investors.write(investor.investor_address, investor);
             self.investor_ids.append().write(investor.investor_address);
             Messages::SUCCESS
@@ -80,23 +66,7 @@ pub mod UsersComponent {
             let agent = self.agents.entry(agent_id).read();
             agent
         }
-        fn register_agent(
-            ref self: ComponentState<TContractState>,
-            agent_name: felt252,
-            agent_email: felt252,
-            agent_phone: felt252,
-            agent_address: felt252,
-            agent_profile_image: felt252,
-        ) -> felt252 {
-            let caller = get_caller_address();
-            let agent = Agent {
-                agent_id: agent_address,
-                name: agent_name,
-                phone: agent_phone,
-                email: agent_email,
-                profile_image: agent_profile_image,
-                agent_address: caller,
-            };
+        fn register_agent(ref self: ComponentState<TContractState>, agent: Agent) -> felt252 {
             self.agents.write(agent.agent_address, agent);
             Messages::SUCCESS
         }

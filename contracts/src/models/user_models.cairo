@@ -17,6 +17,7 @@ pub struct Investor {
     pub email: felt252,
     pub phone: felt252,
     pub address: felt252,
+    pub is_verified:bool,
     pub is_authorized: bool,
     pub timestamp: u64,
 }
