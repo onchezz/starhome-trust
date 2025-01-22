@@ -1,99 +1,75 @@
-import React, { useState } from 'react';
-import { useAccount } from '@starknet-react/core';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { useStakingRead } from '../hooks/useStakingRead';
-import { useStakingWrite } from '../hooks/useStakingWrite';
+import { useState } from "react";
+import { useStakingWrite } from "@/hooks/useStakingWrite";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { toast } from "sonner";
 
-export function StakingInterface() {
-  const [amount, setAmount] = useState('');
-  const { address } = useAccount();
-  const { rewards, isLoadingRewards } = useStakingRead();
-  const { 
-    stake,
-    withdraw,
-    claimRewards,
-    loading,
-  } = useStakingWrite();
+export const StakingInterface = () => {
+  const [amount, setAmount] = useState("");
+  const { stake, withdraw, claimRewards, loading } = useStakingWrite();
 
   const handleStake = async () => {
     try {
-      const bigIntAmount = BigInt(Number(amount) * (10 ** 18)); // Convert to proper decimals
-      await stake(bigIntAmount);
-      setAmount('');
-    } catch (err) {
-      console.error("Stake error:", err);
+      if (!amount) {
+        toast.error("Please enter an amount");
+        return;
+      }
+      const amountBigInt = BigInt(amount);
+      await stake({ args: [amountBigInt] });
+      toast.success("Stake successful!");
+      setAmount("");
+    } catch (error) {
+      console.error("Stake error:", error);
+      toast.error("Failed to stake");
     }
   };
 
   const handleWithdraw = async () => {
     try {
-      const bigIntAmount = BigInt(Number(amount) * (10 ** 18)); // Convert to proper decimals
-      await withdraw(bigIntAmount);
-      setAmount('');
-    } catch (err) {
-      console.error("Withdraw error:", err);
+      if (!amount) {
+        toast.error("Please enter an amount");
+        return;
+      }
+      const amountBigInt = BigInt(amount);
+      await withdraw({ args: [amountBigInt] });
+      toast.success("Withdrawal successful!");
+      setAmount("");
+    } catch (error) {
+      console.error("Withdraw error:", error);
+      toast.error("Failed to withdraw");
     }
   };
 
   const handleClaimRewards = async () => {
     try {
-      await claimRewards();
-    } catch (err) {
-      console.error("Claim rewards error:", err);
+      await claimRewards({ args: [] });
+      toast.success("Rewards claimed successfully!");
+    } catch (error) {
+      console.error("Claim rewards error:", error);
+      toast.error("Failed to claim rewards");
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <h2 className="text-xl font-bold text-gray-900">Staking Interface</h2>
-      
-      <div className="space-y-4">
-        <div className="p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600">Your Current Rewards</p>
-          <p className="text-lg font-bold">
-            {isLoadingRewards ? 'Loading...' : `${rewards || '0'} tokens`}
-          </p>
-        </div>
-
-        <Input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Enter amount"
-          className="w-full"
-          disabled={loading}
-        />
-
-        <div className="grid grid-cols-2 gap-2">
-          <Button 
-            onClick={handleStake} 
-            disabled={loading || !amount || !address}
-          >
-            {loading ? 'Processing...' : 'Stake'}
-          </Button>
-          <Button 
-            onClick={handleWithdraw} 
-            disabled={loading || !amount || !address}
-            variant="outline"
-          >
-            {loading ? 'Processing...' : 'Withdraw'}
-          </Button>
-        </div>
-
-        <Button 
-          onClick={handleClaimRewards} 
-          disabled={loading || !address || !rewards}
-          variant="secondary"
-          className="w-full"
-        >
-          {loading ? 'Processing...' : 'Claim Rewards'}
+    <div className="space-y-4">
+      <Input
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        placeholder="Enter amount"
+        disabled={loading}
+      />
+      <div className="flex gap-2">
+        <Button onClick={handleStake} disabled={loading}>
+          Stake
         </Button>
-
-        {!address && (
-          <p className="text-sm text-red-500">Please connect your wallet to interact with the staking contract.</p>
-        )}
+        <Button onClick={handleWithdraw} disabled={loading}>
+          Withdraw
+        </Button>
+        <Button onClick={handleClaimRewards} disabled={loading}>
+          Claim Rewards
+        </Button>
       </div>
     </div>
   );
-}
+};
