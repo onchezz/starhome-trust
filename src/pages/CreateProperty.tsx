@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import ErrorBoundary from "@/components/errrorBoundary";
 import { tokenOptions } from "@/utils/constants";
+import { StarknetProperty } from "@/types/starknet_types/propertyStartknetTypes";
 
 // Replace next/dynamic import with React.lazy
 const MapLocationPicker = React.lazy(
@@ -53,10 +54,10 @@ const CreateProperty = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
 
-  const [formData, setFormData] = useState<Partial<Property>>({
+  const [formData, setFormData] = useState<Partial<StarknetProperty>>({
     id: uuidv4(),
     owner: address,
-    is_investment: false,
+    asset_token: tokenOptions[1].address,
     has_garden: false,
     has_swimming_pool: false,
     pet_friendly: false,
@@ -141,15 +142,15 @@ const CreateProperty = () => {
         const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
 
         setUploadedImages([ipfsUrl]);
-        handleInputChange("images_id", upload.IpfsHash);
+        handleInputChange("images_id", ipfsUrl);
         toast.success(`Images uploaded to Successfully!`);
 
         // Now create the property with the uploaded images hash
         try {
           await handleListProperty({
             ...formData,
-            images_id: upload.IpfsHash,
-          } as Property);
+            images_id: ipfsUrl,
+          } as StarknetProperty);
 
           toast.success("Property created successfully!");
           // Reset form after successful submission
@@ -170,7 +171,7 @@ const CreateProperty = () => {
     } else {
       // If no images to upload, just create the property
       try {
-        const error = await handleListProperty(formData as Property);
+        const error = await handleListProperty(formData as StarknetProperty);
         toast.success("Property created successfully!", error);
       } catch (error) {
         console.error("Error creating property:", error);

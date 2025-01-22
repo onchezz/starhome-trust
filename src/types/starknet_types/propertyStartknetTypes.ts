@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Investment } from "@/types/investment";
 import { Property } from "@/types/property";
 import { shortString, num } from "starknet";
 import { v4 as uuidv4 } from "uuid";

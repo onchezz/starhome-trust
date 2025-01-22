@@ -1,5 +1,6 @@
 use starhomes::models::property_models::{Property};
 use starhomes::models::investment_model::InvestmentAsset;
+
 #[starknet::interface]
 pub trait IPropertyComponentTrait<TContractState> {
     fn list_property(ref self: TContractState, property: Property) -> felt252;

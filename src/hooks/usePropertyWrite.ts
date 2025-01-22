@@ -1,4 +1,4 @@
-import { transformToStarknetProperty } from '@/types/starknet_types/propertyStartknetTypes';
+import { StarknetProperty, transformToStarknetProperty, validatePropertyData } from '@/types/starknet_types/propertyStartknetTypes';
 import { useStarHomeWriteContract } from './contract_hooks/useStarHomeWriteContract';
 import { Property } from '@/types/property';
 import { useAccount } from '@starknet-react/core';
@@ -9,28 +9,21 @@ import { shortString } from 'starknet';
 
 export const usePropertyWrite = () => {
   const {address} = useAccount();
-  const { sendData: listPropertyAsync, isPending } = useStarHomeWriteContract({
+  const { sendAsync: listPropertyAsync, isPending } = useStarHomeWriteContract({
     functionName: "list_property",
   });
 
-  const handleListProperty = async (property: Property) => {
+  const handleListProperty = async (property: StarknetProperty) => {
     try {
       console.log("Listing property:", property);
-      function getAddressLine(fullAddress) {
-  // Split the address by commas and trim whitespace
-  const parts = fullAddress.split(',').map(part => part.trim());
+    
 
-  // The first part is usually the address line
-  const addressLine = parts[0].toString;
-console.log("address:", addressLine);
-  return addressLine;
-}
-
-   const  writePropery = transformToStarknetProperty(property)        
-      console.log("Listing property:", writePropery);
+  //  const  writeProperty = transformToStarknetProperty(property) ;
+  //  const validate_data = validatePropertyData(writeProperty)       
+      console.log("Listing property:", property);
 
       const tx = await listPropertyAsync({
-        args: [writePropery],
+        args: [property],
       });
 
       console.log("Property listed successfully:", tx);
