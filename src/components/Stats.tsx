@@ -1,6 +1,12 @@
 import { Globe, Users, MapPin } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 
 const Stats = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   const stats = [
     {
       number: "500+",
@@ -20,9 +26,9 @@ const Stats = () => {
   ];
 
   return (
-    <div className="py-20 bg-white">
+    <div className="py-20 bg-white" ref={ref}>
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl font-bold text-navy mb-4">
             Why Choose{" "}
             <span className="relative">
@@ -39,10 +45,17 @@ const Stats = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {stats.map((stat) => (
+          {stats.map((stat, index) => (
             <div
               key={stat.label}
-              className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+              className={`bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${
+                inView
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-10"
+              }`}
+              style={{
+                transitionDelay: `${index * 200}ms`,
+              }}
             >
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">

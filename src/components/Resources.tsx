@@ -1,8 +1,14 @@
 import { Mail, Search, Phone } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 
 const Resources = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   const resources = [
     {
       title: "How Starhomes Facilitated My International Property Investment Journey",
@@ -28,10 +34,10 @@ const Resources = () => {
   ];
 
   return (
-    <div className="py-20 bg-gray-50">
+    <div className="py-20 bg-gray-50" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-navy mb-4">
+          <h2 className="text-4xl font-bold text-navy mb-4 animate-fade-in">
             Resources{" "}
             <span className="relative">
               Designed
@@ -39,17 +45,24 @@ const Resources = () => {
             </span>{" "}
             for Real Estate Investors
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto animate-fade-in delay-100">
             Interested in diversifying your investments? Starhomes is here to guide
             you through global property opportunities using cryptocurrency!
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {resources.map((resource) => (
+          {resources.map((resource, index) => (
             <div
               key={resource.title}
-              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+              className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${
+                inView
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-10"
+              }`}
+              style={{
+                transitionDelay: `${index * 200}ms`,
+              }}
             >
               <img
                 src={resource.image}
@@ -62,7 +75,10 @@ const Resources = () => {
                 </h3>
                 <p className="text-gray-600 mb-4">{resource.description}</p>
                 <Link to="/blogs">
-                  <Button variant="outline" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full hover:scale-105 transition-transform"
+                  >
                     <resource.icon className="w-4 h-4 mr-2" />
                     Learn More
                   </Button>
