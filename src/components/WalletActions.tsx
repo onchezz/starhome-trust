@@ -45,10 +45,10 @@ const WalletActions = () => {
   if (!address) return null;
 
   const BalanceItem = ({ label, value, isLoading }: { label: string; value: string; isLoading: boolean }) => (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center p-2">
       <span>{label}</span>
       {isLoading ? (
-        <Shimmer className="h-6 w-24" />
+        <Shimmer className="h-6 w-24 rounded-md" />
       ) : (
         <motion.span 
           initial={{ opacity: 0 }}
@@ -75,7 +75,7 @@ const WalletActions = () => {
             <DialogDescription>Your current token balances</DialogDescription>
           </DialogHeader>
           <Card className="p-4">
-            <div className="space-y-4">
+            <div className="space-y-2">
               <BalanceItem 
                 label="ETH"
                 value={formatBalance(balances.ETH)}

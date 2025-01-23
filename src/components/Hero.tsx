@@ -17,16 +17,24 @@ export const Hero = () => {
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             <Typewriter
               options={{
-                strings: [
-                  "Invest in Real Estate Globally",
-                  "with Crypto",
-                  "Secure. Transparent. Decentralized."
-                ],
+                strings: ["Invest in Real Estate Globally"],
                 autoStart: true,
-                loop: true,
-                deleteSpeed: 50,
+                loop: false,
+                cursor: "",
                 delay: 80,
+                deleteSpeed: 50,
                 pauseFor: 2500,
+              }}
+              onInit={(typewriter) => {
+                typewriter
+                  .typeString("Invest in Real Estate Globally")
+                  .pauseFor(2500)
+                  .deleteAll()
+                  .typeString("with Crypto")
+                  .pauseFor(2000)
+                  .deleteAll()
+                  .typeString("Secure. Transparent. Decentralized.")
+                  .start();
               }}
             />
           </h1>
