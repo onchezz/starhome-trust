@@ -15,7 +15,8 @@ export interface StarknetInvestment {
   rental_income: bigint;         // u256
   maintenance_costs: bigint;     // u256
   tax_benefits: string;          // felt252
-  highlights: string[];          // Array<felt252>
+  highlights: string[]; 
+  is_active:boolean;         // Array<felt252>
   market_analysis: {
     area_growth: string;         // felt252
     occupancy_rate: string;      // felt252
@@ -66,6 +67,7 @@ export const transformToStarknetInvestment = (formData: Partial<Investment>): St
     location: toFelt252(formData.location),
     size: toFelt252(formData.size),
     investment_type: toFelt252(formData.type),
+    is_active:Boolean(formData.is_active),
     construction_year: toU64(formData.constructionYear),
     asking_price: toBigInt(formData.askingPrice),
     expected_roi: toFelt252(formData.expectedROI),

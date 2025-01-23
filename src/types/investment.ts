@@ -19,6 +19,7 @@ export interface Investment {
   location: string;
   size: string;
   type: string;
+  is_active:boolean;
   constructionYear: number;
   askingPrice: number;
   expectedROI: string;
