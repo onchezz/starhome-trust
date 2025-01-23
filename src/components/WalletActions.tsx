@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { useTokenBalances } from "@/hooks/useTokenBalances";
 import { Card } from "./ui/card";
+import { Shimmer } from "./ui/shimmer";
+import { motion } from "framer-motion";
 
 const WalletActions = () => {
   const { address } = useAccount();
@@ -42,6 +44,23 @@ const WalletActions = () => {
 
   if (!address) return null;
 
+  const BalanceItem = ({ label, value, isLoading }: { label: string; value: string; isLoading: boolean }) => (
+    <div className="flex justify-between items-center">
+      <span>{label}</span>
+      {isLoading ? (
+        <Shimmer className="h-6 w-24" />
+      ) : (
+        <motion.span 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="font-mono"
+        >
+          {value}
+        </motion.span>
+      )}
+    </div>
+  );
+
   return (
     <div className="flex gap-2">
       <Dialog>
@@ -56,24 +75,23 @@ const WalletActions = () => {
             <DialogDescription>Your current token balances</DialogDescription>
           </DialogHeader>
           <Card className="p-4">
-            {isLoading ? (
-              <p className="text-sm text-gray-500">Loading balances...</p>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span>ETH</span>
-                  <span className="font-mono">{formatBalance(balances.ETH)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>USDT</span>
-                  <span className="font-mono">{formatBalance(balances.USDT)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>STRK</span>
-                  <span className="font-mono">{formatBalance(balances.STRK)}</span>
-                </div>
-              </div>
-            )}
+            <div className="space-y-4">
+              <BalanceItem 
+                label="ETH"
+                value={formatBalance(balances.ETH)}
+                isLoading={isLoading}
+              />
+              <BalanceItem 
+                label="USDT"
+                value={formatBalance(balances.USDT)}
+                isLoading={isLoading}
+              />
+              <BalanceItem 
+                label="STRK"
+                value={formatBalance(balances.STRK)}
+                isLoading={isLoading}
+              />
+            </div>
           </Card>
         </DialogContent>
       </Dialog>
