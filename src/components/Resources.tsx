@@ -34,7 +34,7 @@ const Resources = () => {
   ];
 
   return (
-    <div className="py-20 bg-gray-50" ref={ref}>
+    <div className="py-20 bg-gradient-to-b from-white to-gray-50" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-navy mb-4 animate-fade-in">
@@ -55,7 +55,7 @@ const Resources = () => {
           {resources.map((resource, index) => (
             <div
               key={resource.title}
-              className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${
+              className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
                 inView
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
@@ -64,20 +64,23 @@ const Resources = () => {
                 transitionDelay: `${index * 200}ms`,
               }}
             >
-              <img
-                src={resource.image}
-                alt={resource.title}
-                className="w-full h-48 object-cover"
-              />
+              <div className="relative overflow-hidden">
+                <img
+                  src={resource.image}
+                  alt={resource.title}
+                  className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-navy mb-3">
+                <h3 className="text-xl font-semibold text-navy mb-3 group-hover:text-primary transition-colors duration-300">
                   {resource.title}
                 </h3>
                 <p className="text-gray-600 mb-4">{resource.description}</p>
                 <Link to="/blogs">
                   <Button
                     variant="outline"
-                    className="w-full hover:scale-105 transition-transform"
+                    className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300"
                   >
                     <resource.icon className="w-4 h-4 mr-2" />
                     Learn More

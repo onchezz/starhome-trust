@@ -26,17 +26,17 @@ const Stats = () => {
   ];
 
   return (
-    <div className="py-20 bg-white" ref={ref}>
+    <div className="py-20 bg-transparent relative z-10" ref={ref}>
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl font-bold text-navy mb-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-navy mb-4 transform transition-all duration-700 animate-fade-in">
             Why Choose{" "}
             <span className="relative">
               Starhomes?
               <span className="absolute -bottom-2 left-0 w-full h-1 bg-secondary"></span>
             </span>
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto animate-fade-in delay-200">
             Starhomes empowers investors to explore diverse properties worldwide
             using cryptocurrency. Our platform provides comprehensive investment
             options, making it easier for you to embark on your real estate
@@ -48,7 +48,7 @@ const Stats = () => {
           {stats.map((stat, index) => (
             <div
               key={stat.label}
-              className={`bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${
+              className={`bg-white/80 backdrop-blur-md p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
                 inView
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
@@ -57,14 +57,16 @@ const Stats = () => {
                 transitionDelay: `${index * 200}ms`,
               }}
             >
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <div className="flex flex-col items-center text-center group">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12">
                   <stat.icon className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-4xl font-bold text-primary mb-2">
+                <h3 className="text-4xl font-bold text-primary mb-2 transition-colors duration-300">
                   {stat.number}
                 </h3>
-                <p className="text-gray-600">{stat.label}</p>
+                <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300">
+                  {stat.label}
+                </p>
               </div>
             </div>
           ))}
