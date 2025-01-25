@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PageLoader } from "@/components/ui/page-loader";
 import {
   Users,
   TrendingUp,
@@ -21,6 +22,7 @@ import {
 import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
+import { useInView } from "react-intersection-observer";
 
 const investmentProperties = [
   {
@@ -72,10 +74,25 @@ const Investment = () => {
   const [investmentAmounts, setInvestmentAmounts] = useState<{
     [key: number]: string;
   }>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const { address } = useAccount();
   const { connect } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal();
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  // Simulate loading
+  useState(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  });
+
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -136,64 +153,65 @@ const Investment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navbar />
       <div className="container mx-auto py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Properties
-              </CardTitle>
-              <Building className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {investmentProperties.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Investors
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">243</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average ROI</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">15%</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Investment
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$25M</div>
-            </CardContent>
-          </Card>
+          {[
+            {
+              title: "Total Properties",
+              value: investmentProperties.length,
+              icon: Building,
+            },
+            { title: "Total Investors", value: "243", icon: Users },
+            { title: "Average ROI", value: "15%", icon: TrendingUp },
+            { title: "Total Investment", value: "$25M", icon: DollarSign },
+          ].map((stat, index) => (
+            <Card
+              key={stat.title}
+              className="transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              style={{
+                opacity: inView ? 1 : 0,
+                transform: inView
+                  ? "translateY(0)"
+                  : `translateY(${20 + index * 10}px)`,
+                transition: `all 0.5s ease-out ${index * 0.1}s`,
+              }}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {investmentProperties.map((property) => (
-            <Card key={property.id} className="overflow-hidden">
-              <img
-                src={property.image}
-                alt={property.title}
-                className="w-full h-48 object-cover"
-              />
+        <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {investmentProperties.map((property, index) => (
+            <Card
+              key={property.id}
+              className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
+              style={{
+                opacity: inView ? 1 : 0,
+                transform: inView
+                  ? "translateY(0)"
+                  : `translateY(${20 + index * 10}px)`,
+                transition: `all 0.5s ease-out ${index * 0.1}s`,
+              }}
+            >
+              <div className="relative overflow-hidden group">
+                <img
+                  src={property.image}
+                  alt={property.title}
+                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
               <CardHeader>
                 <CardTitle>{property.title}</CardTitle>
                 <p className="text-sm text-gray-500">{property.location}</p>
