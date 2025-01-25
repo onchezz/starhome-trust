@@ -9,9 +9,11 @@ import InvestmentDetails from "@/pages/InvestmentDetails";
 import AddInvestment from "@/pages/AddInvestment";
 import Profile from "@/pages/Profile";
 import CreateUser from "@/pages/CreateUser";
-import CreateProperty from "@/pages/CreateProperty";
+import CreateProperty from "@/pages/AddProperty";
 import { Toaster } from "@/components/ui/sonner";
 import StarknetProvider from "@/providers/StarknetProvider";
+import RegisterAgent from "./pages/RegisterAgent";
+// import CreateProperty from "./pages/AddProperty";
 
 function App() {
   return (
@@ -28,6 +30,7 @@ function App() {
           <Route path="/add-investment" element={<AddInvestment />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-user" element={<CreateUser />} />
+          <Route path="/create-agent" element={<RegisterAgent />} />
           <Route path="/create-property" element={<CreateProperty />} />
         </Routes>
         <Toaster />

@@ -7,8 +7,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import WalletActions from "../WalletActions";
-import { useTokenBalances } from "@/hooks/useTokenBalances";
+import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { Link } from "react-router-dom";
+import ErrorBoundary from "../errrorBoundary";
 
 interface WalletDropdownProps {
   address: string | undefined;
@@ -28,8 +29,10 @@ const WalletDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          className={`${className} ${!address ? 'bg-[#0066FF] text-white hover:bg-[#0066FF]/90' : ''}`}
+        <Button
+          className={`${className} ${
+            !address ? "bg-[#0066FF] text-white hover:bg-[#0066FF]/90" : ""
+          }`}
           variant={address ? "default" : "outline"}
           style={{ backgroundColor: address ? "#0066FF" : undefined }}
           onClick={!address ? handleConnectWallet : undefined}
@@ -37,7 +40,7 @@ const WalletDropdown = ({
           {address ? (
             <>
               <Check className="mr-2 h-4 w-4" />
-              Connected
+              Wallet Connected
             </>
           ) : (
             <>
@@ -47,6 +50,7 @@ const WalletDropdown = ({
           )}
         </Button>
       </DropdownMenuTrigger>
+
       {address && (
         <DropdownMenuContent className="w-56">
           <div className="p-2 text-sm text-gray-500">
@@ -74,16 +78,14 @@ const WalletDropdown = ({
             <WalletActions />
           </div>
           <Link to="/profile">
-            <DropdownMenuItem>
-              View Profile
-            </DropdownMenuItem>
+            <DropdownMenuItem>View Profile</DropdownMenuItem>
           </Link>
-          <Link to="/create-property">
+          {/* <Link to="/create-property">
             <DropdownMenuItem>
               <Plus className="mr-2 h-4 w-4" />
               Create Property
             </DropdownMenuItem>
-          </Link>
+          </Link> */}
           <DropdownMenuItem onClick={handleDisconnect}>
             Disconnect
           </DropdownMenuItem>

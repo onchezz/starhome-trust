@@ -1,8 +1,10 @@
 // const starhomesContract = "0x032974461adde24e64bf4dbacf77308dfa2c58c8aca40ad86c69ee512690e278" as const;
 
+//currenty in use 
+const starhomesContract ="0x030e7db139490658ebdc76d6fed7645e85d792edd981ad0aa5ed9df28cc62b14" as const;
+//  "0x0568f7130f1dc0ee20fa52ce9038ad0e023248270fd5d7d3ae27dc427eed8a95" as const;
 
-const starhomesContract = "0x0568f7130f1dc0ee20fa52ce9038ad0e023248270fd5d7d3ae27dc427eed8a95" as const;
-
+const rpcProvideUr =  "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
 // Eth
 const universalEthAddress =
   "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7" as const;
@@ -24,6 +26,8 @@ const tokenOptions = [
   { symbol: "STRK", address: universalStrkAddress },
 ];
 export {
+  rpcProvideUr,
+  // starhomesDevnetContract,
   tokenOptions,
   starhomesContract,
   usdcTokenAddress,

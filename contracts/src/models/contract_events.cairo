@@ -43,11 +43,14 @@ pub struct Upgraded {
 
 #[event]
 #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
-pub enum Event {
-    Deposit: Deposit,
-    Withdrawal: Withdrawal,
-    RewardsFinished: RewardsFinished,
+pub struct UserRegistered {
+    pub user: ContractAddress,
+    pub name: felt252,
+    pub email: felt252,
+    pub phone: felt252,
+    pub timestamp: u64,
 }
+
 
 #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
 pub struct Deposit {

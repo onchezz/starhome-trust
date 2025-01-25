@@ -98,11 +98,20 @@ pub mod StarhomesContract {
         fn list_property(ref self: ContractState, property: Property) -> felt252 {
             let agent_id = property.agent_id.clone();
             let isRegistered = self.users_data.is_agent_registered(agent_id);
-            assert(isRegistered, Errors::AGENT_NOT_REGISTERED);
+            assert(isRegistered , Errors::AGENT_NOT_REGISTERED);
             self.properties.list_property(property)
         }
         fn list_investment_property(ref self: ContractState, investment_asset: InvestmentAsset) {
             self.stake_to_property.initialize_asset_staking_token(investment_asset.investment_token,investment_asset.id)
+        }
+
+        fn edit_property(ref self: ContractState, property_id: felt252, property: Property) -> felt252 {
+            self.properties.edit_property(property_id, property)
+        }
+        fn edit_listed_investment_property(
+            ref self: ContractState, investment_id: felt252, investment: InvestmentAsset,
+        ) -> felt252 {
+            self.properties.edit_listed_investment_property(investment_id, investment)
         }
 
         fn invest_in_property(ref self: ContractState, investment_id: u256, amount: u256) {// self.properties.invest_in_property(investment_id, amount);

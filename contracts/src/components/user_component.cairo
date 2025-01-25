@@ -3,7 +3,7 @@ pub mod UsersComponent {
     use starhomes::models::user_models::{Investor, Agent};
     use starhomes::messages::success::*;
     use starhomes::interfaces::user::IUsersComponentTrait;
-    // use core::starknet::event::EventEmitter;
+    use starhomes::models::contract_events::UserRegistered;
     use starknet::storage::StoragePathEntry;
     // use core::num::traits::Zero;
     use starknet::{ContractAddress, get_caller_address};
@@ -18,14 +18,16 @@ pub mod UsersComponent {
         investors: Map::<ContractAddress, Investor>,
         authorized_investment_lister: Map::<ContractAddress, Investor>,
         investor_ids: Vec<ContractAddress>,
+        agents_ids: Vec<ContractAddress>,
         agents: Map::<ContractAddress, Agent>,
     }
 
 
     #[event]
     #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
-    pub enum Event { // Registed: Deposit,
-    // Withdrawal: Withdrawal,
+    pub enum Event {
+        Registered: UserRegistered,
+        // Withdrawal: Withdrawal,
     // RewardsFinished: RewardsFinished,
     }
 
@@ -49,6 +51,8 @@ pub mod UsersComponent {
         fn register_investor(
             ref self: ComponentState<TContractState>, investor: Investor,
         ) -> felt252 {
+            let isinvestor = self.is_investor_registered(investor.investor_address);
+            assert(isinvestor == true, 'Investor already registered');
             self.investors.write(investor.investor_address, investor);
             self.investor_ids.append().write(investor.investor_address);
             Messages::SUCCESS
@@ -61,18 +65,42 @@ pub mod UsersComponent {
 
             Messages::SUCCESS
         }
+        fn get_agents(self: @ComponentState<TContractState>) -> Array<Agent> {
+            let mut agents = array![];
+            for i in 0..self.agents_ids.len() {
+                let id = self.agents_ids.at(i).read();
+                agents.append(self.get_agent(id));
+            };
+            agents
+        }
 
         fn get_agent(self: @ComponentState<TContractState>, agent_id: ContractAddress) -> Agent {
             let agent = self.agents.entry(agent_id).read();
             agent
         }
         fn register_agent(ref self: ComponentState<TContractState>, agent: Agent) -> felt252 {
-            self.agents.write(agent.agent_address, agent);
+            let caller = get_caller_address();
+            assert(self.is_agent_registered(caller) == false, Errors::AGENT_ALREADY_REGISTERED);
+            assert(agent.agent_id == caller, Errors::AGENT_OWNER);
+            self.agents.write(agent.agent_id.clone(), agent.clone());
+            self.agents_ids.append().write(agent.agent_id);
+            self
+                .emit(
+                    Event::Registered(
+                        UserRegistered {
+                            user: agent.agent_id,
+                            name: agent.name,
+                            email: agent.email,
+                            phone: agent.phone,
+                            timestamp: starknet::get_block_timestamp(),
+                        },
+                    ),
+                );
             Messages::SUCCESS
         }
         fn edit_agent(ref self: ComponentState<TContractState>, agent: Agent) -> felt252 {
             let caller = get_caller_address();
-            assert(caller == agent.agent_address, 'only agent can edit');
+            assert(caller == agent.agent_id, 'only agent can edit');
             self.agents.entry(caller).write(agent);
             Messages::SUCCESS
         }
@@ -109,7 +137,7 @@ pub mod UsersComponent {
             self: @ComponentState<TContractState>, address: ContractAddress,
         ) -> bool {
             let agent = self.get_agent(address);
-            agent.agent_address == address
+            agent.agent_id == address
         }
     }
 }

@@ -1,3 +1,5 @@
+import React from "react";
+import { Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -15,9 +17,12 @@ import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Filter, Search } from "lucide-react";
 import propertiesData from "@/data/properties.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePropertyRead } from "@/hooks/contract_interactions/usePropertyRead";
+import { Property } from "@/types/property";
 
 const Properties = () => {
+  // const [properties] = usePropertyRead();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     priceRange: [0, 15000000],
@@ -28,6 +33,13 @@ const Properties = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  const [contract_properties, setProperties] = useState([]);
+  // useEffect(() => {
+  //   properties.map((property) => {});
+  //   setProperties(properties);
+  //   console.log("Properties:", properties);
+  //   console.log("Investment Properties:", investmentProperties);
+  // }, [properties, investmentProperties]);
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -76,7 +88,6 @@ const Properties = () => {
         <h1 className="text-4xl font-bold mb-8 text-center">
           Available Properties
         </h1>
-        
 
         {/* Mobile Search and Filter Buttons */}
         <div className="md:hidden flex gap-2 mb-4">
@@ -181,8 +192,79 @@ const Properties = () => {
           </ScrollArea>
         </div>
       </div>
+      <PropertyList />
     </div>
   );
 };
 
 export default Properties;
+
+// import { usePropertyRead } from "../hooks/usePropertyRead";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const PropertyList = () => {
+  const { properties, isLoading, error } = usePropertyRead();
+
+  if (error) {
+    return (
+      <div className="p-4 text-red-500">
+        Error loading properties: {error.message}
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  const renderPropertyCard = (property: Property) => (
+    <Card key={property.id} className="mb-4">
+      <CardHeader>
+        <CardTitle>{property.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm text-gray-500">Price</p>
+            <p className="font-medium">{property.price} ETH</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Location</p>
+            <p className="font-medium">{property.location_address}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Size</p>
+            <p className="font-medium">{property.area} sq ft</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Status</p>
+            <p className="font-medium">{property.status}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="container mx-auto p-4">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">Properties for Sale</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {properties.map(renderPropertyCard)}
+          {/* renderPropertyCard */}
+        </div>
+      </div>
+
+      {/* <div>
+        <h2 className="text-2xl font-bold mb-4">Investment Properties</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {investmentProperties?.map(renderPropertyCard)}
+        </div>
+      </div> */}
+    </div>
+  );
+};

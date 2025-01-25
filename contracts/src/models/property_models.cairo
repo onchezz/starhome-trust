@@ -34,7 +34,7 @@ pub struct Property {
     pub latitude: felt252,
     pub longitude: felt252,
     pub price: u256,
-    pub owner: ContractAddress,
+    // pub owner: ContractAddress,
     pub asking_price: u256,
     pub currency: felt252,
     pub area: u64,
@@ -44,9 +44,9 @@ pub struct Property {
     pub property_type: felt252,
     pub status: felt252,
     pub interested_clients: u256,
-    pub annual_growth_rate: u256,
+    pub annual_growth_rate: felt252,
     pub features_id: felt252, // Array of features
-    pub images_id: felt252, // Array of IPFS CIDs for images
+    pub images_id: ByteArray, // Array of IPFS CIDs for images
     pub video_tour: felt252,
     pub agent_id: ContractAddress,
     pub date_listed: u64, // Date as a string (e.g., "2024-02-15")
@@ -56,12 +56,6 @@ pub struct Property {
     pub wheelchair_accessible: bool,
     pub asset_token: ContractAddress,
 }
-
-
-// #[derive(Copy, Drop, Serde, starknet::Store)]
-// pub struct PropertyIds {
-//     pub property_id: felt252,
-// }
 
 
 #[derive(Copy, Drop, Serde, starknet::Store)]

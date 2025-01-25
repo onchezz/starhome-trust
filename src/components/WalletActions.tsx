@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
-import { useTokenBalances } from "@/hooks/useTokenBalances";
+import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { Card } from "./ui/card";
 import { Shimmer } from "./ui/shimmer";
 import { motion } from "framer-motion";
@@ -27,6 +27,7 @@ const WalletActions = () => {
   const [swapAmount, setSwapAmount] = useState("");
   const [swapToken, setSwapToken] = useState("ETH");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatBalance = (balance: any) => {
     if (!balance) return "0.0000";
     return Number(balance.formatted).toFixed(4);
@@ -44,13 +45,21 @@ const WalletActions = () => {
 
   if (!address) return null;
 
-  const BalanceItem = ({ label, value, isLoading }: { label: string; value: string; isLoading: boolean }) => (
+  const BalanceItem = ({
+    label,
+    value,
+    isLoading,
+  }: {
+    label: string;
+    value: string;
+    isLoading: boolean;
+  }) => (
     <div className="flex justify-between items-center p-2">
       <span>{label}</span>
       {isLoading ? (
         <Shimmer className="h-6 w-24 rounded-md" />
       ) : (
-        <motion.span 
+        <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="font-mono"
@@ -62,12 +71,12 @@ const WalletActions = () => {
   );
 
   return (
-    <div className="flex gap-2">
+    <div className="flex justify-around gap-2">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">
+          {/* <Button variant="outline" size="icon">
             <Wallet className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -76,17 +85,17 @@ const WalletActions = () => {
           </DialogHeader>
           <Card className="p-4">
             <div className="space-y-2">
-              <BalanceItem 
+              <BalanceItem
                 label="ETH"
                 value={formatBalance(balances.ETH)}
                 isLoading={isLoading}
               />
-              <BalanceItem 
+              <BalanceItem
                 label="USDT"
                 value={formatBalance(balances.USDT)}
                 isLoading={isLoading}
               />
-              <BalanceItem 
+              <BalanceItem
                 label="STRK"
                 value={formatBalance(balances.STRK)}
                 isLoading={isLoading}
@@ -144,7 +153,9 @@ const WalletActions = () => {
           <div className="flex justify-center p-4">
             <QRCodeSVG value={address} size={200} />
           </div>
-          <p className="text-center text-sm text-gray-500 break-all">{address}</p>
+          <p className="text-center text-sm text-gray-500 break-all">
+            {address}
+          </p>
         </DialogContent>
       </Dialog>
 

@@ -150,7 +150,7 @@ const MapLocationPicker: React.FC<MapPickerProps> = ({
           onChange={(e) => setSearchLocation(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && searchPlace}
           placeholder="Search for a location..."
-          className="flex-grow"
+          className="flex"
         />
         <Button onClick={searchPlace} disabled={isSearching}>
           {isSearching ? "Searching..." : "Search"}

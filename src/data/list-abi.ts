@@ -1,19 +1,118 @@
 export const list_abi = [
-  {
-    "type": "function",
-    "name": "list_property",
-    "inputs": [
+   {
+    "type": "interface",
+    "name": "starhomes::interfaces::iStarhomes::IStarhomesContract",
+    "items": [
       {
-        "name": "property",
-        "type": "starhomes::models::property_models::Property"
-      }
-    ],
-    "outputs": [
+        "type": "function",
+        "name": "list_property",
+        "inputs": [
+          {
+            "name": "property",
+            "type": "starhomes::models::property_models::Property"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "external"
+      },
       {
-        "type": "core::felt252"
+        "type": "function",
+        "name": "list_investment_property",
+        "inputs": [
+          {
+            "name": "investment_asset",
+            "type": "starhomes::models::investment_model::InvestmentAsset"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "invest_in_property",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_property",
+        "inputs": [
+          {
+            "name": "property_id",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "starhomes::models::property_models::Property"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_sale_properties",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<starhomes::models::property_models::Property>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_investment_properties",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<starhomes::models::investment_model::InvestmentAsset>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_investment",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "starhomes::models::investment_model::InvestmentAsset"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "version",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view"
       }
-    ],
-    "state_mutability": "external"
+    ]
   },
   {
     "type": "struct",
@@ -109,7 +208,7 @@ export const list_abi = [
       },
       {
         "name": "images_id",
-        "type": "core::felt252"
+        "type": "core::byte_array::ByteArray"
       },
       {
         "name": "video_tour",
@@ -142,11 +241,7 @@ export const list_abi = [
       {
         "name": "asset_token",
         "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
-        "name": "is_investment",
-        "type": "core::bool"
       }
     ]
-  }
+  },
 ] as const;

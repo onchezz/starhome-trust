@@ -24,3 +24,18 @@ url = "http://127.0.0.1:5050"
 account = "user"
 accounts-file = "/Users/onchez/.starknet_accounts/starknet_open_zeppelin_accounts.json"
 url = "http://127.0.0.1:5050"
+
+[sncast.argent]
+account = "argent"
+accounts-file = "/Users/onchez/.starknet_accounts/starknet_open_zeppelin_accounts.json"
+url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_7"
+
+[sncast.starhomes_devnet]
+account = "starhomes_devnet"
+accounts-file = "/Users/onchez/.starknet_accounts/starknet_open_zeppelin_accounts.json"
+url = "http://127.0.0.1:5050"
+
+[sncast.starhomes_dev_argrent]
+account = "starhomes_dev_argrent"
+accounts-file = "/Users/onchez/.starknet_accounts/starknet_open_zeppelin_accounts.json"
+url = "http://127.0.0.1:5050"

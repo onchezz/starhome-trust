@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, Suspense } from "react";
 import { useAccount } from "@starknet-react/core";
-import { usePropertyWrite } from "@/hooks/usePropertyWrite";
 import { Property } from "@/types/property";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,9 +21,8 @@ import {
 } from "@/components/ui/select";
 import ErrorBoundary from "@/components/errrorBoundary";
 import { tokenOptions } from "@/utils/constants";
-import { StarknetProperty } from "@/types/starknet_types/propertyStartknetTypes";
+import { usePropertyRegistration } from "@/hooks/contract_interactions/usePropertyWrite";
 
-// Replace next/dynamic import with React.lazy
 const MapLocationPicker = React.lazy(
   () => import("@/components/MapLocationPicker")
 );
@@ -46,18 +44,33 @@ const propertyTypes = [
 const statusOptions = ["Available", "Pending", "Sold", "Under Maintenance"];
 
 const CreateProperty = () => {
-  const { address } = useAccount();
-  const { handleListProperty, isPending } = usePropertyWrite();
+  const { address, status } = useAccount();
+  const { handleListProperty, contractStatus } = usePropertyRegistration();
   const [isUploading, setIsUploading] = useState(false);
+  const [url, setUrl] = useState("");
+  const [ownerAddress, setOwnerAddress] = useState(address);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
 
-  const [formData, setFormData] = useState<Partial<StarknetProperty>>({
-    id: uuidv4(),
-    owner: address,
-    asset_token: tokenOptions[1].address,
+  useEffect(() => {
+    if (status === "disconnected") {
+      // toast.error("wallet not connects");
+    } else if (status === "connected") {
+      setOwnerAddress(address);
+    }
+  }, [address, status]);
+  const generateShortUUID = () => {
+    const fullUUID = uuidv4();
+    return fullUUID.replace(/-/g, "").substring(0, 21);
+  };
+
+  const [formData, setFormData] = useState<Partial<Property>>({
+    id: generateShortUUID(),
+    agent_id: address,
+    interested_clients: 0,
+    asset_token: tokenOptions[0].address,
     has_garden: false,
     has_swimming_pool: false,
     pet_friendly: false,
@@ -77,7 +90,8 @@ const CreateProperty = () => {
   }) => {
     setFormData((prev) => ({
       ...prev,
-      owner: address,
+      // owner: address,
+      // agent_id: address,
       latitude: location.latitude,
       longitude: location.longitude,
       location_address: location.address,
@@ -89,16 +103,13 @@ const CreateProperty = () => {
 
   // Modified handleInputChange with location updates
   const handleInputChange = (field: keyof Property, value: any) => {
-    if (
-      [
-        "price",
-        "asking_price",
-        "interested_clients",
-        "annual_growth_rate",
-      ].includes(field)
-    ) {
+    if (["price", "interested_clients", "asking_price"].includes(field)) {
       value = BigInt(value || 0);
-    } else if (
+    }
+    // else if (["annual_growth_rate"].includes(field)) {
+    //   value = Number(value || 0.0);
+    // }
+    else if (
       ["area", "bedrooms", "bathrooms", "parking_spaces"].includes(field)
     ) {
       value = Number(value || 0);
@@ -112,16 +123,44 @@ const CreateProperty = () => {
       return () => clearTimeout(timer);
     }
   };
+  const listingProperty = async (ipfsUrl) => {
+    try {
+      const status = await handleListProperty({
+        ...formData,
+        owner: address,
+        agent_id: address,
+        images_id: ipfsUrl,
+      } as Property);
+      // contractStatus =
+      if (status.status == "success") {
+        toast.success("Property created successfully! ");
+        // Reset form after successful submission
+        setSelectedFiles([]);
+        setUploadedImages([]);
+        setUploadProgress(0);
+      }
+
+      // toast.success("Property created successfully! ", );
+      // // Reset form after successful submission
+      // setSelectedFiles([]);
+      // setUploadedImages([]);
+      // setUploadProgress(0);
+    } catch (error) {
+      console.error("Error creating property:", error);
+      toast.error("Failed to create property", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {
       toast.error("Please connect your wallet first");
+      setOwnerAddress(address);
       return;
     }
 
     // Handle file upload first if there are selected files
-    if (selectedFiles.length > 0) {
+    if (selectedFiles.length > 0 && !url) {
       setIsUploading(true);
       setUploadProgress(0);
 
@@ -140,27 +179,14 @@ const CreateProperty = () => {
             },
           });
         const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
+        setUrl(ipfsUrl);
 
         setUploadedImages([ipfsUrl]);
         handleInputChange("images_id", ipfsUrl);
         toast.success(`Images uploaded to Successfully!`);
 
         // Now create the property with the uploaded images hash
-        try {
-          await handleListProperty({
-            ...formData,
-            images_id: ipfsUrl,
-          } as StarknetProperty);
-
-          toast.success("Property created successfully!");
-          // Reset form after successful submission
-          setSelectedFiles([]);
-          setUploadedImages([]);
-          setUploadProgress(0);
-        } catch (error) {
-          console.error("Error creating property:", error);
-          toast.error("Failed to create property");
-        }
+        listingProperty(ipfsUrl);
       } catch (error) {
         console.error("Error uploading to IPFS:", error);
         toast.error("Failed to upload images,", error);
@@ -169,15 +195,35 @@ const CreateProperty = () => {
         setUploadProgress(100);
       }
     } else {
-      // If no images to upload, just create the property
-      try {
-        const error = await handleListProperty(formData as StarknetProperty);
-        toast.success("Property created successfully!", error);
-      } catch (error) {
-        console.error("Error creating property:", error);
-        toast.error("Failed to create property");
-      }
+      listingProperty(url);
     }
+
+    // if (url != "") {
+    //   try {
+    //     await handleListProperty({
+    //       ...formData,
+    //       images_id: url,
+    //     } as Property);
+
+    //     toast.success("Property created successfully!");
+    //     // Reset form after successful submission
+    //     setSelectedFiles([]);
+    //     setUploadedImages([]);
+    //     setUploadProgress(0);
+    //   } catch (error) {
+    //     console.error("Error creating property:", error);
+    //     toast.error("Failed to create property", error);
+    //   }
+    // } else {
+    //   // If no images to upload, just create the property
+    //   try {
+    //     const error = await handleListProperty(formData as Property);
+    //     toast.success(`Property created successfully! ${error} `);
+    //   } catch (error) {
+    //     console.error("Error creating property:", error);
+    //     toast.error("Failed to create property");
+    //   }
+    // }
   };
 
   const validateFiles = (files: File[]) => {
@@ -275,7 +321,7 @@ const CreateProperty = () => {
         <div className="mt-2">
           <div className="rounded-lg bg-gray-50 p-4">
             <p className="text-sm text-gray-500">
-              Images uploaded to IPFS folder:
+              Images uploaded:
               <code className="ml-2 px-2 py-1 bg-gray-100 rounded">
                 {uploadedImages[0]}
               </code>
@@ -320,27 +366,29 @@ const CreateProperty = () => {
 
                 {/* Property Details */}
                 <div className="space-y-2">
-                  <Label>Price</Label>
+                  <Label htmlFor="price">Price</Label>
                   <Input
+                    id="price"
                     type="number"
+                    autoComplete="price"
                     required
                     value={
-                      typeof formData.price === "bigint"
-                        ? formData.price.toString()
-                        : ""
+                      formData.price ? Number(formData.price.toString()) : ""
                     }
                     onChange={(e) => handleInputChange("price", e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Asking Price</Label>
+                  <Label htmlFor="asking-price">Asking Price</Label>
                   <Input
+                    id="asking-price"
                     type="number"
+                    autoComplete="asking-price"
                     required
                     value={
-                      typeof formData.asking_price === "bigint"
-                        ? formData.asking_price.toString()
+                      formData.asking_price
+                        ? Number(formData.asking_price.toString())
                         : ""
                     }
                     onChange={(e) =>
@@ -388,7 +436,7 @@ const CreateProperty = () => {
                   <Input
                     type="number"
                     required
-                    value={formData.parking_spaces || ""}
+                    value={formData.parking_spaces}
                     onChange={(e) =>
                       handleInputChange("parking_spaces", e.target.value)
                     }
@@ -447,20 +495,81 @@ const CreateProperty = () => {
                     }
                   />
                 </div>
-
                 <div className="space-y-2">
                   <Label>Annual Growth Rate (%)</Label>
                   <Input
-                    type="number"
+                    type="text"
                     value={
-                      typeof formData.annual_growth_rate === "bigint"
-                        ? formData.annual_growth_rate.toString()
+                      formData.annual_growth_rate
+                        ? formData.annual_growth_rate.toString() // Convert to string for the input
                         : ""
                     }
                     onChange={(e) =>
                       handleInputChange("annual_growth_rate", e.target.value)
                     }
                   />
+                </div>
+
+                {/* <div className="space-y-2">
+                  <Label>Annual Growth Rate (%)</Label>
+                  <Input
+                    type="text"
+                    decimalPlaces={3}
+                    value={
+                      formData.annual_growth_rate
+                        ? Number(formData.annual_growth_rate.toString())
+                        : ""
+                      // formData.annual_growth_rate
+                      // typeof formData.annual_growth_rate == "number"
+                      //   ? formData.annual_growth_rate
+                      //   : 0
+                    }
+                    onChange={(e) =>
+                      handleInputChange("annual_growth_rate", e.target.value)
+                    }
+                  />
+                </div> */}
+                <div className="space-y-2">
+                  <Label>Agent Address</Label>
+                  <Input
+                    disabled
+                    value={formData.agent_id}
+                    onChange={(e) =>
+                      handleInputChange("agent_id", e.target.value)
+                    }
+                    placeholder={address || "Agent Address"}
+                  />
+                </div>
+                {/* <div className="space-y-2">
+                  <Label>Owner Address</Label>
+                  <Input
+                    disabled
+                    value={formData.owner}
+                    onChange={(e) => handleInputChange("owner", e.target.value)}
+                    placeholder={address || "Owner Address"}
+                  />
+                </div> */}
+                <div className="space-y-2">
+                  <Label>Asset Token</Label>
+                  <Select
+                    value={formData.asset_token}
+                    onValueChange={(value) =>
+                      handleInputChange("asset_token", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select token" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tokenOptions.map((token) => (
+                        <SelectItem key={token.symbol} value={token.address}>
+                          {token.symbol}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* </div>
+                  </div> */}
                 </div>
 
                 {/* Location Information with Auto-coordinate Update */}
@@ -537,6 +646,7 @@ const CreateProperty = () => {
                   />
                 </div>
               </div>
+
               {/* Property Features Section */}
               <div>
                 <div className="col-span-full bg-gray-50 p-6 rounded-lg mt-6">
@@ -597,32 +707,6 @@ const CreateProperty = () => {
                           handleInputChange("has_swimming_pool", checked)
                         }
                       />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Asset Token</Label>
-                      <Select
-                        value={formData.asset_token}
-                        onValueChange={(value) =>
-                          handleInputChange("asset_token", value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select token" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tokenOptions.map((token) => (
-                            <SelectItem
-                              key={token.symbol}
-                              value={token.address}
-                            >
-                              {token.symbol}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {/* </div>
-                  </div> */}
                     </div>
                   </div>
                 </div>
@@ -752,19 +836,30 @@ const CreateProperty = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isPending || isUploading}
+                disabled={contractStatus.isPending || isUploading}
                 className="mx-auto bg-blue-500 text-white px-4 py-2 rounded"
               >
                 {isUploading
                   ? "Uploading Images..."
-                  : isPending
+                  : contractStatus.isPending
                   ? "Creating Property..."
                   : selectedFiles.length > 0
                   ? "Upload Images & Create Property"
                   : "Create Property"}
               </Button>
-
-              {/* Rest of your form sections... */}
+              {/* <Button
+                onClick={handleSubmit}
+                disabled={contractStatus.isPending || isUploading}
+                className="mx-auto bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                {isUploading
+                  ? "Uploading Images..."
+                  : contractStatus.isPending
+                  ? "Creating Property..."
+                  : selectedFiles.length > 0
+                  ? "Upload Images & Create Property"
+                  : " Property"}
+              </Button> */}
             </form>
           </CardContent>
         </Card>

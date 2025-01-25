@@ -10,6 +10,7 @@ pub trait IUsersComponentTrait<TContractState> {
         investor:Investor,
     ) -> felt252;
     fn edit_investor(ref self: TContractState, investor: Investor) -> felt252;
+     fn get_agents(self: @TContractState) -> Array<Agent>;
     fn get_agent(self: @TContractState, agent_id: ContractAddress) -> Agent;
     fn register_agent(
         ref self: TContractState,

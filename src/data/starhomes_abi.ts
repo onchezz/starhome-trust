@@ -1,4 +1,4 @@
-export const starhomes_abi = [
+export const starhomes_abi =[
   {
     "type": "impl",
     "name": "StarhomesContractImpl",
@@ -95,10 +95,6 @@ export const starhomes_abi = [
         "type": "core::integer::u256"
       },
       {
-        "name": "owner",
-        "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
         "name": "asking_price",
         "type": "core::integer::u256"
       },
@@ -136,7 +132,7 @@ export const starhomes_abi = [
       },
       {
         "name": "annual_growth_rate",
-        "type": "core::integer::u256"
+        "type": "core::felt252"
       },
       {
         "name": "features_id",
@@ -144,7 +140,7 @@ export const starhomes_abi = [
       },
       {
         "name": "images_id",
-        "type": "core::felt252"
+        "type": "core::byte_array::ByteArray"
       },
       {
         "name": "video_tour",
@@ -237,6 +233,14 @@ export const starhomes_abi = [
         "type": "core::felt252"
       },
       {
+        "name": "description",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "is_active",
+        "type": "core::bool"
+      },
+      {
         "name": "location",
         "type": "core::felt252"
       },
@@ -259,10 +263,6 @@ export const starhomes_abi = [
       {
         "name": "available_staking_amount",
         "type": "core::integer::u256"
-      },
-      {
-        "name": "is_active",
-        "type": "core::bool"
       },
       {
         "name": "investment_type",
@@ -372,6 +372,46 @@ export const starhomes_abi = [
           }
         ],
         "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "edit_property",
+        "inputs": [
+          {
+            "name": "property_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "property",
+            "type": "starhomes::models::property_models::Property"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "edit_listed_investment_property",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "investment",
+            "type": "starhomes::models::investment_model::InvestmentAsset"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
         "state_mutability": "external"
       },
       {
@@ -513,7 +553,7 @@ export const starhomes_abi = [
     "members": [
       {
         "name": "agent_id",
-        "type": "core::felt252"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
         "name": "name",
@@ -529,11 +569,7 @@ export const starhomes_abi = [
       },
       {
         "name": "profile_image",
-        "type": "core::felt252"
-      },
-      {
-        "name": "agent_address",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::byte_array::ByteArray"
       }
     ]
   },
@@ -594,6 +630,17 @@ export const starhomes_abi = [
           }
         ],
         "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_agents",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<starhomes::models::user_models::Agent>"
+          }
+        ],
+        "state_mutability": "view"
       },
       {
         "type": "function",
@@ -998,7 +1045,17 @@ export const starhomes_abi = [
         "kind": "nested"
       },
       {
+        "name": "PropertyEditedListed",
+        "type": "starhomes::models::contract_events::PropertyListed",
+        "kind": "nested"
+      },
+      {
         "name": "InvestmentListed",
+        "type": "starhomes::models::contract_events::InvestmentListed",
+        "kind": "nested"
+      },
+      {
+        "name": "InvestmentListedEdited",
         "type": "starhomes::models::contract_events::InvestmentListed",
         "kind": "nested"
       },

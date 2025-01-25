@@ -6,6 +6,8 @@ pub mod Errors {
     pub const UNFINISHED_DURATION: felt252 = 'Reward duration not finished';
     pub const NOT_ENOUGH_BALANCE: felt252 = 'Balance too low';
     pub const NOT_OWNER: felt252 = 'Caller is not the owner';
+    pub const AGENT_OWNER: felt252 = 'Agent is not the owner';
+    pub const AGENT_ALREADY_REGISTERED: felt252 = 'Agent already registered';
     pub const OWNER_NOT_REGISTERED: felt252 = 'Caller is not registered';
     pub const AGENT_NOT_REGISTERED: felt252 = 'Agent is not registered';
     pub const INVESTOR_NOT_REGISTERED: felt252 = 'Investor is not registered';

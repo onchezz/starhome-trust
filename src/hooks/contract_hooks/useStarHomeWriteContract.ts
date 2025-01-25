@@ -1,55 +1,97 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Abi, useContract, useSendTransaction } from "@starknet-react/core";
+import { jsonRpcProvider, useContract, useSendTransaction } from "@starknet-react/core";
+import type { Abi, Contract, Call } from "starknet";
+import { useMemo, useCallback } from "react";
+import { rpcProvideUr, starhomesContract } from "@/utils/constants";
 import { starhomes_abi } from "@/data/starhomes_abi";
-// import type { Abi, Call } from "starknet";
-import { starhomesContract } from "@/utils/constants";
+import { Chain } from "@starknet-react/chains";
 
-// First attempt to extract interface functions
-type AbiInterface = Extract<
-  typeof starhomes_abi[number],
-  { type: "interface"; name: "starhomes::interface::IStarhomesContract" }
->;
+interface UseSmartContractProps {
+  address: string;
+  abi: Abi;
+}
 
-type AbiFunctions = AbiInterface extends { items: Array<infer Item> }
-  ? Item extends { name: string }
-    ? Item["name"]
-    : string
-  : string;
+interface TransactionStatus {
+  isError: boolean;
+  isSuccess: boolean;
+  isPending: boolean;
+  error: Error | null;
+  reset: () => void;
+}
 
-// Fallback to allowing any string if type extraction fails
-type ContractFunction = AbiFunctions | string;
-
-export const useStarHomeWriteContract = ({
-  functionName,
-}: {
-  functionName: ContractFunction;
-}) => {
-  const { contract } = useContract({
-    abi: starhomes_abi as Abi,
-    address: starhomesContract,
+export function useStarHomeWriteContract() {
+const { contract } = useContract({
+  abi:starhomes_abi as Abi ,
+  address: starhomesContract,
+  // provider:rpcProvideUr
+});
+  // Initialize transaction hook with empty calls
+  const {  sendAsync, error, reset, status } = useSendTransaction({
+    calls: undefined,
   });
 
-  const sendAsync = async ({ args }: { args: any[] }) => {
-    if (!contract) {
-      throw new Error("Contract not initialized");
-    }
+  // Create status object
+  const txStatus: TransactionStatus = useMemo(() => ({
+    isError: status === "error",
+    isSuccess: status === "success",
+    isPending: status === "pending",
+    error,
+    reset,
+  }), [status, error, reset]);
 
-    console.log(`Calling ${functionName} with args:`, args);
-    const call = contract.populate(functionName, args);
-    
-    try {
-      const response = await contract.execute(call);
-      console.log(`${functionName} result:`, response);
-      return response;
-    } catch (error) {
-      console.error(`Error executing ${functionName}:`, error);
-      throw error;
-    }
-  };
+  // Create a memoized execute function
+  const execute = useCallback(
+    async (functionName: string, args: any[]) => {
+      if (!contract) {
+        throw new Error("Contract not initialized");
+      }
+
+      try {
+       console.log(contract.functions)
+       
+        // Create the call using the contract's populate method
+        const call = contract.populate(functionName, args);
+        console.log(`Calling ${functionName} with args:`, args);
+        console.log(`Calling ${functionName} with call:`, call);
+        // Send the transaction
+        const response = await sendAsync([call]);
+        return { response, status: txStatus };
+      } catch (err) {
+        console.error(`Error executing ${functionName}:`, err);
+        throw err;
+      }
+    },
+    [contract, sendAsync, txStatus]
+  );
+
+  // Create a memoized executeBatch function for multiple calls
+  const executeBatch = useCallback(
+    async (calls: { functionName: string; args: any[] }[]) => {
+      if (!contract) {
+        throw new Error("Contract not initialized");
+      }
+
+      try {
+        // Create all calls using the contract's populate method
+        const populatedCalls = calls.map(({ functionName, args }) =>
+          contract.populate(functionName, args)
+        );
+        
+        // Send the batch transaction
+        const response = await sendAsync(populatedCalls);
+        return { response, status: txStatus };
+      } catch (err) {
+        console.error("Error executing batch transaction:", err);
+        throw err;
+      }
+    },
+    [contract, sendAsync, txStatus]
+  );
 
   return {
-    sendAsync,
-    isPending: false, // We'll handle loading state manually since we're using direct contract execution
+    contract,
+    execute,
+    executeBatch,
+    status: txStatus,
   };
-};
+}

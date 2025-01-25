@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
@@ -5,12 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
-import { InvestmentAsset } from "@/types/starknet_types/investment";
+import {
+  InvestmentAsset,
+  MarketAnalysis,
+} from "@/types/starknet_types/investment";
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
-import MarketAnalysis from "@/components/investment/MarketAnalysis";
 import FileUploadSection from "@/components/investment/FileUploadSection";
-
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
   pinataJwt: import.meta.env.VITE_PINATA_JWT,
@@ -242,10 +244,10 @@ const AddInvestment = () => {
                 formData={formData}
                 handleInputChange={handleInputChange}
               />
-              <MarketAnalysis
+              {/* <MarketAnalysis
                 marketAnalysis={formData.market_analysis!}
                 handleMarketAnalysisChange={handleMarketAnalysisChange}
-              />
+              /> */}
               <FileUploadSection
                 selectedFiles={selectedFiles}
                 selectedDocs={selectedDocs}

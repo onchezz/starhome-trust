@@ -11,6 +11,9 @@ pub mod PropertyComponent {
         VecTrait, StoragePathEntry, MutableVecTrait,
     };
     use core::option::Option;
+    #[allow(unused_imports)]
+    use core::panics::{panic, Panic, PanicResult};
+
     // use starhomes::messages::errors::Errors;
     // use starhomes::messages::success::Messages;
     use starknet::ContractAddress;
@@ -18,15 +21,14 @@ pub mod PropertyComponent {
     use core::array::ArrayTrait;
     use core::traits::Into;
     // use openzeppelin::token::erc20::interface::{IERC20Dispatcher};
-    use starhomes::components::user_component::UsersComponent::UsersPrivateFunctions;
-    use starhomes::components::staking_component::AssetStakingComponent::StakingPrivateFunctions;
-
 
     #[event]
     #[derive(Drop, starknet::Event)]
     pub enum Event {
         PropertyListed: PropertyListed,
+        PropertyEditedListed: PropertyListed,
         InvestmentListed: InvestmentListed,
+        InvestmentListedEdited: InvestmentListed,
         PropertySold: PropertySold,
         InvestmentMade: InvestmentMade,
     }
@@ -41,7 +43,7 @@ pub mod PropertyComponent {
         investments_properties: Map::<felt252, InvestmentAsset>,
         property_investments_by_investor: Map::<ContractAddress, Vec<u256>>,
         property_sale_count: u256,
-         property_investment_count: u256,
+        property_investment_count: u256,
     }
 
 
@@ -50,6 +52,8 @@ pub mod PropertyComponent {
         TContractState, +HasComponent<TContractState>,
     > of IPropertyComponentTrait<ComponentState<TContractState>> {
         fn list_property(ref self: ComponentState<TContractState>, property: Property) -> felt252 {
+            self._is_property_added(property.id.clone());
+
             self._add_property(property.clone());
 
             self.listed_sale_properties_ids.append().write(property.id);
@@ -59,7 +63,29 @@ pub mod PropertyComponent {
                     Event::PropertyListed(
                         PropertyListed {
                             property_id: property.id,
-                            owner: property.owner,
+                            owner: property.agent_id,
+                            price: property.price,
+                            payment_token: property.asset_token,
+                            timestamp: starknet::get_block_timestamp(),
+                        },
+                    ),
+                );
+
+            property.id.clone()
+        }
+        fn edit_property(
+            ref self: ComponentState<TContractState>, property_id: felt252, property: Property,
+        ) -> felt252 {
+            self._is_property_added(property.id.clone());
+            let is_property_already_added = self._is_property_added(property.id.clone());
+            assert(is_property_already_added == false, 'Property cannot be edited');
+            self._edit_property(property_id, property.clone());
+            self
+                .emit(
+                    Event::PropertyEditedListed(
+                        PropertyListed {
+                            property_id: property.id,
+                            owner: property.agent_id,
                             price: property.price,
                             payment_token: property.asset_token,
                             timestamp: starknet::get_block_timestamp(),
@@ -72,8 +98,8 @@ pub mod PropertyComponent {
         fn list_investment_property(
             ref self: ComponentState<TContractState>, investment: InvestmentAsset,
         ) -> felt252 {
-           
-
+            let is_investment_already_added = self._is_investment_added(investment.id.clone());
+            assert(is_investment_already_added == true, 'Investment already added');
             self.listed_investment_properties_ids.append().write(investment.id);
 
             self
@@ -91,6 +117,28 @@ pub mod PropertyComponent {
 
             investment.id.clone()
         }
+        fn edit_listed_investment_property(
+            ref self: ComponentState<TContractState>,
+            investment_id: felt252,
+            investment: InvestmentAsset,
+        ) -> felt252 {
+            let is_investment_already_added = self._is_investment_added(investment.id.clone());
+            assert(is_investment_already_added == false, 'Investment cannot be edited');
+            self.edit_listed_investment(investment_id, investment.clone());
+            self
+                .emit(
+                    Event::InvestmentListedEdited(
+                        InvestmentListed {
+                            investment_id: investment.id,
+                            owner: investment.owner,
+                            asset_price: investment.asset_value,
+                            payment_token: investment.investment_token,
+                            timestamp: starknet::get_block_timestamp(),
+                        },
+                    ),
+                );
+            investment_id
+        }
         fn get_sale_properties(self: @ComponentState<TContractState>) -> Array<Property> {
             let mut sale_properties = array![];
             for i in 0..self.listed_sale_properties_ids.len() {
@@ -99,7 +147,9 @@ pub mod PropertyComponent {
             };
             sale_properties
         }
-        fn get_investment_properties(self: @ComponentState<TContractState>) -> Array<InvestmentAsset> {
+        fn get_investment_properties(
+            self: @ComponentState<TContractState>,
+        ) -> Array<InvestmentAsset> {
             let mut investment_properties = array![];
             for i in 0..self.listed_investment_properties_ids.len() {
                 let id = self.listed_investment_properties_ids.at(i).read();
@@ -107,9 +157,6 @@ pub mod PropertyComponent {
             };
             investment_properties
         }
-
-
-       
 
         fn get_property_by_id(
             self: @ComponentState<TContractState>, property_id: felt252,
@@ -124,28 +171,57 @@ pub mod PropertyComponent {
         }
     }
 
+    #[inline]
+    pub fn panic_with_felt252(err_code: felt252) {
+        panic(array![err_code])
+    }
 
     #[generate_trait]
     pub impl PropertyFunctions<
         TContractState, +HasComponent<TContractState>,
     > of PropertyFunctionsTrait<TContractState> {
-        fn _add_property(ref self: ComponentState<TContractState>, property: Property) -> Property {
-            self.properties.write(property.id.clone(), property.clone());
-            property
+        fn _is_property_added(self: @ComponentState<TContractState>, property_id: felt252) -> bool {
+            let saved_id = self.get_property_by_id(property_id).id;
+            match (saved_id == property_id) {
+                true => {
+                    panic_with_felt252('Property already exists');
+                    true
+                },
+                false => false,
+            }
+            // let saved_id = self.get_property_by_id(property_id).id;
+        // assert(saved_id == property_id, 'Property already exists');
+        // property_id
         }
-         fn _add_investment_asset(ref self: ComponentState<TContractState>, asset: InvestmentAsset) -> InvestmentAsset {
+        fn _add_property(ref self: ComponentState<TContractState>, property: Property) {
+            self.properties.write(property.id.clone(), property.clone());
+        }
+        fn _edit_property(
+            ref self: ComponentState<TContractState>, id: felt252, property: Property,
+        ) {
+            self.properties.entry(id).write(property.clone());
+        }
+        fn _is_investment_added(
+            self: @ComponentState<TContractState>, investment_id: felt252,
+        ) -> bool {
+            self.investments_properties.entry(investment_id).read().id == investment_id
+        }
+        fn _add_investment_asset(ref self: ComponentState<TContractState>, asset: InvestmentAsset) {
             self.investments_properties.write(asset.id.clone(), asset.clone());
-            asset
+        }
+        fn edit_listed_investment(
+            ref self: ComponentState<TContractState>,
+            investment_id: felt252,
+            investment: InvestmentAsset,
+        ) {
+            self.investments_properties.entry(investment_id).write(investment);
         }
         fn _initialize_property_count(ref self: ComponentState<TContractState>) {
-    
             self.property_sale_count.write(0);
-                  self.property_investment_count.write(0);
+            self.property_investment_count.write(0);
         }
         fn get_investment_count(self: @ComponentState<TContractState>) -> u256 {
             (self.listed_investment_properties_ids.len()).into()
         }
-        
-      
     }
 }
