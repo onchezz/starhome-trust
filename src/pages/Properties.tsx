@@ -20,9 +20,9 @@ import propertiesData from "@/data/properties.json";
 import { useEffect, useState } from "react";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertyRead";
 import { Property } from "@/types/property";
+import { motion } from "framer-motion";
 
 const Properties = () => {
-  // const [properties] = usePropertyRead();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     priceRange: [0, 15000000],
@@ -32,14 +32,8 @@ const Properties = () => {
   });
   const [showSearch, setShowSearch] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-
   const [contract_properties, setProperties] = useState([]);
-  // useEffect(() => {
-  //   properties.map((property) => {});
-  //   setProperties(properties);
-  //   console.log("Properties:", properties);
-  //   console.log("Investment Properties:", investmentProperties);
-  // }, [properties, investmentProperties]);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -82,12 +76,17 @@ const Properties = () => {
   });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <Navbar />
       <div className="container mx-auto py-24">
-        <h1 className="text-4xl font-bold mb-8 text-center">
+        <motion.h1 
+          className="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           Available Properties
-        </h1>
+        </motion.h1>
 
         {/* Mobile Search and Filter Buttons */}
         <div className="md:hidden flex gap-2 mb-4">
@@ -119,7 +118,6 @@ const Properties = () => {
           </Button>
         </div>
 
-        {/* Search Bar - Desktop always visible, Mobile collapsible */}
         <div className={`md:block ${showSearch ? "block" : "hidden"}`}>
           <PropertySearch
             searchTerm={searchTerm}
@@ -128,7 +126,6 @@ const Properties = () => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Filters - Desktop always visible, Mobile collapsible */}
           <div
             className={`md:block md:w-80 md:flex-shrink-0 ${
               showFilters ? "block" : "hidden"
@@ -137,56 +134,81 @@ const Properties = () => {
             <PropertyFilters onFilterChange={setFilters} />
           </div>
 
-          <ScrollArea className="h-[800px] w-full rounded-md border p-4">
+          <ScrollArea className="h-[800px] w-full rounded-md border p-4 bg-white/50 backdrop-blur-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProperties.map((property) => (
-                <Card key={property.id} className="overflow-hidden relative">
-                  <Badge
-                    variant="secondary"
-                    className="absolute top-4 right-4 bg-green-500 text-white hover:bg-green-600"
-                  >
-                    {property.status}
-                  </Badge>
-                  <img
-                    src={property.images[0]}
-                    alt={property.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <CardHeader>
-                    <CardTitle>{property.title}</CardTitle>
-                    <CardDescription>
-                      {property.location.city}, {property.location.state}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between mb-4">
-                      <span className="text-2xl font-bold text-primary">
-                        {formatPrice(property.price)}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="text-center">
-                        <p className="font-semibold">
-                          {property.interestedClients}
-                        </p>
-                        <p className="text-muted-foreground">
-                          Interested Clients
-                        </p>
+              {filteredProperties.map((property, index) => (
+                <motion.div
+                  key={property.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ 
+                    scale: 1.02,
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <Card className="overflow-hidden relative group hover:shadow-lg transition-all duration-300">
+                    <Badge
+                      variant="secondary"
+                      className="absolute top-4 right-4 bg-green-500 text-white hover:bg-green-600 z-10"
+                    >
+                      {property.status}
+                    </Badge>
+                    <motion.div
+                      className="relative overflow-hidden"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <img
+                        src={property.images[0]}
+                        alt={property.title}
+                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </motion.div>
+                    <CardHeader>
+                      <CardTitle>{property.title}</CardTitle>
+                      <CardDescription>
+                        {property.location.city}, {property.location.state}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex justify-between mb-4">
+                        <motion.span 
+                          className="text-2xl font-bold text-primary"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: 0.2 }}
+                        >
+                          {formatPrice(property.price)}
+                        </motion.span>
                       </div>
-                      <div className="text-center">
-                        <p className="font-semibold">
-                          {property.annualGrowthRate}%
-                        </p>
-                        <p className="text-muted-foreground">Annual Growth</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="text-center">
+                          <p className="font-semibold">
+                            {property.interestedClients}
+                          </p>
+                          <p className="text-muted-foreground">
+                            Interested Clients
+                          </p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold">
+                            {property.annualGrowthRate}%
+                          </p>
+                          <p className="text-muted-foreground">Annual Growth</p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/properties/${property.id}`} className="w-full">
-                      <Button className="w-full">View Details</Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
+                    </CardContent>
+                    <CardFooter>
+                      <Link to={`/properties/${property.id}`} className="w-full">
+                        <Button className="w-full bg-primary hover:bg-primary/90 transition-colors duration-300">
+                          View Details
+                        </Button>
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </ScrollArea>
@@ -198,9 +220,6 @@ const Properties = () => {
 };
 
 export default Properties;
-
-// import { usePropertyRead } from "../hooks/usePropertyRead";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const PropertyList = () => {
   const { properties, isLoading, error } = usePropertyRead();
@@ -255,16 +274,8 @@ const PropertyList = () => {
         <h2 className="text-2xl font-bold mb-4">Properties for Sale</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {properties.map(renderPropertyCard)}
-          {/* renderPropertyCard */}
         </div>
       </div>
-
-      {/* <div>
-        <h2 className="text-2xl font-bold mb-4">Investment Properties</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {investmentProperties?.map(renderPropertyCard)}
-        </div>
-      </div> */}
     </div>
   );
 };
