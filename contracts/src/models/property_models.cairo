@@ -33,9 +33,9 @@ pub struct Property {
     pub country: felt252,
     pub latitude: felt252,
     pub longitude: felt252,
-    pub price: u256,
+    pub price: u64,
     // pub owner: ContractAddress,
-    pub asking_price: u256,
+    pub asking_price: u64,
     pub currency: felt252,
     pub area: u64,
     pub bedrooms: u64,
@@ -43,7 +43,7 @@ pub struct Property {
     pub parking_spaces: u64,
     pub property_type: felt252,
     pub status: felt252,
-    pub interested_clients: u256,
+    pub interested_clients: u64,
     pub annual_growth_rate: felt252,
     pub features_id: felt252, // Array of features
     pub images_id: ByteArray, // Array of IPFS CIDs for images

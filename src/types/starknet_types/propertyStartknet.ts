@@ -32,3 +32,4 @@ export interface StarknetProperty {
   wheelchair_accessible: boolean;
   asset_token: string;
 }
+

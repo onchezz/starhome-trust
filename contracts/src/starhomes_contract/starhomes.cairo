@@ -1,5 +1,5 @@
 #[starknet::contract]
-pub mod StarhomesContract {
+pub mod StarhomesContracts {
     use starhomes::components::staking_component::AssetStakingComponent;
     // use starhomes::components::staking_component::AssetStakingComponent::StakingPrivateFunctions;
     use starhomes::components::property_component::PropertyComponent;

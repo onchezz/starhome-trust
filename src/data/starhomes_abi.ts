@@ -1,12 +1,12 @@
 export const starhomes_abi =[
   {
-    "type": "impl",
     "name": "StarhomesContractImpl",
+    "type": "impl",
     "interface_name": "starhomes::interfaces::iStarhomes::IStarhomesContract"
   },
   {
-    "type": "struct",
     "name": "core::byte_array::ByteArray",
+    "type": "struct",
     "members": [
       {
         "name": "data",
@@ -23,8 +23,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
     "name": "core::integer::u256",
+    "type": "struct",
     "members": [
       {
         "name": "low",
@@ -37,8 +37,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "enum",
     "name": "core::bool",
+    "type": "enum",
     "variants": [
       {
         "name": "False",
@@ -51,8 +51,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
     "name": "starhomes::models::property_models::Property",
+    "type": "struct",
     "members": [
       {
         "name": "id",
@@ -177,8 +177,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
     "name": "starhomes::models::investment_model::MarketAnalysis",
+    "type": "struct",
     "members": [
       {
         "name": "area_growth",
@@ -199,8 +199,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
     "name": "starhomes::models::investment_model::LegalDetails",
+    "type": "struct",
     "members": [
       {
         "name": "ownership",
@@ -221,8 +221,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
     "name": "starhomes::models::investment_model::InvestmentAsset",
+    "type": "struct",
     "members": [
       {
         "name": "id",
@@ -327,12 +327,12 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "interface",
     "name": "starhomes::interfaces::iStarhomes::IStarhomesContract",
+    "type": "interface",
     "items": [
       {
-        "type": "function",
         "name": "list_property",
+        "type": "function",
         "inputs": [
           {
             "name": "property",
@@ -347,8 +347,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "list_investment_property",
+        "type": "function",
         "inputs": [
           {
             "name": "investment_asset",
@@ -359,8 +359,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "invest_in_property",
+        "type": "function",
         "inputs": [
           {
             "name": "investment_id",
@@ -375,8 +375,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "edit_property",
+        "type": "function",
         "inputs": [
           {
             "name": "property_id",
@@ -395,8 +395,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "edit_listed_investment_property",
+        "type": "function",
         "inputs": [
           {
             "name": "investment_id",
@@ -415,8 +415,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "get_property",
+        "type": "function",
         "inputs": [
           {
             "name": "property_id",
@@ -431,8 +431,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "get_sale_properties",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -442,8 +442,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "get_investment_properties",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -453,8 +453,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "get_investment",
+        "type": "function",
         "inputs": [
           {
             "name": "investment_id",
@@ -469,8 +469,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "version",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -482,17 +482,17 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "impl",
     "name": "UpgradeableImpl",
+    "type": "impl",
     "interface_name": "openzeppelin_upgrades::interface::IUpgradeable"
   },
   {
-    "type": "interface",
     "name": "openzeppelin_upgrades::interface::IUpgradeable",
+    "type": "interface",
     "items": [
       {
-        "type": "function",
         "name": "upgrade",
+        "type": "function",
         "inputs": [
           {
             "name": "new_class_hash",
@@ -505,13 +505,13 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "impl",
     "name": "UsersComponentImpl",
+    "type": "impl",
     "interface_name": "starhomes::interfaces::user::IUsersComponentTrait"
   },
   {
-    "type": "struct",
     "name": "starhomes::models::user_models::Investor",
+    "type": "struct",
     "members": [
       {
         "name": "investor_address",
@@ -548,8 +548,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
     "name": "starhomes::models::user_models::Agent",
+    "type": "struct",
     "members": [
       {
         "name": "agent_id",
@@ -574,12 +574,12 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "interface",
     "name": "starhomes::interfaces::user::IUsersComponentTrait",
+    "type": "interface",
     "items": [
       {
-        "type": "function",
         "name": "get_investors",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -589,8 +589,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "get_investor",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -600,8 +600,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "register_investor",
+        "type": "function",
         "inputs": [
           {
             "name": "investor",
@@ -616,8 +616,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "edit_investor",
+        "type": "function",
         "inputs": [
           {
             "name": "investor",
@@ -632,8 +632,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "get_agents",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -643,8 +643,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "get_agent",
+        "type": "function",
         "inputs": [
           {
             "name": "agent_id",
@@ -659,8 +659,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "register_agent",
+        "type": "function",
         "inputs": [
           {
             "name": "agent",
@@ -675,8 +675,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "edit_agent",
+        "type": "function",
         "inputs": [
           {
             "name": "agent",
@@ -693,17 +693,17 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "impl",
     "name": "OwnableMixinImpl",
+    "type": "impl",
     "interface_name": "openzeppelin_access::ownable::interface::OwnableABI"
   },
   {
-    "type": "interface",
     "name": "openzeppelin_access::ownable::interface::OwnableABI",
+    "type": "interface",
     "items": [
       {
-        "type": "function",
         "name": "owner",
+        "type": "function",
         "inputs": [],
         "outputs": [
           {
@@ -713,8 +713,8 @@ export const starhomes_abi =[
         "state_mutability": "view"
       },
       {
-        "type": "function",
         "name": "transfer_ownership",
+        "type": "function",
         "inputs": [
           {
             "name": "new_owner",
@@ -725,15 +725,15 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "renounce_ownership",
+        "type": "function",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "transferOwnership",
+        "type": "function",
         "inputs": [
           {
             "name": "newOwner",
@@ -744,8 +744,8 @@ export const starhomes_abi =[
         "state_mutability": "external"
       },
       {
-        "type": "function",
         "name": "renounceOwnership",
+        "type": "function",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
@@ -753,8 +753,8 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "constructor",
     "name": "constructor",
+    "type": "constructor",
     "inputs": [
       {
         "name": "owner",
@@ -763,343 +763,381 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "key",
         "name": "previous_owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "key"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "key",
         "name": "new_owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "key"
+        "type": "core::starknet::contract_address::ContractAddress"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "key",
         "name": "previous_owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "key"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "key",
         "name": "new_owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "key"
+        "type": "core::starknet::contract_address::ContractAddress"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "enum",
     "name": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
-    "kind": "enum",
+    "type": "event",
     "variants": [
       {
+        "kind": "nested",
         "name": "OwnershipTransferred",
-        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
-        "kind": "nested"
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred"
       },
       {
+        "kind": "nested",
         "name": "OwnershipTransferStarted",
-        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
-        "kind": "nested"
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "class_hash",
-        "type": "core::starknet::class_hash::ClassHash",
-        "kind": "data"
+        "type": "core::starknet::class_hash::ClassHash"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "enum",
     "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
-    "kind": "enum",
+    "type": "event",
     "variants": [
       {
+        "kind": "nested",
         "name": "Upgraded",
-        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
-        "kind": "nested"
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "starhomes::models::contract_events::Deposit",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "user",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "amount",
-        "type": "core::integer::u256",
-        "kind": "data"
+        "type": "core::integer::u256"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "starhomes::models::contract_events::Withdrawal",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "user",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "amount",
-        "type": "core::integer::u256",
-        "kind": "data"
+        "type": "core::integer::u256"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "starhomes::models::contract_events::RewardsFinished",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "msg",
-        "type": "core::felt252",
-        "kind": "data"
+        "type": "core::felt252"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "enum",
     "name": "starhomes::components::staking_component::AssetStakingComponent::Event",
-    "kind": "enum",
+    "type": "event",
     "variants": [
       {
+        "kind": "nested",
         "name": "Deposit",
-        "type": "starhomes::models::contract_events::Deposit",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::Deposit"
       },
       {
+        "kind": "nested",
         "name": "Withdrawal",
-        "type": "starhomes::models::contract_events::Withdrawal",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::Withdrawal"
       },
       {
+        "kind": "nested",
         "name": "RewardsFinished",
-        "type": "starhomes::models::contract_events::RewardsFinished",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::RewardsFinished"
       }
     ]
   },
   {
+    "kind": "struct",
+    "name": "starhomes::models::contract_events::UserRegistered",
     "type": "event",
+    "members": [
+      {
+        "kind": "data",
+        "name": "user",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "kind": "data",
+        "name": "name",
+        "type": "core::felt252"
+      },
+      {
+        "kind": "data",
+        "name": "email",
+        "type": "core::felt252"
+      },
+      {
+        "kind": "data",
+        "name": "phone",
+        "type": "core::felt252"
+      },
+      {
+        "kind": "data",
+        "name": "timestamp",
+        "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "kind": "enum",
     "name": "starhomes::components::user_component::UsersComponent::Event",
-    "kind": "enum",
-    "variants": []
+    "type": "event",
+    "variants": [
+      {
+        "kind": "nested",
+        "name": "Registered",
+        "type": "starhomes::models::contract_events::UserRegistered"
+      }
+    ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "starhomes::models::contract_events::PropertyListed",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "property_id",
-        "type": "core::felt252",
-        "kind": "data"
+        "type": "core::felt252"
       },
       {
+        "kind": "data",
         "name": "owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "price",
-        "type": "core::integer::u256",
-        "kind": "data"
+        "type": "core::integer::u256"
       },
       {
+        "kind": "data",
         "name": "payment_token",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "timestamp",
-        "type": "core::integer::u64",
-        "kind": "data"
+        "type": "core::integer::u64"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "starhomes::models::contract_events::InvestmentListed",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "investment_id",
-        "type": "core::felt252",
-        "kind": "data"
+        "type": "core::felt252"
       },
       {
+        "kind": "data",
         "name": "owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "asset_price",
-        "type": "core::integer::u256",
-        "kind": "data"
+        "type": "core::integer::u256"
       },
       {
+        "kind": "data",
         "name": "payment_token",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "timestamp",
-        "type": "core::integer::u64",
-        "kind": "data"
+        "type": "core::integer::u64"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "struct",
     "name": "starhomes::models::contract_events::PropertySold",
-    "kind": "struct",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "property_id",
-        "type": "core::felt252",
-        "kind": "data"
+        "type": "core::felt252"
       },
       {
+        "kind": "data",
         "name": "old_owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "new_owner",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "price",
-        "type": "core::integer::u256",
-        "kind": "data"
+        "type": "core::integer::u256"
       },
       {
+        "kind": "data",
         "name": "timestamp",
-        "type": "core::integer::u64",
-        "kind": "data"
+        "type": "core::integer::u64"
       }
     ]
   },
   {
-    "type": "event",
-    "name": "starhomes::models::contract_events::InvestmentMade",
     "kind": "struct",
+    "name": "starhomes::models::contract_events::InvestmentMade",
+    "type": "event",
     "members": [
       {
+        "kind": "data",
         "name": "property_id",
-        "type": "core::felt252",
-        "kind": "data"
+        "type": "core::felt252"
       },
       {
+        "kind": "data",
         "name": "investor",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "kind": "data",
         "name": "amount",
-        "type": "core::integer::u256",
-        "kind": "data"
+        "type": "core::integer::u256"
       },
       {
+        "kind": "data",
         "name": "timestamp",
-        "type": "core::integer::u64",
-        "kind": "data"
+        "type": "core::integer::u64"
       }
     ]
   },
   {
-    "type": "event",
+    "kind": "enum",
     "name": "starhomes::components::property_component::PropertyComponent::Event",
-    "kind": "enum",
+    "type": "event",
     "variants": [
       {
+        "kind": "nested",
         "name": "PropertyListed",
-        "type": "starhomes::models::contract_events::PropertyListed",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::PropertyListed"
       },
       {
+        "kind": "nested",
         "name": "PropertyEditedListed",
-        "type": "starhomes::models::contract_events::PropertyListed",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::PropertyListed"
       },
       {
+        "kind": "nested",
         "name": "InvestmentListed",
-        "type": "starhomes::models::contract_events::InvestmentListed",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::InvestmentListed"
       },
       {
+        "kind": "nested",
         "name": "InvestmentListedEdited",
-        "type": "starhomes::models::contract_events::InvestmentListed",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::InvestmentListed"
       },
       {
+        "kind": "nested",
         "name": "PropertySold",
-        "type": "starhomes::models::contract_events::PropertySold",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::PropertySold"
       },
       {
+        "kind": "nested",
         "name": "InvestmentMade",
-        "type": "starhomes::models::contract_events::InvestmentMade",
-        "kind": "nested"
+        "type": "starhomes::models::contract_events::InvestmentMade"
       }
     ]
   },
   {
-    "type": "event",
-    "name": "starhomes::starhomes_contract::starhomes::StarhomesContract::Event",
     "kind": "enum",
+    "name": "starhomes::starhomes_contract::starhomes::StarhomesContract::Event",
+    "type": "event",
     "variants": [
       {
+        "kind": "flat",
         "name": "OwnableEvent",
-        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
-        "kind": "flat"
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::Event"
       },
       {
+        "kind": "flat",
         "name": "UpgradeableEvent",
-        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
-        "kind": "flat"
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event"
       },
       {
+        "kind": "flat",
         "name": "AssetStakingEvent",
-        "type": "starhomes::components::staking_component::AssetStakingComponent::Event",
-        "kind": "flat"
+        "type": "starhomes::components::staking_component::AssetStakingComponent::Event"
       },
       {
+        "kind": "flat",
         "name": "UsersEvent",
-        "type": "starhomes::components::user_component::UsersComponent::Event",
-        "kind": "flat"
+        "type": "starhomes::components::user_component::UsersComponent::Event"
       },
       {
+        "kind": "flat",
         "name": "PropertyComponentEvent",
-        "type": "starhomes::components::property_component::PropertyComponent::Event",
-        "kind": "flat"
+        "type": "starhomes::components::property_component::PropertyComponent::Event"
       }
     ]
   }

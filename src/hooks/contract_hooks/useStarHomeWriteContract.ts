@@ -6,11 +6,6 @@ import { rpcProvideUr, starhomesContract } from "@/utils/constants";
 import { starhomes_abi } from "@/data/starhomes_abi";
 import { Chain } from "@starknet-react/chains";
 
-interface UseSmartContractProps {
-  address: string;
-  abi: Abi;
-}
-
 interface TransactionStatus {
   isError: boolean;
   isSuccess: boolean;

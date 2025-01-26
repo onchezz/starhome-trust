@@ -1,39 +1,3 @@
-// import { BigNumberish, num,  } from "starknet";
-
-// // Using string for ContractAddress since we'll convert it when sending to contract
-// export interface StarknetProperty {
-//   id: BigNumberish;
-//   title: BigNumberish;
-//   description: string;
-//   location_address: BigNumberish;
-//   city: BigNumberish;
-//   state: BigNumberish;
-//   country: BigNumberish;
-//   latitude: BigNumberish;
-//   longitude: BigNumberish;
-//   price: BigNumberish;
-//   owner: BigNumberish; // ContractAddress as string
-//   asking_price: BigNumberish;
-//   currency: BigNumberish;
-//   area: BigNumberish;
-//   bedrooms: BigNumberish;
-//   bathrooms: BigNumberish;
-//   parking_spaces: BigNumberish;
-//   property_type: BigNumberish;
-//   status: BigNumberish;
-//   interested_clients: BigNumberish;
-//   annual_growth_rate: BigNumberish;
-//   features_id: BigNumberish;
-//   images_id: string;
-//   video_tour: BigNumberish;
-//   agent_id: BigNumberish; // ContractAddress as string
-//   date_listed: BigNumberish;
-//   has_garden: boolean;
-//   has_swimming_pool: boolean;
-//   pet_friendly: boolean;
-//   wheelchair_accessible: boolean;
-//   asset_token: string; // ContractAddress as string
-// }
 
 export interface Property {
   id: string;            // felt252

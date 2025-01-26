@@ -5,7 +5,7 @@ use starknet::class_hash::ClassHash;
 pub struct PropertyListed {
     pub property_id: felt252,
     pub owner: ContractAddress,
-    pub price: u256,
+    pub price: u64,
     pub payment_token: ContractAddress,
     pub timestamp: u64,
 }
