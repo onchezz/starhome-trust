@@ -186,7 +186,7 @@ const RegisterAgent = () => {
 
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <Card className="w-full mt-24 max-w-md mx-auto">
         <CardHeader>
           <CardTitle>Agent Registration</CardTitle>

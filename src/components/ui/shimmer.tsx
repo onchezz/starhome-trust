@@ -1,5 +1,3 @@
-// import { cn } from "@/lib/utils";
-
 import { cn } from "@/utils/utils";
 
 interface ShimmerProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -10,11 +8,17 @@ export const Shimmer = ({ className, ...props }: ShimmerProps) => {
   return (
     <div
       className={cn(
-        "animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent",
-        "relative overflow-hidden rounded-md bg-gray-100/10",
+        "relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-md",
         className
       )}
       {...props}
-    />
+    >
+      <div
+        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent animate-shimmer"
+        style={{
+          backgroundImage: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
+        }}
+      />
+    </div>
   );
 };

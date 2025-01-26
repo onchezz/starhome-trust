@@ -1,14 +1,13 @@
-import type { Config } from "tailwindcss";
+import { type Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -26,15 +25,13 @@ export default {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#0066FF",
-          foreground: "#FFFFFF",
+          light: "#33C3F0",
+          dark: "#0052CC",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#FFB800",
-          foreground: "#000000",
-        },
-        navy: {
-          DEFAULT: "#221F26",
-          light: "#403E43",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -71,20 +68,16 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        pulse: {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
+        shimmer: {
+          "100%": {
+            transform: "translateX(100%)",
+          },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        float: "float 6s ease-in-out infinite",
-        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        shimmer: "shimmer 2s infinite",
       },
     },
   },

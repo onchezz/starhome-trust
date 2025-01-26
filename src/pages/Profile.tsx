@@ -40,7 +40,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    
       <div className="container mx-auto py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Profile Details Card */}

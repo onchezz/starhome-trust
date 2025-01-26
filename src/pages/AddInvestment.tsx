@@ -228,7 +228,7 @@ const AddInvestment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="container mx-auto py-24">
         <Card className="animate-fade-in">
           <CardHeader>
