@@ -31,7 +31,10 @@ const CreateProperty = () => {
   const { id } = useParams();
   const { address, status } = useAccount();
   const { handleListProperty, contractStatus } = usePropertyRegistration();
-  const { data: existingProperty, isLoading: isLoadingProperty } = usePropertyRead(id);
+  const { properties, isLoading: isLoadingProperty } = usePropertyRead();
+
+  // Find the existing property if we have an ID
+  const existingProperty = id ? properties.find(p => p.id === id) : undefined;
 
   const [isUploading, setIsUploading] = useState(false);
   const [url, setUrl] = useState("");

@@ -2,23 +2,15 @@ import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContra
 import { Property } from '@/types/property';
 
 export const usePropertyRead = () => {
-  const { data: properties, isLoading, error } = useStarHomeReadContract({
+  const { data: propertiesData, isLoading, error } = useStarHomeReadContract({
     functionName: "get_sale_properties",
-    
-    // args: [],
   });
 
-  // const { data: investmentProperties, isLoading: isLoadingInvestments } = useStarHomeReadContract({
-  //   functionName: "get_investment_properties",
-  // });
-
-  console.log("Sale properties:", properties);
-  // console.log("Investment properties:", investmentProperties);
+  console.log("Sale properties:", propertiesData);
 
   return {
-    properties,
-    // investmentProperties,
-    isLoading: isLoading ,
+    properties: propertiesData || [],
+    isLoading,
     error,
   };
 };
