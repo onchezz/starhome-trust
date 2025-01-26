@@ -110,6 +110,7 @@ const MapLocationPicker: React.FC<MapPickerProps> = ({
 
         // Extract address components
         const address = feature.place_name;
+        console.log("Location details:", feature);
         const city =
           context.find((c: any) => c.id.startsWith("place"))?.text || "";
         const state =
@@ -143,6 +144,10 @@ const MapLocationPicker: React.FC<MapPickerProps> = ({
   };
   return (
     <div className="space-y-4">
+      <p className="text-sm text-gray-500">
+        Click on the map to select a location or drag the marker to adjust
+        position
+      </p>
       <div className="flex gap-2">
         <Input
           type="text"
@@ -161,11 +166,6 @@ const MapLocationPicker: React.FC<MapPickerProps> = ({
         ref={mapContainer}
         className="h-96 rounded-lg overflow-hidden border border-gray-200"
       />
-
-      <p className="text-sm text-gray-500">
-        Click on the map to select a location or drag the marker to adjust
-        position
-      </p>
     </div>
   );
 };

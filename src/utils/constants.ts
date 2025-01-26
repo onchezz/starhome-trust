@@ -1,4 +1,5 @@
-const starhomesContract ="0x030e7db139490658ebdc76d6fed7645e85d792edd981ad0aa5ed9df28cc62b14" as const;
+const starhomesContract ="0x04ca966dbe927ab79127eaf0415fd90d07b802b857beee3fe8840088a9c10493" as const;
+// "0x030e7db139490658ebdc76d6fed7645e85d792edd981ad0aa5ed9df28cc62b14" as const;
 
 const rpcProvideUr =  "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
 

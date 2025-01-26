@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users } from "lucide-react";
 import { motion } from "framer-motion";
@@ -10,13 +16,15 @@ interface PropertyCardProps {
   location: {
     city: string;
     state: string;
+    country: string;
   };
   price: number;
   askingPrice: number;
   interestedClients: number;
   annualGrowthRate: number;
-  images: string[];
+  imagesUrl: string;
   propertyType: string;
+  status: string;
 }
 
 export const PropertyCard = ({
@@ -27,13 +35,14 @@ export const PropertyCard = ({
   askingPrice,
   interestedClients,
   annualGrowthRate,
-  images,
+  imagesUrl,
   propertyType,
+  status,
 }: PropertyCardProps) => {
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       maximumFractionDigits: 0,
     }).format(price);
   };
@@ -48,22 +57,22 @@ export const PropertyCard = ({
       <Card className="overflow-hidden group">
         <div className="relative">
           <motion.img
-            src={images[0]}
+            src={imagesUrl}
             alt={title}
             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
           />
-          <Badge 
-            variant="secondary" 
+          <Badge
+            variant="secondary"
             className="absolute top-4 right-4 bg-green-500 text-white hover:bg-green-600"
           >
-            For Sale
+            {status}
           </Badge>
         </div>
-        
+
         <CardHeader>
           <CardTitle className="line-clamp-1">{title}</CardTitle>
           <p className="text-sm text-muted-foreground">
-            {location.city}, {location.state}
+            {location.city}, {location.state}, {location.country}
           </p>
         </CardHeader>
 
@@ -101,7 +110,7 @@ export const PropertyCard = ({
 
         <CardFooter>
           <Link to={`/properties/${id}`} className="w-full">
-            <motion.button 
+            <motion.button
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

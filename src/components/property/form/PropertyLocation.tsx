@@ -25,6 +25,16 @@ const PropertyLocation = ({
   handleLocationSelect,
   isLocationLoading,
 }: PropertyLocationProps) => {
+  if (isLocationLoading){
+    return (
+      <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+        <div className="text-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-500 mx-auto" />
+          <p className="text-sm text-gray-500">Loading Map...</p>
+        </div>
+      </div>
+    );  
+  }
   return (
     <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in delay-300">
       <h3 className="text-lg font-semibold text-gray-900">Location Details</h3>
@@ -81,7 +91,9 @@ const PropertyLocation = ({
           <ErrorBoundary
             fallback={
               <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                <p className="text-sm text-red-500">Error loading map. Please try again.</p>
+                <p className="text-sm text-red-500">
+                  Error loading map. Please try again.
+                </p>
               </div>
             }
           >

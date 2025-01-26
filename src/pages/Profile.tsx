@@ -8,10 +8,17 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Check, Building2, Wallet } from "lucide-react";
 import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
+import { useAgentReadByAddress } from "@/hooks/contract_interactions/useContractReads";
+import { useEffect, useState } from "react";
+import {
+  AgentConverter,
+  StarknetAgent,
+} from "@/types/starknet_types/user_agent";
 
 const Profile = () => {
   const { address } = useAccount();
   const { balances, isLoading } = useTokenBalances();
+
 
   // Fetch user assets using the contract hook
   const { data: userAssets, isLoading: assetsLoading } =
@@ -20,17 +27,23 @@ const Profile = () => {
       args: [address],
     });
 
+  const {
+    agent: agentInfo,
+    isLoading: isLoadingAgent,
+    error,
+  } = useAgentReadByAddress(address);
+
   const formatBalance = (balance: any) => {
     if (!balance) return "0.0000";
     return Number(balance.formatted).toFixed(4);
   };
 
-  // Dummy user data
   const userData = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
+    name: agentInfo.name || "John Doe",
+    email: agentInfo.email || "j@gmail.com",
+    phone: agentInfo.phone || "1234567890",
     profileImage:
+      agentInfo.profile_image ||
       "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
     isVerified: true,
     isInvestor: true,
@@ -40,7 +53,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-    
       <div className="container mx-auto py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Profile Details Card */}

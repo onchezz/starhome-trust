@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { PinataSDK } from "pinata-web3";
 import { Loader2 } from "lucide-react";
 import { usePropertyRegistration } from "@/hooks/contract_interactions/usePropertyWrite";
 import BasicInformation from "@/components/property/form/BasicInformation";
@@ -16,12 +15,8 @@ import PropertyFeatures from "@/components/property/form/PropertyFeatures";
 import PropertyLocation from "@/components/property/form/PropertyLocation";
 import ImageUploader from "@/components/property/form/ImageUploader";
 import { useParams } from "react-router-dom";
-import { usePropertyRead } from "@/hooks/contract_interactions/usePropertyRead";
-
-const pinata = new PinataSDK({
-  pinataJwt: import.meta.env.VITE_PINATA_JWT,
-  pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
-});
+import { usePropertyRead } from "@/hooks/contract_interactions/useContractReads";
+import pinata from "@/hooks/services_hooks/pinata";
 
 const generateShortUUID = () => {
   const fullUUID = uuidv4();
@@ -35,7 +30,10 @@ const CreateProperty = () => {
   const { properties, isLoading: isLoadingProperty } = usePropertyRead();
 
   // Find the existing property if we have an ID
-  const existingProperty = id && properties ? properties.find((p: Property) => p.id === id) : undefined;
+  const existingProperty =
+    id && properties
+      ? properties.find((p: Property) => p.id === id)
+      : undefined;
 
   const [isUploading, setIsUploading] = useState(false);
   const [url, setUrl] = useState("");
@@ -63,14 +61,11 @@ const CreateProperty = () => {
       setFormData(existingProperty);
       setUrl(existingProperty.images_id || "");
     }
-  }, [id, existingProperty]);
-
-  useEffect(() => {
     if (status === "connected") {
       setOwnerAddress(address);
-      setFormData(prev => ({ ...prev, agent_id: address }));
+      setFormData((prev) => ({ ...prev, agent_id: address }));
     }
-  }, [address, status]);
+  }, [id, existingProperty, address, status]);
 
   const handleInputChange = (field: keyof Property, value: any) => {
     if (["price", "interested_clients", "asking_price"].includes(field)) {
@@ -147,8 +142,12 @@ const CreateProperty = () => {
       setUploadProgress(0);
 
       try {
+        // const group = await pinata.groups.create({
+        //   name: `property-${formData.id}-images`,
+        // });
+
         const upload = await pinata.upload
-          .fileArray(selectedFiles)
+          .file(selectedFiles[0])
           .addMetadata({
             name: `property-${formData.id}-images`,
             keyValues: {
@@ -212,14 +211,16 @@ const CreateProperty = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
         <Card className="animate-fade-in shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader className="space-y-2 border-b border-gray-100 bg-white/50 backdrop-blur-sm">
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
               {id ? "Edit Property" : "Create New Property"}
             </CardTitle>
-            <p className="text-gray-500">Fill in the details to {id ? "update" : "list"} a property</p>
+            <p className="text-gray-500">
+              Fill in the details to {id ? "update" : "list"} a property
+            </p>
           </CardHeader>
           <CardContent className="pt-6 pb-8">
             <form onSubmit={handleSubmit} className="space-y-8">
