@@ -22,6 +22,7 @@ import {
 import ErrorBoundary from "@/components/errrorBoundary";
 import { tokenOptions } from "@/utils/constants";
 import { usePropertyRegistration } from "@/hooks/contract_interactions/usePropertyWrite";
+import { Loader2 } from "lucide-react";
 
 const MapLocationPicker = React.lazy(
   () => import("@/components/MapLocationPicker")
@@ -90,8 +91,6 @@ const CreateProperty = () => {
   }) => {
     setFormData((prev) => ({
       ...prev,
-      // owner: address,
-      // agent_id: address,
       latitude: location.latitude,
       longitude: location.longitude,
       location_address: location.address,
@@ -101,15 +100,10 @@ const CreateProperty = () => {
     }));
   };
 
-  // Modified handleInputChange with location updates
   const handleInputChange = (field: keyof Property, value: any) => {
     if (["price", "interested_clients", "asking_price"].includes(field)) {
       value = BigInt(value || 0);
-    }
-    // else if (["annual_growth_rate"].includes(field)) {
-    //   value = Number(value || 0.0);
-    // }
-    else if (
+    } else if (
       ["area", "bedrooms", "bathrooms", "parking_spaces"].includes(field)
     ) {
       value = Number(value || 0);
@@ -117,7 +111,6 @@ const CreateProperty = () => {
 
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // Trigger location update when address fields change
     if (["location_address", "city", "state", "country"].includes(field)) {
       const timer = setTimeout(() => {}, 1000);
       return () => clearTimeout(timer);
@@ -131,20 +124,12 @@ const CreateProperty = () => {
         agent_id: address,
         images_id: ipfsUrl,
       } as Property);
-      // contractStatus =
       if (status.status == "success") {
         toast.success("Property created successfully! ");
-        // Reset form after successful submission
         setSelectedFiles([]);
         setUploadedImages([]);
         setUploadProgress(0);
       }
-
-      // toast.success("Property created successfully! ", );
-      // // Reset form after successful submission
-      // setSelectedFiles([]);
-      // setUploadedImages([]);
-      // setUploadProgress(0);
     } catch (error) {
       console.error("Error creating property:", error);
       toast.error("Failed to create property", error);
@@ -159,16 +144,13 @@ const CreateProperty = () => {
       return;
     }
 
-    // Handle file upload first if there are selected files
     if (selectedFiles.length > 0 && !url) {
       setIsUploading(true);
       setUploadProgress(0);
 
       try {
-        // Show upload starting
         toast.info("Uploading images");
 
-        // Upload files as a folder
         const upload = await pinata.upload
           .fileArray(selectedFiles)
           .addMetadata({
@@ -185,7 +167,6 @@ const CreateProperty = () => {
         handleInputChange("images_id", ipfsUrl);
         toast.success(`Images uploaded to Successfully!`);
 
-        // Now create the property with the uploaded images hash
         listingProperty(ipfsUrl);
       } catch (error) {
         console.error("Error uploading to IPFS:", error);
@@ -197,33 +178,6 @@ const CreateProperty = () => {
     } else {
       listingProperty(url);
     }
-
-    // if (url != "") {
-    //   try {
-    //     await handleListProperty({
-    //       ...formData,
-    //       images_id: url,
-    //     } as Property);
-
-    //     toast.success("Property created successfully!");
-    //     // Reset form after successful submission
-    //     setSelectedFiles([]);
-    //     setUploadedImages([]);
-    //     setUploadProgress(0);
-    //   } catch (error) {
-    //     console.error("Error creating property:", error);
-    //     toast.error("Failed to create property", error);
-    //   }
-    // } else {
-    //   // If no images to upload, just create the property
-    //   try {
-    //     const error = await handleListProperty(formData as Property);
-    //     toast.success(`Property created successfully! ${error} `);
-    //   } catch (error) {
-    //     console.error("Error creating property:", error);
-    //     toast.error("Failed to create property");
-    //   }
-    // }
   };
 
   const validateFiles = (files: File[]) => {
@@ -233,7 +187,6 @@ const CreateProperty = () => {
         return false;
       }
       if (file.size > 10 * 1024 * 1024) {
-        // 10MB limit
         toast.error(`${file.name} is too large (max 10MB)`);
         return false;
       }
@@ -263,9 +216,6 @@ const CreateProperty = () => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Removed uploadFiles function as it's now handled in handleSubmit
-
-  // Image preview for selected files
   const SelectedFilesPreview = () => {
     if (selectedFiles.length === 0) return null;
 
@@ -304,14 +254,10 @@ const CreateProperty = () => {
             </div>
           ))}
         </div>
-        {/* <Button onClick={uploadFiles} disabled={isUploading} className="mt-4">
-            {isUploading ? "Uploading..." : "Upload Selected Files"}
-          </Button> */}
       </div>
     );
   };
 
-  // Preview for uploaded images
   const UploadedImagesPreview = () => {
     if (uploadedImages.length === 0) return null;
 
@@ -332,439 +278,470 @@ const CreateProperty = () => {
     );
   };
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <Navbar />
-      <div className="container mx-auto py-24">
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Property</CardTitle>
+      <div className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
+        <Card className="animate-fade-in shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="space-y-2 border-b border-gray-100 bg-white/50 backdrop-blur-sm">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+              Create New Property
+            </CardTitle>
+            <p className="text-gray-500">Fill in the details to list a new property</p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Information Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Basic Information */}
-                <div className="space-y-2">
-                  <Label>Title</Label>
-                  <Input
-                    required
-                    value={formData.title || ""}
-                    onChange={(e) => handleInputChange("title", e.target.value)}
-                  />
-                </div>
+          <CardContent className="pt-6 pb-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in">
+                <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-2 group">
+                    <Label className="text-sm font-medium">Title</Label>
+                    <Input
+                      required
+                      value={formData.title || ""}
+                      onChange={(e) => handleInputChange("title", e.target.value)}
+                      className="transition-all duration-300 border-gray-200 focus:border-purple-500 hover:border-purple-400"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea
-                    required
-                    value={formData.description?.toString() || ""}
-                    onChange={(e) =>
-                      handleInputChange("description", e.target.value)
-                    }
-                  />
-                </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label className="text-sm font-medium">Description</Label>
+                    <Textarea
+                      required
+                      value={formData.description?.toString() || ""}
+                      onChange={(e) =>
+                        handleInputChange("description", e.target.value)
+                      }
+                      className="min-h-[100px] transition-all duration-300 border-gray-200 focus:border-purple-500 hover:border-purple-400"
+                    />
+                  </div>
 
-                {/* Property Details */}
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    autoComplete="price"
-                    required
-                    value={
-                      formData.price ? Number(formData.price.toString()) : ""
-                    }
-                    onChange={(e) => handleInputChange("price", e.target.value)}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Price</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      autoComplete="price"
+                      required
+                      value={
+                        formData.price ? Number(formData.price.toString()) : ""
+                      }
+                      onChange={(e) => handleInputChange("price", e.target.value)}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="asking-price">Asking Price</Label>
-                  <Input
-                    id="asking-price"
-                    type="number"
-                    autoComplete="asking-price"
-                    required
-                    value={
-                      formData.asking_price
-                        ? Number(formData.asking_price.toString())
-                        : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange("asking_price", e.target.value)
-                    }
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="asking-price">Asking Price</Label>
+                    <Input
+                      id="asking-price"
+                      type="number"
+                      autoComplete="asking-price"
+                      required
+                      value={
+                        formData.asking_price
+                          ? Number(formData.asking_price.toString())
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleInputChange("asking_price", e.target.value)
+                      }
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Area (sq ft)</Label>
-                  <Input
-                    type="number"
-                    required
-                    value={formData.area || ""}
-                    onChange={(e) => handleInputChange("area", e.target.value)}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Area (sq ft)</Label>
+                    <Input
+                      type="number"
+                      required
+                      value={formData.area || ""}
+                      onChange={(e) => handleInputChange("area", e.target.value)}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Bedrooms</Label>
-                  <Input
-                    type="number"
-                    required
-                    value={formData.bedrooms || ""}
-                    onChange={(e) =>
-                      handleInputChange("bedrooms", e.target.value)
-                    }
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Bedrooms</Label>
+                    <Input
+                      type="number"
+                      required
+                      value={formData.bedrooms || ""}
+                      onChange={(e) =>
+                        handleInputChange("bedrooms", e.target.value)
+                      }
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Bathrooms</Label>
-                  <Input
-                    type="number"
-                    required
-                    value={formData.bathrooms || ""}
-                    onChange={(e) =>
-                      handleInputChange("bathrooms", e.target.value)
-                    }
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Bathrooms</Label>
+                    <Input
+                      type="number"
+                      required
+                      value={formData.bathrooms || ""}
+                      onChange={(e) =>
+                        handleInputChange("bathrooms", e.target.value)
+                      }
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Parking Spaces</Label>
-                  <Input
-                    type="number"
-                    required
-                    value={formData.parking_spaces}
-                    onChange={(e) =>
-                      handleInputChange("parking_spaces", e.target.value)
-                    }
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Parking Spaces</Label>
+                    <Input
+                      type="number"
+                      required
+                      value={formData.parking_spaces}
+                      onChange={(e) =>
+                        handleInputChange("parking_spaces", e.target.value)
+                      }
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Property Type</Label>
-                  <Select
-                    value={formData.property_type}
-                    onValueChange={(value) =>
-                      handleInputChange("property_type", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {propertyTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <Label>Property Type</Label>
+                    <Select
+                      value={formData.property_type}
+                      onValueChange={(value) =>
+                        handleInputChange("property_type", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {propertyTypes.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Status</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) =>
-                      handleInputChange("status", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statusOptions.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) =>
+                        handleInputChange("status", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statusOptions.map((status) => (
+                          <SelectItem key={status} value={status}>
+                            {status}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Additional Details */}
-                <div className="space-y-2">
-                  <Label>Video Tour URL</Label>
-                  <Input
-                    value={formData.video_tour || ""}
-                    onChange={(e) =>
-                      handleInputChange("video_tour", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Annual Growth Rate (%)</Label>
-                  <Input
-                    type="text"
-                    value={
-                      formData.annual_growth_rate
-                        ? formData.annual_growth_rate.toString() // Convert to string for the input
-                        : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange("annual_growth_rate", e.target.value)
-                    }
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Video Tour URL</Label>
+                    <Input
+                      value={formData.video_tour || ""}
+                      onChange={(e) =>
+                        handleInputChange("video_tour", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Annual Growth Rate (%)</Label>
+                    <Input
+                      type="text"
+                      value={
+                        formData.annual_growth_rate
+                          ? formData.annual_growth_rate.toString()
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleInputChange("annual_growth_rate", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Agent Address</Label>
+                    <Input
+                      disabled
+                      value={formData.agent_id}
+                      onChange={(e) =>
+                        handleInputChange("agent_id", e.target.value)
+                      }
+                      placeholder={address || "Agent Address"}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Asset Token</Label>
+                    <Select
+                      value={formData.asset_token}
+                      onValueChange={(value) =>
+                        handleInputChange("asset_token", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select token" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tokenOptions.map((token) => (
+                          <SelectItem key={token.symbol} value={token.address}>
+                            {token.symbol}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* <div className="space-y-2">
-                  <Label>Annual Growth Rate (%)</Label>
-                  <Input
-                    type="text"
-                    decimalPlaces={3}
-                    value={
-                      formData.annual_growth_rate
-                        ? Number(formData.annual_growth_rate.toString())
-                        : ""
-                      // formData.annual_growth_rate
-                      // typeof formData.annual_growth_rate == "number"
-                      //   ? formData.annual_growth_rate
-                      //   : 0
-                    }
-                    onChange={(e) =>
-                      handleInputChange("annual_growth_rate", e.target.value)
-                    }
-                  />
-                </div> */}
-                <div className="space-y-2">
-                  <Label>Agent Address</Label>
-                  <Input
-                    disabled
-                    value={formData.agent_id}
-                    onChange={(e) =>
-                      handleInputChange("agent_id", e.target.value)
-                    }
-                    placeholder={address || "Agent Address"}
-                  />
-                </div>
-                {/* <div className="space-y-2">
-                  <Label>Owner Address</Label>
-                  <Input
-                    disabled
-                    value={formData.owner}
-                    onChange={(e) => handleInputChange("owner", e.target.value)}
-                    placeholder={address || "Owner Address"}
-                  />
-                </div> */}
-                <div className="space-y-2">
-                  <Label>Asset Token</Label>
-                  <Select
-                    value={formData.asset_token}
-                    onValueChange={(value) =>
-                      handleInputChange("asset_token", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select token" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {tokenOptions.map((token) => (
-                        <SelectItem key={token.symbol} value={token.address}>
-                          {token.symbol}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {/* </div>
-                  </div> */}
-                </div>
+                  <div className="space-y-2">
+                    <Label>Address</Label>
+                    <Input
+                      required
+                      value={formData.location_address || ""}
+                      onChange={(e) =>
+                        handleInputChange("location_address", e.target.value)
+                      }
+                      placeholder="Enter street address"
+                    />
+                  </div>
 
-                {/* Location Information with Auto-coordinate Update */}
-                <div className="space-y-2">
-                  <Label>Address</Label>
-                  <Input
-                    required
-                    value={formData.location_address || ""}
-                    onChange={(e) =>
-                      handleInputChange("location_address", e.target.value)
-                    }
-                    placeholder="Enter street address"
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>City</Label>
+                    <Input
+                      disabled
+                      value={formData.city || ""}
+                      onChange={(e) => handleInputChange("city", e.target.value)}
+                      placeholder="Asset city"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>City</Label>
-                  <Input
-                    disabled
-                    value={formData.city || ""}
-                    onChange={(e) => handleInputChange("city", e.target.value)}
-                    placeholder="Asset city"
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>State</Label>
+                    <Input
+                      disabled
+                      value={formData.state || formData.city || ""}
+                      onChange={(e) => handleInputChange("state", e.target.value)}
+                      placeholder="state"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>State</Label>
-                  <Input
-                    disabled
-                    value={formData.state || formData.city || ""}
-                    onChange={(e) => handleInputChange("state", e.target.value)}
-                    placeholder="state"
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Country</Label>
+                    <Input
+                      disabled
+                      value={formData.country || ""}
+                      onChange={(e) =>
+                        handleInputChange("country", e.target.value)
+                      }
+                      placeholder="Asset country"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Country</Label>
-                  <Input
-                    disabled
-                    value={formData.country || ""}
-                    onChange={(e) =>
-                      handleInputChange("country", e.target.value)
-                    }
-                    placeholder="Asset country"
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label>Latitude</Label>
+                    <Input
+                      value={formData.latitude || ""}
+                      disabled
+                      placeholder={
+                        isLocationLoading
+                          ? "Updating..."
+                          : "Will be set automatically"
+                      }
+                      className={isLocationLoading ? "bg-gray-100" : ""}
+                    />
+                  </div>
 
-                {/* Coordinates Fields (Auto-populated) */}
-                <div className="space-y-2">
-                  <Label>Latitude</Label>
-                  <Input
-                    value={formData.latitude || ""}
-                    disabled
-                    placeholder={
-                      isLocationLoading
-                        ? "Updating..."
-                        : "Will be set automatically"
-                    }
-                    className={isLocationLoading ? "bg-gray-100" : ""}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Longitude</Label>
-                  <Input
-                    value={formData.longitude || ""}
-                    disabled
-                    placeholder={
-                      isLocationLoading
-                        ? "Updating..."
-                        : "Will be set automatically"
-                    }
-                    className={isLocationLoading ? "bg-gray-100" : ""}
-                  />
-                </div>
-              </div>
-
-              {/* Property Features Section */}
-              <div>
-                <div className="col-span-full bg-gray-50 p-6 rounded-lg mt-6">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Property Features
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="flex items-center justify-between space-x-2">
-                      <Label htmlFor="has_garden">Garden</Label>
-                      <Switch
-                        id="has_garden"
-                        checked={formData.has_garden || false}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("has_garden", checked)
-                        }
-                      />
-                    </div>
-                    {/* <div className="flex items-center justify-between space-x-2">
-                      <Label htmlFor="is_investment">Investment Property</Label>
-                      <Switch
-                        id="is_investment"
-                        checked={formData.is_investment || false}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("is_investment", checked)
-                        }
-                      />
-                    </div> */}
-                    <div className="flex items-center justify-between space-x-2">
-                      <Label htmlFor="pet_friendly">Pet Friendly</Label>
-                      <Switch
-                        id="pet_friendly"
-                        checked={formData.pet_friendly || false}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("pet_friendly", checked)
-                        }
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between space-x-2">
-                      <Label htmlFor="wheelchair_accessible">
-                        Wheelchair Accessible
-                      </Label>
-                      <Switch
-                        id="wheelchair_accessible"
-                        checked={formData.wheelchair_accessible || false}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("wheelchair_accessible", checked)
-                        }
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between space-x-2">
-                      <Label htmlFor="has_swimming_pool">Swimming Pool</Label>
-                      <Switch
-                        id="has_swimming_pool"
-                        checked={formData.has_swimming_pool || false}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("has_swimming_pool", checked)
-                        }
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Longitude</Label>
+                    <Input
+                      value={formData.longitude || ""}
+                      disabled
+                      placeholder={
+                        isLocationLoading
+                          ? "Updating..."
+                          : "Will be set automatically"
+                      }
+                      className={isLocationLoading ? "bg-gray-100" : ""}
+                    />
                   </div>
                 </div>
               </div>
 
-              {/* map picker */}
-              <div>
-                <Suspense
-                  fallback={
-                    <div className="h-96 flex items-center justify-center bg-gray-100 rounded-lg">
-                      Loading Map...
-                    </div>
-                  }
-                >
-                  <ErrorBoundary
+              <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in delay-100">
+                <h3 className="text-lg font-semibold text-gray-900">Location Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Address</Label>
+                    <Input
+                      required
+                      value={formData.location_address || ""}
+                      onChange={(e) =>
+                        handleInputChange("location_address", e.target.value)
+                      }
+                      placeholder="Enter street address"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>City</Label>
+                    <Input
+                      disabled
+                      value={formData.city || ""}
+                      onChange={(e) => handleInputChange("city", e.target.value)}
+                      placeholder="Asset city"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>State</Label>
+                    <Input
+                      disabled
+                      value={formData.state || formData.city || ""}
+                      onChange={(e) => handleInputChange("state", e.target.value)}
+                      placeholder="state"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Country</Label>
+                    <Input
+                      disabled
+                      value={formData.country || ""}
+                      onChange={(e) =>
+                        handleInputChange("country", e.target.value)
+                      }
+                      placeholder="Asset country"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Latitude</Label>
+                    <Input
+                      value={formData.latitude || ""}
+                      disabled
+                      placeholder={
+                        isLocationLoading
+                          ? "Updating..."
+                          : "Will be set automatically"
+                      }
+                      className={isLocationLoading ? "bg-gray-100" : ""}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Longitude</Label>
+                    <Input
+                      value={formData.longitude || ""}
+                      disabled
+                      placeholder={
+                        isLocationLoading
+                          ? "Updating..."
+                          : "Will be set automatically"
+                      }
+                      className={isLocationLoading ? "bg-gray-100" : ""}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <Suspense
                     fallback={
-                      <div className="h-96 flex items-center justify-center bg-gray-100 rounded-lg">
-                        Error loading map. Please try again.
+                      <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                        <div className="text-center space-y-3">
+                          <Loader2 className="h-8 w-8 animate-spin text-purple-500 mx-auto" />
+                          <p className="text-sm text-gray-500">Loading Map...</p>
+                        </div>
                       </div>
                     }
                   >
-                    <MapLocationPicker
-                      onLocationSelect={handleLocationSelect}
-                      initialLocation={
-                        formData.latitude && formData.longitude
-                          ? {
-                              latitude: formData.latitude.toString(),
-                              longitude: formData.longitude.toString(),
-                            }
-                          : undefined
+                    <ErrorBoundary
+                      fallback={
+                        <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                          <p className="text-sm text-red-500">Error loading map. Please try again.</p>
+                        </div>
+                      }
+                    >
+                      <MapLocationPicker
+                        onLocationSelect={handleLocationSelect}
+                        initialLocation={
+                          formData.latitude && formData.longitude
+                            ? {
+                                latitude: formData.latitude.toString(),
+                                longitude: formData.longitude.toString(),
+                              }
+                            : undefined
+                        }
+                      />
+                    </ErrorBoundary>
+                  </Suspense>
+                </div>
+              </div>
+
+              <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in delay-200">
+                <h3 className="text-lg font-semibold text-gray-900">Property Features</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
+                    <Label htmlFor="has_garden" className="cursor-pointer">Garden</Label>
+                    <Switch
+                      id="has_garden"
+                      checked={formData.has_garden || false}
+                      onCheckedChange={(checked) =>
+                        handleInputChange("has_garden", checked)
                       }
                     />
-                  </ErrorBoundary>
-                </Suspense>
+                  </div>
+                  <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
+                    <Label htmlFor="pet_friendly" className="cursor-pointer">Pet Friendly</Label>
+                    <Switch
+                      id="pet_friendly"
+                      checked={formData.pet_friendly || false}
+                      onCheckedChange={(checked) =>
+                        handleInputChange("pet_friendly", checked)
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
+                    <Label htmlFor="wheelchair_accessible" className="cursor-pointer">Wheelchair Accessible</Label>
+                    <Switch
+                      id="wheelchair_accessible"
+                      checked={formData.wheelchair_accessible || false}
+                      onCheckedChange={(checked) =>
+                        handleInputChange("wheelchair_accessible", checked)
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
+                    <Label htmlFor="has_swimming_pool" className="cursor-pointer">Swimming Pool</Label>
+                    <Switch
+                      id="has_swimming_pool"
+                      checked={formData.has_swimming_pool || false}
+                      onCheckedChange={(checked) =>
+                        handleInputChange("has_swimming_pool", checked)
+                      }
+                    />
+                  </div>
+                </div>
               </div>
-              {/* File Upload Section */}
-              <div className="space-y-4">
-                <Label>Property Images</Label>
+
+              <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in delay-300">
+                <h3 className="text-lg font-semibold text-gray-900">Property Images</h3>
                 <div
                   className={`
-                                  border-2 border-dashed rounded-lg p-8
-                                  ${
-                                    isUploading
-                                      ? "border-gray-300 bg-gray-50"
-                                      : "border-gray-300 hover:border-primary cursor-pointer"
-                                  }
-                                  transition-colors duration-200 ease-in-out
-                                  flex flex-col items-center justify-center space-y-4
-                                `}
+                    border-2 border-dashed rounded-lg p-8
+                    ${
+                      isUploading
+                        ? "border-gray-300 bg-gray-50"
+                        : "border-purple-300 hover:border-purple-500 cursor-pointer"
+                    }
+                    transition-all duration-300 ease-in-out
+                    flex flex-col items-center justify-center space-y-4
+                  `}
                   onDrop={handleDrop}
                   onDragOver={(e) => e.preventDefault()}
                   onDragEnter={(e) => {
                     e.preventDefault();
-                    e.currentTarget.classList.add("border-primary");
+                    e.currentTarget.classList.add("border-purple-500");
                   }}
                   onDragLeave={(e) => {
                     e.preventDefault();
-                    e.currentTarget.classList.remove("border-primary");
+                    e.currentTarget.classList.remove("border-purple-500");
                   }}
                 >
                   <div className="text-center">
@@ -812,18 +789,18 @@ const CreateProperty = () => {
                   </div>
                 </div>
 
-                {/* File Previews */}
                 <SelectedFilesPreview />
                 {uploadedImages.length > 0 && <UploadedImagesPreview />}
 
-                {/* Upload Progress */}
                 {isUploading && (
-                  <div className="mt-4">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className="mt-4 animate-fade-in">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
                       <div
-                        className="bg-primary h-2.5 rounded-full transition-all duration-500"
+                        className="bg-purple-500 h-2.5 rounded-full transition-all duration-500 relative"
                         style={{ width: `${uploadProgress}%` }}
-                      />
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-purple-600 animate-pulse"></div>
+                      </div>
                     </div>
                     <p className="text-sm text-gray-500 mt-2 text-center">
                       Uploading images to IPFS...
@@ -831,35 +808,33 @@ const CreateProperty = () => {
                   </div>
                 )}
               </div>
-              {/* <Button onClick={ListPerty}>list </Button> */}
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={contractStatus.isPending || isUploading}
-                className="mx-auto bg-blue-500 text-white px-4 py-2 rounded"
+                className={`w-full max-w-md mx-auto bg-gradient-to-r from-purple-600 to-blue-500 text-white px-8 py-3 rounded-lg font-medium
+                  transform hover:scale-105 active:scale-95 transition-all duration-300
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                  flex items-center justify-center space-x-2
+                `}
               >
-                {isUploading
-                  ? "Uploading Images..."
-                  : contractStatus.isPending
-                  ? "Creating Property..."
-                  : selectedFiles.length > 0
-                  ? "Upload Images & Create Property"
-                  : "Create Property"}
+                {isUploading || contractStatus.isPending ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>
+                      {isUploading
+                        ? "Uploading Images..."
+                        : "Creating Property..."}
+                    </span>
+                  </>
+                ) : (
+                  <span>
+                    {selectedFiles.length > 0
+                      ? "Upload Images & Create Property"
+                      : "Create Property"}
+                  </span>
+                )}
               </Button>
-              {/* <Button
-                onClick={handleSubmit}
-                disabled={contractStatus.isPending || isUploading}
-                className="mx-auto bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                {isUploading
-                  ? "Uploading Images..."
-                  : contractStatus.isPending
-                  ? "Creating Property..."
-                  : selectedFiles.length > 0
-                  ? "Upload Images & Create Property"
-                  : " Property"}
-              </Button> */}
             </form>
           </CardContent>
         </Card>
