@@ -1,5 +1,3 @@
-// import { cn } from "@/lib/utils";
-
 import { cn } from "@/utils/utils";
 
 interface ShimmerProps extends React.HTMLAttributes<HTMLDivElement> {

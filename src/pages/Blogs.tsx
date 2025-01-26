@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PageLoader } from "@/components/ui/page-loader";
+import { Shimmer } from "@/components/ui/shimmer";
 import {
   Card,
   CardContent,
@@ -33,7 +33,46 @@ const Blogs = () => {
   });
 
   if (isLoading) {
-    return <PageLoader />;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <Navbar />
+        <div className="container mx-auto py-24">
+          <div className="text-center mb-16">
+            <Shimmer className="h-12 w-3/4 mx-auto mb-4" />
+            <Shimmer className="h-6 w-1/2 mx-auto" />
+          </div>
+
+          <div className="mb-12 space-y-6">
+            <div className="relative max-w-md mx-auto">
+              <Shimmer className="h-10 w-full" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Shimmer key={index} className="h-10 w-24" />
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <Shimmer className="w-full h-48" />
+                <CardHeader>
+                  <Shimmer className="h-6 w-3/4 mb-2" />
+                  <Shimmer className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <Shimmer className="h-20 w-full" />
+                </CardContent>
+                <CardFooter>
+                  <Shimmer className="h-10 w-full" />
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const filteredBlogs = blogsData.blogs.filter((blog) => {

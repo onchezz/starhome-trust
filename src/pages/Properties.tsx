@@ -1,23 +1,21 @@
-import React from "react";
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import Navbar from "@/components/Navbar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Shimmer } from "@/components/ui/shimmer";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Search, Filter, ChevronUp, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import { PropertySearch } from "@/components/property/PropertySearch";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
-import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp, Filter, Search } from "lucide-react";
-import propertiesData from "@/data/properties.json";
-import { useEffect, useState } from "react";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertyRead";
 import { Property } from "@/types/property";
 import { motion } from "framer-motion";
@@ -32,17 +30,42 @@ const Properties = () => {
   });
   const [showSearch, setShowSearch] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [contract_properties, setProperties] = useState([]);
+  const { properties, isLoading, error } = usePropertyRead();
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+        <Navbar />
+        <div className="container mx-auto py-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <Shimmer className="w-full h-48" />
+                <CardHeader>
+                  <Shimmer className="h-6 w-3/4 mb-2" />
+                  <Shimmer className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Shimmer className="h-8 w-full" />
+                    <div className="grid grid-cols-2 gap-4">
+                      <Shimmer className="h-16 w-full" />
+                      <Shimmer className="h-16 w-full" />
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Shimmer className="h-10 w-full" />
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const filteredProperties = propertiesData.properties.filter((property) => {
+  const filteredProperties = properties.filter((property) => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
       property.title.toLowerCase().includes(searchLower) ||
@@ -232,8 +255,25 @@ const PropertyList = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <Card key={index} className="overflow-hidden">
+            <Shimmer className="w-full h-48" />
+            <CardHeader>
+              <Shimmer className="h-6 w-3/4 mb-2" />
+              <Shimmer className="h-4 w-1/2" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Shimmer className="h-8 w-full" />
+                <div className="grid grid-cols-2 gap-4">
+                  <Shimmer className="h-16 w-full" />
+                  <Shimmer className="h-16 w-full" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   }

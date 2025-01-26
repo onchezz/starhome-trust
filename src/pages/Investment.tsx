@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PageLoader } from "@/components/ui/page-loader";
+import { Shimmer } from "@/components/ui/shimmer";
 import {
   Users,
   TrendingUp,
@@ -91,7 +91,50 @@ const Investment = () => {
   });
 
   if (isLoading) {
-    return <PageLoader />;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <Navbar />
+        <div className="container mx-auto py-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Card key={index}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Shimmer className="h-6 w-24" />
+                  <Shimmer className="h-4 w-4" />
+                </CardHeader>
+                <CardContent>
+                  <Shimmer className="h-8 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <Shimmer className="w-full h-48" />
+                <CardHeader>
+                  <Shimmer className="h-6 w-3/4 mb-2" />
+                  <Shimmer className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Shimmer className="h-4 w-full mb-2" />
+                      <Shimmer className="h-2 w-full" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Shimmer className="h-16 w-full" />
+                      <Shimmer className="h-16 w-full" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const formatCurrency = (amount: number) => {
