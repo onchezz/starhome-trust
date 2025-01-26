@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { InvestmentShimmerCard } from "@/components/ui/shimmer-cards";
+import { Shimmer } from "@/components/ui/shimmer";
 import {
   Users,
   TrendingUp,
@@ -149,9 +149,10 @@ const Investment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <Navbar />
       <div className="container mx-auto py-24">
+        {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, index) => (
@@ -203,10 +204,35 @@ const Investment = () => {
           )}
         </div>
 
+        {/* Investment Cards */}
         <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, index) => (
-              <InvestmentShimmerCard key={index} />
+              <Card
+                key={index}
+                className="overflow-hidden animate-pulse"
+              >
+                <Shimmer className="w-full h-48" />
+                <CardHeader>
+                  <Shimmer className="h-6 w-3/4 mb-2" />
+                  <Shimmer className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Shimmer className="h-4 w-full" />
+                  <div className="grid grid-cols-2 gap-4">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i}>
+                        <Shimmer className="h-4 w-24 mb-2" />
+                        <Shimmer className="h-6 w-16" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Shimmer className="h-10 w-full" />
+                    <Shimmer className="h-10 w-32" />
+                  </div>
+                </CardContent>
+              </Card>
             ))
           ) : (
             investmentProperties.map((property, index) => (
