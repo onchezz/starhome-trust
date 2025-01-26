@@ -9,18 +9,19 @@ const universalStrkAddress =
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d" as const;
 
 const usdcTokenAddress = 
-  "0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080"as const;
+  "0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080" as const;
 
 const usdTTokenAddress = 
-  "0x02Ab8758891E84b968fF11361789070c6B1Af2dF618D6D2f4a78b0757573C6eB"as const;
+  "0x02Ab8758891E84b968fF11361789070c6B1Af2dF618D6D2f4a78b0757573C6eB" as const;
 
 export const LAST_CONNECTED_TIME_LOCALSTORAGE_KEY = "lastConnectedTime";
+
 export const tokenOptions = [
   { symbol: "USDC", address: usdcTokenAddress },
   { symbol: "USDT", address: usdTTokenAddress },
   { symbol: "ETH", address: universalEthAddress },
   { symbol: "STRK", address: universalStrkAddress },
-];
+] as const;
 
 export const propertyTypes = [
   "House",
@@ -30,7 +31,7 @@ export const propertyTypes = [
   "Villa",
   "Land",
   "Commercial",
-  "Other"
+  "Other",
 ] as const;
 
 export const statusOptions = [
@@ -38,7 +39,7 @@ export const statusOptions = [
   "Sold",
   "Under Contract",
   "Pending",
-  "Off Market"
+  "Off Market",
 ] as const;
 
 export {

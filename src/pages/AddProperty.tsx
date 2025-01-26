@@ -34,7 +34,7 @@ const CreateProperty = () => {
   const { properties, isLoading: isLoadingProperty } = usePropertyRead();
 
   // Find the existing property if we have an ID
-  const existingProperty = id ? properties.find(p => p.id === id) : undefined;
+  const existingProperty = id && properties ? properties.find((p: Property) => p.id === id) : undefined;
 
   const [isUploading, setIsUploading] = useState(false);
   const [url, setUrl] = useState("");

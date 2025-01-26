@@ -219,8 +219,6 @@ const Properties = () => {
   );
 };
 
-export default Properties;
-
 const PropertyList = () => {
   const { properties, isLoading, error } = usePropertyRead();
 
@@ -249,7 +247,7 @@ const PropertyList = () => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-gray-500">Price</p>
-            <p className="font-medium">{property.price.toString()} ETH</p>
+            <p className="font-medium">{property.price?.toString()} ETH</p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Location</p>
@@ -257,7 +255,7 @@ const PropertyList = () => {
           </div>
           <div>
             <p className="text-sm text-gray-500">Size</p>
-            <p className="font-medium">{property.area.toString()} sq ft</p>
+            <p className="font-medium">{property.area?.toString()} sq ft</p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Status</p>
@@ -273,11 +271,11 @@ const PropertyList = () => {
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Properties for Sale</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.isArray(properties) && properties.map(renderPropertyCard)}
+          {properties && properties.length > 0 && properties.map(renderPropertyCard)}
         </div>
       </div>
     </div>
   );
 };
 
-// ... keep existing code (rest of the file)
+export default Properties;

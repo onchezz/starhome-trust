@@ -1,4 +1,4 @@
-import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
+import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
 import { Property } from '@/types/property';
 
 export const usePropertyRead = () => {
@@ -8,8 +8,11 @@ export const usePropertyRead = () => {
 
   console.log("Sale properties:", propertiesData);
 
+  // Ensure we always return an array for properties
+  const properties = Array.isArray(propertiesData) ? propertiesData : [];
+
   return {
-    properties: propertiesData || [],
+    properties,
     isLoading,
     error,
   };
