@@ -62,10 +62,8 @@ const Properties = () => {
             {properties.map((starknetProperty: Property) => {
               const property =
                 PropertyConverter.fromStarknetProperty(starknetProperty);
-              const img = readImages(
-                "bafybeibikptpzc7iyxggjsngsunzkb25xfyifwogwfbbu36xdw7jpx3gga"
-              );
-              //  setImage(img);
+             
+           
 
               console.log(property);
 
@@ -79,7 +77,7 @@ const Properties = () => {
                   askingPrice={property.asking_price}
                   interestedClients={property.interested_clients}
                   annualGrowthRate={property.annual_growth_rate}
-                  imagesUrl={image}
+                  imagesUrl={property.images_id}
                   propertyType={property.property_type}
                   key={property.id}
                   {...property}
