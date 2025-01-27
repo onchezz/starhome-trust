@@ -49,7 +49,7 @@ export const Hero = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <div className="min-h-screen pt-16 flex items-center bg-gradient-to-br from-white to-blue-50">
+      <div className="min-h-screen pt-16 flex items-center bg-gradient-to-br from-background to-background/50 dark:from-background dark:to-background/80">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -60,7 +60,7 @@ export const Hero = () => {
                   transition={{ duration: 0.8 }}
                   className="text-center"
                 >
-                  <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight">
+                  <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
                     Invest in Real Estate{" "}
                     <span className="text-primary">Globally</span> with Crypto
                   </h1>
@@ -116,7 +116,7 @@ export const Hero = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-200 rounded-full filter blur-3xl opacity-30 animate-float"></div>
+              <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full filter blur-3xl opacity-30 animate-float"></div>
               <img
                 src="/lovable-uploads/b254c8f5-c5c5-4d7d-b9b9-ff1a00699d47.png"
                 alt="Real Estate Investment"
@@ -125,7 +125,7 @@ export const Hero = () => {
             </div>
           </div>
 
-          <h1 className="flex  text-xl md:text-2xl mb-6 mt-10 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+          <h1 className="flex text-xl md:text-2xl mb-6 mt-10 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             <Typewriter
               options={{
                 strings: ["Secure. Transparent. Decentralized."],
@@ -134,13 +134,6 @@ export const Hero = () => {
                 cursor: "",
                 delay: 80,
                 deleteSpeed: 50,
-                // pauseFor: 2500,
-              }}
-              onInit={(typewriter) => {
-                typewriter
-
-                  .typeString("Secure. Transparent. Decentralized.")
-                  .start();
               }}
             />
           </h1>
