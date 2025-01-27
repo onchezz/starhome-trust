@@ -5,22 +5,29 @@ import { StarknetAgent } from '@/types/starknet_types/user_agent';
 // import { StarknetAgent } from './agent-types';
 // import { useStarHomeWriteContract } from '';
 
-export const useAgentRegistration = () => {
+export const useUserWrite = () => {
   const { address } = useAccount();
   const { execute, status: contractStatus } = useStarHomeWriteContract();
 
-  const handleRegisterAgent = async (agent: Partial<StarknetAgent>) => {
+  const handleRegisterUser = async (agent: Partial<StarknetAgent>) => {
     try {
       const defaultAgent: StarknetAgent = {
-        agent_id: agent.agent_id || "",
+        id:address||"",
         name: agent.name || "",
         phone: agent.phone || "",
         email: agent.email || "",
         profile_image: agent.profile_image || "",
-        agent_address: address || ""
+        is_verified: false,
+        is_authorized: false,
+        is_agent: false,
+        is_investor: false,
+        timestamp: Math.floor(Date.now() / 1000)
       };
 
-      const tx = await execute("register_agent", [defaultAgent]);
+      console.log("user data from form"+{...agent })
+
+
+      const tx = await execute("register_user", [defaultAgent]);
       
       toast.success("Agent registered successfully!");
       return {
@@ -33,9 +40,28 @@ export const useAgentRegistration = () => {
       throw error;
     }
   };
+  const handleSignAsAgent = async ()=>{
+    try {
+     
+      console.log("signing agent ")
+
+      const tx = await execute("register_as_agent", [address]);
+      
+      toast.success("Agent registered successfully!");
+      return {
+        transaction_hash: tx.response.transaction_hash,
+        status: 'success' as const
+      };
+    } catch (error) {
+      console.error("Error registering agent:", error);
+      toast.error("Failed to register agent");
+      throw error;
+    }
+  }
 
   return {
-    handleRegisterAgent,
+    handleRegisterUser,
+    handleSignAsAgent,
     contractStatus
   };
 };

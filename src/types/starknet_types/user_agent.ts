@@ -1,19 +1,24 @@
 import { BigNumberish, num, shortString } from "starknet";
 
 export interface StarknetAgent {
-  agent_id: string;
+  id: string;
   name: string;
   phone: string;
   email: string;
   profile_image: string;
-  agent_address: string;
+  is_verified: boolean,
+  is_authorized: boolean,
+  is_agent: boolean,
+  is_investor: boolean,
+  timestamp: number,
+
 }
 
 export interface RegisterAgentResponse {
   transaction_hash: string;
   status: 'success' | 'pending' | 'error';
 }
-export class AgentConverter {
+export class UserConverter {
     static feltToString(felt: string): string {
         return shortString.decodeShortString(felt);
     }
@@ -21,25 +26,63 @@ export class AgentConverter {
         return num.toHex(address);
     }
 
-    static fromStarknetAgent(starknetAgent: any): StarknetAgent {
+    static fromStarknetUser(starknetAgent: any): StarknetAgent {
       if (!starknetAgent) {
         return {
-          agent_id: "",
+          id: "",
           name: "",
           phone: "",
           email: "",
           profile_image: "",
-          agent_address: "",
+          is_verified: false,
+          is_authorized: false,
+          is_agent: false,
+          is_investor: false,
+          timestamp: 0,
         };
       }
 
       return {
-        agent_id: this.addressToString(starknetAgent.agent_id),
+        id: this.addressToString(starknetAgent.id),
         name: this.feltToString(starknetAgent.name),
         phone: this.feltToString(starknetAgent.phone),
         email: this.feltToString(starknetAgent.email),
         profile_image: starknetAgent.profile_image,
-        agent_address: this.addressToString(starknetAgent.agent_id),
+        is_verified: starknetAgent.is_verified,
+        is_authorized: starknetAgent.is_authorized,
+        is_agent: starknetAgent.is_agent,
+        is_investor: starknetAgent.is_investor,
+        timestamp: Number(starknetAgent.timestamp),
+      };
+    }
+
+     static toStarknetUser(starknetAgent: any): StarknetAgent {
+      if (!starknetAgent) {
+        return {
+          id: "",
+          name: "",
+          phone: "",
+          email: "",
+          profile_image: "",
+          is_verified: false,
+          is_authorized: false,
+          is_agent: false,
+          is_investor: false,
+          timestamp: Math.floor(Date.now() / 1000),
+        };
+      }
+
+      return {
+        id: this.addressToString(starknetAgent.agent_id),
+        name: this.feltToString(starknetAgent.name),
+        phone: this.feltToString(starknetAgent.phone),
+        email: this.feltToString(starknetAgent.email),
+        profile_image: starknetAgent.profile_image,
+        is_verified: starknetAgent.is_verified,
+        is_authorized: starknetAgent.is_authorized,
+        is_agent: starknetAgent.is_agent,
+        is_investor: starknetAgent.is_investor,
+        timestamp:Math.floor(Date.now() / 1000),
       };
     }
   }

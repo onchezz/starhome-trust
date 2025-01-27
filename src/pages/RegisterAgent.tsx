@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
-import { useAgentRegistration } from "@/hooks/contract_interactions/useAgentRegistration";
+import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { useAccount } from "@starknet-react/core";
 import { toast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
@@ -17,7 +17,7 @@ const pinata = new PinataSDK({
 
 const RegisterAgent = () => {
   const { address } = useAccount();
-  const { handleRegisterAgent, contractStatus } = useAgentRegistration();
+  const { handleRegisterUser, contractStatus } = useUserWrite();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,7 +31,6 @@ const RegisterAgent = () => {
 
   useEffect(() => {
     if (!address) {
-     
       toast({
         title: "Wallet Not Connected",
         description: "Please connect your wallet to continue",
@@ -142,9 +141,9 @@ const RegisterAgent = () => {
 
     try {
       setIsSubmitting(true);
-      const { transaction_hash, status } = await handleRegisterAgent({
+      const { transaction_hash, status } = await handleRegisterUser({
         ...formData,
-        agent_id: address, // Generate a unique ID
+        id: address, // Generate a unique ID
       });
       if (status == "success") {
         resetForm();

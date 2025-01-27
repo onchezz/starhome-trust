@@ -23,20 +23,6 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
-    "name": "core::integer::u256",
-    "members": [
-      {
-        "name": "low",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "high",
-        "type": "core::integer::u128"
-      }
-    ]
-  },
-  {
     "type": "enum",
     "name": "core::bool",
     "variants": [
@@ -92,11 +78,11 @@ export const starhomes_abi =[
       },
       {
         "name": "price",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "asking_price",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "currency",
@@ -128,7 +114,7 @@ export const starhomes_abi =[
       },
       {
         "name": "interested_clients",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "annual_growth_rate",
@@ -173,6 +159,20 @@ export const starhomes_abi =[
       {
         "name": "asset_token",
         "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
       }
     ]
   },
@@ -507,52 +507,14 @@ export const starhomes_abi =[
   {
     "type": "impl",
     "name": "UsersComponentImpl",
-    "interface_name": "starhomes::interfaces::user::IUsersComponentTrait"
+    "interface_name": "starhomes::interfaces::user_interface::IUsersComponentTrait"
   },
   {
     "type": "struct",
-    "name": "starhomes::models::user_models::Investor",
+    "name": "starhomes::models::user_models::User",
     "members": [
       {
-        "name": "investor_address",
-        "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
-        "name": "name",
-        "type": "core::felt252"
-      },
-      {
-        "name": "email",
-        "type": "core::felt252"
-      },
-      {
-        "name": "phone",
-        "type": "core::felt252"
-      },
-      {
-        "name": "address",
-        "type": "core::felt252"
-      },
-      {
-        "name": "is_verified",
-        "type": "core::bool"
-      },
-      {
-        "name": "is_authorized",
-        "type": "core::bool"
-      },
-      {
-        "name": "timestamp",
-        "type": "core::integer::u64"
-      }
-    ]
-  },
-  {
-    "type": "struct",
-    "name": "starhomes::models::user_models::Agent",
-    "members": [
-      {
-        "name": "agent_id",
+        "name": "id",
         "type": "core::starknet::contract_address::ContractAddress"
       },
       {
@@ -570,20 +532,92 @@ export const starhomes_abi =[
       {
         "name": "profile_image",
         "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "is_verified",
+        "type": "core::bool"
+      },
+      {
+        "name": "is_authorized",
+        "type": "core::bool"
+      },
+      {
+        "name": "is_agent",
+        "type": "core::bool"
+      },
+      {
+        "name": "is_investor",
+        "type": "core::bool"
+      },
+      {
+        "name": "timestamp",
+        "type": "core::integer::u64"
       }
     ]
   },
   {
     "type": "interface",
-    "name": "starhomes::interfaces::user::IUsersComponentTrait",
+    "name": "starhomes::interfaces::user_interface::IUsersComponentTrait",
     "items": [
+      {
+        "type": "function",
+        "name": "register_user",
+        "inputs": [
+          {
+            "name": "user",
+            "type": "starhomes::models::user_models::User"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "edit_user",
+        "inputs": [
+          {
+            "name": "user_id",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "user",
+            "type": "starhomes::models::user_models::User"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_user_by_address",
+        "inputs": [
+          {
+            "name": "user_id",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "starhomes::models::user_models::User"
+          }
+        ],
+        "state_mutability": "view"
+      },
       {
         "type": "function",
         "name": "get_investors",
         "inputs": [],
         "outputs": [
           {
-            "type": "core::array::Array::<starhomes::models::user_models::Investor>"
+            "type": "core::array::Array::<starhomes::models::user_models::User>"
           }
         ],
         "state_mutability": "view"
@@ -594,42 +628,10 @@ export const starhomes_abi =[
         "inputs": [],
         "outputs": [
           {
-            "type": "starhomes::models::user_models::Investor"
+            "type": "starhomes::models::user_models::User"
           }
         ],
         "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "register_investor",
-        "inputs": [
-          {
-            "name": "investor",
-            "type": "starhomes::models::user_models::Investor"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "edit_investor",
-        "inputs": [
-          {
-            "name": "investor",
-            "type": "starhomes::models::user_models::Investor"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "external"
       },
       {
         "type": "function",
@@ -637,7 +639,7 @@ export const starhomes_abi =[
         "inputs": [],
         "outputs": [
           {
-            "type": "core::array::Array::<starhomes::models::user_models::Agent>"
+            "type": "core::array::Array::<starhomes::models::user_models::User>"
           }
         ],
         "state_mutability": "view"
@@ -653,18 +655,18 @@ export const starhomes_abi =[
         ],
         "outputs": [
           {
-            "type": "starhomes::models::user_models::Agent"
+            "type": "starhomes::models::user_models::User"
           }
         ],
         "state_mutability": "view"
       },
       {
         "type": "function",
-        "name": "register_agent",
+        "name": "register_as_agent",
         "inputs": [
           {
-            "name": "agent",
-            "type": "starhomes::models::user_models::Agent"
+            "name": "user_id",
+            "type": "core::starknet::contract_address::ContractAddress"
           }
         ],
         "outputs": [
@@ -676,11 +678,11 @@ export const starhomes_abi =[
       },
       {
         "type": "function",
-        "name": "edit_agent",
+        "name": "register_as_investor",
         "inputs": [
           {
-            "name": "agent",
-            "type": "starhomes::models::user_models::Agent"
+            "name": "user_id",
+            "type": "core::starknet::contract_address::ContractAddress"
           }
         ],
         "outputs": [
@@ -688,6 +690,18 @@ export const starhomes_abi =[
             "type": "core::felt252"
           }
         ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "authorize_as_investment_lister",
+        "inputs": [
+          {
+            "name": "investor_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
         "state_mutability": "external"
       }
     ]
@@ -966,7 +980,7 @@ export const starhomes_abi =[
       },
       {
         "name": "price",
-        "type": "core::integer::u256",
+        "type": "core::integer::u64",
         "kind": "data"
       },
       {
@@ -1111,7 +1125,7 @@ export const starhomes_abi =[
   },
   {
     "type": "event",
-    "name": "starhomes::starhomes_contract::starhomes::StarhomesContracts::Event",
+    "name": "starhomes::starhomes_contract::starhomes::StarhomesContract::Event",
     "kind": "enum",
     "variants": [
       {

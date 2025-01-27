@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAccount } from "@starknet-react/core";
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { Button } from "@/components/ui/button";
@@ -8,17 +7,12 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Check, Building2, Wallet } from "lucide-react";
 import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
-import { useAgentReadByAddress } from "@/hooks/contract_interactions/useContractReads";
-import { useEffect, useState } from "react";
-import {
-  AgentConverter,
-  StarknetAgent,
-} from "@/types/starknet_types/user_agent";
+import { useUserReadByAddress } from "@/hooks/contract_interactions/useContractReads";
+import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 
 const Profile = () => {
   const { address } = useAccount();
   const { balances, isLoading } = useTokenBalances();
-
 
   // Fetch user assets using the contract hook
   const { data: userAssets, isLoading: assetsLoading } =
@@ -31,23 +25,25 @@ const Profile = () => {
     agent: agentInfo,
     isLoading: isLoadingAgent,
     error,
-  } = useAgentReadByAddress(address);
+  } = useUserReadByAddress(address);
 
   const formatBalance = (balance: any) => {
     if (!balance) return "0.0000";
+    console.log("datetime" + Math.floor(Date.now() / 1000));
     return Number(balance.formatted).toFixed(4);
   };
+  const { handleSignAsAgent } = useUserWrite();
 
   const userData = {
     name: agentInfo.name || "John Doe",
     email: agentInfo.email || "j@gmail.com",
-    phone: agentInfo.phone || "1234567890",
+    phone: agentInfo.phone || "123",
     profileImage:
       agentInfo.profile_image ||
       "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
-    isVerified: true,
-    isInvestor: true,
-    isAgent: true,
+    isVerified: agentInfo.is_verified,
+    isInvestor: agentInfo.is_investor,
+    isAgent: agentInfo.is_agent,
     assets: Array.isArray(userAssets) ? userAssets : [],
   };
 
@@ -149,9 +145,12 @@ const Profile = () => {
                 <Link to="/create-property">
                   <Button className="w-full">Create Property</Button>
                 </Link>
-                <Link to="/create-agent">
+                {/* <Link to="/create-agent">
                   <Button className="w-full">Register As Agent</Button>
-                </Link>
+                </Link> */}
+                <Button onClick={handleSignAsAgent} className="w-full">
+                  Register As Agent
+                </Button>
 
                 <Link to="/add-investment">
                   <Button className="w-full">Create Investment</Button>

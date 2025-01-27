@@ -18,4 +18,6 @@ pub mod Errors {
     pub const STAKING_FAILED: felt252 = 'Staking failed';
     pub const INVESTOR_ALREADY_AUTHORIZED: felt252 = 'Investor already authorized';
     pub const INVESTOR_NOT_AUTHORIZED: felt252 = 'Investor not authorized';
+    pub const USER_ALREADY_REGISTERED: felt252 = 'User already registered';
+    pub const USER_NOT_REGISTERED:felt252 = 'User is not registered';
 }

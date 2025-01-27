@@ -42,7 +42,7 @@ const { contract } = useContract({
       }
 
       try {
-       console.log(contract.functions)
+       console.log(`calling args:`, args)
        
         // Create the call using the contract's populate method
         const call = contract.populate(functionName, args);

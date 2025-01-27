@@ -4,7 +4,8 @@ import { Abi, useContract } from '@starknet-react/core';
 import { starhomes_abi } from '@/data/starhomes_abi';
 import { starhomesContract } from '@/utils/constants';
 import { PropertyConverter } from '@/types/property';
-import { AgentConverter } from '@/types/starknet_types/user_agent';
+import { UserConverter } from '@/types/starknet_types/user_agent';
+// import { AgentConverter } from '@/types/starknet_types/user_agent';
 
 export const usePropertyRead = () => {
   const { data: propertiesData, isLoading, error } = useStarHomeReadContract({
@@ -41,12 +42,13 @@ export const usePropertyReadById = (id: string) => {
   };
 };
 
-export const useAgentReadByAddress = (address: string) => {
+export const useUserReadByAddress = (address: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
-    functionName: "get_agent",
+    functionName: "get_user_by_address",
     args: [address],
   });
-const agentData = AgentConverter.fromStarknetAgent(data);
+  const agentData = UserConverter.fromStarknetUser(data);
+  console.log("agent data is :",agentData)
 
   return {
     agent: agentData,
