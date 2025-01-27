@@ -15,71 +15,85 @@ const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
+  console.log("Property ID:", id); // Debug log
   const { property, isLoading, error } = usePropertyReadById(id || "");
+  console.log("Property data:", property); // Debug log
 
   if (isLoading) {
     return <PageLoader />;
   }
 
   if (error || !property) {
-    return <div>Error loading property details</div>;
+    console.error("Error loading property:", error);
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-2">Error Loading Property</h2>
+        <p className="text-gray-600">Unable to load property details. Please try again later.</p>
+      </div>
+    </div>;
   }
 
-  // Convert features string to array
-  const features = property.features_id ? property.features_id.split(',') : [];
+  // Convert features string to array and ensure it's not empty
+  const features = property.features_id ? property.features_id.toString().split(',').filter(Boolean) : [];
+  
+  // Ensure we have a valid date
+  const dateListed = property.date_listed ? new Date(property.date_listed * 1000).toISOString() : new Date().toISOString();
+
+  // Ensure we have a valid image URL
+  const imageUrl = property.images_id || '/placeholder.svg';
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       <PropertyHero 
-        title={property.title}
+        title={property.title.toString()}
         location={`${property.location_address}, ${property.city}, ${property.state}`}
-        images={[property.images_id]} // Assuming images_id is the URL
-        totalInvestment={property.price}
+        images={[imageUrl]}
+        totalInvestment={Number(property.price)}
       />
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <PropertyAbout 
-              description={property.description}
+              description={property.description.toString()}
               features={features}
-              bedrooms={property.bedrooms}
-              bathrooms={property.bathrooms}
-              parkingSpaces={property.parking_spaces}
-              area={property.area}
-              dateListed={new Date(property.date_listed * 1000).toISOString()}
-              propertyType={property.property_type}
-              status={property.status}
-              interestedClients={property.interested_clients}
+              bedrooms={Number(property.bedrooms)}
+              bathrooms={Number(property.bathrooms)}
+              parkingSpaces={Number(property.parking_spaces)}
+              area={Number(property.area)}
+              dateListed={dateListed}
+              propertyType={property.property_type.toString()}
+              status={property.status.toString()}
+              interestedClients={Number(property.interested_clients)}
             />
 
             <PropertyMap 
               location={{
                 latitude: Number(property.latitude),
                 longitude: Number(property.longitude),
-                address: property.location_address,
-                city: property.city,
-                state: property.state
+                address: property.location_address.toString(),
+                city: property.city.toString(),
+                state: property.state.toString()
               }} 
             />
             
             <PropertyGallery 
-              images={[property.images_id]} // Assuming images_id is the URL
-              title={property.title}
+              images={[imageUrl]}
+              title={property.title.toString()}
               onImageClick={setSelectedImage}
             />
           </div>
 
           <div className="space-y-6">
-            <PropertyInvestment propertyId={property.id} />
+            <PropertyInvestment propertyId={property.id.toString()} />
             <PropertySchedule />
           </div>
         </div>
 
         <div className="mt-12">
-          <SimilarProperties currentPropertyId={property.id} />
+          <SimilarProperties currentPropertyId={property.id.toString()} />
         </div>
       </div>
 

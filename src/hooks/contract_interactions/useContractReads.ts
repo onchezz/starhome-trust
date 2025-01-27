@@ -64,44 +64,49 @@ export const usePropertyReadById = (id: string) => {
     args: [id],
   });
 
-  console.log("Property by ID:", propertyData);
+  console.log("Property data from contract:", propertyData);
 
   let property = null;
   if (propertyData) {
-    // Create a properly typed StarknetProperty object
-    const starknetProperty: StarknetProperty = {
-      id: propertyData.id?.toString() || "",
-      title: propertyData.title?.toString() || "",
-      description: propertyData.description?.toString() || "",
-      location_address: propertyData.location_address?.toString() || "",
-      city: propertyData.city?.toString() || "",
-      state: propertyData.state?.toString() || "",
-      country: propertyData.country?.toString() || "",
-      latitude: propertyData.latitude?.toString() || "",
-      longitude: propertyData.longitude?.toString() || "",
-      price: Number(propertyData.price) || 0,
-      asking_price: Number(propertyData.asking_price) || 0,
-      currency: propertyData.currency?.toString() || "",
-      area: Number(propertyData.area) || 0,
-      bedrooms: Number(propertyData.bedrooms) || 0,
-      bathrooms: Number(propertyData.bathrooms) || 0,
-      parking_spaces: Number(propertyData.parking_spaces) || 0,
-      property_type: propertyData.property_type?.toString() || "",
-      status: propertyData.status?.toString() || "",
-      interested_clients: Number(propertyData.interested_clients) || 0,
-      annual_growth_rate: Number(propertyData.annual_growth_rate) || 0,
-      features_id: propertyData.features_id?.toString() || "",
-      images_id: propertyData.images_id?.toString() || "",
-      video_tour: propertyData.video_tour?.toString() || "",
-      agent_id: propertyData.agent_id?.toString() || "",
-      date_listed: Number(propertyData.date_listed) || 0,
-      has_garden: Boolean(propertyData.has_garden),
-      has_swimming_pool: Boolean(propertyData.has_swimming_pool),
-      pet_friendly: Boolean(propertyData.pet_friendly),
-      wheelchair_accessible: Boolean(propertyData.wheelchair_accessible),
-      asset_token: propertyData.asset_token?.toString() || ""
-    };
-    property = PropertyConverter.fromStarknetProperty(starknetProperty);
+    try {
+      // Create a properly typed StarknetProperty object
+      const starknetProperty: StarknetProperty = {
+        id: propertyData.id?.toString() || "",
+        title: propertyData.title?.toString() || "",
+        description: propertyData.description?.toString() || "",
+        location_address: propertyData.location_address?.toString() || "",
+        city: propertyData.city?.toString() || "",
+        state: propertyData.state?.toString() || "",
+        country: propertyData.country?.toString() || "",
+        latitude: propertyData.latitude?.toString() || "",
+        longitude: propertyData.longitude?.toString() || "",
+        price: Number(propertyData.price) || 0,
+        asking_price: Number(propertyData.asking_price) || 0,
+        currency: propertyData.currency?.toString() || "",
+        area: Number(propertyData.area) || 0,
+        bedrooms: Number(propertyData.bedrooms) || 0,
+        bathrooms: Number(propertyData.bathrooms) || 0,
+        parking_spaces: Number(propertyData.parking_spaces) || 0,
+        property_type: propertyData.property_type?.toString() || "",
+        status: propertyData.status?.toString() || "",
+        interested_clients: Number(propertyData.interested_clients) || 0,
+        annual_growth_rate: Number(propertyData.annual_growth_rate) || 0,
+        features_id: propertyData.features_id?.toString() || "",
+        images_id: propertyData.images_id?.toString() || "",
+        video_tour: propertyData.video_tour?.toString() || "",
+        agent_id: propertyData.agent_id?.toString() || "",
+        date_listed: Number(propertyData.date_listed) || 0,
+        has_garden: Boolean(propertyData.has_garden),
+        has_swimming_pool: Boolean(propertyData.has_swimming_pool),
+        pet_friendly: Boolean(propertyData.pet_friendly),
+        wheelchair_accessible: Boolean(propertyData.wheelchair_accessible),
+        asset_token: propertyData.asset_token?.toString() || ""
+      };
+      console.log("Converted property:", starknetProperty);
+      property = PropertyConverter.fromStarknetProperty(starknetProperty);
+    } catch (err) {
+      console.error("Error converting property data:", err);
+    }
   }
 
   return {
