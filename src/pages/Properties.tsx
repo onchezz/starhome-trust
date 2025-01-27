@@ -17,12 +17,15 @@ const Properties = () => {
   });
 
   const filteredProperties = properties
-    ?.filter((starknetProperty: Property) => {
+    ?.filter((starknetProperty: any) => {
       const property = PropertyConverter.fromStarknetProperty(starknetProperty);
-      const matchesSearch =
-        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.country.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Ensure all values are strings before using toLowerCase()
+      const titleMatch = property.title.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      const cityMatch = property.city.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      const countryMatch = property.country.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesSearch = titleMatch || cityMatch || countryMatch;
 
       const matchesPriceRange =
         property.price >= filters.priceRange[0] &&
@@ -48,7 +51,7 @@ const Properties = () => {
         matchesPropertyType
       );
     })
-    .map(PropertyConverter.fromStarknetProperty);
+    .map((property: any) => PropertyConverter.fromStarknetProperty(property));
 
   console.log("Filtered properties:", filteredProperties);
 
@@ -79,17 +82,20 @@ const Properties = () => {
                   {filteredProperties?.map((property) => (
                     <PropertyCard
                       key={property.id}
+                      id={property.id}
+                      title={property.title}
                       location={{
                         city: property.city,
                         state: property.state,
                         country: property.country,
                       }}
+                      price={property.price}
                       askingPrice={property.asking_price}
                       interestedClients={property.interested_clients}
-                      annualGrowthRate={property.annual_growth_rate}
+                      annualGrowthRate={Number(property.annual_growth_rate)}
                       imagesUrl={property.images_id}
                       propertyType={property.property_type}
-                      {...property}
+                      status={property.status}
                     />
                   ))}
                 </div>

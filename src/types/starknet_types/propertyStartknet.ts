@@ -1,35 +1,32 @@
-
 export interface StarknetProperty {
-  id: string;
-  title: string;
-  description: string;
-  location_address: string;
-  city: string;
-  state: string;
-  country: string;
-  latitude: string;
-  longitude: string;
+  id: string | number;
+  title: string | number;
+  description: string | number;
+  location_address: string | number;
+  city: string | number;
+  state: string | number;
+  country: string | number;
+  latitude: string | number;
+  longitude: string | number;
   price: number;
-  // owner: string;
   asking_price: number;
-  currency: string;
+  currency: string | number;
   area: number;
   bedrooms: number;
   bathrooms: number;
   parking_spaces: number;
-  property_type: string;
-  status: string;
+  property_type: string | number;
+  status: string | number;
   interested_clients: number;
   annual_growth_rate: number;
-  features_id: string;
-  images_id: string;
-  video_tour: string;
-  agent_id: string;
+  features_id: string | number;
+  images_id: string | number;
+  video_tour: string | number;
+  agent_id: string | number;
   date_listed: number;
   has_garden: boolean;
   has_swimming_pool: boolean;
   pet_friendly: boolean;
   wheelchair_accessible: boolean;
-  asset_token: string;
+  asset_token: string | number;
 }
-
