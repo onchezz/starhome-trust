@@ -1,10 +1,8 @@
-// import { BigNumberish } from 'starknet';
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { StarknetProperty } from '@/types/starknet_types/propertyStartknet';
 import { BigNumberish } from 'starknet';
-
 
 export const usePropertyRegistration = () => {
   const { address } = useAccount();
@@ -13,15 +11,18 @@ export const usePropertyRegistration = () => {
   const handleListProperty = async (property: Partial<StarknetProperty>) => {
     console.log("Listing property before listing from form:", property);
     
-   const agent_id:BigNumberish =property.agent_id;
-   const asset_token:BigNumberish =property.asset_token;
+    const agent_id: BigNumberish = property.agent_id;
+    const asset_token: BigNumberish = property.asset_token;
+    const location_address = typeof property.location_address === 'string' 
+      ? property.location_address.split(',')[0] 
+      : property.location_address?.toString() || "";
 
     try {
       const defaultProperty: StarknetProperty = {
         id: property.id || "",
         title: property.title || "",
         description: property.description || "",
-        location_address: property.location_address.split(",")[0] || "",
+        location_address: location_address,
         city: property.city || "",
         state: property.state || "",
         country: property.country || "",
@@ -41,20 +42,20 @@ export const usePropertyRegistration = () => {
         features_id: "00",
         images_id: property.images_id || "",
         video_tour: property.video_tour || "none",
-        agent_id: agent_id|| "", //agent_id|| address ||
-        date_listed:Math.floor(Date.now() / 1000),
+        agent_id: agent_id || "",
+        date_listed: Math.floor(Date.now() / 1000),
         has_garden: property.has_garden || false,
         has_swimming_pool: property.has_swimming_pool || false,
         pet_friendly: property.pet_friendly || false,
         wheelchair_accessible: property.wheelchair_accessible || false,
-        asset_token:asset_token|| ""//asset_token
+        asset_token: asset_token || ""
       };
 
       console.log("Listing property after conversion:", defaultProperty);
 
-      const tx = await execute("list_property", [{...defaultProperty}]);
+      const tx = await execute("list_property", [{ ...defaultProperty }]);
       
-      toast.success(`Property listed successfully! ${tx.response.transaction_hash}`,);
+      toast.success(`Property listed successfully! ${tx.response.transaction_hash}`);
       return {
         status: 'success' as const
       };
