@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import propertiesData from "@/data/properties.json";
 import { PropertyHero } from "@/components/property/PropertyHero";
 import { PropertyMap } from "@/components/property/PropertyMap";
 import { PropertyInvestment } from "@/components/property/PropertyInvestment";
@@ -9,68 +8,34 @@ import { PropertySchedule } from "@/components/property/PropertySchedule";
 import { PropertyGallery } from "@/components/property/PropertyGallery";
 import { PropertyAbout } from "@/components/property/PropertyAbout";
 import { SimilarProperties } from "@/components/property/SimilarProperties";
-
-interface Property {
-  id: string;
-  title: string;
-  description: string;
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    latitude: number;
-    longitude: number;
-  };
-  price: number;
-  askingPrice: number;
-  features: string[];
-  images: string[];
-  agent: {
-    name: string;
-    phone: string;
-    email: string;
-    profileImage: string;
-  };
-  dateListed: string;
-  propertyType: string;
-  status: string;
-  interestedClients: number;
-  annualGrowthRate: number;
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  parkingSpaces: number;
-}
+import { usePropertyReadById } from "@/hooks/contract_interactions/useContractReads";
+import { PageLoader } from "@/components/ui/page-loader";
 
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const [property, setProperty] = useState<Property | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  const { property, isLoading, error } = usePropertyReadById(id || "");
 
-  useEffect(() => {
-    const foundProperty = propertiesData.properties.find(
-      (p) => p.id === id
-    );
-    if (foundProperty) {
-      setProperty(foundProperty as Property);
-    }
-  }, [id]);
-
-  if (!property) {
-    return <div>Loading...</div>;
+  if (isLoading) {
+    return <PageLoader />;
   }
 
-  const formattedLocation = `${property.location.address}, ${property.location.city}, ${property.location.state}`;
+  if (error || !property) {
+    return <div>Error loading property details</div>;
+  }
+
+  // Convert features string to array
+  const features = property.features_id ? property.features_id.split(',') : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       <PropertyHero 
         title={property.title}
-        location={formattedLocation}
-        images={property.images}
+        location={`${property.location_address}, ${property.city}, ${property.state}`}
+        images={[property.images_id]} // Assuming images_id is the URL
         totalInvestment={property.price}
       />
 
@@ -79,21 +44,29 @@ const PropertyDetails = () => {
           <div className="lg:col-span-2 space-y-6">
             <PropertyAbout 
               description={property.description}
-              features={property.features}
+              features={features}
               bedrooms={property.bedrooms}
               bathrooms={property.bathrooms}
-              parkingSpaces={property.parkingSpaces}
+              parkingSpaces={property.parking_spaces}
               area={property.area}
-              dateListed={property.dateListed}
-              propertyType={property.propertyType}
+              dateListed={new Date(property.date_listed * 1000).toISOString()}
+              propertyType={property.property_type}
               status={property.status}
-              interestedClients={property.interestedClients}
+              interestedClients={property.interested_clients}
             />
 
-            <PropertyMap location={property.location} />
+            <PropertyMap 
+              location={{
+                latitude: Number(property.latitude),
+                longitude: Number(property.longitude),
+                address: property.location_address,
+                city: property.city,
+                state: property.state
+              }} 
+            />
             
             <PropertyGallery 
-              images={property.images}
+              images={[property.images_id]} // Assuming images_id is the URL
               title={property.title}
               onImageClick={setSelectedImage}
             />
@@ -110,7 +83,6 @@ const PropertyDetails = () => {
         </div>
       </div>
 
-      {/* Image Modal */}
       {selectedImage && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
