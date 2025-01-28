@@ -34,7 +34,7 @@ const Resources = () => {
   ];
 
   return (
-    <div className="py-20 bg-gradient-to-b from-background to-background/50 dark:from-gray-900 dark:to-gray-800" ref={ref}>
+    <div className="py-20 bg-gradient-to-b from-background to-background/50 dark:from-gray-800 dark:to-gray-700" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-foreground dark:text-white mb-4 animate-fade-in">
