@@ -6,6 +6,7 @@ import { useAccount } from "@starknet-react/core";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { toast } from "sonner";
 import { cn } from "@/utils/utils";
+import { useState } from "react";
 
 interface NavigationItem {
   label: string;
@@ -21,14 +22,22 @@ interface SimpleMobileMenuProps {
 const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => {
   const { address } = useAccount();
   const { user } = useUserReadByAddress(address || "");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
 
+  const handleNavigation = (item: NavigationItem) => {
+    if (onNavigate) {
+      onNavigate(item);
+    }
+    setIsOpen(false);
+  };
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
@@ -59,6 +68,7 @@ const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => 
                       size="icon"
                       className="h-6 w-6"
                       onClick={() => handleCopy(user.phone)}
+                      type="button"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -72,6 +82,7 @@ const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => 
                   size="icon"
                   className="h-6 w-6 ml-2"
                   onClick={() => handleCopy(address)}
+                  type="button"
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
@@ -87,9 +98,7 @@ const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => 
                   "block px-4 py-2 text-sm hover:bg-muted rounded-md transition-colors",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 )}
-                onClick={() => {
-                  if (onNavigate) onNavigate(item);
-                }}
+                onClick={() => handleNavigation(item)}
               >
                 {item.label}
               </Link>
