@@ -4,7 +4,7 @@ import { useConnect, useAccount, useDisconnect } from "@starknet-react/core";
 import { toast } from "sonner";
 import NavigationLinks from "./navbar/NavigationLinks";
 import WalletDropdown from "./navbar/WalletDropdown";
-import MobileMenu from "./navbar/MobileMenu";
+import SimpleMobileMenu from "./navbar/SimpleMobileMenu";
 import { ThemeToggle } from "./navbar/ThemeToggle";
 import { Home } from "lucide-react";
 
@@ -102,11 +102,8 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu */}
-          <MobileMenu
+          <SimpleMobileMenu
             navigation={navigation}
-            address={address}
-            handleConnectWallet={handleConnectWallet}
-            handleDisconnect={handleDisconnect}
             onNavigate={handleNavigation}
           />
         </div>

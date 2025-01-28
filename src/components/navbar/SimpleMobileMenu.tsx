@@ -7,6 +7,7 @@ import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead"
 import { toast } from "sonner";
 import { cn } from "@/utils/utils";
 import { useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavigationItem {
   label: string;
@@ -103,6 +104,9 @@ const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => 
                 {item.label}
               </Link>
             ))}
+          </div>
+          <div className="mt-auto p-4 border-t">
+            <ThemeToggle />
           </div>
         </nav>
       </SheetContent>
