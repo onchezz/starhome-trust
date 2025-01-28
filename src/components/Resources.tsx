@@ -45,7 +45,7 @@ const Resources = () => {
             </span>{" "}
             for Real Estate Investors
           </h2>
-          <p className="text-muted-foreground dark:text-gray-300 max-w-2xl mx-auto animate-fade-in delay-100">
+          <p className="text-muted-foreground dark:text-gray-200 max-w-2xl mx-auto animate-fade-in delay-100">
             Interested in diversifying your investments? Starhomes is here to guide
             you through global property opportunities using cryptocurrency!
           </p>
@@ -55,7 +55,7 @@ const Resources = () => {
           {resources.map((resource, index) => (
             <div
               key={resource.title}
-              className={`group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
+              className={`group bg-white dark:bg-gray-800/80 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
                 inView
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
@@ -76,11 +76,13 @@ const Resources = () => {
                 <h3 className="text-xl font-semibold text-foreground dark:text-white mb-3 group-hover:text-primary transition-colors duration-300">
                   {resource.title}
                 </h3>
-                <p className="text-muted-foreground dark:text-gray-300 mb-4">{resource.description}</p>
+                <p className="text-muted-foreground dark:text-gray-200 mb-4">
+                  {resource.description}
+                </p>
                 <Link to="/blogs">
                   <Button
                     variant="outline"
-                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground dark:border-gray-600 dark:text-white transition-all duration-300"
+                    className="w-full group-hover:bg-primary group-hover:text-white dark:border-gray-600 dark:text-white transition-all duration-300"
                   >
                     <resource.icon className="w-4 h-4 mr-2" />
                     Learn More
