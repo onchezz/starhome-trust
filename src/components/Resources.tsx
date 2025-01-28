@@ -34,18 +34,18 @@ const Resources = () => {
   ];
 
   return (
-    <div className="py-20 bg-gradient-to-b from-background to-background/50 dark:from-background dark:to-background/80" ref={ref}>
+    <div className="py-20 bg-gradient-to-b from-background to-background/50 dark:from-gray-900 dark:to-gray-800" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4 animate-fade-in">
+          <h2 className="text-4xl font-bold text-foreground dark:text-white mb-4 animate-fade-in">
             Resources{" "}
             <span className="relative">
               Designed
-              <span className="absolute -bottom-2 left-0 w-full h-1 bg-secondary dark:bg-secondary/50"></span>
+              <span className="absolute -bottom-2 left-0 w-full h-1 bg-secondary dark:bg-white/20"></span>
             </span>{" "}
             for Real Estate Investors
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in delay-100">
+          <p className="text-muted-foreground dark:text-gray-300 max-w-2xl mx-auto animate-fade-in delay-100">
             Interested in diversifying your investments? Starhomes is here to guide
             you through global property opportunities using cryptocurrency!
           </p>
@@ -55,7 +55,7 @@ const Resources = () => {
           {resources.map((resource, index) => (
             <div
               key={resource.title}
-              className={`group bg-white dark:bg-gray-900/50 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
+              className={`group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
                 inView
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
@@ -73,14 +73,14 @@ const Resources = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-xl font-semibold text-foreground dark:text-white mb-3 group-hover:text-primary transition-colors duration-300">
                   {resource.title}
                 </h3>
-                <p className="text-muted-foreground mb-4">{resource.description}</p>
+                <p className="text-muted-foreground dark:text-gray-300 mb-4">{resource.description}</p>
                 <Link to="/blogs">
                   <Button
                     variant="outline"
-                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
+                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground dark:border-gray-600 dark:text-white transition-all duration-300"
                   >
                     <resource.icon className="w-4 h-4 mr-2" />
                     Learn More

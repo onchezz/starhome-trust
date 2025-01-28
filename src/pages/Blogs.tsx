@@ -34,7 +34,7 @@ const Blogs = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
         {/* <Navbar /> */}
         <div className="container mx-auto py-24">
           <div className="text-center mb-16">
@@ -85,14 +85,14 @@ const Blogs = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <Navbar />
       <div className="container mx-auto py-24">
         <div className="text-center mb-16 animate-fade-in">
-          <h1 className="text-4xl font-bold text-navy mb-4">
+          <h1 className="text-4xl font-bold text-navy dark:text-white mb-4">
             Explore Insights and Strategies for Real Estate Investment
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Stay informed with the latest trends in global property and
             cryptocurrency investments
           </p>
@@ -105,7 +105,7 @@ const Blogs = () => {
               placeholder="Search articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
             />
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           </div>
@@ -116,7 +116,7 @@ const Blogs = () => {
                 key={category}
                 variant={selectedCategory === category ? "default" : "outline"}
                 onClick={() => setSelectedCategory(category)}
-                className="transition-all duration-300 hover:scale-105"
+                className="transition-all duration-300 hover:scale-105 dark:text-white dark:border-gray-600"
               >
                 {category}
               </Button>
@@ -128,7 +128,7 @@ const Blogs = () => {
           {filteredBlogs.map((blog, index) => (
             <Card
               key={blog.id}
-              className="overflow-hidden group hover:shadow-xl transition-all duration-300"
+              className="overflow-hidden group hover:shadow-xl transition-all duration-300 dark:bg-gray-800 dark:border-gray-700"
               style={{
                 opacity: inView ? 1 : 0,
                 transform: inView
