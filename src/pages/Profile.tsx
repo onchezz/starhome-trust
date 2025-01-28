@@ -23,16 +23,16 @@ const Profile = () => {
     isLoading: isLoadingUser,
     error,
   } = useUserReadByAddress(address);
-  const { handleSignAsAgent } = useUserWrite();
+  const { handleSignAsAgent: signAsAgent } = useUserWrite();
 
   const { data: userAssets, isLoading: assetsLoading } = useStarHomeReadContract({
     functionName: "get_user_assets",
     args: [address],
   });
 
-  const handleSignAsAgent = async () => {
+  const handleAgentSignup = async () => {
     try {
-      await handleSignAsAgent();
+      await signAsAgent();
       toast.success("Successfully registered as agent!");
     } catch (error) {
       console.error("Error registering as agent:", error);
@@ -81,19 +81,19 @@ const Profile = () => {
                   Profile Details
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {user.is_verified && (
+                  {user?.is_verified && (
                     <Badge variant="secondary" className="text-xs sm:text-sm">
                       <Check className="w-3 h-3 mr-1" />
                       Verified
                     </Badge>
                   )}
-                  {user.is_investor && (
+                  {user?.is_investor && (
                     <Badge variant="outline" className="text-xs sm:text-sm">
                       <Wallet className="w-3 h-3 mr-1" />
                       Investor
                     </Badge>
                   )}
-                  {user.is_agent && (
+                  {user?.is_agent && (
                     <Badge className="text-xs sm:text-sm">
                       <Building2 className="w-3 h-3 mr-1" />
                       Agent
@@ -111,7 +111,7 @@ const Profile = () => {
                   className="flex flex-col sm:flex-row items-start gap-4"
                 >
                   <img
-                    src={user.profile_image || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop"}
+                    src={user?.profile_image || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop"}
                     alt="Profile"
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-2 ring-primary/20"
                   />
@@ -119,15 +119,15 @@ const Profile = () => {
                     <h3 className={cn(
                       "text-base sm:text-lg md:text-xl font-medium",
                       theme === "dark" ? "text-white" : "text-gray-900"
-                    )}>{user.name || "John Doe"}</h3>
+                    )}>{user?.name || "John Doe"}</h3>
                     <p className={cn(
                       "text-sm sm:text-base",
                       theme === "dark" ? "text-gray-300" : "text-gray-500"
-                    )}>{user.email || "j@gmail.com"}</p>
+                    )}>{user?.email || "j@gmail.com"}</p>
                     <p className={cn(
                       "text-sm sm:text-base",
                       theme === "dark" ? "text-gray-300" : "text-gray-500"
-                    )}>{user.phone || "123"}</p>
+                    )}>{user?.phone || "123"}</p>
                   </div>
                 </motion.div>
 
@@ -162,9 +162,9 @@ const Profile = () => {
                     </Button>
                   </Link>
                   
-                  {!user.is_agent ? (
+                  {!user?.is_agent ? (
                     <Button 
-                      onClick={handleSignAsAgent} 
+                      onClick={handleAgentSignup} 
                       variant="outline"
                       className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
                     >
@@ -219,15 +219,15 @@ const Profile = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className={theme === "dark" ? "text-gray-300" : ""}>ETH</span>
-                      <span className="font-mono">{Number(balances.ETH?.formatted || 0).toFixed(4)}</span>
+                      <span className="font-mono">{Number(balances?.ETH?.formatted || 0).toFixed(4)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className={theme === "dark" ? "text-gray-300" : ""}>USDT</span>
-                      <span className="font-mono">{Number(balances.USDT?.formatted || 0).toFixed(4)}</span>
+                      <span className="font-mono">{Number(balances?.USDT?.formatted || 0).toFixed(4)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className={theme === "dark" ? "text-gray-300" : ""}>STRK</span>
-                      <span className="font-mono">{Number(balances.STRK?.formatted || 0).toFixed(4)}</span>
+                      <span className="font-mono">{Number(balances?.STRK?.formatted || 0).toFixed(4)}</span>
                     </div>
                   </div>
                 )}
@@ -251,12 +251,12 @@ const Profile = () => {
                         <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                       ))}
                     </div>
-                  ) : userAssets.length === 0 ? (
+                  ) : userAssets?.length === 0 ? (
                     <p className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
                       No assets found
                     </p>
                   ) : (
-                    userAssets.map((asset: any) => (
+                    userAssets?.map((asset: any) => (
                       <div
                         key={asset.id}
                         className={cn(
