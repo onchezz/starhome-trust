@@ -55,14 +55,14 @@ const WalletActions = () => {
     isLoading: boolean;
   }) => (
     <div className="flex justify-between items-center p-2">
-      <span>{label}</span>
+      <span className="text-sm sm:text-base">{label}</span>
       {isLoading ? (
-        <Shimmer className="h-6 w-24 rounded-md" />
+        <Shimmer className="h-5 sm:h-6 w-20 sm:w-24 rounded-md" />
       ) : (
         <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="font-mono"
+          className="font-mono text-sm sm:text-base"
         >
           {value}
         </motion.span>
@@ -71,19 +71,19 @@ const WalletActions = () => {
   );
 
   return (
-    <div className="flex justify-around gap-2">
+    <div className="flex justify-around gap-1 sm:gap-2">
       <Dialog>
         <DialogTrigger asChild>
-          {/* <Button variant="outline" size="icon">
-            <Wallet className="h-4 w-4" />
-          </Button> */}
+          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+            <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Wallet Balances</DialogTitle>
-            <DialogDescription>Your current token balances</DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">Wallet Balances</DialogTitle>
+            <DialogDescription className="text-sm sm:text-base">Your current token balances</DialogDescription>
           </DialogHeader>
-          <Card className="p-4">
+          <Card className="p-3 sm:p-4">
             <div className="space-y-2">
               <BalanceItem
                 label="ETH"
@@ -107,33 +107,35 @@ const WalletActions = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">
-            <Send className="h-4 w-4" />
+          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+            <Send className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Send Tokens</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Send Tokens</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Amount</Label>
+              <Label className="text-sm sm:text-base">Amount</Label>
               <Input
                 type="number"
                 value={sendAmount}
                 onChange={(e) => setSendAmount(e.target.value)}
                 placeholder="0.0"
+                className="text-sm sm:text-base"
               />
             </div>
             <div>
-              <Label>Recipient Address</Label>
+              <Label className="text-sm sm:text-base">Recipient Address</Label>
               <Input
                 value={recipientAddress}
                 onChange={(e) => setRecipientAddress(e.target.value)}
                 placeholder="0x..."
+                className="text-sm sm:text-base"
               />
             </div>
-            <Button onClick={handleSend} className="w-full">
+            <Button onClick={handleSend} className="w-full text-sm sm:text-base">
               Send
             </Button>
           </div>
@@ -142,18 +144,18 @@ const WalletActions = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">
-            <QrCode className="h-4 w-4" />
+          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+            <QrCode className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Wallet Address QR Code</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Wallet Address QR Code</DialogTitle>
           </DialogHeader>
-          <div className="flex justify-center p-4">
+          <div className="flex justify-center p-3 sm:p-4">
             <QRCodeSVG value={address} size={200} />
           </div>
-          <p className="text-center text-sm text-gray-500 break-all">
+          <p className="text-center text-xs sm:text-sm text-gray-500 break-all">
             {address}
           </p>
         </DialogContent>
@@ -161,28 +163,29 @@ const WalletActions = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">
-            <Repeat className="h-4 w-4" />
+          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+            <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Swap Tokens</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Swap Tokens</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Amount</Label>
+              <Label className="text-sm sm:text-base">Amount</Label>
               <Input
                 type="number"
                 value={swapAmount}
                 onChange={(e) => setSwapAmount(e.target.value)}
                 placeholder="0.0"
+                className="text-sm sm:text-base"
               />
             </div>
             <div>
-              <Label>Token</Label>
+              <Label className="text-sm sm:text-base">Token</Label>
               <select
-                className="w-full border rounded-md p-2"
+                className="w-full border rounded-md p-2 text-sm sm:text-base"
                 value={swapToken}
                 onChange={(e) => setSwapToken(e.target.value)}
               >
@@ -191,7 +194,7 @@ const WalletActions = () => {
                 <option value="USDC">USDC</option>
               </select>
             </div>
-            <Button onClick={handleSwap} className="w-full">
+            <Button onClick={handleSwap} className="w-full text-sm sm:text-base">
               Swap
             </Button>
           </div>
