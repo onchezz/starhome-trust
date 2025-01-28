@@ -246,11 +246,48 @@ const AddInvestment = () => {
                 handleInputChange={handleInputChange}
               />
               
-              <div className="space-y-6">
+              {/* Grid layout for file upload sections */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FileUploadSection
+                  selectedFiles={selectedFiles}
+                  selectedDocs={[]}
+                  isUploading={isUploading}
+                  uploadProgress={uploadProgress}
+                  uploadedFiles={uploadedFiles}
+                  uploadedSize={uploadedSize}
+                  totalUploadSize={totalUploadSize}
+                  handleFileSelect={handleFileSelect}
+                  handleDrop={handleDrop}
+                  setSelectedFiles={setSelectedFiles}
+                  setSelectedDocs={setSelectedDocs}
+                  setPreviewUrl={setPreviewUrl}
+                  setShowPreviewModal={setShowPreviewModal}
+                  type="images"
+                />
+                <FileUploadSection
+                  selectedFiles={[]}
+                  selectedDocs={selectedDocs}
+                  isUploading={isUploading}
+                  uploadProgress={uploadProgress}
+                  uploadedFiles={uploadedFiles}
+                  uploadedSize={uploadedSize}
+                  totalUploadSize={totalUploadSize}
+                  handleFileSelect={handleFileSelect}
+                  handleDrop={handleDrop}
+                  setSelectedFiles={setSelectedFiles}
+                  setSelectedDocs={setSelectedDocs}
+                  setPreviewUrl={setPreviewUrl}
+                  setShowPreviewModal={setShowPreviewModal}
+                  type="documents"
+                />
+              </div>
+
+              {/* Grid layout for bullet points */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <BulletPointInput
-                  label="Additional Features"
-                  points={additionalFeatures}
-                  onChange={setAdditionalFeatures}
+                  label="Highlights"
+                  points={highlights}
+                  onChange={setHighlights}
                 />
                 <BulletPointInput
                   label="Risk Factors"
@@ -258,27 +295,11 @@ const AddInvestment = () => {
                   onChange={setRiskFactors}
                 />
                 <BulletPointInput
-                  label="Highlights"
-                  points={highlights}
-                  onChange={setHighlights}
+                  label="Additional Features"
+                  points={additionalFeatures}
+                  onChange={setAdditionalFeatures}
                 />
               </div>
-
-              <FileUploadSection
-                selectedFiles={selectedFiles}
-                selectedDocs={selectedDocs}
-                isUploading={isUploading}
-                uploadProgress={uploadProgress}
-                uploadedFiles={uploadedFiles}
-                uploadedSize={uploadedSize}
-                totalUploadSize={totalUploadSize}
-                handleFileSelect={handleFileSelect}
-                handleDrop={handleDrop}
-                setSelectedFiles={setSelectedFiles}
-                setSelectedDocs={setSelectedDocs}
-                setPreviewUrl={setPreviewUrl}
-                setShowPreviewModal={setShowPreviewModal}
-              />
 
               <Button
                 type="submit"
