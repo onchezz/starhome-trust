@@ -16,11 +16,11 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
   handleMarketAnalysisChange,
 }) => {
   return (
-    <div className="bg-gray-50 p-6 rounded-lg animate-fade-in">
-      <h3 className="text-lg font-semibold mb-4">Market Analysis</h3>
+    <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg animate-fade-in">
+      <h3 className="text-lg font-semibold mb-4 dark:text-white">Market Analysis</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label>Area Growth Rate (%)</Label>
+          <Label className="dark:text-gray-200">Area Growth Rate (%)</Label>
           <Input
             required
             value={marketAnalysis?.area_growth || ""}
@@ -28,11 +28,12 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
               handleMarketAnalysisChange("area_growth", e.target.value)
             }
             placeholder="Annual area growth rate"
+            className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Occupancy Rate (%)</Label>
+          <Label className="dark:text-gray-200">Occupancy Rate (%)</Label>
           <Input
             required
             value={marketAnalysis?.occupancy_rate || ""}
@@ -40,11 +41,12 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
               handleMarketAnalysisChange("occupancy_rate", e.target.value)
             }
             placeholder="Current occupancy rate"
+            className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Comparable Properties</Label>
+          <Label className="dark:text-gray-200">Comparable Properties</Label>
           <Input
             required
             value={marketAnalysis?.comparable_properties || ""}
@@ -55,11 +57,12 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
               )
             }
             placeholder="Similar properties in the area"
+            className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Demand Trend</Label>
+          <Label className="dark:text-gray-200">Demand Trend</Label>
           <Input
             required
             value={marketAnalysis?.demand_trend || ""}
@@ -67,6 +70,7 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
               handleMarketAnalysisChange("demand_trend", e.target.value)
             }
             placeholder="Current market demand trend"
+            className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
         </div>
       </div>
