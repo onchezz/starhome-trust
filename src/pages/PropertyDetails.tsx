@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
 import { PropertyHero } from "@/components/property/PropertyHero";
 import { PropertyMap } from "@/components/property/PropertyMap";
 import { PropertyInvestment } from "@/components/property/PropertyInvestment";
@@ -9,17 +8,32 @@ import { PropertyGallery } from "@/components/property/PropertyGallery";
 import { PropertyAbout } from "@/components/property/PropertyAbout";
 import { SimilarProperties } from "@/components/property/SimilarProperties";
 import { usePropertyReadById } from "@/hooks/contract_interactions/usePropertiesReads";
+import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { PageLoader } from "@/components/ui/page-loader";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  console.log("Property ID:", id); // Debug log
+  console.log("Property ID:", id);
   const { property, isLoading, error } = usePropertyReadById(id || "");
-  console.log("Property data:", property); // Debug log
+  const { user: agent, isLoading: isLoadingAgent } = useUserReadByAddress(
+    property?.agentId || ""
+  );
 
-  if (isLoading) {
+  const handleCopyAddress = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Address copied to clipboard");
+    } catch (err) {
+      toast.error("Failed to copy address");
+    }
+  };
+
+  if (isLoading || isLoadingAgent) {
     return <PageLoader />;
   }
 
@@ -37,17 +51,14 @@ const PropertyDetails = () => {
     );
   }
 
-  // Convert features string to array and ensure it's not empty
   const features = property.featuresId
     ? property.featuresId.toString().split(",").filter(Boolean)
     : [];
 
-  // Ensure we have a valid date
   const dateListed = property.dateListed
     ? new Date(property.dateListed * 1000).toISOString()
     : new Date().toISOString();
 
-  // Ensure we have a valid image URL
   const imageUrl = property.imagesId || "/placeholder.svg";
 
   return (
@@ -74,6 +85,34 @@ const PropertyDetails = () => {
               status={property.status.toString()}
               interestedClients={Number(property.interestedClients)}
             />
+
+            {agent && (
+              <div className="bg-card rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">Agent Information</h3>
+                <div className="space-y-2">
+                  <p className="text-sm">
+                    <span className="font-medium">Name:</span> {agent.name}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Email:</span> {agent.email}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Phone:</span> {agent.phone}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">Agent Address:</span>
+                    <span className="text-sm font-mono">{agent.id}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleCopyAddress(agent.id)}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <PropertyMap
               location={{
