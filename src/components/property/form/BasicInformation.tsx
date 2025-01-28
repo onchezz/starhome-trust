@@ -40,8 +40,8 @@ const BasicInformation = ({ formData, handleInputChange, address }: BasicInforma
         <div className="space-y-2">
           <Label>Property Type</Label>
           <Select
-            value={formData.property_type}
-            onValueChange={(value) => handleInputChange("property_type", value)}
+            value={formData.propertyType}
+            onValueChange={(value) => handleInputChange("propertyType", value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select type" />
@@ -78,8 +78,8 @@ const BasicInformation = ({ formData, handleInputChange, address }: BasicInforma
         <div className="space-y-2">
           <Label>Asset Token</Label>
           <Select
-            value={formData.asset_token}
-            onValueChange={(value) => handleInputChange("asset_token", value)}
+            value={formData.assetToken}
+            onValueChange={(value) => handleInputChange("assetToken", value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select token" />
@@ -98,7 +98,7 @@ const BasicInformation = ({ formData, handleInputChange, address }: BasicInforma
           <Label>Agent Address</Label>
           <Input
             disabled
-            value={formData.agent_id}
+            value={formData.agentId}
             placeholder={address || "Agent Address"}
           />
         </div>

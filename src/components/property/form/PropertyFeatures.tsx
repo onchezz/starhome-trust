@@ -49,43 +49,59 @@ const PropertyFeatures = ({ formData, handleInputChange }: PropertyFeaturesProps
           <Input
             type="number"
             required
-            value={formData.parking_spaces || ""}
-            onChange={(e) => handleInputChange("parking_spaces", e.target.value)}
+            value={formData.parkingSpaces || ""}
+            onChange={(e) => handleInputChange("parkingSpaces", e.target.value)}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">
         <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
-          <Label htmlFor="has_garden" className="cursor-pointer">Garden</Label>
+          <Label htmlFor="has_garden" className="cursor-pointer">
+            Garden
+          </Label>
           <Switch
             id="has_garden"
-            checked={formData.has_garden || false}
-            onCheckedChange={(checked) => handleInputChange("has_garden", checked)}
+            checked={formData.hasGarden || false}
+            onCheckedChange={(checked) =>
+              handleInputChange("hasGarden", checked)
+            }
           />
         </div>
         <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
-          <Label htmlFor="pet_friendly" className="cursor-pointer">Pet Friendly</Label>
+          <Label htmlFor="pet_friendly" className="cursor-pointer">
+            Pet Friendly
+          </Label>
           <Switch
             id="pet_friendly"
-            checked={formData.pet_friendly || false}
-            onCheckedChange={(checked) => handleInputChange("pet_friendly", checked)}
+            checked={formData.petFriendly || false}
+            onCheckedChange={(checked) =>
+              handleInputChange("petFriendly", checked)
+            }
           />
         </div>
         <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
-          <Label htmlFor="wheelchair_accessible" className="cursor-pointer">Wheelchair Accessible</Label>
+          <Label htmlFor="wheelchair_accessible" className="cursor-pointer">
+            Wheelchair Accessible
+          </Label>
           <Switch
             id="wheelchair_accessible"
-            checked={formData.wheelchair_accessible || false}
-            onCheckedChange={(checked) => handleInputChange("wheelchair_accessible", checked)}
+            checked={formData.wheelchairAccessible || false}
+            onCheckedChange={(checked) =>
+              handleInputChange("wheelchairAccessible", checked)
+            }
           />
         </div>
         <div className="flex items-center justify-between space-x-2 p-4 rounded-lg bg-white/60 hover:bg-white/80 transition-colors duration-300">
-          <Label htmlFor="has_swimming_pool" className="cursor-pointer">Swimming Pool</Label>
+          <Label htmlFor="has_swimming_pool" className="cursor-pointer">
+            Swimming Pool
+          </Label>
           <Switch
             id="has_swimming_pool"
-            checked={formData.has_swimming_pool || false}
-            onCheckedChange={(checked) => handleInputChange("has_swimming_pool", checked)}
+            checked={formData.hasSwimmingPool || false}
+            onCheckedChange={(checked) =>
+              handleInputChange("hasSwimmingPool", checked)
+            }
           />
         </div>
       </div>

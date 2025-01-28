@@ -49,6 +49,7 @@ const { contract } = useContract({
         console.log(`Calling ${functionName} with args:`, args);
         console.log(`Calling ${functionName} with call:`, call);
         // Send the transaction
+        parseCalldataValue(args)
         const response = await sendAsync([call]);
         return { response, status: txStatus };
       } catch (err) {
@@ -89,4 +90,17 @@ const { contract } = useContract({
     executeBatch,
     status: txStatus,
   };
+}
+function parseCalldataValue(calldata) {
+    return calldata.reduce((acc, value) => {
+        try {
+            const bigIntValue = BigInt(value);
+            acc.push(bigIntValue);
+        } catch (error) {
+            console.error(`Failed to parse value: ${value}`, error);
+            // Handle the error, e.g., by skipping or providing a default value
+            acc.push(BigInt(0)); // Default value
+        }
+        return acc;
+    }, []);
 }

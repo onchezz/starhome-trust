@@ -181,7 +181,6 @@ const CreateProperty = () => {
       try {
         const status = await handleListProperty({
           ...formData,
-
           agentId: address,
           imagesId: url,
         } as Property);

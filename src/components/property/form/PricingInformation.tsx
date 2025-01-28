@@ -11,7 +11,9 @@ interface PricingInformationProps {
 const PricingInformation = ({ formData, handleInputChange }: PricingInformationProps) => {
   return (
     <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in delay-100">
-      <h3 className="text-lg font-semibold text-gray-900">Pricing Information</h3>
+      <h3 className="text-lg font-semibold text-gray-900">
+        Pricing Information
+      </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="space-y-2">
           <Label htmlFor="price">Price</Label>
@@ -30,7 +32,11 @@ const PricingInformation = ({ formData, handleInputChange }: PricingInformationP
             id="asking-price"
             type="number"
             required
-            value={formData.asking_price ? Number(formData.asking_price.toString()) : ""}
+            value={
+              formData.asking_price
+                ? Number(formData.asking_price.toString())
+                : ""
+            }
             onChange={(e) => handleInputChange("asking_price", e.target.value)}
           />
         </div>
@@ -39,8 +45,14 @@ const PricingInformation = ({ formData, handleInputChange }: PricingInformationP
           <Label>Annual Growth Rate (%)</Label>
           <Input
             type="number"
-            value={formData.annual_growth_rate ? formData.annual_growth_rate.toString() : ""}
-            onChange={(e) => handleInputChange("annual_growth_rate", e.target.value)}
+            value={
+              formData.annualGrowthRate
+                ? formData.annualGrowthRate.toString()
+                : ""
+            }
+            onChange={(e) =>
+              handleInputChange("annualGrowthRate", e.target.value)
+            }
           />
         </div>
       </div>

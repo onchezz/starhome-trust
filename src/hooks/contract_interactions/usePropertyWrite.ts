@@ -1,9 +1,8 @@
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
-// import { StarknetProperty } from '@/types/starknet_types/propertyStartknet';
 import { BigNumberish } from 'starknet';
-import { Property } from '@/types/property';
+import { Property, StarknetProperty } from '@/types/property';
 
 export const usePropertyRegistration = () => {
   const { address } = useAccount();
@@ -12,18 +11,16 @@ export const usePropertyRegistration = () => {
   const handleListProperty = async (property: Partial<Property>) => {
     console.log("Listing property before listing from form:", property);
     
-    const agent_id: BigNumberish = property.agentId;
-    const asset_token: BigNumberish = property.assetToken;
-    const location_address = typeof property.locationAddress === 'string' 
-      ? property.locationAddress.split(',')[0] 
-      :  "";
+   
+   const agent_id:BigNumberish =property.agentId;
+   const asset_token:BigNumberish =property.assetToken;
 
     try {
-      const defaultProperty: Property = {
+      const defaultProperty: StarknetProperty = {
         id: property.id || "",
         title: property.title || "",
         description: property.description || "",
-        locationAddress: location_address,
+        location_address: property.locationAddress.split(",")[0] || "",
         city: property.city || "",
         state: property.state || "",
         country: property.country || "",
@@ -35,26 +32,27 @@ export const usePropertyRegistration = () => {
         area: property.area || 0,
         bedrooms: property.bedrooms || 0,
         bathrooms: property.bathrooms || 0,
-        parkingSpaces: property.parkingSpaces || 0,
-        propertyType: property.propertyType || "",
+        parking_spaces: property.parkingSpaces || 0,
+        property_type: property.propertyType || "",
         status: property.status || "",
-        interestedClients: property.interestedClients || 0,
-        annualGrowthRate: property.annualGrowthRate || 0,
-        featuresId: "00",
-        imagesId: property.imagesId || "",
-        videoId: property.videoId || "none",
-        agentId: agent_id || "",
-        dateListed: Math.floor(Date.now() / 1000),
-        hasGarden: property.hasGarden || false,
-        hasSwimmingPool: property.hasSwimmingPool || false,
-        petFriendly: property.petFriendly || false,
-        wheelchairAccessible: property.wheelchairAccessible || false,
-        assetToken: asset_token || ""
+        interested_clients: property.interestedClients || 0,
+        annual_growth_rate: property.annualGrowthRate || 0,
+        features_id: "00",
+        images_id: property.imagesId || "",
+        video_tour: property.videoId || "none",
+        agent_id:address|| "", //agent_id|| address ||
+        date_listed:Math.floor(Date.now() / 1000),
+        has_garden: property.hasGarden || false,
+        has_swimming_pool: property.hasSwimmingPool || false,
+        pet_friendly: property.petFriendly || false,
+        wheelchair_accessible: property.wheelchairAccessible || false,
+        asset_token:property.assetToken|| ""//asset_token
       };
+
 
       console.log("Listing property after conversion:", defaultProperty);
 
-      const tx = await execute("list_property", [{ ...defaultProperty }]);
+      const tx = await execute("list_property", [defaultProperty]);
       
       toast.success(`Property listed successfully! ${tx.response.transaction_hash}`);
       return {
@@ -72,3 +70,4 @@ export const usePropertyRegistration = () => {
     contractStatus
   };
 };
+
