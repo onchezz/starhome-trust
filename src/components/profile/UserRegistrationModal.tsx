@@ -36,8 +36,7 @@ export function UserRegistrationModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [ipfsHash, setIpfsHash] = useState("");
-
-  const isUserRegistered = currentUser && currentUser.name && currentUser.phone && currentUser.email;
+  const [isUserRegistered, setIsUserRegistered] = useState(false);
 
   useEffect(() => {
     if (!address) {
@@ -47,33 +46,54 @@ export function UserRegistrationModal() {
   }, [address]);
 
   useEffect(() => {
-    if (isUserRegistered) {
-      console.log("Pre-filling user data:", currentUser);
-      setFormData({
-        name: currentUser.name,
-        email: currentUser.email,
-        phone: currentUser.phone,
-        profile_image: currentUser.profile_image,
-        is_verified: currentUser.is_verified,
-        is_agent: currentUser.is_agent,
-        is_investor: currentUser.is_investor,
-      });
-      if (currentUser.profile_image) {
-        setIpfsHash(currentUser.profile_image);
+    // Check if user data indicates an unregistered user
+    const isUnregistered = (userData: any) => {
+      console.log("Checking user registration status:", userData);
+      return !userData || 
+             userData.name === "0" || 
+             userData.name === 0 || 
+             userData.name === "" ||
+             userData.phone === "0" ||
+             userData.phone === 0 ||
+             userData.phone === "" ||
+             userData.email === "0" ||
+             userData.email === 0 ||
+             userData.email === "";
+    };
+
+    if (currentUser && !isLoadingUser) {
+      const unregistered = isUnregistered(currentUser);
+      console.log("User registration status:", unregistered ? "Unregistered" : "Registered");
+      setIsUserRegistered(!unregistered);
+
+      if (!unregistered) {
+        console.log("Pre-filling user data:", currentUser);
+        setFormData({
+          name: currentUser.name,
+          email: currentUser.email,
+          phone: currentUser.phone,
+          profile_image: currentUser.profile_image,
+          is_verified: currentUser.is_verified,
+          is_agent: currentUser.is_agent,
+          is_investor: currentUser.is_investor,
+        });
+        if (currentUser.profile_image) {
+          setIpfsHash(currentUser.profile_image);
+        }
+      } else {
+        console.log("No valid user data to pre-fill");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          profile_image: "",
+          is_verified: false,
+          is_agent: false,
+          is_investor: false,
+        });
       }
-    } else {
-      console.log("No user data to pre-fill");
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        profile_image: "",
-        is_verified: false,
-        is_agent: false,
-        is_investor: false,
-      });
     }
-  }, [currentUser, isUserRegistered]);
+  }, [currentUser, isLoadingUser]);
 
   const validateForm = () => {
     if (!formData.name?.trim()) {
