@@ -32,7 +32,7 @@ const AddInvestment = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
-  // New state for bullet points
+  // State for bullet points
   const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
@@ -45,7 +45,7 @@ const AddInvestment = () => {
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
     id: generateShortUUID(),
     owner: address,
-    investor_id: address,
+    investorId: address, // Changed from investor_id to investorId
     isActive: true,
     investmentToken: "",
     marketAnalysis: {
@@ -204,8 +204,8 @@ const AddInvestment = () => {
       // Convert bullet points to strings
       const updatedFormData = {
         ...formData,
-        additional_features: additionalFeatures.join("\n"),
-        risk_factors: riskFactors.join("\n"),
+        additionalFeatures: additionalFeatures.join("\n"),
+        riskFactors: riskFactors.join("\n"),
         highlights: highlights.join("\n"),
       };
 
