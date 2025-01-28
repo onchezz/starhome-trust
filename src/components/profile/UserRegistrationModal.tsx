@@ -30,6 +30,7 @@ export function UserRegistrationModal() {
     phone: "",
     profile_image: "",
     is_verified: false,
+    is_authorized: false,
     is_agent: false,
     is_investor: false,
   });
@@ -77,16 +78,6 @@ export function UserRegistrationModal() {
         if (currentUser.profile_image) {
           setIpfsHash(currentUser.profile_image);
         }
-      } else {
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          profile_image: "",
-          is_verified: false,
-          is_agent: false,
-          is_investor: false,
-        });
       }
     }
   }, [currentUser, isLoadingUser]);
@@ -168,7 +159,8 @@ export function UserRegistrationModal() {
       if (response.status === "success") {
         toast.success(isUserRegistered ? "Profile updated successfully!" : "Registration successful!");
         setIsOpen(false);
-        resetForm();
+        // Force reload the page and show shimmer while data is being fetched
+        window.location.reload();
       }
     } catch (error) {
       console.error("Registration error:", error);

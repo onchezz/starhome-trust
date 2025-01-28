@@ -2,13 +2,15 @@ import { useAccount } from "@starknet-react/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { Badge } from "@/components/ui/badge";
-import { Check, Building2, Wallet, Loader2, UserX } from "lucide-react";
+import { Check, Building2, Wallet, UserX } from "lucide-react";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { ProfileActions } from "@/components/profile/ProfileActions";
 import { UserRegistrationModal } from "@/components/profile/UserRegistrationModal";
+import { ProfileShimmer } from "@/components/profile/ProfileShimmer";
+import { useEffect, useState } from "react";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -19,6 +21,26 @@ const Profile = () => {
     isLoading: isLoadingUser,
     error,
   } = useUserReadByAddress(address || "");
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (isRefreshing) {
+      intervalId = setInterval(() => {
+        if (user && !isLoadingUser) {
+          setIsRefreshing(false);
+        }
+      }, 3000); // Check every 3 seconds
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isRefreshing, user, isLoadingUser]);
 
   const isUnregistered = (userData: any) => {
     return !userData || 
@@ -33,12 +55,8 @@ const Profile = () => {
            userData.email === "";
   };
 
-  if (isLoadingUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin" />
-      </div>
-    );
+  if (isLoadingUser || isRefreshing) {
+    return <ProfileShimmer />;
   }
 
   if (error) {
