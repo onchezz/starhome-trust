@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
 
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
 import FileUploadSection from "@/components/investment/FileUploadSection";
+import BulletPointInput from "@/components/investment/BulletPointInput";
 import { InvestmentAsset, MarketAnalysis } from "@/types/investment";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
 
@@ -32,6 +32,11 @@ const AddInvestment = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
+  // New state for bullet points
+  const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
+  const [riskFactors, setRiskFactors] = useState<string[]>([]);
+  const [highlights, setHighlights] = useState<string[]>([]);
+
   const generateShortUUID = () => {
     const fullUUID = crypto.randomUUID();
     return fullUUID.replace(/-/g, "").substring(0, 21);
@@ -40,6 +45,7 @@ const AddInvestment = () => {
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
     id: generateShortUUID(),
     owner: address,
+    investor_id: address,
     isActive: true,
     investmentToken: "",
     marketAnalysis: {
@@ -194,22 +200,16 @@ const AddInvestment = () => {
       return;
     }
 
-    // setIsUploading(true);
-    // setUploadProgress(0);
-    // setUploadedFiles(0);
-    // setUploadedSize(0);
-    // setTotalUploadSize(0);
-
     try {
-      if (selectedFiles.length > 0) {
-        // await handleUpload(selectedFiles, false);
-      }
+      // Convert bullet points to strings
+      const updatedFormData = {
+        ...formData,
+        additional_features: additionalFeatures.join("\n"),
+        risk_factors: riskFactors.join("\n"),
+        highlights: highlights.join("\n"),
+      };
 
-      if (selectedDocs.length > 0) {
-        // await handleUpload(selectedDocs, true);
-      }
-
-      const status = await handleListInvestmentProperty(formData);
+      const status = await handleListInvestmentProperty(updatedFormData);
 
       if (status.status === "success") {
         toast.success("Investment created successfully!");
@@ -220,10 +220,6 @@ const AddInvestment = () => {
         setUploadedSize(0);
         setTotalUploadSize(0);
       }
-
-      // TODO: Add contract interaction here
-
-      // Reset form
     } catch (error) {
       console.error("Error creating investment:", error);
       toast.error("Failed to create investment");
@@ -234,7 +230,6 @@ const AddInvestment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-    
       <div className="container mx-auto py-24">
         <Card className="animate-fade-in">
           <CardHeader>
@@ -250,10 +245,25 @@ const AddInvestment = () => {
                 formData={formData}
                 handleInputChange={handleInputChange}
               />
-              {/* <MarketAnalysis
-                marketAnalysis={formData.market_analysis!}
-                handleMarketAnalysisChange={handleMarketAnalysisChange}
-              /> */}
+              
+              <div className="space-y-6">
+                <BulletPointInput
+                  label="Additional Features"
+                  points={additionalFeatures}
+                  onChange={setAdditionalFeatures}
+                />
+                <BulletPointInput
+                  label="Risk Factors"
+                  points={riskFactors}
+                  onChange={setRiskFactors}
+                />
+                <BulletPointInput
+                  label="Highlights"
+                  points={highlights}
+                  onChange={setHighlights}
+                />
+              </div>
+
               <FileUploadSection
                 selectedFiles={selectedFiles}
                 selectedDocs={selectedDocs}
