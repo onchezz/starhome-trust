@@ -1,17 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
 
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
-import FileUploadSection from "@/components/investment/FileUploadSection";
 import { InvestmentAsset, MarketAnalysis } from "@/types/investment";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
+import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
+import UploadGrid from "@/components/investment/UploadGrid";
+import BulletPointsGrid from "@/components/investment/BulletPointsGrid";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -32,6 +32,11 @@ const AddInvestment = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
+  // State for bullet points
+  const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
+  const [riskFactors, setRiskFactors] = useState<string[]>([]);
+  const [highlights, setHighlights] = useState<string[]>([]);
+
   const generateShortUUID = () => {
     const fullUUID = crypto.randomUUID();
     return fullUUID.replace(/-/g, "").substring(0, 21);
@@ -40,6 +45,7 @@ const AddInvestment = () => {
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
     id: generateShortUUID(),
     owner: address,
+    investorId: address,
     isActive: true,
     investmentToken: "",
     marketAnalysis: {
@@ -194,22 +200,15 @@ const AddInvestment = () => {
       return;
     }
 
-    // setIsUploading(true);
-    // setUploadProgress(0);
-    // setUploadedFiles(0);
-    // setUploadedSize(0);
-    // setTotalUploadSize(0);
-
     try {
-      if (selectedFiles.length > 0) {
-        // await handleUpload(selectedFiles, false);
-      }
+      const updatedFormData = {
+        ...formData,
+        additionalFeatures: additionalFeatures.join("\n"),
+        riskFactors: riskFactors.join("\n"),
+        highlights: highlights.join("\n"),
+      };
 
-      if (selectedDocs.length > 0) {
-        // await handleUpload(selectedDocs, true);
-      }
-
-      const status = await handleListInvestmentProperty(formData);
+      const status = await handleListInvestmentProperty(updatedFormData);
 
       if (status.status === "success") {
         toast.success("Investment created successfully!");
@@ -220,10 +219,6 @@ const AddInvestment = () => {
         setUploadedSize(0);
         setTotalUploadSize(0);
       }
-
-      // TODO: Add contract interaction here
-
-      // Reset form
     } catch (error) {
       console.error("Error creating investment:", error);
       toast.error("Failed to create investment");
@@ -234,12 +229,14 @@ const AddInvestment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-    
       <div className="container mx-auto py-24">
         <Card className="animate-fade-in">
-          <CardHeader>
-            <CardTitle>Create New Investment Property</CardTitle>
-          </CardHeader>
+          <InvestmentFormHeader
+            isActive={formData.isActive || false}
+            onStatusChange={(checked) =>
+              setFormData((prev) => ({ ...prev, isActive: checked }))
+            }
+          />
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <BasicInformation
@@ -250,11 +247,8 @@ const AddInvestment = () => {
                 formData={formData}
                 handleInputChange={handleInputChange}
               />
-              {/* <MarketAnalysis
-                marketAnalysis={formData.market_analysis!}
-                handleMarketAnalysisChange={handleMarketAnalysisChange}
-              /> */}
-              <FileUploadSection
+              
+              <UploadGrid
                 selectedFiles={selectedFiles}
                 selectedDocs={selectedDocs}
                 isUploading={isUploading}
@@ -268,6 +262,15 @@ const AddInvestment = () => {
                 setSelectedDocs={setSelectedDocs}
                 setPreviewUrl={setPreviewUrl}
                 setShowPreviewModal={setShowPreviewModal}
+              />
+
+              <BulletPointsGrid
+                highlights={highlights}
+                riskFactors={riskFactors}
+                additionalFeatures={additionalFeatures}
+                setHighlights={setHighlights}
+                setRiskFactors={setRiskFactors}
+                setAdditionalFeatures={setAdditionalFeatures}
               />
 
               <Button
