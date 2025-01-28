@@ -76,7 +76,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50">
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-[2520px] mx-auto">
         <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center space-x-2">
@@ -105,6 +105,9 @@ const Navbar = () => {
           <SimpleMobileMenu
             navigation={navigation}
             onNavigate={handleNavigation}
+            address={address}
+            handleConnectWallet={handleConnectWallet}
+            handleDisconnect={handleDisconnect}
           />
         </div>
       </div>

@@ -1,13 +1,11 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAccount } from "@starknet-react/core";
-import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
-import { toast } from "sonner";
 import { cn } from "@/utils/utils";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { Wallet } from "lucide-react";
 
 interface NavigationItem {
   label: string;
@@ -17,23 +15,23 @@ interface NavigationItem {
 
 interface SimpleMobileMenuProps {
   navigation: NavigationItem[];
-  onNavigate?: (item: NavigationItem) => void;
+  onNavigate: (item: NavigationItem) => void;
+  address?: string;
+  handleConnectWallet: () => void;
+  handleDisconnect: () => void;
 }
 
-const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => {
-  const { address } = useAccount();
-  const { user } = useUserReadByAddress(address || "");
+const SimpleMobileMenu = ({
+  navigation,
+  onNavigate,
+  address,
+  handleConnectWallet,
+  handleDisconnect,
+}: SimpleMobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!");
-  };
-
-  const handleNavigation = (item: NavigationItem) => {
-    if (onNavigate) {
-      onNavigate(item);
-    }
+  const handleItemClick = (item: NavigationItem) => {
+    onNavigate(item);
     setIsOpen(false);
   };
 
@@ -42,71 +40,41 @@ const SimpleMobileMenu = ({ navigation, onNavigate }: SimpleMobileMenuProps) => 
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="inline-flex items-center md:hidden"
+          className="md:hidden"
           size="icon"
         >
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background">
-        <nav className="flex flex-col gap-4">
-          {address && user && (
-            <div className="p-4 space-y-4 border-b">
-              <div className="flex items-center space-x-4">
-                {user.profile_image && (
-                  <img
-                    src={user.profile_image}
-                    alt="Profile"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                )}
-                <div className="flex-1">
-                  <p className="font-medium">{user.name}</p>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-sm text-muted-foreground">{user.phone}</p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleCopy(user.phone)}
-                      type="button"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground break-all">
-                {address}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 ml-2"
-                  onClick={() => handleCopy(address)}
-                  type="button"
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </p>
-            </div>
-          )}
-          <div className="space-y-2">
+      <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
+        <nav className="flex flex-col h-full">
+          <div className="p-4 border-b">
+            <h2 className="font-semibold">Menu</h2>
+          </div>
+          <div className="flex-1 overflow-y-auto">
             {navigation.map((item) => (
               <Link
-                key={item.label}
-                to={item.href}
+                key={item.href}
+                to={item.isPage ? item.href : "#"}
+                onClick={() => handleItemClick(item)}
                 className={cn(
-                  "block px-4 py-2 text-sm hover:bg-muted rounded-md transition-colors",
-                  "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  "block px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
+                  "border-b border-gray-200 dark:border-gray-700"
                 )}
-                onClick={() => handleNavigation(item)}
               >
                 {item.label}
               </Link>
             ))}
           </div>
-          <div className="mt-auto p-4 border-t">
-            <ThemeToggle />
+          <div className="p-4 border-t space-y-4">
+            <Button 
+              className="w-full"
+              onClick={address ? handleDisconnect : handleConnectWallet}
+            >
+              <Wallet className="mr-2 h-4 w-4" />
+              {address ? "Disconnect Wallet" : "Connect Wallet"}
+            </Button>
+            <ThemeToggle className="w-full" />
           </div>
         </nav>
       </SheetContent>
