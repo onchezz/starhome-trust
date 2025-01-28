@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { User as UserType } from "@/types/user";
 import pinata from "@/hooks/services_hooks/pinata";
+import { Switch } from "@/components/ui/switch";
 
 export function UserRegistrationModal() {
   const { address } = useAccount();
@@ -46,9 +47,7 @@ export function UserRegistrationModal() {
   }, [address]);
 
   useEffect(() => {
-    // Check if user data indicates an unregistered user
     const isUnregistered = (userData: any) => {
-      console.log("Checking user registration status:", userData);
       return !userData || 
              userData.name === "0" || 
              userData.name === 0 || 
@@ -63,11 +62,9 @@ export function UserRegistrationModal() {
 
     if (currentUser && !isLoadingUser) {
       const unregistered = isUnregistered(currentUser);
-      console.log("User registration status:", unregistered ? "Unregistered" : "Registered");
       setIsUserRegistered(!unregistered);
 
       if (!unregistered) {
-        console.log("Pre-filling user data:", currentUser);
         setFormData({
           name: currentUser.name,
           email: currentUser.email,
@@ -81,7 +78,6 @@ export function UserRegistrationModal() {
           setIpfsHash(currentUser.profile_image);
         }
       } else {
-        console.log("No valid user data to pre-fill");
         setFormData({
           name: "",
           email: "",
@@ -158,7 +154,6 @@ export function UserRegistrationModal() {
 
     try {
       setIsSubmitting(true);
-      console.log("Current form data:", formData);
       const userData = {
         ...formData,
         id: address,
@@ -168,8 +163,6 @@ export function UserRegistrationModal() {
         timestamp: Math.floor(Date.now() / 1000),
       };
 
-      console.log("Submitting user data:", userData);
-      
       const response = await handleRegisterUser(userData);
       
       if (response.status === "success") {
@@ -196,6 +189,15 @@ export function UserRegistrationModal() {
       is_investor: false,
     });
     setIpfsHash("");
+  };
+
+  const handleSwitchChange = (type: 'agent' | 'investor', checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      is_agent: type === 'agent' ? checked : prev.is_agent,
+      is_investor: type === 'investor' ? checked : prev.is_investor,
+    }));
+    console.log(`${type} switch changed to:`, checked);
   };
 
   return (
@@ -254,6 +256,27 @@ export function UserRegistrationModal() {
               required
               disabled={!address || isSubmitting}
             />
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="agent-switch">Register as Agent</Label>
+              <Switch
+                id="agent-switch"
+                checked={formData.is_agent}
+                onCheckedChange={(checked) => handleSwitchChange('agent', checked)}
+                disabled={!address || isSubmitting}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="investor-switch">Register as Investor</Label>
+              <Switch
+                id="investor-switch"
+                checked={formData.is_investor}
+                onCheckedChange={(checked) => handleSwitchChange('investor', checked)}
+                disabled={!address || isSubmitting}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="profile_image">Profile Image</Label>
