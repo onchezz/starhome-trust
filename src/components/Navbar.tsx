@@ -53,21 +53,30 @@ const Navbar = () => {
     try {
       console.log("Connecting StarkNet wallet");
       const { connector } = await starknetkitConnectModal();
+      
       if (!connector) {
-        console.log("No connector selected");
+        console.log("No connector selected - user likely closed modal");
         return;
       }
+
       await connect({ connector });
+      console.log("Wallet connected successfully");
       toast.success("Wallet connected successfully");
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast.error("Failed to connect wallet");
+      // Check if error is due to user rejection
+      if (error?.message?.includes("reject")) {
+        toast.error("Connection rejected. Please try again when ready.");
+      } else {
+        toast.error("Failed to connect wallet. Please try again.");
+      }
     }
   };
 
   const handleDisconnect = async () => {
     try {
       await disconnect();
+      console.log("Wallet disconnected successfully");
       toast.success("Wallet disconnected successfully");
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
