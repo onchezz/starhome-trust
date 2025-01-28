@@ -1,17 +1,13 @@
 import { useAccount } from "@starknet-react/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Check, Building2, Wallet, Loader2, Plus, User } from "lucide-react";
-import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
+import { Check, Building2, Wallet, Loader2 } from "lucide-react";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import { UserRegistrationModal } from "@/components/profile/UserRegistrationModal";
-import { toast } from "sonner";
+import { ProfileActions } from "@/components/profile/ProfileActions";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -22,22 +18,6 @@ const Profile = () => {
     isLoading: isLoadingUser,
     error,
   } = useUserReadByAddress(address || "");
-  const { handleSignAsAgent, contractStatus } = useUserWrite();
-
-  const handleAgentSignup = async () => {
-    if (!address) {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-    
-    try {
-      await handleSignAsAgent();
-      toast.success("Successfully registered as agent!");
-    } catch (error) {
-      console.error("Error registering as agent:", error);
-      toast.error("Failed to register as agent");
-    }
-  };
 
   if (isLoadingUser) {
     return (
@@ -148,44 +128,7 @@ const Profile = () => {
                   <p className="text-xs sm:text-sm font-mono break-all mt-1">{address}</p>
                 </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4"
-                >
-                  <Link to="/create-property" className="w-full">
-                    <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
-                      <Plus className="w-4 h-4" />
-                      Create Property
-                    </Button>
-                  </Link>
-                  
-                  {!user?.is_agent && (
-                    <Button 
-                      onClick={handleAgentSignup}
-                      variant="outline"
-                      disabled={contractStatus.isPending}
-                      className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
-                    >
-                      <Building2 className="w-4 h-4" />
-                      {contractStatus.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        "Sign as Agent"
-                      )}
-                    </Button>
-                  )}
-
-                  <UserRegistrationModal 
-                    isUpdate={!!user} 
-                    currentUserData={user ? {
-                      name: user.name,
-                      email: user.email,
-                      phone: user.phone,
-                    } : undefined}
-                  />
-                </motion.div>
+                <ProfileActions user={user} isLoading={isLoadingUser} />
               </div>
             </CardContent>
           </Card>

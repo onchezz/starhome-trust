@@ -7,32 +7,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { toast } from "sonner";
-import { Loader2, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useAccount } from "@starknet-react/core";
+import { UserForm } from "./UserForm";
+import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
+import { User as UserType } from "@/types/user";
 
-interface UserRegistrationModalProps {
-  isUpdate?: boolean;
-  currentUserData?: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-}
-
-export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistrationModalProps) {
+export function UserRegistrationModal() {
   const { address } = useAccount();
   const { handleRegisterUser, contractStatus } = useUserWrite();
-  const [formData, setFormData] = useState({
-    name: currentUserData?.name || "",
-    email: currentUserData?.email || "",
-    phone: currentUserData?.phone || "",
+  const { user: currentUser, isLoading: isLoadingUser } = useUserReadByAddress(address || "");
+  
+  const [formData, setFormData] = useState<Partial<UserType>>({
+    name: "",
+    email: "",
+    phone: "",
+    is_verified: false,
+    is_agent: false,
+    is_investor: false,
   });
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        name: currentUser.name,
+        email: currentUser.email,
+        phone: currentUser.phone,
+        is_verified: currentUser.is_verified,
+        is_agent: currentUser.is_agent,
+        is_investor: currentUser.is_investor,
+      });
+    }
+  }, [currentUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,18 +52,26 @@ export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistr
     }
 
     try {
-      const response = await handleRegisterUser({
+      const userData = {
         ...formData,
         id: address,
-      });
+        profile_image: "",
+        is_verified: false,
+        is_authorized: false,
+        timestamp: Math.floor(Date.now() / 1000),
+      };
+
+      console.log("Submitting user data:", userData);
+      
+      const response = await handleRegisterUser(userData);
       
       if (response.status === "success") {
-        toast.success(isUpdate ? "Profile updated successfully!" : "Registration successful!");
+        toast.success(currentUser ? "Profile updated successfully!" : "Registration successful!");
         setIsOpen(false);
       }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(isUpdate ? "Failed to update profile" : "Failed to register");
+      toast.error(currentUser ? "Failed to update profile" : "Failed to register");
     }
   };
 
@@ -62,59 +80,27 @@ export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistr
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
           <User className="w-4 h-4" />
-          {isUpdate ? "Update Profile" : "Register User"}
+          {currentUser ? "Update Profile" : "Create Account"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isUpdate ? "Update Profile" : "Register New User"}</DialogTitle>
+          <DialogTitle>
+            {currentUser ? "Update Profile" : "Create New Account"}
+          </DialogTitle>
           <DialogDescription>
-            {isUpdate 
+            {currentUser 
               ? "Update your profile information below."
-              : "Fill in your details to register as a new user."}
+              : "Fill in your details to create a new account."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter your name"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-              placeholder="Enter your phone number"
-              required
-            />
-          </div>
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={contractStatus.isPending}
-          >
-            {contractStatus.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isUpdate ? "Update Profile" : "Register"}
-          </Button>
-        </form>
+        <UserForm 
+          formData={formData}
+          setFormData={setFormData}
+          isLoading={contractStatus.isPending || isLoadingUser}
+          onSubmit={handleSubmit}
+          isUpdate={!!currentUser}
+        />
       </DialogContent>
     </Dialog>
   );
