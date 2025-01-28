@@ -64,7 +64,6 @@ const Navbar = () => {
       toast.success("Wallet connected successfully");
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      // Check if error is due to user rejection
       if (error?.message?.includes("reject")) {
         toast.error("Connection rejected. Please try again when ready.");
       } else {
@@ -87,27 +86,29 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-[2520px] mx-auto">
-        <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center space-x-2">
-            <Home className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+        <div className="flex justify-between items-center h-16 px-2 sm:px-4 lg:px-6">
+          <Link to="/" className="flex items-center space-x-2 min-w-[120px]">
+            <Home className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-[#0066FF] to-[#33C3F0] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
               StarHomes
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6">
             <NavigationLinks
               items={navigation}
-              className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-3 py-1 rounded-md"
+              className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors px-2 sm:px-3 py-1 text-sm lg:text-base rounded-md"
               onNavigate={handleNavigation}
             />
-            <ThemeToggle />
-            <WalletDropdown
-              address={address}
-              handleConnectWallet={handleConnectWallet}
-              handleDisconnect={handleDisconnect}
-            />
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              <ThemeToggle />
+              <WalletDropdown
+                address={address}
+                handleConnectWallet={handleConnectWallet}
+                handleDisconnect={handleDisconnect}
+              />
+            </div>
           </div>
 
           {/* Mobile Menu */}
