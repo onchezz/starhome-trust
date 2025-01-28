@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
-import { User, UserConverter } from "@/types/starknet_types/user_agent";
+import { User, UserConverter } from "@/types/user";
 
 export const useUserReadByAddress = (address: string) => {
   const [user, setUser] = useState<User | null>(null);

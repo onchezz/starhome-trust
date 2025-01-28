@@ -3,17 +3,19 @@ import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { BigNumberish } from 'starknet';
 import { Property, StarknetProperty } from '@/types/property';
+import { dummyInvestmentProperties, InvestmentAsset } from '@/types/investment';
 
-export const usePropertyRegistration = () => {
+
+export const usePropertyCreate = () => {
   const { address } = useAccount();
   const { contract, execute, status: contractStatus } = useStarHomeWriteContract();
 
-  const handleListProperty = async (property: Partial<Property>) => {
+  const handleListSaleProperty = async (property: Partial<Property>) => {
     console.log("Listing property before listing from form:", property);
     
    
-   const agent_id:BigNumberish =property.agentId;
-   const asset_token:BigNumberish =property.assetToken;
+  //  const agent_id:BigNumberish =property.agentId;
+  //  const asset_token:BigNumberish =property.assetToken;
 
     try {
       const defaultProperty: StarknetProperty = {
@@ -64,10 +66,69 @@ export const usePropertyRegistration = () => {
       throw error;
     }
   };
+const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>) => {
+    console.log("Listing investment property:", investment);
+
+    try {
+      const defaultInvestment: InvestmentAsset = {
+        id: investment.id || "0",
+        name: investment.name || "",
+        description: investment.description || "",
+        isActive: investment.isActive || false,
+        location: investment.location || "",
+        size: investment.size || "0",
+        investorId: investment.investorId || "0",
+        owner: address || "",
+        constructionStatus:investment.constructionStatus,
+        assetValue: investment.assetValue || "0",
+        availableStakingAmount: investment.availableStakingAmount || "0",
+        investmentType: investment.investmentType || "0",
+        constructionYear: investment.constructionYear || 0,
+        propertyPrice: investment.propertyPrice || "0",
+        expectedRoi: investment.expectedRoi || "0",
+        rentalIncome: investment.rentalIncome || "0",
+        maintenanceCosts: investment.maintenanceCosts || "0",
+        taxBenefits: investment.taxBenefits || "0",
+        highlights: investment.highlights || "",
+        marketAnalysis: {
+          areaGrowth: investment.marketAnalysis?.areaGrowth || "0",
+          occupancyRate: investment.marketAnalysis?.occupancyRate || "0",
+          comparableProperties: investment.marketAnalysis?.comparableProperties || "0",
+          demandTrend: investment.marketAnalysis?.demandTrend || "0",
+         
+        },
+        riskFactors: investment.riskFactors || "",
+        legalDetails: {
+          ownership: investment.legalDetails?.ownership || "0",
+          zoning: investment.legalDetails?.zoning || "0",
+          permits: investment.legalDetails?.permits || "0",
+          documentsId: investment.legalDetails?.documentsId || "0",
+        },
+        additionalFeatures: investment.additionalFeatures || "",
+        images: investment.images || "",
+        investmentToken: investment.investmentToken || "",
+        minInvestmentAmount: investment.minInvestmentAmount || "0"
+      };
+
+      console.log("Listing investment property after conversion:", dummyInvestmentProperties[0]);
+
+      const tx = await execute("list_investment_property", [dummyInvestmentProperties[0]]);
+      
+      toast.success(`Investment property listed successfully! ${tx.response.transaction_hash}`);
+      return {
+        status: 'success' as const
+      };
+    } catch (error) {
+      console.error("Error listing investment property:", error);
+      toast.error("Failed to list investment property");
+      throw error;
+    }
+  };
+  
 
   return {
-    handleListProperty,
+    handleListSaleProperty,
+    handleListInvestmentProperty,
     contractStatus
   };
 };
-

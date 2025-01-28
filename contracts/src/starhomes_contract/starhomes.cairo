@@ -4,6 +4,7 @@ pub mod StarhomesContract {
     // use starhomes::components::staking_component::AssetStakingComponent::StakingPrivateFunctions;
     use starhomes::components::property_component::PropertyComponent;
     use starhomes::components::user_component::UsersComponent;
+    use starhomes::components::blogs_component::BlogComponent;
     use starhomes::interface::starhomes_interface::*;
     use core::option::Option;
     use starhomes::models::property_models::Property;
@@ -16,10 +17,7 @@ pub mod StarhomesContract {
     use starhomes::interfaces::iStarhomes::IStarhomesContract;
     use starknet::ContractAddress;
     use starknet::class_hash::ClassHash;
-    // use starknet::storage::{Map, StorageMapWriteAccess, Vec, VecTrait, MutableVecTrait};
 
-    // use starknet::get_caller_address;
-    // use starknet::get_contract_address;
     use core::array::ArrayTrait;
     use core::traits::Into;
     // use openzeppelin::token::erc20::interface::{IERC20Dispatcher};
@@ -33,7 +31,7 @@ pub mod StarhomesContract {
     component!(path: AssetStakingComponent, storage: stake_to_property, event: AssetStakingEvent);
     component!(path: UsersComponent, storage: users_data, event: UsersEvent);
     component!(path: PropertyComponent, storage: properties, event: PropertyComponentEvent);
-
+    component!(path: BlogComponent, storage: blogs, event: BlogsComponentEvent);
 
     impl PropertyComponentImpl = PropertyComponent::PropertyComponentImpl<ContractState>;
     impl PropertyPrivateFunctions = PropertyComponent::PropertyFunctions<ContractState>;
@@ -45,6 +43,10 @@ pub mod StarhomesContract {
     #[abi(embed_v0)]
     impl UsersComponentImpl = UsersComponent::UsersComponentImpl<ContractState>;
     impl UsersPrivateFunctions = UsersComponent::UsersPrivateFunctions<ContractState>;
+
+
+    #[abi(embed_v0)]
+    impl BlogComponentImpl = BlogComponent::BlogsComponentImpl<ContractState>;
     // Ownable Mixin
     #[abi(embed_v0)]
     impl OwnableMixinImpl = OwnableComponent::OwnableMixinImpl<ContractState>;
@@ -66,6 +68,8 @@ pub mod StarhomesContract {
         UsersEvent: UsersComponent::Event,
         #[flat]
         PropertyComponentEvent: PropertyComponent::Event,
+        #[flat]
+        BlogsComponentEvent: BlogComponent::Event,
     }
 
 
@@ -81,6 +85,8 @@ pub mod StarhomesContract {
         ownable: OwnableComponent::Storage,
         #[substorage(v0)]
         upgradeable: UpgradeableComponent::Storage,
+        #[substorage(v0)]
+        blogs: BlogComponent::Storage,
         contract_owner: ContractAddress,
         version: u64,
     }
@@ -106,7 +112,9 @@ pub mod StarhomesContract {
                 .stake_to_property
                 .initialize_asset_staking_token(
                     investment_asset.investment_token, investment_asset.id,
-                )
+                );
+
+            self.properties.list_investment_property(investment_asset);
         }
 
         fn edit_property(

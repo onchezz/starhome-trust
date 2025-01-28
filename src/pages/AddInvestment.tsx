@@ -6,13 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
-import {
-  InvestmentAsset,
-  MarketAnalysis,
-} from "@/types/starknet_types/investment";
+
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
 import FileUploadSection from "@/components/investment/FileUploadSection";
+import { InvestmentAsset, MarketAnalysis } from "@/types/investment";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
+
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
   pinataJwt: import.meta.env.VITE_PINATA_JWT,
@@ -21,6 +21,7 @@ const pinata = new PinataSDK({
 
 const AddInvestment = () => {
   const { address } = useAccount();
+  const { handleListInvestmentProperty, contractStatus } = usePropertyCreate();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<File[]>([]);
@@ -39,19 +40,19 @@ const AddInvestment = () => {
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
     id: generateShortUUID(),
     owner: address,
-    is_active: true,
-    investment_token: "",
-    market_analysis: {
-      area_growth: "",
-      occupancy_rate: "",
-      comparable_properties: "",
-      demand_trend: "",
+    isActive: true,
+    investmentToken: "",
+    marketAnalysis: {
+      areaGrowth: "",
+      occupancyRate: "",
+      comparableProperties: "",
+      demandTrend: "",
     },
-    legal_details: {
+    legalDetails: {
       ownership: "",
       zoning: "",
       permits: "",
-      documents_id: "",
+      documentsId: "",
     },
   });
 
@@ -67,7 +68,7 @@ const AddInvestment = () => {
       ].includes(field)
     ) {
       value = BigInt(value || 0);
-    } else if (field === "construction_year") {
+    } else if (field === "constructionYear") {
       value = Number(value || 0);
     }
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -80,7 +81,7 @@ const AddInvestment = () => {
     setFormData((prev) => ({
       ...prev,
       market_analysis: {
-        ...prev.market_analysis!,
+        ...prev.marketAnalysis!,
         [field]: value,
       },
     }));
@@ -164,8 +165,8 @@ const AddInvestment = () => {
       const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
 
       if (isDocuments) {
-        handleInputChange("legal_details", {
-          ...formData.legal_details,
+        handleInputChange("legalDetails", {
+          ...formData.legalDetails,
           documents_id: ipfsUrl,
         });
       } else {
@@ -193,31 +194,36 @@ const AddInvestment = () => {
       return;
     }
 
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadedFiles(0);
-    setUploadedSize(0);
-    setTotalUploadSize(0);
+    // setIsUploading(true);
+    // setUploadProgress(0);
+    // setUploadedFiles(0);
+    // setUploadedSize(0);
+    // setTotalUploadSize(0);
 
     try {
       if (selectedFiles.length > 0) {
-        await handleUpload(selectedFiles, false);
+        // await handleUpload(selectedFiles, false);
       }
 
       if (selectedDocs.length > 0) {
-        await handleUpload(selectedDocs, true);
+        // await handleUpload(selectedDocs, true);
+      }
+
+      const status = await handleListInvestmentProperty(formData);
+
+      if (status.status === "success") {
+        toast.success("Investment created successfully!");
+        setSelectedFiles([]);
+        setSelectedDocs([]);
+        setUploadProgress(0);
+        setUploadedFiles(0);
+        setUploadedSize(0);
+        setTotalUploadSize(0);
       }
 
       // TODO: Add contract interaction here
-      toast.success("Investment created successfully!");
 
       // Reset form
-      setSelectedFiles([]);
-      setSelectedDocs([]);
-      setUploadProgress(0);
-      setUploadedFiles(0);
-      setUploadedSize(0);
-      setTotalUploadSize(0);
     } catch (error) {
       console.error("Error creating investment:", error);
       toast.error("Failed to create investment");
@@ -228,7 +234,7 @@ const AddInvestment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* <Navbar /> */}
+    
       <div className="container mx-auto py-24">
         <Card className="animate-fade-in">
           <CardHeader>

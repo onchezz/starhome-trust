@@ -1,7 +1,7 @@
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
-import { User } from '@/types/starknet_types/user_agent';
+import { User } from '@/types/user';
 
 
 export const useUserWrite = () => {

@@ -50,6 +50,13 @@ pub struct UserRegistered {
     pub phone: felt252,
     pub timestamp: u64,
 }
+#[event]
+#[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
+pub struct BlogAdded {
+    pub user: ContractAddress,
+    pub author: felt252,
+    pub timestamp: u64,
+}
 
 
 #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]

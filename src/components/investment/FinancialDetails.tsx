@@ -1,7 +1,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { InvestmentAsset } from "@/types/starknet_types/investment";
+import { InvestmentAsset } from "@/types/investment";
 
 interface FinancialDetailsProps {
   formData: Partial<InvestmentAsset>;
@@ -19,12 +19,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={
-            typeof formData.asset_value === "bigint"
-              ? formData.asset_value.toString()
-              : ""
-          }
-          onChange={(e) => handleInputChange("asset_value", e.target.value)}
+          value={formData.assetValue}
+          onChange={(e) => handleInputChange("assetValue", e.target.value)}
           placeholder="Total asset value"
         />
       </div>
@@ -34,15 +30,12 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={
-            typeof formData.available_staking_amount === "bigint"
-              ? formData.available_staking_amount.toString()
-              : ""
-          }
+          value={formData.availableStakingAmount}
+          // disabled
           onChange={(e) =>
-            handleInputChange("available_staking_amount", e.target.value)
+            handleInputChange("availableStakingAmount", e.target.value)
           }
-          placeholder="Available amount for staking"
+          placeholder={"Available amount for staking"}
         />
       </div>
 
@@ -51,13 +44,9 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={
-            typeof formData.min_investment_amount === "bigint"
-              ? formData.min_investment_amount.toString()
-              : ""
-          }
+          value={formData.minInvestmentAmount}
           onChange={(e) =>
-            handleInputChange("min_investment_amount", e.target.value)
+            handleInputChange("minInvestmentAmount", e.target.value)
           }
           placeholder="Minimum investment required"
         />
@@ -68,8 +57,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={formData.expected_roi || ""}
-          onChange={(e) => handleInputChange("expected_roi", e.target.value)}
+          value={formData.expectedRoi}
+          onChange={(e) => handleInputChange("expectedRoi", e.target.value)}
           placeholder="Expected return on investment"
         />
       </div>
@@ -79,12 +68,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={
-            typeof formData.rental_income === "bigint"
-              ? formData.rental_income.toString()
-              : ""
-          }
-          onChange={(e) => handleInputChange("rental_income", e.target.value)}
+          value={formData.rentalIncome}
+          onChange={(e) => handleInputChange("rentalIncome", e.target.value)}
           placeholder="Expected annual rental income"
         />
       </div>
@@ -94,13 +79,9 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={
-            typeof formData.maintenance_costs === "bigint"
-              ? formData.maintenance_costs.toString()
-              : ""
-          }
+          value={formData.maintenanceCosts}
           onChange={(e) =>
-            handleInputChange("maintenance_costs", e.target.value)
+            handleInputChange("maintenanceCosts", e.target.value)
           }
           placeholder="Expected annual maintenance costs"
         />

@@ -10,13 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { InvestmentAsset } from "@/types/starknet_types/investment";
+
 import { tokenOptions } from "@/utils/constants";
-import {
-  investmentTypes,
-  zoningTypes,
-  constructionStatus,
-} from "@/types/starknet_types/investment";
+import { InvestmentAsset, constructionStatus, investmentTypes } from "@/types/investment";
 
 interface BasicInformationProps {
   formData: Partial<InvestmentAsset>;
@@ -63,9 +59,9 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
       <div className="space-y-2">
         <Label>Construction Status</Label>
         <Select
-          value={formData.construction_status}
+          value={formData.constructionStatus}
           onValueChange={(value) =>
-            handleInputChange("construction_status", value)
+            handleInputChange("constructionStatus", value)
           }
         >
           <SelectTrigger>
@@ -84,8 +80,8 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
       <div className="space-y-2">
         <Label>Investment Type</Label>
         <Select
-          value={formData.investment_type}
-          onValueChange={(value) => handleInputChange("investment_type", value)}
+          value={formData.investmentType}
+          onValueChange={(value) => handleInputChange("investmentType", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select investment type" />
@@ -103,8 +99,8 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
       <div className="space-y-2">
         <Label>Investment Token</Label>
         <Select
-          value={formData.investment_token}
-          onValueChange={(value) => handleInputChange("investment_token", value)}
+          value={formData.investmentToken}
+          onValueChange={(value) => handleInputChange("investmentToken", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select token" />
@@ -123,9 +119,9 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
         <Label>Investment Status</Label>
         <div className="flex items-center space-x-2">
           <Switch
-            checked={formData.is_active || false}
+            checked={formData.isActive || false}
             onCheckedChange={(checked) =>
-              handleInputChange("is_active", checked)
+              handleInputChange("isActive", checked)
             }
           />
           <Label>Active</Label>

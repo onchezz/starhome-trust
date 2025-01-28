@@ -7,18 +7,21 @@ pub mod models {
     pub mod investment_model;
     pub mod user_models;
     pub mod contract_events;
+    pub mod blogs_model;
 }
 
 pub mod components {
     pub mod staking_component;
     pub mod property_component;
     pub mod user_component;
+    pub mod blogs_component;
 }
 pub mod interfaces {
     pub mod user_interface;
     pub mod iStarhomes;
     pub mod asset_staking;
     pub mod property;
+    pub mod blogs_interface;
 }
 pub mod starhomes_contract {
     pub mod starhomes;

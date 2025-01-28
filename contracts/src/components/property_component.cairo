@@ -101,6 +101,7 @@ pub mod PropertyComponent {
             let is_investment_already_added = self._is_investment_added(investment.id.clone());
             assert(is_investment_already_added == true, 'Investment already added');
             self.listed_investment_properties_ids.append().write(investment.id);
+            
 
             self
                 .emit(

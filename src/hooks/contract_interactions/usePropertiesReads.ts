@@ -1,7 +1,7 @@
 
 import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 import { Property, PropertyConverter } from '@/types/property';
-import { UserConverter } from '@/types/starknet_types/user_agent';
+import { UserConverter } from '@/types/user';
 import { useEffect, useState } from 'react';
 
 

@@ -27,6 +27,7 @@ pub struct InvestmentAsset {
     pub size: felt252,
     pub investor_id: felt252,
     pub owner: ContractAddress,
+    pub construction_status:felt252,
     pub asset_value: u256,
     pub available_staking_amount: u256,
     pub investment_type: felt252,
@@ -41,7 +42,7 @@ pub struct InvestmentAsset {
     pub risk_factors: ByteArray,
     pub legal_details: LegalDetails,
     pub additional_features: ByteArray,
-    pub images: felt252,
+    pub images: ByteArray,
     pub investment_token: ContractAddress,
     pub min_investment_amount: u256,
 }

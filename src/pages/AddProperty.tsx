@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
-import { usePropertyRegistration } from "@/hooks/contract_interactions/usePropertyWrite";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
 import BasicInformation from "@/components/property/form/BasicInformation";
 import PricingInformation from "@/components/property/form/PricingInformation";
 import PropertyFeatures from "@/components/property/form/PropertyFeatures";
@@ -26,7 +26,7 @@ const generateShortUUID = () => {
 const CreateProperty = () => {
   const { id } = useParams();
   const { address, status } = useAccount();
-  const { handleListProperty, contractStatus } = usePropertyRegistration();
+  const { handleListSaleProperty, contractStatus } = usePropertyCreate();
   const { properties, isLoading: isLoadingProperty } = usePropertyRead();
 
   // Find the existing property if we have an ID
@@ -159,7 +159,7 @@ const CreateProperty = () => {
         handleInputChange("imagesId", ipfsUrl);
         toast.success("Images uploaded successfully!");
 
-        const status = await handleListProperty({
+        const status = await handleListSaleProperty({
           ...formData,
           owner: address,
           agentId: address,
@@ -179,7 +179,7 @@ const CreateProperty = () => {
       }
     } else {
       try {
-        const status = await handleListProperty({
+        const status = await handleListSaleProperty({
           ...formData,
           agentId: address,
           imagesId: url,
