@@ -37,15 +37,15 @@ const Resources = () => {
     <div className="py-20 bg-gradient-to-b from-background to-background/50 dark:from-gray-800 dark:to-gray-700" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground dark:text-white mb-4 animate-fade-in">
+          <h2 className="text-4xl font-bold text-foreground mb-4 animate-fade-in">
             Resources{" "}
             <span className="relative">
               Designed
-              <span className="absolute -bottom-2 left-0 w-full h-1 bg-secondary dark:bg-white/20"></span>
+              <span className="absolute -bottom-2 left-0 w-full h-1 bg-secondary"></span>
             </span>{" "}
             for Real Estate Investors
           </h2>
-          <p className="text-muted-foreground dark:text-white/90 max-w-2xl mx-auto animate-fade-in delay-100">
+          <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in delay-100">
             Interested in diversifying your investments? Starhomes is here to guide
             you through global property opportunities using cryptocurrency!
           </p>
@@ -73,16 +73,16 @@ const Resources = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-foreground dark:text-white mb-3 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                   {resource.title}
                 </h3>
-                <p className="text-muted-foreground dark:text-white/90 mb-4">
+                <p className="text-muted-foreground mb-4">
                   {resource.description}
                 </p>
                 <Link to="/blogs">
                   <Button
                     variant="outline"
-                    className="w-full group-hover:bg-primary group-hover:text-white dark:border-gray-600 dark:text-white transition-all duration-300"
+                    className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300"
                   >
                     <resource.icon className="w-4 h-4 mr-2" />
                     Learn More
