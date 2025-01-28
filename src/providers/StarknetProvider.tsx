@@ -5,20 +5,24 @@ import {
 } from "starknetkit/argentMobile";
 import { WebWalletConnector } from "starknetkit/webwallet";
 import { mainnet, sepolia } from "@starknet-react/chains";
-import { StarknetConfig, publicProvider } from "@starknet-react/core";
-// import { defaultProvider } from "starknet";
-// import { RpcProvider } from "starknet";
-// import { rpcProvideUr } from "@/utils/constants";
+import {
+  StarknetConfig,
+  jsonRpcProvider,
+  publicProvider,
+} from "@starknet-react/core";
+import { defaultProvider } from "starknet";
+import { RpcProvider } from "starknet";
+import { rpcProvideUr } from "@/utils/constants";
 
-// import { Chain } from "@starknet-react/chains";
+import { Chain } from "@starknet-react/chains";
 
-// function rpc(chain: Chain) {
-//   return {
-//     nodeUrl: `${rpcProvideUr}`,
-//   };
-// }
+function rpc(chain: Chain) {
+  return {
+    nodeUrl: `${rpcProvideUr}`,
+  };
+}
 
-// const provider = jsonRpcProvider({ rpc });
+const provider = jsonRpcProvider({ rpc });
 export default function StarknetProvider({
   children,
 }: {
@@ -53,7 +57,7 @@ export default function StarknetProvider({
   return (
     <StarknetConfig
       chains={chains}
-      provider={publicProvider()}
+      provider={provider}
       connectors={connectors}
       autoConnect={true}
     >
