@@ -26,7 +26,7 @@ interface UserRegistrationModalProps {
 
 export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistrationModalProps) {
   const { address } = useAccount();
-  const { handleRegisterUser, handleSignAsAgent, contractStatus } = useUserWrite();
+  const { handleRegisterUser, contractStatus } = useUserWrite();
   const [formData, setFormData] = useState({
     name: currentUserData?.name || "",
     email: currentUserData?.email || "",
@@ -82,6 +82,7 @@ export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistr
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
               placeholder="Enter your name"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -92,6 +93,7 @@ export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistr
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               placeholder="Enter your email"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -101,6 +103,7 @@ export function UserRegistrationModal({ isUpdate, currentUserData }: UserRegistr
               value={formData.phone}
               onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
               placeholder="Enter your phone number"
+              required
             />
           </div>
           <Button 

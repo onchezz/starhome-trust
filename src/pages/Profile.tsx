@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Check, Building2, Wallet, Loader2, Plus, User } from "lucide-react";
-import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { motion } from "framer-motion";
@@ -22,17 +21,17 @@ const Profile = () => {
     user,
     isLoading: isLoadingUser,
     error,
-  } = useUserReadByAddress(address);
-  const { handleSignAsAgent: signAsAgent } = useUserWrite();
-
-  const { data: userAssets, isLoading: assetsLoading } = useStarHomeReadContract({
-    functionName: "get_user_assets",
-    args: [address],
-  });
+  } = useUserReadByAddress(address || "");
+  const { handleSignAsAgent, contractStatus } = useUserWrite();
 
   const handleAgentSignup = async () => {
+    if (!address) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+    
     try {
-      await signAsAgent();
+      await handleSignAsAgent();
       toast.success("Successfully registered as agent!");
     } catch (error) {
       console.error("Error registering as agent:", error);
@@ -119,15 +118,15 @@ const Profile = () => {
                     <h3 className={cn(
                       "text-base sm:text-lg md:text-xl font-medium",
                       theme === "dark" ? "text-white" : "text-gray-900"
-                    )}>{user?.name || "John Doe"}</h3>
+                    )}>{user?.name || "Not Registered"}</h3>
                     <p className={cn(
                       "text-sm sm:text-base",
                       theme === "dark" ? "text-gray-300" : "text-gray-500"
-                    )}>{user?.email || "j@gmail.com"}</p>
+                    )}>{user?.email || "No email provided"}</p>
                     <p className={cn(
                       "text-sm sm:text-base",
                       theme === "dark" ? "text-gray-300" : "text-gray-500"
-                    )}>{user?.phone || "123"}</p>
+                    )}>{user?.phone || "No phone provided"}</p>
                   </div>
                 </motion.div>
 
@@ -162,22 +161,20 @@ const Profile = () => {
                     </Button>
                   </Link>
                   
-                  {!user?.is_agent ? (
+                  {!user?.is_agent && (
                     <Button 
-                      onClick={handleAgentSignup} 
+                      onClick={handleAgentSignup}
                       variant="outline"
+                      disabled={contractStatus.isPending}
                       className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
                     >
                       <Building2 className="w-4 h-4" />
-                      Sign as Agent
+                      {contractStatus.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Sign as Agent"
+                      )}
                     </Button>
-                  ) : (
-                    <Link to="/add-investment" className="w-full">
-                      <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
-                        <Plus className="w-4 h-4" />
-                        Create Investment
-                      </Button>
-                    </Link>
                   )}
 
                   <UserRegistrationModal 
@@ -231,57 +228,6 @@ const Profile = () => {
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-
-            <Card className={cn(
-              "backdrop-blur-xl border transition-all duration-300",
-              theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-            )}>
-              <CardHeader>
-                <CardTitle className={theme === "dark" ? "text-white" : ""}>
-                  My Assets
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {assetsLoading ? (
-                    <div className="space-y-4">
-                      {[1, 2].map((i) => (
-                        <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                      ))}
-                    </div>
-                  ) : userAssets?.length === 0 ? (
-                    <p className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
-                      No assets found
-                    </p>
-                  ) : (
-                    userAssets?.map((asset: any) => (
-                      <div
-                        key={asset.id}
-                        className={cn(
-                          "flex justify-between items-center p-4 rounded-lg",
-                          theme === "dark" ? "bg-white/5" : "bg-gray-50"
-                        )}
-                      >
-                        <div>
-                          <h4 className={theme === "dark" ? "text-white" : "text-gray-900"}>
-                            {asset.name}
-                          </h4>
-                          <p className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
-                            {asset.type}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">${asset.value}</p>
-                          <p className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
-                            ROI: {asset.roi}%
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
               </CardContent>
             </Card>
           </motion.div>
