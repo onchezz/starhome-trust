@@ -13,7 +13,7 @@ pub struct PropertyListed {
 pub struct InvestmentListed {
     pub investment_id: felt252,
     pub owner: ContractAddress,
-    pub asset_price: u256,
+    pub asset_price: u64,
     pub payment_token: ContractAddress,
     pub timestamp: u64,
 }

@@ -159,6 +159,18 @@ pub mod PropertyComponent {
             investment_properties
         }
 
+        fn get_sale_properties_by_agent(self: @ComponentState<TContractState>, agent_id: ContractAddress) -> Array<Property> {
+             let mut properties = array![];
+             properties
+        }
+        fn get_investment_properties_by_lister(
+            self: @ComponentState<TContractState>, lister_id: ContractAddress
+        ) -> Array<InvestmentAsset> {
+             let mut investment_properties = array![];
+             investment_properties
+        }
+
+
         fn get_property_by_id(
             self: @ComponentState<TContractState>, property_id: felt252,
         ) -> Property {
