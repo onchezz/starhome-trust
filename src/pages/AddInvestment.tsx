@@ -1,17 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
 
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
-import FileUploadSection from "@/components/investment/FileUploadSection";
-import BulletPointInput from "@/components/investment/BulletPointInput";
 import { InvestmentAsset, MarketAnalysis } from "@/types/investment";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
+import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
+import UploadGrid from "@/components/investment/UploadGrid";
+import BulletPointsGrid from "@/components/investment/BulletPointsGrid";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -45,7 +45,7 @@ const AddInvestment = () => {
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
     id: generateShortUUID(),
     owner: address,
-    investorId: address, // Changed from investor_id to investorId
+    investorId: address,
     isActive: true,
     investmentToken: "",
     marketAnalysis: {
@@ -201,7 +201,6 @@ const AddInvestment = () => {
     }
 
     try {
-      // Convert bullet points to strings
       const updatedFormData = {
         ...formData,
         additionalFeatures: additionalFeatures.join("\n"),
@@ -232,9 +231,12 @@ const AddInvestment = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-24">
         <Card className="animate-fade-in">
-          <CardHeader>
-            <CardTitle>Create New Investment Property</CardTitle>
-          </CardHeader>
+          <InvestmentFormHeader
+            isActive={formData.isActive || false}
+            onStatusChange={(checked) =>
+              setFormData((prev) => ({ ...prev, isActive: checked }))
+            }
+          />
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <BasicInformation
@@ -246,60 +248,30 @@ const AddInvestment = () => {
                 handleInputChange={handleInputChange}
               />
               
-              {/* Grid layout for file upload sections */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FileUploadSection
-                  selectedFiles={selectedFiles}
-                  selectedDocs={[]}
-                  isUploading={isUploading}
-                  uploadProgress={uploadProgress}
-                  uploadedFiles={uploadedFiles}
-                  uploadedSize={uploadedSize}
-                  totalUploadSize={totalUploadSize}
-                  handleFileSelect={handleFileSelect}
-                  handleDrop={handleDrop}
-                  setSelectedFiles={setSelectedFiles}
-                  setSelectedDocs={setSelectedDocs}
-                  setPreviewUrl={setPreviewUrl}
-                  setShowPreviewModal={setShowPreviewModal}
-                  type="images"
-                />
-                <FileUploadSection
-                  selectedFiles={[]}
-                  selectedDocs={selectedDocs}
-                  isUploading={isUploading}
-                  uploadProgress={uploadProgress}
-                  uploadedFiles={uploadedFiles}
-                  uploadedSize={uploadedSize}
-                  totalUploadSize={totalUploadSize}
-                  handleFileSelect={handleFileSelect}
-                  handleDrop={handleDrop}
-                  setSelectedFiles={setSelectedFiles}
-                  setSelectedDocs={setSelectedDocs}
-                  setPreviewUrl={setPreviewUrl}
-                  setShowPreviewModal={setShowPreviewModal}
-                  type="documents"
-                />
-              </div>
+              <UploadGrid
+                selectedFiles={selectedFiles}
+                selectedDocs={selectedDocs}
+                isUploading={isUploading}
+                uploadProgress={uploadProgress}
+                uploadedFiles={uploadedFiles}
+                uploadedSize={uploadedSize}
+                totalUploadSize={totalUploadSize}
+                handleFileSelect={handleFileSelect}
+                handleDrop={handleDrop}
+                setSelectedFiles={setSelectedFiles}
+                setSelectedDocs={setSelectedDocs}
+                setPreviewUrl={setPreviewUrl}
+                setShowPreviewModal={setShowPreviewModal}
+              />
 
-              {/* Grid layout for bullet points */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <BulletPointInput
-                  label="Highlights"
-                  points={highlights}
-                  onChange={setHighlights}
-                />
-                <BulletPointInput
-                  label="Risk Factors"
-                  points={riskFactors}
-                  onChange={setRiskFactors}
-                />
-                <BulletPointInput
-                  label="Additional Features"
-                  points={additionalFeatures}
-                  onChange={setAdditionalFeatures}
-                />
-              </div>
+              <BulletPointsGrid
+                highlights={highlights}
+                riskFactors={riskFactors}
+                additionalFeatures={additionalFeatures}
+                setHighlights={setHighlights}
+                setRiskFactors={setRiskFactors}
+                setAdditionalFeatures={setAdditionalFeatures}
+              />
 
               <Button
                 type="submit"
