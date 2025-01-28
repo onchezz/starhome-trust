@@ -15,10 +15,23 @@ export const tokenAddresses = {
 const CACHE_DURATION = 30000; // 30 seconds
 const CACHE_KEY = 'token_balances';
 
+interface SerializedBalance {
+  decimals: number;
+  formatted: string;
+  symbol: string;
+  value: string; // BigInt as string
+}
+
+interface CachedBalances {
+  USDT: SerializedBalance | null;
+  STRK: SerializedBalance | null;
+  ETH: SerializedBalance | null;
+}
+
 export function useTokenBalances() {
   const { address } = useAccount();
   const [lastFetchTime, setLastFetchTime] = useState(0);
-  const [cachedBalances, setCachedBalances] = useState({
+  const [cachedBalances, setCachedBalances] = useState<CachedBalances>({
     USDT: null,
     STRK: null,
     ETH: null,
@@ -61,21 +74,39 @@ export function useTokenBalances() {
     enabled: !!address && shouldRefetch(),
   });
 
+  const serializeBalance = (balance: any): SerializedBalance | null => {
+    if (!balance) return null;
+    return {
+      decimals: balance.decimals,
+      formatted: balance.formatted,
+      symbol: balance.symbol,
+      value: balance.value.toString(), // Convert BigInt to string
+    };
+  };
+
   const loadFromCache = useCallback(() => {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-      const { balances, timestamp } = JSON.parse(cached);
-      setCachedBalances(balances);
-      setLastFetchTime(timestamp);
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { balances, timestamp } = JSON.parse(cached);
+        setCachedBalances(balances);
+        setLastFetchTime(timestamp);
+      }
+    } catch (error) {
+      console.error('Error loading from cache:', error);
     }
   }, []);
 
-  const saveToCache = useCallback((balances: any) => {
-    const cacheData = {
-      balances,
-      timestamp: Date.now()
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+  const saveToCache = useCallback((balances: CachedBalances) => {
+    try {
+      const cacheData = {
+        balances,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Error saving to cache:', error);
+    }
   }, []);
 
   useEffect(() => {
@@ -87,9 +118,9 @@ export function useTokenBalances() {
   useEffect(() => {
     if (usdtBalance || strkBalance || ethBalance) {
       const newBalances = {
-        USDT: usdtBalance,
-        STRK: strkBalance,
-        ETH: ethBalance,
+        USDT: serializeBalance(usdtBalance),
+        STRK: serializeBalance(strkBalance),
+        ETH: serializeBalance(ethBalance),
       };
       setCachedBalances(newBalances);
       setLastFetchTime(Date.now());
@@ -108,7 +139,11 @@ export function useTokenBalances() {
   };
 
   return {
-    balances: cachedBalances,
+    balances: {
+      USDT: usdtBalance || cachedBalances.USDT,
+      STRK: strkBalance || cachedBalances.STRK,
+      ETH: ethBalance || cachedBalances.ETH,
+    },
     isLoading: isLoadingUsdt || isLoadingStrk || isLoadingEth,
     refresh: forceRefresh
   };
