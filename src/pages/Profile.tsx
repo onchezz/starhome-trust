@@ -31,14 +31,14 @@ const Profile = () => {
   if (isLoadingUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin" />
+        <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 text-red-500 flex justify-center items-center min-h-screen">
+      <div className="p-2 sm:p-4 text-red-500 flex justify-center items-center min-h-screen text-sm sm:text-base">
         Error: {error.message}
       </div>
     );
@@ -46,7 +46,7 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div className="p-4 flex justify-center items-center min-h-screen">
+      <div className="p-2 sm:p-4 flex justify-center items-center min-h-screen text-sm sm:text-base">
         No user found
       </div>
     );
@@ -72,10 +72,10 @@ const Profile = () => {
 
   return (
     <div className={cn(
-      "min-h-screen transition-colors duration-300",
+      "min-h-screen transition-colors duration-300 px-2 sm:px-4 md:px-6",
       theme === "dark" ? "bg-[#1A1F2C]" : "bg-gray-50"
     )}>
-      <div className="container mx-auto py-24">
+      <div className="container mx-auto py-12 sm:py-16 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -86,26 +86,29 @@ const Profile = () => {
             "backdrop-blur-xl border transition-all duration-300",
             theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
           )}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className={theme === "dark" ? "text-white" : "text-gray-900"}>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <span className={cn(
+                  "text-lg sm:text-xl md:text-2xl",
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                )}>
                   Profile Details
                 </span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {userData.isVerified && (
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" className="text-xs sm:text-sm">
                       <Check className="w-3 h-3 mr-1" />
                       Verified
                     </Badge>
                   )}
                   {userData.isInvestor && (
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="text-xs sm:text-sm">
                       <Wallet className="w-3 h-3 mr-1" />
                       Investor
                     </Badge>
                   )}
                   {userData.isAgent && (
-                    <Badge>
+                    <Badge className="text-xs sm:text-sm">
                       <Building2 className="w-3 h-3 mr-1" />
                       Agent
                     </Badge>
@@ -113,26 +116,32 @@ const Profile = () => {
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-8">
+            <CardContent className="p-4 sm:p-6">
+              <div className="space-y-6 sm:space-y-8">
                 <motion.div 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex items-center space-x-4"
+                  className="flex flex-col sm:flex-row items-start gap-4"
                 >
                   <img
                     src={userData.profileImage}
                     alt="Profile"
-                    className="w-20 h-20 rounded-full object-cover ring-2 ring-primary/20"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-2 ring-primary/20"
                   />
                   <div>
                     <h3 className={cn(
-                      "font-medium text-xl",
+                      "text-base sm:text-lg md:text-xl font-medium",
                       theme === "dark" ? "text-white" : "text-gray-900"
                     )}>{userData.name}</h3>
-                    <p className={theme === "dark" ? "text-gray-300" : "text-gray-500"}>{userData.email}</p>
-                    <p className={theme === "dark" ? "text-gray-300" : "text-gray-500"}>{userData.phone}</p>
+                    <p className={cn(
+                      "text-sm sm:text-base",
+                      theme === "dark" ? "text-gray-300" : "text-gray-500"
+                    )}>{userData.email}</p>
+                    <p className={cn(
+                      "text-sm sm:text-base",
+                      theme === "dark" ? "text-gray-300" : "text-gray-500"
+                    )}>{userData.phone}</p>
                   </div>
                 </motion.div>
 
@@ -141,33 +150,33 @@ const Profile = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                   className={cn(
-                    "p-4 rounded-lg",
+                    "p-3 sm:p-4 rounded-lg",
                     theme === "dark" ? "bg-white/5" : "bg-gray-50"
                   )}
                 >
                   <label className={cn(
-                    "text-sm font-medium",
+                    "text-xs sm:text-sm font-medium",
                     theme === "dark" ? "text-gray-300" : "text-gray-500"
                   )}>
                     Wallet Address
                   </label>
-                  <p className="text-sm font-mono break-all mt-1">{address}</p>
+                  <p className="text-xs sm:text-sm font-mono break-all mt-1">{address}</p>
                 </motion.div>
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4"
                 >
-                  <Link to="/create-property">
-                    <Button className="w-full">Create Property</Button>
+                  <Link to="/create-property" className="w-full">
+                    <Button className="w-full text-xs sm:text-sm h-8 sm:h-10">Create Property</Button>
                   </Link>
-                  <Button onClick={handleSignAsAgent} className="w-full">
+                  <Button onClick={handleSignAsAgent} className="w-full text-xs sm:text-sm h-8 sm:h-10">
                     Register As Agent
                   </Button>
-                  <Link to="/add-investment">
-                    <Button className="w-full">Create Investment</Button>
+                  <Link to="/add-investment" className="w-full">
+                    <Button className="w-full text-xs sm:text-sm h-8 sm:h-10">Create Investment</Button>
                   </Link>
                 </motion.div>
               </div>
