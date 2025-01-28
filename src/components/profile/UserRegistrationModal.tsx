@@ -10,7 +10,7 @@ import {
 import { useState, useEffect } from "react";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { toast } from "sonner";
-import { User } from "lucide-react";
+import { User, Loader2 } from "lucide-react";
 import { useAccount } from "@starknet-react/core";
 import { UserForm } from "./UserForm";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
@@ -31,8 +31,11 @@ export function UserRegistrationModal() {
   });
   const [isOpen, setIsOpen] = useState(false);
 
+  const isUserRegistered = currentUser && currentUser.name && currentUser.phone && currentUser.email;
+
   useEffect(() => {
-    if (currentUser) {
+    if (isUserRegistered) {
+      console.log("Pre-filling user data:", currentUser);
       setFormData({
         name: currentUser.name,
         email: currentUser.email,
@@ -40,6 +43,16 @@ export function UserRegistrationModal() {
         is_verified: currentUser.is_verified,
         is_agent: currentUser.is_agent,
         is_investor: currentUser.is_investor,
+      });
+    } else {
+      console.log("No user data to pre-fill");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        is_verified: false,
+        is_agent: false,
+        is_investor: false,
       });
     }
   }, [currentUser]);
@@ -52,6 +65,7 @@ export function UserRegistrationModal() {
     }
 
     try {
+      console.log("Current form data:", formData);
       const userData = {
         ...formData,
         id: address,
@@ -66,12 +80,12 @@ export function UserRegistrationModal() {
       const response = await handleRegisterUser(userData);
       
       if (response.status === "success") {
-        toast.success(currentUser ? "Profile updated successfully!" : "Registration successful!");
+        toast.success(isUserRegistered ? "Profile updated successfully!" : "Registration successful!");
         setIsOpen(false);
       }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(currentUser ? "Failed to update profile" : "Failed to register");
+      toast.error(isUserRegistered ? "Failed to update profile" : "Failed to register");
     }
   };
 
@@ -80,16 +94,16 @@ export function UserRegistrationModal() {
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
           <User className="w-4 h-4" />
-          {currentUser ? "Update Profile" : "Create Account"}
+          {isUserRegistered ? "Update Profile" : "Create Account"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {currentUser ? "Update Profile" : "Create New Account"}
+            {isUserRegistered ? "Update Profile" : "Create New Account"}
           </DialogTitle>
           <DialogDescription>
-            {currentUser 
+            {isUserRegistered 
               ? "Update your profile information below."
               : "Fill in your details to create a new account."}
           </DialogDescription>
@@ -99,7 +113,7 @@ export function UserRegistrationModal() {
           setFormData={setFormData}
           isLoading={contractStatus.isPending || isLoadingUser}
           onSubmit={handleSubmit}
-          isUpdate={!!currentUser}
+          isUpdate={!!isUserRegistered}
         />
       </DialogContent>
     </Dialog>
