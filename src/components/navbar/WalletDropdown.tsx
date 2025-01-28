@@ -10,6 +10,7 @@ import WalletActions from "../WalletActions";
 import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { Link } from "react-router-dom";
 import ErrorBoundary from "../errrorBoundary";
+import { toast } from "sonner";
 
 interface WalletDropdownProps {
   address: string | undefined;
@@ -26,6 +27,29 @@ const WalletDropdown = ({
 }: WalletDropdownProps) => {
   const { balances, isLoading } = useTokenBalances();
 
+  const handleWalletConnect = async () => {
+    try {
+      await handleConnectWallet();
+    } catch (error) {
+      console.error("Wallet connection error:", error);
+      if (error?.message?.includes("rejected")) {
+        toast.error("Wallet connection was rejected. Please try again.");
+      } else {
+        toast.error("Failed to connect wallet. Please try again.");
+      }
+    }
+  };
+
+  const handleWalletDisconnect = async () => {
+    try {
+      await handleDisconnect();
+      toast.success("Wallet disconnected successfully");
+    } catch (error) {
+      console.error("Wallet disconnection error:", error);
+      toast.error("Failed to disconnect wallet");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -35,7 +59,7 @@ const WalletDropdown = ({
           }`}
           variant={address ? "default" : "outline"}
           style={{ backgroundColor: address ? "#0066FF" : undefined }}
-          onClick={!address ? handleConnectWallet : undefined}
+          onClick={!address ? handleWalletConnect : undefined}
         >
           {address ? (
             <>
@@ -80,13 +104,7 @@ const WalletDropdown = ({
           <Link to="/profile">
             <DropdownMenuItem>View Profile</DropdownMenuItem>
           </Link>
-          {/* <Link to="/create-property">
-            <DropdownMenuItem>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Property
-            </DropdownMenuItem>
-          </Link> */}
-          <DropdownMenuItem onClick={handleDisconnect}>
+          <DropdownMenuItem onClick={handleWalletDisconnect}>
             Disconnect
           </DropdownMenuItem>
         </DropdownMenuContent>
