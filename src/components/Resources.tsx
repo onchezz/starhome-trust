@@ -45,7 +45,7 @@ const Resources = () => {
             </span>{" "}
             for Real Estate Investors
           </h2>
-          <p className="text-muted-foreground dark:text-gray-200 max-w-2xl mx-auto animate-fade-in delay-100">
+          <p className="text-muted-foreground dark:text-white/90 max-w-2xl mx-auto animate-fade-in delay-100">
             Interested in diversifying your investments? Starhomes is here to guide
             you through global property opportunities using cryptocurrency!
           </p>
@@ -76,7 +76,7 @@ const Resources = () => {
                 <h3 className="text-xl font-semibold text-foreground dark:text-white mb-3 group-hover:text-primary transition-colors duration-300">
                   {resource.title}
                 </h3>
-                <p className="text-muted-foreground dark:text-gray-200 mb-4">
+                <p className="text-muted-foreground dark:text-white/90 mb-4">
                   {resource.description}
                 </p>
                 <Link to="/blogs">
