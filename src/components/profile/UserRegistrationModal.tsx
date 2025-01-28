@@ -21,7 +21,7 @@ import { Switch } from "@/components/ui/switch";
 
 export function UserRegistrationModal() {
   const { address } = useAccount();
-  const { handleRegisterUser, contractStatus } = useUserWrite();
+  const { handleRegisterUser, handleEditUser, contractStatus } = useUserWrite();
   const { user: currentUser, isLoading: isLoadingUser } = useUserReadByAddress(address || "");
   
   const [formData, setFormData] = useState<Partial<UserType>>({
@@ -149,12 +149,12 @@ export function UserRegistrationModal() {
         ...formData,
         id: address,
         profile_image: formData.profile_image || "",
-        is_verified: false,
-        is_authorized: false,
         timestamp: Math.floor(Date.now() / 1000),
       };
 
-      const response = await handleRegisterUser(userData);
+      const response = isUserRegistered 
+        ? await handleEditUser(userData)
+        : await handleRegisterUser(userData);
       
       if (response.status === "success") {
         toast.success(isUserRegistered ? "Profile updated successfully!" : "Registration successful!");
