@@ -17,22 +17,8 @@ export const useStarHomeReadContract = ({
     address: starhomesContract,
   });
   // return  useCall({abi: starhomes_abi as Abi,address:starhomesContract, functionName:functionName, args:args });
-const{data, isLoading,error}= useReadContract({ abi: starhomes_abi as Abi,address:starhomesContract, functionName:functionName, args:args});
-// if (!isLoading){
-//   const formatAnswer = (answer: any) => {
-//         if (functionName === "get_sale_properties") {
-//           return answer.map((property: Property) => ({
-//             ...property,
-//             price: BigInt(property.price),
-//             owner: BigInt(property.agent_id),
-//             // isForSale: property.isForSale,
-//           }));
-//         }
-//         return answer;
-//       }
-//         const tdata = formatAnswer(data);
-// console.log("Data:", tdata);
-// }
+const{data, isLoading,error,}= useReadContract({ abi: starhomes_abi as Abi,address:starhomesContract, functionName:functionName, args:args});
+
  
 //   return useQuery({
 //     queryKey: [functionName, args],
@@ -46,13 +32,13 @@ const{data, isLoading,error}= useReadContract({ abi: starhomes_abi as Abi,addres
 
      
       
-// //       const result = await contract.call(functionName, args,
-// //          {
-// //   parseRequest: true,
-// //   parseResponse: true,
-// //   formatResponse: formatAnswer,
-// // }
-// // );
+//       const result = await contract.call(functionName, args,
+//          {
+//   parseRequest: true,
+//   parseResponse: true,
+//   // formatResponse: formatAnswer,
+// }
+// );
 
 //       console.log(`${functionName} result:`, result);
 //       return result;

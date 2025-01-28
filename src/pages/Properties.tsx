@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyShimmerCard } from "@/components/ui/shimmer-cards";
-import { usePropertyRead } from "@/hooks/contract_interactions/useContractReads";
+import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { Property, PropertyConverter } from "@/types/property";
 import { PropertySearch } from "@/components/property/PropertySearch";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
@@ -16,15 +16,32 @@ const Properties = () => {
     propertyType: "any",
   });
 
+  // const fetchData
+  // const properties =  propertiesData.map((prop) => {
+  //   const property = PropertyConverter.fromStarknetProperty(prop);
+
+  //   console.log(property);
+  //   return properties;
+  // });
+
   const filteredProperties = properties
     ?.filter((starknetProperty: any) => {
       const property = PropertyConverter.fromStarknetProperty(starknetProperty);
-      
+
       // Ensure all values are strings before using toLowerCase()
-      const titleMatch = property.title.toString().toLowerCase().includes(searchTerm.toLowerCase());
-      const cityMatch = property.city.toString().toLowerCase().includes(searchTerm.toLowerCase());
-      const countryMatch = property.country.toString().toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const titleMatch = property.title
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const cityMatch = property.city
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const countryMatch = property.country
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
       const matchesSearch = titleMatch || cityMatch || countryMatch;
 
       const matchesPriceRange =
@@ -41,7 +58,7 @@ const Properties = () => {
 
       const matchesPropertyType =
         filters.propertyType === "any" ||
-        property.property_type === filters.propertyType;
+        property.propertyType === filters.propertyType;
 
       return (
         matchesSearch &&
@@ -91,10 +108,10 @@ const Properties = () => {
                       }}
                       price={property.price}
                       askingPrice={property.asking_price}
-                      interestedClients={property.interested_clients}
-                      annualGrowthRate={Number(property.annual_growth_rate)}
-                      imagesUrl={property.images_id}
-                      propertyType={property.property_type}
+                      interestedClients={property.interestedClients}
+                      annualGrowthRate={property.annualGrowthRate}
+                      imagesUrl={property.imagesId}
+                      propertyType={property.propertyType}
                       status={property.status}
                     />
                   ))}

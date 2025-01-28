@@ -1,17 +1,16 @@
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
-import { StarknetAgent } from '@/types/starknet_types/user_agent';
-// import { StarknetAgent } from './agent-types';
-// import { useStarHomeWriteContract } from '';
+import { User } from '@/types/starknet_types/user_agent';
+
 
 export const useUserWrite = () => {
   const { address } = useAccount();
   const { execute, status: contractStatus } = useStarHomeWriteContract();
 
-  const handleRegisterUser = async (agent: Partial<StarknetAgent>) => {
+  const handleRegisterUser = async (agent: Partial<User>) => {
     try {
-      const defaultAgent: StarknetAgent = {
+      const defaultAgent: User = {
         id:address||"",
         name: agent.name || "",
         phone: agent.phone || "",

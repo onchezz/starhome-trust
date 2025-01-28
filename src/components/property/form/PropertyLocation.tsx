@@ -43,7 +43,7 @@ const PropertyLocation = ({
           <Label>Address</Label>
           <Input
             required
-            value={formData.location_address || ""}
+            value={formData.locationAddress || ""}
             disabled
             placeholder="Select location on map"
           />

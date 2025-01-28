@@ -15,7 +15,7 @@ import PropertyFeatures from "@/components/property/form/PropertyFeatures";
 import PropertyLocation from "@/components/property/form/PropertyLocation";
 import ImageUploader from "@/components/property/form/ImageUploader";
 import { useParams } from "react-router-dom";
-import { usePropertyRead } from "@/hooks/contract_interactions/useContractReads";
+import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import pinata from "@/hooks/services_hooks/pinata";
 
 const generateShortUUID = () => {
@@ -44,14 +44,14 @@ const CreateProperty = () => {
 
   const [formData, setFormData] = useState<Partial<Property>>({
     id: generateShortUUID(),
-    agent_id: address,
-    interested_clients: 0,
-    asset_token: "",
-    has_garden: false,
-    has_swimming_pool: false,
-    pet_friendly: false,
-    wheelchair_accessible: false,
-    date_listed: Math.floor(Date.now() / 1000),
+    agentId: address,
+    interestedClients: 0,
+    assetToken: "",
+    hasGarden: false,
+    hasSwimmingPool: false,
+    petFriendly: false,
+    wheelchairAccessible: false,
+    dateListed: Math.floor(Date.now() / 1000),
     status: "Available",
     currency: "USD",
   });
@@ -59,7 +59,7 @@ const CreateProperty = () => {
   useEffect(() => {
     if (id && existingProperty) {
       setFormData(existingProperty);
-      setUrl(existingProperty.images_id || "");
+      setUrl(existingProperty.imagesId || "");
     }
     if (status === "connected") {
       setOwnerAddress(address);
@@ -91,7 +91,7 @@ const CreateProperty = () => {
       ...prev,
       latitude: location.latitude,
       longitude: location.longitude,
-      location_address: location.address,
+      locationAddress: location.address,
       city: location.city,
       state: location.state,
       country: location.country,
@@ -146,26 +146,24 @@ const CreateProperty = () => {
         //   name: `property-${formData.id}-images`,
         // });
 
-        const upload = await pinata.upload
-          .file(selectedFiles[0])
-          .addMetadata({
-            name: `property-${formData.id}-images`,
-            keyValues: {
-              propertyId: formData.id,
-              uploadDate: new Date().toISOString(),
-            },
-          });
+        const upload = await pinata.upload.file(selectedFiles[0]).addMetadata({
+          name: `property-${formData.id}-images`,
+          keyValues: {
+            propertyId: formData.id,
+            uploadDate: new Date().toISOString(),
+          },
+        });
 
         const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
         setUrl(ipfsUrl);
-        handleInputChange("images_id", ipfsUrl);
+        handleInputChange("imagesId", ipfsUrl);
         toast.success("Images uploaded successfully!");
 
         const status = await handleListProperty({
           ...formData,
           owner: address,
-          agent_id: address,
-          images_id: ipfsUrl,
+          agentId: address,
+          imagesId: ipfsUrl,
         } as Property);
 
         if (status.status === "success") {
@@ -183,9 +181,9 @@ const CreateProperty = () => {
       try {
         const status = await handleListProperty({
           ...formData,
-          owner: address,
-          agent_id: address,
-          images_id: url,
+
+          agentId: address,
+          imagesId: url,
         } as Property);
 
         if (status.status === "success") {

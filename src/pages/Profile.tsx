@@ -7,44 +7,64 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Check, Building2, Wallet } from "lucide-react";
 import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
-import { useUserReadByAddress } from "@/hooks/contract_interactions/useContractReads";
+
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
+import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 
 const Profile = () => {
   const { address } = useAccount();
-  const { balances, isLoading } = useTokenBalances();
-
+  const { balances, isLoading: isLoadingBal } = useTokenBalances();
+  const {
+    user,
+    isLoading: isLoadingUser,
+    error,
+  } = useUserReadByAddress(address);
+  const { handleSignAsAgent } = useUserWrite();
   // Fetch user assets using the contract hook
   const { data: userAssets, isLoading: assetsLoading } =
     useStarHomeReadContract({
       functionName: "get_user_assets",
       args: [address],
     });
+  if (isLoadingUser) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <span className="loading loading-spinner loading-lg">Loading...</span>
+      </div>
+    );
+  }
 
-  const {
-    agent: agentInfo,
-    isLoading: isLoadingAgent,
-    error,
-  } = useUserReadByAddress(address);
+  if (error) {
+    return <div className="p-4 text-red-500">Error: {error.message}</div>;
+  }
+
+  if (!user) {
+    return <div className="p-4">No agent found</div>;
+  }
+
+  // const {
+  //   agent: agentInfo,
+  //   isLoading: isLoadingAgent,
+  //   error,
+  // } = useUserReadByAddress(address);
 
   const formatBalance = (balance: any) => {
     if (!balance) return "0.0000";
     console.log("datetime" + Math.floor(Date.now() / 1000));
     return Number(balance.formatted).toFixed(4);
   };
-  const { handleSignAsAgent } = useUserWrite();
 
   const userData = {
-    name: agentInfo.name || "John Doe",
-    email: agentInfo.email || "j@gmail.com",
-    phone: agentInfo.phone || "123",
+    name: user.name || "John Doe",
+    email: user.email || "j@gmail.com",
+    phone: user.phone || "123",
     profileImage:
-      agentInfo.profile_image ||
+      user.profile_image ||
       "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
-    isVerified: agentInfo.is_verified,
-    isInvestor: agentInfo.is_investor,
-    isAgent: agentInfo.is_agent,
-    assets: Array.isArray(userAssets) ? userAssets : [],
+    isVerified: user.is_verified,
+    isInvestor: user.is_investor,
+    isAgent: user.is_agent,
+    assets: Array.isArray(user) ? user : [],
   };
 
   return (
@@ -108,7 +128,7 @@ const Profile = () => {
               <CardTitle>Wallet Balances</CardTitle>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
+              {isLoadingBal ? (
                 <p>Loading balances...</p>
               ) : (
                 <div className="space-y-4">

@@ -1,6 +1,6 @@
 import { BigNumberish, num, shortString } from "starknet";
 
-export interface StarknetAgent {
+export interface User {
   id: string;
   name: string;
   phone: string;
@@ -26,7 +26,7 @@ export class UserConverter {
         return num.toHex(address);
     }
 
-    static fromStarknetUser(starknetAgent: any): StarknetAgent {
+    static fromStarknetUser(starknetAgent: any): User {
       if (!starknetAgent) {
         return {
           id: "",
@@ -56,7 +56,7 @@ export class UserConverter {
       };
     }
 
-     static toStarknetUser(starknetAgent: any): StarknetAgent {
+     static toStarknetUser(starknetAgent: any): User {
       if (!starknetAgent) {
         return {
           id: "",

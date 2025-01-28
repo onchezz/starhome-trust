@@ -8,13 +8,13 @@ import { PropertySchedule } from "@/components/property/PropertySchedule";
 import { PropertyGallery } from "@/components/property/PropertyGallery";
 import { PropertyAbout } from "@/components/property/PropertyAbout";
 import { SimilarProperties } from "@/components/property/SimilarProperties";
-import { usePropertyReadById } from "@/hooks/contract_interactions/useContractReads";
+import { usePropertyReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { PageLoader } from "@/components/ui/page-loader";
 
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  
+
   console.log("Property ID:", id); // Debug log
   const { property, isLoading, error } = usePropertyReadById(id || "");
   console.log("Property data:", property); // Debug log
@@ -25,30 +25,36 @@ const PropertyDetails = () => {
 
   if (error || !property) {
     console.error("Error loading property:", error);
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Error Loading Property</h2>
-        <p className="text-gray-600">Unable to load property details. Please try again later.</p>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Error Loading Property</h2>
+          <p className="text-gray-600">
+            Unable to load property details. Please try again later.
+          </p>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   // Convert features string to array and ensure it's not empty
-  const features = property.features_id ? property.features_id.toString().split(',').filter(Boolean) : [];
-  
+  const features = property.featuresId
+    ? property.featuresId.toString().split(",").filter(Boolean)
+    : [];
+
   // Ensure we have a valid date
-  const dateListed = property.date_listed ? new Date(property.date_listed * 1000).toISOString() : new Date().toISOString();
+  const dateListed = property.dateListed
+    ? new Date(property.dateListed * 1000).toISOString()
+    : new Date().toISOString();
 
   // Ensure we have a valid image URL
-  const imageUrl = property.images_id || '/placeholder.svg';
+  const imageUrl = property.imagesId || "/placeholder.svg";
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <PropertyHero 
+      <PropertyHero
         title={property.title.toString()}
-        location={`${property.location_address}, ${property.city}, ${property.state}`}
+        location={`${property.locationAddress}, ${property.city}, ${property.state}`}
         images={[imageUrl]}
         totalInvestment={Number(property.price)}
       />
@@ -56,30 +62,30 @@ const PropertyDetails = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <PropertyAbout 
+            <PropertyAbout
               description={property.description.toString()}
               features={features}
               bedrooms={Number(property.bedrooms)}
               bathrooms={Number(property.bathrooms)}
-              parkingSpaces={Number(property.parking_spaces)}
+              parkingSpaces={Number(property.parkingSpaces)}
               area={Number(property.area)}
               dateListed={dateListed}
-              propertyType={property.property_type.toString()}
+              propertyType={property.propertyType.toString()}
               status={property.status.toString()}
-              interestedClients={Number(property.interested_clients)}
+              interestedClients={Number(property.interestedClients)}
             />
 
-            <PropertyMap 
+            <PropertyMap
               location={{
                 latitude: Number(property.latitude),
                 longitude: Number(property.longitude),
-                address: property.location_address.toString(),
+                address: property.locationAddress.toString(),
                 city: property.city.toString(),
-                state: property.state.toString()
-              }} 
+                state: property.state.toString(),
+              }}
             />
-            
-            <PropertyGallery 
+
+            <PropertyGallery
               images={[imageUrl]}
               title={property.title.toString()}
               onImageClick={setSelectedImage}
@@ -98,7 +104,7 @@ const PropertyDetails = () => {
       </div>
 
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
           onClick={() => setSelectedImage(null)}
         >
