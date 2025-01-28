@@ -40,11 +40,11 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="py-20 bg-white">
+    <div className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-primary rounded-3xl p-8 text-white">
+            <div className="bg-primary dark:bg-primary/10 rounded-3xl p-8 text-white">
               <img
                 src="/lovable-uploads/f0e1f301-eb87-4525-91c1-305fe18c2b3e.png"
                 alt="Contact"
@@ -59,25 +59,36 @@ const ContactForm = () => {
             <div>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Your Name
                   </label>
-                  <Input name="name" placeholder="John Doe" required />
+                  <Input 
+                    name="name" 
+                    placeholder="John Doe" 
+                    required 
+                    className="dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Email
                   </label>
-                  <Input name="email" type="email" placeholder="john@example.com" required />
+                  <Input 
+                    name="email" 
+                    type="email" 
+                    placeholder="john@example.com" 
+                    required 
+                    className="dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Your Message
                   </label>
                   <Textarea
                     name="message"
                     placeholder="Tell us about your investment goals..."
-                    className="min-h-[150px]"
+                    className="min-h-[150px] dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
                     required
                   />
                 </div>
