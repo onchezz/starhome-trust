@@ -74,7 +74,9 @@ const SimpleMobileMenu = ({
               <Wallet className="mr-2 h-4 w-4" />
               {address ? "Disconnect Wallet" : "Connect Wallet"}
             </Button>
-            <ThemeToggle className="w-full" />
+            <div className="flex justify-center">
+              <ThemeToggle />
+            </div>
           </div>
         </nav>
       </SheetContent>
