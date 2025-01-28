@@ -4,13 +4,15 @@ import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Check, Building2, Wallet, Loader2 } from "lucide-react";
+import { Check, Building2, Wallet, Loader2, Plus, User } from "lucide-react";
 import { useStarHomeReadContract } from "@/hooks/contract_hooks/useStarHomeReadContract";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { UserRegistrationModal } from "@/components/profile/UserRegistrationModal";
+import { toast } from "sonner";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -28,6 +30,16 @@ const Profile = () => {
     args: [address],
   });
 
+  const handleSignAsAgent = async () => {
+    try {
+      await handleSignAsAgent();
+      toast.success("Successfully registered as agent!");
+    } catch (error) {
+      console.error("Error registering as agent:", error);
+      toast.error("Failed to register as agent");
+    }
+  };
+
   if (isLoadingUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -43,32 +55,6 @@ const Profile = () => {
       </div>
     );
   }
-
-  if (!user) {
-    return (
-      <div className="p-2 sm:p-4 flex justify-center items-center min-h-screen text-sm sm:text-base">
-        No user found
-      </div>
-    );
-  }
-
-  const formatBalance = (balance: any) => {
-    if (!balance) return "0.0000";
-    return Number(balance.formatted).toFixed(4);
-  };
-
-  const userData = {
-    name: user.name || "John Doe",
-    email: user.email || "j@gmail.com",
-    phone: user.phone || "123",
-    profileImage:
-      user.profile_image ||
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop",
-    isVerified: user.is_verified,
-    isInvestor: user.is_investor,
-    isAgent: user.is_agent,
-    assets: Array.isArray(user) ? user : [],
-  };
 
   return (
     <div className={cn(
@@ -95,19 +81,19 @@ const Profile = () => {
                   Profile Details
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {userData.isVerified && (
+                  {user.is_verified && (
                     <Badge variant="secondary" className="text-xs sm:text-sm">
                       <Check className="w-3 h-3 mr-1" />
                       Verified
                     </Badge>
                   )}
-                  {userData.isInvestor && (
+                  {user.is_investor && (
                     <Badge variant="outline" className="text-xs sm:text-sm">
                       <Wallet className="w-3 h-3 mr-1" />
                       Investor
                     </Badge>
                   )}
-                  {userData.isAgent && (
+                  {user.is_agent && (
                     <Badge className="text-xs sm:text-sm">
                       <Building2 className="w-3 h-3 mr-1" />
                       Agent
@@ -125,7 +111,7 @@ const Profile = () => {
                   className="flex flex-col sm:flex-row items-start gap-4"
                 >
                   <img
-                    src={userData.profileImage}
+                    src={user.profile_image || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop"}
                     alt="Profile"
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-2 ring-primary/20"
                   />
@@ -133,15 +119,15 @@ const Profile = () => {
                     <h3 className={cn(
                       "text-base sm:text-lg md:text-xl font-medium",
                       theme === "dark" ? "text-white" : "text-gray-900"
-                    )}>{userData.name}</h3>
+                    )}>{user.name || "John Doe"}</h3>
                     <p className={cn(
                       "text-sm sm:text-base",
                       theme === "dark" ? "text-gray-300" : "text-gray-500"
-                    )}>{userData.email}</p>
+                    )}>{user.email || "j@gmail.com"}</p>
                     <p className={cn(
                       "text-sm sm:text-base",
                       theme === "dark" ? "text-gray-300" : "text-gray-500"
-                    )}>{userData.phone}</p>
+                    )}>{user.phone || "123"}</p>
                   </div>
                 </motion.div>
 
@@ -170,14 +156,38 @@ const Profile = () => {
                   className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4"
                 >
                   <Link to="/create-property" className="w-full">
-                    <Button className="w-full text-xs sm:text-sm h-8 sm:h-10">Create Property</Button>
+                    <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
+                      <Plus className="w-4 h-4" />
+                      Create Property
+                    </Button>
                   </Link>
-                  <Button onClick={handleSignAsAgent} className="w-full text-xs sm:text-sm h-8 sm:h-10">
-                    Register As Agent
-                  </Button>
-                  <Link to="/add-investment" className="w-full">
-                    <Button className="w-full text-xs sm:text-sm h-8 sm:h-10">Create Investment</Button>
-                  </Link>
+                  
+                  {!user.is_agent ? (
+                    <Button 
+                      onClick={handleSignAsAgent} 
+                      variant="outline"
+                      className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
+                    >
+                      <Building2 className="w-4 h-4" />
+                      Sign as Agent
+                    </Button>
+                  ) : (
+                    <Link to="/add-investment" className="w-full">
+                      <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Create Investment
+                      </Button>
+                    </Link>
+                  )}
+
+                  <UserRegistrationModal 
+                    isUpdate={!!user} 
+                    currentUserData={user ? {
+                      name: user.name,
+                      email: user.email,
+                      phone: user.phone,
+                    } : undefined}
+                  />
                 </motion.div>
               </div>
             </CardContent>
@@ -209,15 +219,15 @@ const Profile = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className={theme === "dark" ? "text-gray-300" : ""}>ETH</span>
-                      <span className="font-mono">{formatBalance(balances.ETH)}</span>
+                      <span className="font-mono">{Number(balances.ETH?.formatted || 0).toFixed(4)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className={theme === "dark" ? "text-gray-300" : ""}>USDT</span>
-                      <span className="font-mono">{formatBalance(balances.USDT)}</span>
+                      <span className="font-mono">{Number(balances.USDT?.formatted || 0).toFixed(4)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className={theme === "dark" ? "text-gray-300" : ""}>STRK</span>
-                      <span className="font-mono">{formatBalance(balances.STRK)}</span>
+                      <span className="font-mono">{Number(balances.STRK?.formatted || 0).toFixed(4)}</span>
                     </div>
                   </div>
                 )}
@@ -241,12 +251,12 @@ const Profile = () => {
                         <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                       ))}
                     </div>
-                  ) : userData.assets.length === 0 ? (
+                  ) : userAssets.length === 0 ? (
                     <p className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
                       No assets found
                     </p>
                   ) : (
-                    userData.assets.map((asset: any) => (
+                    userAssets.map((asset: any) => (
                       <div
                         key={asset.id}
                         className={cn(
