@@ -12,6 +12,7 @@ import { ContactDetails } from "@/components/profile/ContactDetails";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { Card } from "@/components/ui/card";
 import { User } from "@/types/user";
+import { useState, useEffect } from "react";
 
 const Profile = () => {
   const { theme } = useTheme();
