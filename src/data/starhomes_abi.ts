@@ -257,12 +257,16 @@ export const starhomes_abi =[
         "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "name": "construction_status",
+        "type": "core::felt252"
+      },
+      {
         "name": "asset_value",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "available_staking_amount",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "investment_type",
@@ -282,7 +286,7 @@ export const starhomes_abi =[
       },
       {
         "name": "rental_income",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "maintenance_costs",
@@ -314,7 +318,7 @@ export const starhomes_abi =[
       },
       {
         "name": "images",
-        "type": "core::felt252"
+        "type": "core::byte_array::ByteArray"
       },
       {
         "name": "investment_token",
@@ -322,7 +326,7 @@ export const starhomes_abi =[
       },
       {
         "name": "min_investment_amount",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       }
     ]
   },
@@ -708,6 +712,114 @@ export const starhomes_abi =[
   },
   {
     "type": "impl",
+    "name": "BlogComponentImpl",
+    "interface_name": "starhomes::interfaces::blogs_interface::IBlogsComponentTrait"
+  },
+  {
+    "type": "struct",
+    "name": "starhomes::models::blogs_model::Blog",
+    "members": [
+      {
+        "name": "id",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "title",
+        "type": "core::felt252"
+      },
+      {
+        "name": "category",
+        "type": "core::felt252"
+      },
+      {
+        "name": "description",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "image",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "content",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "author",
+        "type": "core::felt252"
+      },
+      {
+        "name": "date",
+        "type": "core::felt252"
+      },
+      {
+        "name": "readTime",
+        "type": "core::felt252"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "starhomes::interfaces::blogs_interface::IBlogsComponentTrait",
+    "items": [
+      {
+        "type": "function",
+        "name": "add_blog",
+        "inputs": [
+          {
+            "name": "blog",
+            "type": "starhomes::models::blogs_model::Blog"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "edit_blog",
+        "inputs": [
+          {
+            "name": "blog_id",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "blog",
+            "type": "starhomes::models::blogs_model::Blog"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_all_blogs",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<starhomes::models::blogs_model::Blog>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_blog_by_id",
+        "inputs": [
+          {
+            "name": "blog_id",
+            "type": "core::integer::u64"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "starhomes::models::blogs_model::Blog"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "OwnableMixinImpl",
     "interface_name": "openzeppelin_access::ownable::interface::OwnableABI"
   },
@@ -1012,7 +1124,7 @@ export const starhomes_abi =[
       },
       {
         "name": "asset_price",
-        "type": "core::integer::u256",
+        "type": "core::integer::u64",
         "kind": "data"
       },
       {
@@ -1125,6 +1237,45 @@ export const starhomes_abi =[
   },
   {
     "type": "event",
+    "name": "starhomes::models::contract_events::BlogAdded",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "user",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "author",
+        "type": "core::felt252",
+        "kind": "data"
+      },
+      {
+        "name": "timestamp",
+        "type": "core::integer::u64",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "starhomes::components::blogs_component::BlogComponent::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "BLOGADDED",
+        "type": "starhomes::models::contract_events::BlogAdded",
+        "kind": "nested"
+      },
+      {
+        "name": "BLOGUPDATED",
+        "type": "starhomes::models::contract_events::BlogAdded",
+        "kind": "nested"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "starhomes::starhomes_contract::starhomes::StarhomesContract::Event",
     "kind": "enum",
     "variants": [
@@ -1151,6 +1302,11 @@ export const starhomes_abi =[
       {
         "name": "PropertyComponentEvent",
         "type": "starhomes::components::property_component::PropertyComponent::Event",
+        "kind": "flat"
+      },
+      {
+        "name": "BlogsComponentEvent",
+        "type": "starhomes::components::blogs_component::BlogComponent::Event",
         "kind": "flat"
       }
     ]
