@@ -9,10 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 
 import { tokenOptions } from "@/utils/constants";
-import { InvestmentAsset, constructionStatus, investmentTypes } from "@/types/investment";
+import {
+  InvestmentAsset,
+  constructionStatus,
+  investmentTypes,
+} from "@/types/investment";
 
 interface BasicInformationProps {
   formData: Partial<InvestmentAsset>;
@@ -113,19 +116,6 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Investment Status</Label>
-        <div className="flex items-center space-x-2">
-          <Switch
-            checked={formData.isActive || false}
-            onCheckedChange={(checked) =>
-              handleInputChange("isActive", checked)
-            }
-          />
-          <Label>Active</Label>
-        </div>
       </div>
     </div>
   );

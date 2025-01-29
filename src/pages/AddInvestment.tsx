@@ -247,7 +247,15 @@ const AddInvestment = () => {
                 formData={formData}
                 handleInputChange={handleInputChange}
               />
-              
+
+              <BulletPointsGrid
+                highlights={highlights}
+                riskFactors={riskFactors}
+                additionalFeatures={additionalFeatures}
+                setHighlights={setHighlights}
+                setRiskFactors={setRiskFactors}
+                setAdditionalFeatures={setAdditionalFeatures}
+              />
               <UploadGrid
                 selectedFiles={selectedFiles}
                 selectedDocs={selectedDocs}
@@ -262,15 +270,6 @@ const AddInvestment = () => {
                 setSelectedDocs={setSelectedDocs}
                 setPreviewUrl={setPreviewUrl}
                 setShowPreviewModal={setShowPreviewModal}
-              />
-
-              <BulletPointsGrid
-                highlights={highlights}
-                riskFactors={riskFactors}
-                additionalFeatures={additionalFeatures}
-                setHighlights={setHighlights}
-                setRiskFactors={setRiskFactors}
-                setAdditionalFeatures={setAdditionalFeatures}
               />
 
               <Button

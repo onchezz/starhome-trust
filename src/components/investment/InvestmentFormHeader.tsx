@@ -23,6 +23,8 @@ const InvestmentFormHeader: React.FC<InvestmentFormHeaderProps> = ({
             checked={isActive}
             onCheckedChange={onStatusChange}
           />
+          <Label>{isActive?`Active`: `Deactivated`}</Label>
+          
         </div>
       </div>
     </CardHeader>
