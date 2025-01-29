@@ -202,17 +202,17 @@ const AddInvestment = () => {
     }
 
     try {
-      // Convert string values to appropriate types
+      // Convert string values to appropriate types using correct camelCase properties
       const processedFormData = {
         ...formData,
-        is_active: formData.isActive === true, // Ensure boolean
-        asset_value: BigInt(formData.asset_value || 0),
-        available_staking_amount: BigInt(formData.available_staking_amount || 0),
-        property_price: BigInt(formData.property_price || 0),
-        rental_income: BigInt(formData.rental_income || 0),
-        maintenance_costs: BigInt(formData.maintenance_costs || 0),
-        min_investment_amount: BigInt(formData.min_investment_amount || 0),
-        construction_year: Number(formData.construction_year || 0),
+        isActive: formData.isActive === true, // Ensure boolean
+        assetValue: BigInt(formData.assetValue || 0),
+        availableStakingAmount: BigInt(formData.availableStakingAmount || 0),
+        propertyPrice: BigInt(formData.propertyPrice || 0),
+        rentalIncome: BigInt(formData.rentalIncome || 0),
+        maintenanceCosts: BigInt(formData.maintenanceCosts || 0),
+        minInvestmentAmount: BigInt(formData.minInvestmentAmount || 0),
+        constructionYear: Number(formData.constructionYear || 0),
         additionalFeatures: additionalFeatures.join("\n"),
         riskFactors: riskFactors.join("\n"),
         highlights: highlights.join("\n"),
