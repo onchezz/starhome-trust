@@ -69,7 +69,8 @@ export const usePropertyCreate = () => {
       
       // Helper function to safely convert values to strings
       const toSafeString = (value: any): string => {
-        if (value === undefined || value === null) return "0";
+        if (value === undefined || value === null) return "";
+        if (typeof value === 'object') return JSON.stringify(value);
         return value.toString();
       };
 
@@ -83,14 +84,14 @@ export const usePropertyCreate = () => {
         investor_id: toSafeString(investment.investorId),
         owner: address || "",
         construction_status: toSafeString(investment.constructionStatus),
-        asset_value: toSafeString(investment.assetValue),
-        available_staking_amount: toSafeString(investment.availableStakingAmount),
+        asset_value: toSafeString(investment.assetValue || 0),
+        available_staking_amount: toSafeString(investment.availableStakingAmount || 0),
         investment_type: toSafeString(investment.investmentType),
         construction_year: Number(investment.constructionYear || 0),
-        property_price: toSafeString(investment.propertyPrice),
+        property_price: toSafeString(investment.propertyPrice || 0),
         expected_roi: toSafeString(investment.expectedRoi),
-        rental_income: toSafeString(investment.rentalIncome),
-        maintenance_costs: toSafeString(investment.maintenanceCosts),
+        rental_income: toSafeString(investment.rentalIncome || 0),
+        maintenance_costs: toSafeString(investment.maintenanceCosts || 0),
         tax_benefits: toSafeString(investment.taxBenefits),
         highlights: toSafeString(investment.highlights),
         market_analysis: toSafeString(investment.marketAnalysis),
@@ -99,7 +100,7 @@ export const usePropertyCreate = () => {
         additional_features: toSafeString(investment.additionalFeatures),
         images: toSafeString(investment.images),
         investment_token: toSafeString(investment.investmentToken),
-        min_investment_amount: toSafeString(investment.minInvestmentAmount)
+        min_investment_amount: toSafeString(investment.minInvestmentAmount || 0)
       };
 
       console.log("Listing investment property after conversion:", defaultInvestment);
