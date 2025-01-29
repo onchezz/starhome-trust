@@ -55,7 +55,8 @@ export const usePropertyCreate = () => {
       };
     } catch (error) {
       console.error("Error listing property:", error);
-      toast.error("Failed to list property");
+      const errorMessage = error instanceof Error ? error.message : "Failed to list property";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -109,12 +110,26 @@ export const usePropertyCreate = () => {
       
       toast.success(`Investment property listed successfully! ${tx.response.transaction_hash}`);
       return {
-        status: 'success' as const
+        status: 'success' as const,
+        data: tx
       };
     } catch (error) {
       console.error("Error listing investment property:", error);
-      toast.error("Failed to list investment property");
-      throw error;
+      let errorMessage = "Failed to list investment property";
+      
+      // Extract error message from Starknet error if available
+      if (error instanceof Error) {
+        if (error.message.includes("Error in the called contract")) {
+          // Extract contract error message
+          const match = error.message.match(/Error message: (.*?)(?:\n|$)/);
+          errorMessage = match ? match[1] : error.message;
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 

@@ -180,6 +180,7 @@ const AddInvestment = () => {
       return;
     }
 
+    setIsUploading(true);
     try {
       console.log("Form data before processing:", formData);
       
@@ -194,20 +195,19 @@ const AddInvestment = () => {
 
       console.log("Submitting investment with processed data:", processedFormData);
       
-      const status = await handleListInvestmentProperty(processedFormData);
+      await handleListInvestmentProperty(processedFormData);
 
-      if (status.status === "success") {
-        toast.success("Investment created successfully!");
-        setSelectedFiles([]);
-        setSelectedDocs([]);
-        setUploadProgress(0);
-        setUploadedFiles(0);
-        setUploadedSize(0);
-        setTotalUploadSize(0);
-      }
+      toast.success("Investment created successfully!");
+      setSelectedFiles([]);
+      setSelectedDocs([]);
+      setUploadProgress(0);
+      setUploadedFiles(0);
+      setUploadedSize(0);
+      setTotalUploadSize(0);
+      
     } catch (error) {
       console.error("Error creating investment:", error);
-      toast.error("Failed to create investment");
+      // Error is already handled by usePropertyCreate hook
     } finally {
       setIsUploading(false);
     }
