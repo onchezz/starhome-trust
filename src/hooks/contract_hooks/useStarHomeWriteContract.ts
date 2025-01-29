@@ -15,26 +15,26 @@ interface TransactionStatus {
 }
 
 export function useStarHomeWriteContract() {
-const { contract } = useContract({
-  abi:starhomes_abi as Abi ,
-  address: starhomesContract,
-  // provider:rpcProvideUr
-});
-  // Initialize transaction hook with empty calls
-  const {  sendAsync, error, reset, status } = useSendTransaction({
+  const { contract } = useContract({
+    abi: starhomes_abi as Abi,
+    address: starhomesContract,
+  });
+
+  const { sendAsync, error, reset, status } = useSendTransaction({
     calls: undefined,
   });
 
-  // Create status object
-  const txStatus: TransactionStatus = useMemo(() => ({
-    isError: status === "error",
-    isSuccess: status === "success",
-    isPending: status === "pending",
-    error,
-    reset,
-  }), [status, error, reset]);
+  const txStatus: TransactionStatus = useMemo(
+    () => ({
+      isError: status === "error",
+      isSuccess: status === "success",
+      isPending: status === "pending",
+      error,
+      reset,
+    }),
+    [status, error, reset]
+  );
 
-  // Create a memoized execute function
   const execute = useCallback(
     async (functionName: string, args: any[]) => {
       if (!contract) {
@@ -42,14 +42,19 @@ const { contract } = useContract({
       }
 
       try {
-       console.log(`calling args:`, args)
-       
-        // Create the call using the contract's populate method
-        const call = contract.populate(functionName, args);
         console.log(`Calling ${functionName} with args:`, args);
-        console.log(`Calling ${functionName} with call:`, call);
-        // Send the transaction
-        parseCalldataValue(args)
+        
+        // Process boolean values
+        const processedArgs = args.map(arg => {
+          if (typeof arg === 'boolean') {
+            return arg ? 1 : 0; // Convert boolean to 1/0 for contract
+          }
+          return arg;
+        });
+
+        const call = contract.populate(functionName, processedArgs);
+        console.log(`Populated call:`, call);
+
         const response = await sendAsync([call]);
         return { response, status: txStatus };
       } catch (err) {
@@ -60,7 +65,6 @@ const { contract } = useContract({
     [contract, sendAsync, txStatus]
   );
 
-  // Create a memoized executeBatch function for multiple calls
   const executeBatch = useCallback(
     async (calls: { functionName: string; args: any[] }[]) => {
       if (!contract) {
@@ -90,17 +94,4 @@ const { contract } = useContract({
     executeBatch,
     status: txStatus,
   };
-}
-function parseCalldataValue(calldata) {
-    return calldata.reduce((acc, value) => {
-        try {
-            const bigIntValue = BigInt(value);
-            acc.push(bigIntValue);
-        } catch (error) {
-            console.error(`Failed to parse value: ${value}`, error);
-            // Handle the error, e.g., by skipping or providing a default value
-            acc.push(BigInt(0)); // Default value
-        }
-        return acc;
-    }, []);
 }

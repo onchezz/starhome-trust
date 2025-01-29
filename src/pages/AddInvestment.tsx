@@ -202,14 +202,25 @@ const AddInvestment = () => {
     }
 
     try {
-      const updatedFormData = {
+      // Convert string values to appropriate types
+      const processedFormData = {
         ...formData,
+        is_active: formData.isActive === true, // Ensure boolean
+        asset_value: BigInt(formData.asset_value || 0),
+        available_staking_amount: BigInt(formData.available_staking_amount || 0),
+        property_price: BigInt(formData.property_price || 0),
+        rental_income: BigInt(formData.rental_income || 0),
+        maintenance_costs: BigInt(formData.maintenance_costs || 0),
+        min_investment_amount: BigInt(formData.min_investment_amount || 0),
+        construction_year: Number(formData.construction_year || 0),
         additionalFeatures: additionalFeatures.join("\n"),
         riskFactors: riskFactors.join("\n"),
         highlights: highlights.join("\n"),
       };
 
-      const status = await handleListInvestmentProperty(updatedFormData);
+      console.log("Submitting investment with data:", processedFormData);
+      
+      const status = await handleListInvestmentProperty(processedFormData);
 
       if (status.status === "success") {
         toast.success("Investment created successfully!");
