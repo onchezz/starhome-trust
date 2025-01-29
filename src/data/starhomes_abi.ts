@@ -164,64 +164,6 @@ export const starhomes_abi =[
   },
   {
     "type": "struct",
-    "name": "core::integer::u256",
-    "members": [
-      {
-        "name": "low",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "high",
-        "type": "core::integer::u128"
-      }
-    ]
-  },
-  {
-    "type": "struct",
-    "name": "starhomes::models::investment_model::MarketAnalysis",
-    "members": [
-      {
-        "name": "area_growth",
-        "type": "core::felt252"
-      },
-      {
-        "name": "occupancy_rate",
-        "type": "core::felt252"
-      },
-      {
-        "name": "comparable_properties",
-        "type": "core::felt252"
-      },
-      {
-        "name": "demand_trend",
-        "type": "core::felt252"
-      }
-    ]
-  },
-  {
-    "type": "struct",
-    "name": "starhomes::models::investment_model::LegalDetails",
-    "members": [
-      {
-        "name": "ownership",
-        "type": "core::felt252"
-      },
-      {
-        "name": "zoning",
-        "type": "core::felt252"
-      },
-      {
-        "name": "permits",
-        "type": "core::felt252"
-      },
-      {
-        "name": "documents_id",
-        "type": "core::felt252"
-      }
-    ]
-  },
-  {
-    "type": "struct",
     "name": "starhomes::models::investment_model::InvestmentAsset",
     "members": [
       {
@@ -278,7 +220,7 @@ export const starhomes_abi =[
       },
       {
         "name": "property_price",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "expected_roi",
@@ -290,7 +232,7 @@ export const starhomes_abi =[
       },
       {
         "name": "maintenance_costs",
-        "type": "core::integer::u256"
+        "type": "core::integer::u64"
       },
       {
         "name": "tax_benefits",
@@ -302,15 +244,15 @@ export const starhomes_abi =[
       },
       {
         "name": "market_analysis",
-        "type": "starhomes::models::investment_model::MarketAnalysis"
+        "type": "core::byte_array::ByteArray"
       },
       {
         "name": "risk_factors",
         "type": "core::byte_array::ByteArray"
       },
       {
-        "name": "legal_details",
-        "type": "starhomes::models::investment_model::LegalDetails"
+        "name": "legal_detailId",
+        "type": "core::byte_array::ByteArray"
       },
       {
         "name": "additional_features",
@@ -327,6 +269,20 @@ export const starhomes_abi =[
       {
         "name": "min_investment_amount",
         "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
       }
     ]
   },
