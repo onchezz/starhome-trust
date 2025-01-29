@@ -83,20 +83,20 @@ export const usePropertyCreate = () => {
         id: investment.id || "0",
         name: investment.name || "",
         description: investment.description || "",
-        is_active: isActive,
+        is_active: true,
         location: investment.location || "",
         size: investment.size || "0",
-        investor_id: investment.investorId || "0",
+        investor_id: address || "0",
         owner: address || "",
         construction_status: investment.constructionStatus || "",
-        asset_value: toBigIntString(investment.assetValue),
-        available_staking_amount: toBigIntString(investment.availableStakingAmount),
+        asset_value: investment.assetValue,
+        available_staking_amount: investment.availableStakingAmount,
         investment_type: investment.investmentType || "0",
-        construction_year: Number(investment.constructionYear || 0),
-        property_price: toBigIntString(investment.propertyPrice),
+        construction_year: investment.constructionYear || 0,
+        property_price: investment.propertyPrice,
         expected_roi: investment.expectedRoi || "0",
-        rental_income: toBigIntString(investment.rentalIncome),
-        maintenance_costs: toBigIntString(investment.maintenanceCosts),
+        rental_income:investment.rentalIncome,
+        maintenance_costs: investment.maintenanceCosts,
         tax_benefits: investment.taxBenefits || "0",
         highlights: investment.highlights || "",
         market_analysis: {
@@ -115,7 +115,7 @@ export const usePropertyCreate = () => {
         additional_features: investment.additionalFeatures || "",
         images: investment.images || "",
         investment_token: investment.investmentToken || "",
-        min_investment_amount: toBigIntString(investment.minInvestmentAmount)
+        min_investment_amount:investment.minInvestmentAmount,
       };
 
       console.log("Listing investment property after conversion:", defaultInvestment);
