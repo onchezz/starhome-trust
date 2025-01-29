@@ -125,7 +125,7 @@ export const Hero = () => {
             </div>
           </div>
 
-          <h1 className="flex text-xl md:text-2xl mb-6 mt-10 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+          <h1 className="text-center text-xl md:text-2xl mt-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             <Typewriter
               options={{
                 strings: ["Secure. Transparent. Decentralized."],
