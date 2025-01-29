@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Building2 } from "lucide-react";
+import { Building2, BadgeCheck, BadgeAlert } from "lucide-react";
 import { UserRegistrationModal } from "./UserRegistrationModal";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { toast } from "sonner";
 import { useAccount } from "@starknet-react/core";
 import { User } from "@/types/user";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileActionsProps {
   user: User | null;
@@ -31,20 +32,55 @@ export function ProfileActions({ user, isLoading }: ProfileActionsProps) {
   };
 
   return (
-    <div className="flex gap-2">
-      {user && !user.is_agent && (
-        <Button 
-          onClick={handleAgentSignup}
-          variant="outline"
-          disabled={contractStatus.isPending || isLoading}
-          className="text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
-        >
-          <Building2 className="w-4 h-4" />
-          Sign as Agent
-        </Button>
-      )}
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {user && (
+          <>
+            <Badge variant="outline" className="flex items-center gap-1">
+              {user.is_verified ? (
+                <>
+                  <BadgeCheck className="w-3 h-3 text-green-500" />
+                  <span>Verified</span>
+                </>
+              ) : (
+                <>
+                  <BadgeAlert className="w-3 h-3 text-yellow-500" />
+                  <span>Unverified</span>
+                </>
+              )}
+            </Badge>
+            <Badge variant="outline" className="flex items-center gap-1">
+              {user.is_authorized ? (
+                <>
+                  <BadgeCheck className="w-3 h-3 text-green-500" />
+                  <span>Authorized</span>
+                </>
+              ) : (
+                <>
+                  <BadgeAlert className="w-3 h-3 text-yellow-500" />
+                  <span>Unauthorized</span>
+                </>
+              )}
+            </Badge>
+          </>
+        )}
+      </div>
 
-      <UserRegistrationModal />
+      <div className="flex gap-2">
+        {user && !user.is_agent && (
+          <Button 
+            onClick={handleAgentSignup}
+            variant="outline"
+            disabled={contractStatus.isPending || isLoading}
+            className="text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
+          >
+            <Building2 className="w-4 h-4" />
+            Sign as Agent
+          </Button>
+        )}
+
+        <UserRegistrationModal />
+      </div>
     </div>
   );
 }
