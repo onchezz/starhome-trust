@@ -1,5 +1,4 @@
 import { useAccount } from "@starknet-react/core";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { UserX } from "lucide-react";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
@@ -12,11 +11,16 @@ import { ProfileShimmer } from "@/components/profile/ProfileShimmer";
 import { useEffect, useState } from "react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileWallet } from "@/components/profile/ProfileWallet";
+import { ContactDetails } from "@/components/profile/ContactDetails";
+import { AccountOverview } from "@/components/profile/AccountOverview";
+import { Card, CardContent } from "@/components/ui/card";
+import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 
 const Profile = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
   const { balances, isLoading: isLoadingBal } = useTokenBalances();
+  const { handleEditUser, contractStatus } = useUserWrite();
   const {
     user,
     isLoading: isLoadingUser,
@@ -27,7 +31,6 @@ const Profile = () => {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-
     if (isRefreshing) {
       intervalId = setInterval(() => {
         if (user && !isLoadingUser) {
@@ -35,13 +38,22 @@ const Profile = () => {
         }
       }, 3000);
     }
-
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
       }
     };
   }, [isRefreshing, user, isLoadingUser]);
+
+  const handleUpdateUser = async (data: Partial<typeof user>) => {
+    if (!user) return;
+    try {
+      await handleEditUser({ ...user, ...data });
+      setIsRefreshing(true);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
 
   const isUnregistered = (userData: any) => {
     return !userData || 
@@ -75,11 +87,9 @@ const Profile = () => {
           "max-w-md w-full backdrop-blur-xl border transition-all duration-300",
           theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
         )}>
-          <CardHeader className="text-center">
+          <CardContent className="text-center space-y-4 p-6">
             <UserX className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <CardTitle className="text-xl">Not Registered</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
+            <h2 className="text-xl font-semibold">Not Registered</h2>
             <p className="text-gray-500">
               You haven't registered your profile yet. Create an account to access all features.
             </p>
@@ -103,28 +113,22 @@ const Profile = () => {
           className="max-w-4xl mx-auto"
         >
           <Card className={cn(
-            "backdrop-blur-xl border transition-all duration-300",
+            "backdrop-blur-xl border transition-all duration-300 mb-6",
             theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
           )}>
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl md:text-2xl">
-                Profile Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              <div className="space-y-6 sm:space-y-8">
-                <motion.div 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <ProfileHeader user={user} />
-                </motion.div>
-
-                <ProfileActions user={user} isLoading={isLoadingUser} />
-              </div>
+            <CardContent className="p-6">
+              <ProfileHeader user={user} />
+              <ProfileActions user={user} isLoading={isLoadingUser} />
             </CardContent>
           </Card>
+
+          <ContactDetails 
+            user={user} 
+            onUpdate={handleUpdateUser}
+            isLoading={contractStatus.isPending}
+          />
+
+          <AccountOverview user={user} />
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
