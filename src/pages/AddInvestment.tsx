@@ -245,12 +245,7 @@ const AddInvestment = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80 dark:from-slate-900 dark:to-slate-800/90 transition-colors duration-300">
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <Card className="animate-fade-in backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-none shadow-xl">
-          <InvestmentFormHeader
-            isActive={formData.isActive || false}
-            onStatusChange={(checked) =>
-              setFormData((prev) => ({ ...prev, isActive: checked }))
-            }
-          />
+          <InvestmentFormHeader />
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-8">
