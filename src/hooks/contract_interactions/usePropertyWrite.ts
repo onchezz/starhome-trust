@@ -16,7 +16,7 @@ export const usePropertyCreate = () => {
         id: property.id || "",
         title: property.title || "",
         description: property.description || "",
-        location_address: property.locationAddress.split(",")[0] || "",
+        location_address: property.locationAddress?.split(",")[0] || "",
         city: property.city || "",
         state: property.state || "",
         country: property.country || "",
@@ -67,45 +67,39 @@ export const usePropertyCreate = () => {
       // Convert boolean to 0/1 for Cairo contract
       const isActive = investment.isActive ? 1 : 0;
       
-      // Helper function to safely convert values to BigInt strings
-      const toBigIntString = (value: string | number | undefined) => {
-        if (!value) return "0";
-        // Remove any non-numeric characters except dots
-        const cleanValue = value.toString().replace(/[^\d.]/g, '');
-        // Convert to whole number if it's a decimal (multiply by 100 to preserve 2 decimal places)
-        const wholePart = cleanValue.includes('.') 
-          ? Math.round(parseFloat(cleanValue) * 100).toString()
-          : cleanValue;
-        return wholePart || "0";
+      // Helper function to safely convert values to strings
+      const toSafeString = (value: any): string => {
+        if (value === undefined || value === null) return "0";
+        return value.toString();
       };
 
       const defaultInvestment = {
-        id: investment.id || "0",
-        name: investment.name || "",
-        description: investment.description || "",
+        id: toSafeString(investment.id),
+        name: toSafeString(investment.name),
+        description: toSafeString(investment.description),
         is_active: isActive,
-        location: investment.location || "",
-        size: investment.size || "0",
-        investor_id: investment.investorId || "0",
+        location: toSafeString(investment.location),
+        size: toSafeString(investment.size),
+        investor_id: toSafeString(investment.investorId),
         owner: address || "",
-        construction_status: investment.constructionStatus || "",
-        asset_value: toBigIntString(investment.assetValue),
-        available_staking_amount: toBigIntString(investment.availableStakingAmount),
-        investment_type: investment.investmentType || "0",
+        construction_status: toSafeString(investment.constructionStatus),
+        asset_value: toSafeString(investment.assetValue),
+        available_staking_amount: toSafeString(investment.availableStakingAmount),
+        investment_type: toSafeString(investment.investmentType),
         construction_year: Number(investment.constructionYear || 0),
-        property_price: toBigIntString(investment.propertyPrice),
-        expected_roi: investment.expectedRoi || "0",
-        rental_income: toBigIntString(investment.rentalIncome),
-        maintenance_costs: toBigIntString(investment.maintenanceCosts),
-        tax_benefits: investment.taxBenefits || "0",
-        highlights: investment.highlights || "",
-        market_analysis: investment.marketAnalysis || "",
-        risk_factors: investment.riskFactors || "",
-        legal_detailId: investment.legalDetailsId || "",
-        additional_features: investment.additionalFeatures || "",
-        images: investment.images || "",
-        investment_token: investment.investmentToken || "",
-        min_investment_amount: toBigIntString(investment.minInvestmentAmount)
+        property_price: toSafeString(investment.propertyPrice),
+        expected_roi: toSafeString(investment.expectedRoi),
+        rental_income: toSafeString(investment.rentalIncome),
+        maintenance_costs: toSafeString(investment.maintenanceCosts),
+        tax_benefits: toSafeString(investment.taxBenefits),
+        highlights: toSafeString(investment.highlights),
+        market_analysis: toSafeString(investment.marketAnalysis),
+        risk_factors: toSafeString(investment.riskFactors),
+        legal_detailId: toSafeString(investment.legalDetailsId),
+        additional_features: toSafeString(investment.additionalFeatures),
+        images: toSafeString(investment.images),
+        investment_token: toSafeString(investment.investmentToken),
+        min_investment_amount: toSafeString(investment.minInvestmentAmount)
       };
 
       console.log("Listing investment property after conversion:", defaultInvestment);
