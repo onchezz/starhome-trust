@@ -15,9 +15,19 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-      <PropertyDetails formData={formData} handleInputChange={handleInputChange} />
-      <PropertyStatus formData={formData} handleInputChange={handleInputChange} />
-      <InvestmentOptions formData={formData} handleInputChange={handleInputChange} />
+      <PropertyDetails
+        formData={formData}
+        handleInputChange={handleInputChange}
+      />
+
+      <InvestmentOptions
+        formData={formData}
+        handleInputChange={handleInputChange}
+      />
+      <PropertyStatus
+        formData={formData}
+        handleInputChange={handleInputChange}
+      />
     </div>
   );
 };
