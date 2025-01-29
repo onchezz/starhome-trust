@@ -1,5 +1,3 @@
-
-
 export const investmentTypes = [
   "Residential",
   "Commercial",
@@ -37,51 +35,37 @@ export type RiskLevel = typeof riskLevels[number];
 export type ZoningType = typeof zoningTypes[number];
 export type ConstructionStatusType = typeof constructionStatus[number];
 
-
-export interface MarketAnalysis {
-    areaGrowth: string;
-    occupancyRate: string;
-    comparableProperties: string;
-    demandTrend: string;
-}
-
-export interface LegalDetails {
-    ownership: string;
-    zoning: string;
-    permits: string;
-    documentsId: string;
-}
-
+// Updated to match Cairo contract structure
 export interface InvestmentAsset {
-    id: string;
-    name: string;
-    description: string;
-    isActive: boolean;
-    location: string;
-    size: string;
-    investorId: string;
-    owner: string;
-    constructionStatus:string,
-    assetValue: string;
-    availableStakingAmount: string;
-    investmentType: string;
-    constructionYear: number;
-    propertyPrice: string;
-    expectedRoi: string;
-    rentalIncome: string;
-    maintenanceCosts: string;
-    taxBenefits: string;
-    highlights: string;
-    marketAnalysis: MarketAnalysis;
-    riskFactors: string;
-    legalDetails: LegalDetails;
-    additionalFeatures: string;
-    images: string;
-    investmentToken: string;
-    minInvestmentAmount: string;
+    id: string;                      // felt252
+    name: string;                    // felt252
+    description: string;             // ByteArray
+    isActive: boolean;               // bool
+    location: string;                // felt252
+    size: string;                    // felt252
+    investorId: string;              // felt252
+    owner: string;                   // ContractAddress
+    constructionStatus: string;      // felt252
+    assetValue: string;              // u64
+    availableStakingAmount: string;  // u64
+    investmentType: string;          // felt252
+    constructionYear: number;        // u64
+    propertyPrice: string;           // u64
+    expectedRoi: string;             // felt252
+    rentalIncome: string;            // u64
+    maintenanceCosts: string;        // u64
+    taxBenefits: string;             // felt252
+    highlights: string;              // ByteArray
+    marketAnalysis: string;          // ByteArray
+    riskFactors: string;             // ByteArray
+    legalDetailsId: string;          // ByteArray
+    additionalFeatures: string;      // ByteArray
+    images: string;                  // ByteArray
+    investmentToken: string;         // ContractAddress
+    minInvestmentAmount: string;     // u64
 }
 
-
+// Constants for testing/demo purposes
 const OWNER_ADDRESS = "0x07b80d0f8512b5c4c052999e7d333020c91dbc40dff64933c8a5914c8c4c2e8c";
 const INVESTMENT_TOKEN = "0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080";
 const IPFS_IMAGE = "https://gateway.pinata.cloud/ipfs/bafybeiczuk7ze63d3r3vc5mcatxnx5lj53i6rupnw55ohdf5pmksj5ygdm";
@@ -93,72 +77,31 @@ export const dummyInvestmentProperties = [
     description: "Modern luxury apartment complex in prime downtown location with 50 units",
     isActive: true,
     location: "123 Downtown Avenue, Miami, FL",
-    size: "75000", // 75,000 sq ft
+    size: "75000",
     investorId: OWNER_ADDRESS,
     owner: OWNER_ADDRESS,
-    assetValue: "25000000", // $25M
-    availableStakingAmount: "15000000", // $15M
-    investmentType: "1", // 1 for residential
+    constructionStatus: "Completed",
+    assetValue: "25000000",
+    availableStakingAmount: "15000000",
+    investmentType: "1",
     constructionYear: 2020,
-    propertyPrice: "30000000", // $30M
-    expectedRoi: "150", // 15.0%
-    rentalIncome: "2000000", // $2M annual
-    maintenanceCosts: "500000", // $500k annual
-    taxBenefits: "100", // 10.0%
+    propertyPrice: "30000000",
+    expectedRoi: "150",
+    rentalIncome: "2000000",
+    maintenanceCosts: "500000",
+    taxBenefits: "100",
     highlights: "Premium finishes,24/7 security,Rooftop pool,Fitness center,EV charging",
-    marketAnalysis: {
-      areaGrowth: "80", // 8.0%
-      occupancyRate: "950", // 95.0%
-      comparableProperties: "8", // 8 similar properties
-      demandTrend: "120" // 12.0% growth
-    },
+    marketAnalysis: JSON.stringify({
+      areaGrowth: "80",
+      occupancyRate: "950",
+      comparableProperties: "8",
+      demandTrend: "120"
+    }),
     riskFactors: "Market volatility,Construction delays,Regulatory changes",
-    legalDetails: {
-      ownership: "1", // 1 for full ownership
-      zoning: "2", // 2 for mixed-use
-      permits: "1", // 1 for all permits approved
-      documentsId: "DOC123456"
-    },
+    legalDetailsId: "DOC123456",
     additionalFeatures: "Smart home features,Green building certification,Underground parking",
     images: IPFS_IMAGE,
     investmentToken: INVESTMENT_TOKEN,
-    minInvestmentAmount: "100000" // $100k minimum
-  },
-  {
-    id: "2",
-    name: "Commercial Office Tower",
-    description: "Class A office building in tech district with 20 floors",
-    isActive: true,
-    location: "456 Innovation Drive, Austin, TX",
-    size: "120000", // 120,000 sq ft
-    investorId: OWNER_ADDRESS,
-    owner: OWNER_ADDRESS,
-    assetValue: "45000000", // $45M
-    availableStakingAmount: "30000000", // $30M
-    investmentType: "2", // 2 for commercial
-    constructionYear: 2019,
-    propertyPrice: "50000000", // $50M
-    expectedRoi: "180", // 18.0%
-    rentalIncome: "4000000", // $4M annual
-    maintenanceCosts: "800000", // $800k annual
-    taxBenefits: "120", // 12.0%
-    highlights: "LEED certification,Floor-to-ceiling windows,Conference center,Tech-ready infrastructure",
-    marketAnalysis: {
-      areaGrowth: "100", // 10.0%
-      occupancyRate: "880", // 88.0%
-      comparableProperties: "5", // 5 similar properties
-      demandTrend: "150" // 15.0% growth
-    },
-    riskFactors: "Tech sector dependency,Economic cycles,Remote work impact",
-    legalDetails: {
-      ownership: "1", // 1 for full ownership
-      zoning: "3", // 3 for commercial
-      permits: "1", // 1 for all permits approved
-      documentsId: "DOC789012"
-    },
-    additionalFeatures: "Flexible floor plans,Bike storage,Shower facilities,Rooftop garden",
-    images: IPFS_IMAGE,
-    investmentToken: INVESTMENT_TOKEN,
-    minInvestmentAmount: "250000" // $250k minimum
+    minInvestmentAmount: "100000"
   }
 ];
