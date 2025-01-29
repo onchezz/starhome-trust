@@ -73,6 +73,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           type="number"
           required
           min="0"
+          step="0.01"
           value={formData.expectedRoi}
           onChange={(e) => handleNonNegativeInput("expectedRoi", e.target.value)}
           placeholder="Expected return on investment"
