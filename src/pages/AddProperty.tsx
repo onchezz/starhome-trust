@@ -27,7 +27,10 @@ const CreateProperty = () => {
   const { id } = useParams();
   const { address, status } = useAccount();
   const { handleListSaleProperty, contractStatus } = usePropertyCreate();
-  const { properties, isLoading: isLoadingProperty } = usePropertyRead();
+  const {
+    saleProperties: properties,
+    salePropertiesLoading: isLoadingProperty,
+  } = usePropertyRead();
 
   // Find the existing property if we have an ID
   const existingProperty =
@@ -146,24 +149,26 @@ const CreateProperty = () => {
         //   name: `property-${formData.id}-images`,
         // });
 
-        const upload = await pinata.upload.file(selectedFiles[0]).addMetadata({
-          name: `property-${formData.id}-images`,
-          keyValues: {
-            propertyId: formData.id,
-            uploadDate: new Date().toISOString(),
-          },
-        });
+        const upload = await pinata.upload
+          .fileArray(selectedFiles)
+          .addMetadata({
+            name: `property-${formData.id}-images`,
+            keyValues: {
+              propertyId: formData.id,
+              uploadDate: new Date().toISOString(),
+            },
+          });
 
-        const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
-        setUrl(ipfsUrl);
-        handleInputChange("imagesId", ipfsUrl);
+        // const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
+        setUrl(upload.IpfsHash);
+        handleInputChange("imagesId", upload.IpfsHash);
         toast.success("Images uploaded successfully!");
 
         const status = await handleListSaleProperty({
           ...formData,
           owner: address,
           agentId: address,
-          imagesId: ipfsUrl,
+          imagesId: upload.IpfsHash,
         } as Property);
 
         if (status.status === "success") {

@@ -7,7 +7,8 @@ import { PropertySearch } from "@/components/property/PropertySearch";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
 
 const Properties = () => {
-  const { properties, isLoading } = usePropertyRead();
+  const { saleProperties: properties, salePropertiesLoading: isLoading } =
+    usePropertyRead();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     priceRange: [0, 15000000],

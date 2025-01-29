@@ -97,7 +97,7 @@ pub mod UsersComponent {
         fn register_as_agent(
             ref self: ComponentState<TContractState>, user_id: ContractAddress,
         ) -> felt252 {
-            let caller = get_caller_address();
+            // let caller = get_caller_address();
             assert(self.is_user_registered(user_id), Errors::USER_NOT_REGISTERED);
             // assert(self.is_agent_registered(user_id), Errors::AGENT_ALREADY_REGISTERED);
             let user: User = self.get_user_by_address(user_id);

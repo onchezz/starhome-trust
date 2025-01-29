@@ -1,3 +1,5 @@
+import { BigNumberish, num, shortString } from "starknet";
+
 export const investmentTypes = [
   "Residential",
   "Commercial",
@@ -36,30 +38,75 @@ export type ZoningType = typeof zoningTypes[number];
 export type ConstructionStatusType = typeof constructionStatus[number];
 
 export interface InvestmentAsset {
-    id: string;                      
-    name: string;                    
-    description: string;             
-    isActive: boolean;               
-    location: string;                
-    size: string;                    
-    investorId: string;              
-    owner: string;                   
-    constructionStatus: string;      
-    assetValue: string;              
-    availableStakingAmount: string;  
-    investmentType: string;          
-    constructionYear: number;        
-    propertyPrice: string;           
-    expectedRoi: string;             
-    rentalIncome: string;            
-    maintenanceCosts: string;        
-    taxBenefits: string;             
-    highlights: string;              
-    marketAnalysis: string;          
-    riskFactors: string;             
-    legalDetailsId: string;          
-    additionalFeatures: string;      
-    images: string;                  
-    investmentToken: string;         
-    minInvestmentAmount: string;     
+  id: string;
+  name: string;
+  description: string;
+  is_active:boolean,
+  location: string;
+  size: number;
+  investor_id: string;
+  owner: string;
+  construction_status:string,
+  asset_value: number;
+  available_staking_amount: number;
+  investment_type: string;
+  construction_year: number;
+  property_price:number;
+  expected_roi: string;
+  rental_income: number;
+  maintenance_costs: number;
+  tax_benefits: string;
+  highlights: string;
+  market_analysis: string;
+  risk_factors: string;
+  legal_detail: string;
+  additional_features: string;
+  images: string;
+  investment_token: string;
+  min_investment_amount: number;  
+}
+export class InvestmentAssetConverter {
+    static feltToString(felt: string): string {
+        return shortString.decodeShortString(felt);
+    }
+
+    static addressToString(address: BigNumberish): string {
+        return num.toHex(address);
+    }
+
+    static fromStarknetProperty(starknetProperty: any): InvestmentAsset {
+        return {
+            id: shortString.decodeShortString(starknetProperty.id),
+            name: this.feltToString(starknetProperty.name),
+            description: starknetProperty.description,
+            is_active: Boolean(starknetProperty.is_active),
+            location: this.feltToString(starknetProperty.location),
+            size: Number(starknetProperty.size),
+            investor_id: this.addressToString(starknetProperty.investor_id),
+            owner: this.addressToString(starknetProperty.owner),
+            construction_status: this.feltToString(starknetProperty.construction_status),
+            asset_value: Number(starknetProperty.asset_value),
+            available_staking_amount: Number(starknetProperty.available_staking_amount),
+            investment_type: this.feltToString(starknetProperty.investment_type),
+            construction_year: Number(starknetProperty.construction_year),
+            property_price: Number(starknetProperty.property_price),
+            expected_roi: this.feltToString(starknetProperty.expected_roi),
+            rental_income: Number(starknetProperty.rental_income),
+            maintenance_costs: Number(starknetProperty.maintenance_costs),
+            tax_benefits: this.feltToString(starknetProperty.tax_benefits),
+            highlights: this.feltToString(starknetProperty.highlights),
+            market_analysis: this.feltToString(starknetProperty.market_analysis),
+            risk_factors: this.feltToString(starknetProperty.risk_factors),
+            legal_detail: this.feltToString(starknetProperty.legal_detail),
+            additional_features: this.feltToString(starknetProperty.additional_features),
+            images: this.feltToString(starknetProperty.images),
+            investment_token: this.addressToString(starknetProperty.investment_token),
+            min_investment_amount: Number(starknetProperty.min_investment_amount)
+        };
+    }
+
+    static async getProperty(contract: any, propertyId: BigNumberish): Promise<InvestmentAsset> {
+        const starknetProperty = await contract.get_property(propertyId);
+        return this.fromStarknetProperty(starknetProperty);
+    }
 }

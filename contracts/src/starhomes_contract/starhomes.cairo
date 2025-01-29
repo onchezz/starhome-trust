@@ -138,6 +138,18 @@ pub mod StarhomesContract {
         fn get_sale_properties(self: @ContractState) -> Array<Property> {
             self.properties.get_sale_properties()
         }
+        fn get_sale_properties_by_agent(
+            self: @ContractState, agent_id: ContractAddress,
+        ) -> Array<Property> {
+            self.properties.get_sale_properties_by_agent(agent_id)
+        }
+
+        fn get_investment_properties_by_lister(
+            self: @ContractState, lister_id: ContractAddress,
+        ) -> Array<InvestmentAsset> {
+            self.properties.get_investment_properties_by_lister(lister_id)
+        }
+
         fn get_investment_properties(self: @ContractState) -> Array<InvestmentAsset> {
             self.properties.get_investment_properties()
         }

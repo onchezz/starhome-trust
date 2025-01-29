@@ -6,21 +6,30 @@ import { useEffect, useState } from 'react';
 
 
 export const usePropertyRead = () => {
-  const { data: propertiesData, isLoading, error } = useStarHomeReadContract({
+  const { data: propertiesData, isLoading: salePropertiesLoading, error:salePropertiesError } = useStarHomeReadContract({
     functionName: "get_sale_properties",
   });
+  const { data: investmentPropertiesData, isLoading:investmentPropertiesLoading, error:investmentPropertiesError} = useStarHomeReadContract({
+    functionName: "get_investment_properties",
+  });
+
 
   console.log("Sale properties:", propertiesData);
 
 
-  const properties = Array.isArray(propertiesData) ? propertiesData : [];
+  const saleProperties = Array.isArray(propertiesData) ? propertiesData : [];
+  const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData : [];
  
   return {
-    properties,
-    isLoading,
-    error,
+    saleProperties,
+    salePropertiesLoading,
+    salePropertiesError,
+    investmentProperties,
+    investmentPropertiesLoading,
+    investmentPropertiesError
   };
 };
+
 export const usePropertyReadById = (id: string) => {
   const [property, setProperty] = useState<Property | null>(null);
   
@@ -44,18 +53,3 @@ export const usePropertyReadById = (id: string) => {
 };
 
 
-
-// export const useUserReadByAddress = (address: string) => {
-//   const { data, isLoading, error } = useStarHomeReadContract({
-//     functionName: "get_user_by_address",
-//     args: [address],
-//   });
-//   const agentData = data ? UserConverter.fromStarknetUser(data) : null;
-//   console.log("agent data is :", agentData);
-
-//   return {
-//     agent: agentData,
-//     isLoading,
-//     error,
-//   };
-// };

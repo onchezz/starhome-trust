@@ -15,10 +15,10 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
 }) => {
   // Update Available Staking Amount when Asset Value changes
   useEffect(() => {
-    if (formData.assetValue) {
-      handleInputChange("availableStakingAmount", formData.assetValue);
+    if (formData.asset_value) {
+      handleInputChange("available_staking_amount", formData.asset_value);
     }
-  }, [formData.assetValue]);
+  }, [formData.asset_value]);
 
   const handleNonNegativeInput = (field: keyof InvestmentAsset, value: string) => {
     const numValue = Number(value);
@@ -37,8 +37,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           type="number"
           required
           min="0"
-          value={formData.assetValue}
-          onChange={(e) => handleNonNegativeInput("assetValue", e.target.value)}
+          value={formData.asset_value}
+          onChange={(e) => handleNonNegativeInput("asset_value", e.target.value)}
           placeholder="Total asset value"
         />
       </div>
@@ -48,7 +48,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
         <Input
           type="number"
           required
-          value={formData.availableStakingAmount}
+          value={formData.available_staking_amount}
           disabled
           placeholder="Same as Asset Value"
           className="bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
@@ -61,8 +61,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           type="number"
           required
           min="0"
-          value={formData.minInvestmentAmount}
-          onChange={(e) => handleNonNegativeInput("minInvestmentAmount", e.target.value)}
+          value={formData.min_investment_amount}
+          onChange={(e) => handleNonNegativeInput("min_investment_amount", e.target.value)}
           placeholder="Minimum investment required"
         />
       </div>
@@ -74,8 +74,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           required
           min="0"
           step="0.01"
-          value={formData.expectedRoi}
-          onChange={(e) => handleNonNegativeInput("expectedRoi", e.target.value)}
+          value={formData.expected_roi}
+          onChange={(e) => handleNonNegativeInput("expected_roi", e.target.value)}
           placeholder="Expected return on investment"
         />
       </div>
@@ -86,8 +86,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           type="number"
           required
           min="0"
-          value={formData.rentalIncome}
-          onChange={(e) => handleNonNegativeInput("rentalIncome", e.target.value)}
+          value={formData.rental_income}
+          onChange={(e) => handleNonNegativeInput("rental_income", e.target.value)}
           placeholder="Expected annual rental income"
         />
       </div>
@@ -98,8 +98,8 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           type="number"
           required
           min="0"
-          value={formData.maintenanceCosts}
-          onChange={(e) => handleNonNegativeInput("maintenanceCosts", e.target.value)}
+          value={formData.maintenance_costs}
+          onChange={(e) => handleNonNegativeInput("maintenance_costs", e.target.value)}
           placeholder="Expected annual maintenance costs"
         />
       </div>

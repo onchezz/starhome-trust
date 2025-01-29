@@ -4,6 +4,8 @@ const starhomesContract ="0x05ac9fe7a619672c4ac2c98193266d5e429b13e0d76c2c7bd5a1
 
 const rpcProvideUr =  "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
 
+const pinataImageUrl = "https://gateway.pinata.cloud/ipfs/" as const;
+
 const universalEthAddress =
   "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7" as const;
 
@@ -45,6 +47,7 @@ export const statusOptions = [
 ] as const;
 
 export {
+  pinataImageUrl,
   rpcProvideUr,
   starhomesContract,
   usdcTokenAddress,

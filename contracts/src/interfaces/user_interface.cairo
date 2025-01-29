@@ -1,4 +1,3 @@
-// use starhomes::model::models::{ Investor,  Agent};
 use starhomes::models::user_models::{User};
 use starknet::ContractAddress;
 #[starknet::interface]

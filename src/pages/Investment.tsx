@@ -23,6 +23,8 @@ import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
+import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
+import { InvestmentAssetConverter } from "@/types/investment";
 
 const investmentProperties = [
   {
@@ -70,6 +72,8 @@ const investmentProperties = [
 ];
 
 const Investment = () => {
+  const { investmentProperties,investmentPropertiesLoading,investmentPropertiesError} =
+      usePropertyRead();
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
     [key: number]: string;
@@ -235,7 +239,9 @@ const Investment = () => {
               </Card>
             ))
           ) : (
-            investmentProperties.map((property, index) => (
+            investmentProperties.map((investmentproperty, index) => (
+           const property =  new InvestmentAssetConverter.fromStarknetProperty(investmentproperty);
+              
               <Card
                 key={property.id}
                 className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"

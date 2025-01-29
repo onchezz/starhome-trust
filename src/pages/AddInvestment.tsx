@@ -46,31 +46,31 @@ const AddInvestment = () => {
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
     id: generateShortUUID(),
     owner: address,
-    investorId: address,
-    isActive: true,
-    investmentToken: "",
-    marketAnalysis: JSON.stringify({
+    investor_id: address,
+    is_active: true,
+    investment_token: "",
+    market_analysis: JSON.stringify({
       areaGrowth: "",
       occupancyRate: "",
       comparableProperties: "",
       demandTrend: "",
     }),
-    legalDetailsId: "",
+    legal_detail: "",
   });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
     if (
       [
-        "assetValue",
-        "propertyPrice",
-        "rentalIncome",
-        "maintenanceCosts",
-        "minInvestmentAmount",
-        "availableStakingAmount",
+        "asset_value",
+        "property_price",
+        "rental_income",
+        "maintenance_costs",
+        "min_Investment_amount",
+        "available_staking_amount",
       ].includes(field)
     ) {
       value = BigInt(value || 0).toString();
-    } else if (field === "constructionYear") {
+    } else if (field === "construction_year") {
       value = Number(value || 0);
     }
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -154,7 +154,7 @@ const AddInvestment = () => {
       const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
 
       if (isDocuments) {
-        handleInputChange("legalDetailsId", ipfsUrl);
+        handleInputChange("legal_detail", ipfsUrl);
       } else {
         handleInputChange("images", ipfsUrl);
       }
@@ -172,7 +172,16 @@ const AddInvestment = () => {
       throw error;
     }
   };
-
+const handleTest = async ()=>{
+   const processedFormData = {
+     ...formData,
+     isActive: formData.is_active === true,
+     additionalFeatures: additionalFeatures.join(","),
+     riskFactors: riskFactors.join(","),
+     highlights: highlights.join(","),
+   };
+  await handleListInvestmentProperty(processedFormData);
+}
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {
@@ -187,10 +196,10 @@ const AddInvestment = () => {
       // Convert values to strings while maintaining numeric validation
       const processedFormData = {
         ...formData,
-        isActive: formData.isActive === true,
-        additionalFeatures: additionalFeatures.join("\n"),
-        riskFactors: riskFactors.join("\n"),
-        highlights: highlights.join("\n"),
+        isActive: formData.is_active === true,
+        additionalFeatures: additionalFeatures.join(","),
+        riskFactors: riskFactors.join(","),
+        highlights: highlights.join(","),
       };
 
       console.log("Submitting investment with processed data:", processedFormData);
@@ -279,6 +288,7 @@ const AddInvestment = () => {
 
               <Button
                 type="submit"
+                onClick={handleTest}
                 disabled={isUploading || contractStatus.isPending}
                 className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >

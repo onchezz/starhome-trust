@@ -3,6 +3,8 @@ import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { Property, StarknetProperty } from '@/types/property';
 import { InvestmentAsset } from '@/types/investment';
+import { dummyInvestment } from '@/types/starknet_types/investment';
+
 
 export const usePropertyCreate = () => {
   const { address } = useAccount();
@@ -66,7 +68,7 @@ export const usePropertyCreate = () => {
 
     try {
       // Convert boolean to 0/1 for Cairo contract
-      const isActive = investment.isActive ? 1 : 0;
+      const isActive = investment.is_active ? 1 : 0;
       
       // Helper function to safely convert values to BigInt strings
       const toBigIntString = (value: any): string => {
@@ -85,31 +87,31 @@ export const usePropertyCreate = () => {
         is_active: isActive,
         location: investment.location || '',
         size: investment.size || '',
-        investor_id: investment.investorId || '0',
+        investor_id: address|| '0',
         owner: address || '',
-        construction_status: investment.constructionStatus || '',
-        asset_value: toBigIntString(investment.assetValue),
-        available_staking_amount: toBigIntString(investment.availableStakingAmount),
-        investment_type: investment.investmentType || '',
-        construction_year: Number(investment.constructionYear || 0),
-        property_price: toBigIntString(investment.propertyPrice),
-        expected_roi: investment.expectedRoi || '0',
-        rental_income: toBigIntString(investment.rentalIncome),
-        maintenance_costs: toBigIntString(investment.maintenanceCosts),
-        tax_benefits: investment.taxBenefits || '0',
+        construction_status: investment.construction_status || '',
+        asset_value: investment.asset_value,
+        available_staking_amount: investment.available_staking_amount,
+        investment_type: investment.investment_type || '',
+        construction_year:investment.construction_year || 0,
+        property_price: investment.property_price,
+        expected_roi: investment.expected_roi || '0',
+        rental_income: investment.rental_income||0,
+        maintenance_costs: investment.maintenance_costs||0,
+        tax_benefits: investment.tax_benefits || '0',
         highlights: investment.highlights || '',
-        market_analysis: investment.marketAnalysis || '',
-        risk_factors: investment.riskFactors || '',
-        legal_detailId: investment.legalDetailsId || '',
-        additional_features: investment.additionalFeatures || '',
-        images: investment.images || '',
-        investment_token: investment.investmentToken || '',
-        min_investment_amount: toBigIntString(investment.minInvestmentAmount)
+        market_analysis: investment.market_analysis || '',
+        risk_factors: investment.risk_factors || '',
+        legal_detailId: investment.legal_detail || '',
+        additional_features: investment.additional_features || '',
+        images:investment.images,
+        investment_token: investment.investment_token || '',
+        min_investment_amount: toBigIntString(investment.min_investment_amount)
       };
 
-      console.log("Listing investment property after conversion:", defaultInvestment);
+      console.log("Listing investment property after conversion:", dummyInvestment);
 
-      const tx = await execute("list_investment_property", [defaultInvestment]);
+      const tx = await execute("list_investment_property", [dummyInvestment]);
       
       toast.success(`Investment property listed successfully! ${tx.response.transaction_hash}`);
       return {

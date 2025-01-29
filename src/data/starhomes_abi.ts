@@ -184,7 +184,7 @@ export const starhomes_abi =[
       },
       {
         "name": "location",
-        "type": "core::felt252"
+        "type": "core::byte_array::ByteArray"
       },
       {
         "name": "size",
@@ -192,7 +192,7 @@ export const starhomes_abi =[
       },
       {
         "name": "investor_id",
-        "type": "core::felt252"
+        "type": "core::starknet::contract_address::ContractAddress"
       },
       {
         "name": "owner",
@@ -251,7 +251,7 @@ export const starhomes_abi =[
         "type": "core::byte_array::ByteArray"
       },
       {
-        "name": "legal_detailId",
+        "name": "legal_detail",
         "type": "core::byte_array::ByteArray"
       },
       {
