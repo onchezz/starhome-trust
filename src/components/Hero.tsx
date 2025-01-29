@@ -53,7 +53,7 @@ export const Hero = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="container mx-auto px-4 relative z-10">
+              <div className="container mx-auto px-4 relative z-10 mt-36">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -78,9 +78,9 @@ export const Hero = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
+                    transition={{ delay: 0.1 }}
                   >
-                    <div className="flex justify-center flex-wrap gap-4">
+                    <div className="flex justify-center flex-wrap gap-4 mt-12" >
                       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -125,7 +125,7 @@ export const Hero = () => {
             </div>
           </div>
 
-          <h1 className="text-center text-xl md:text-2xl mt-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+          <h1 className="text-center text-xl md:text-2xl mt-64 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             <Typewriter
               options={{
                 strings: ["Secure. Transparent. Decentralized."],
