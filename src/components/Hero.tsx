@@ -142,7 +142,7 @@ export const Hero = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="flex justify-center w-1/3 mx-auto text-center items-center h-42 text-x mt-48 text-muted-foreground"
+              className="flex justify-center w-1/3 mx-auto text-center items-center h-42 text-x mt-8 text-muted-foreground"
             >
               Empowering individuals to invest in diverse properties worldwide
               using cryptocurrency, ensuring a seamless and innovative process.
