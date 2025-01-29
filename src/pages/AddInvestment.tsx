@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
-import { InvestmentAsset, MarketAnalysis } from "@/types/investment";
+import { InvestmentAsset } from "@/types/investment";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
 import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
 import UploadGrid from "@/components/investment/UploadGrid";
@@ -49,49 +49,31 @@ const AddInvestment = () => {
     investorId: address,
     isActive: true,
     investmentToken: "",
-    marketAnalysis: {
+    marketAnalysis: JSON.stringify({
       areaGrowth: "",
       occupancyRate: "",
       comparableProperties: "",
       demandTrend: "",
-    },
-    legalDetails: {
-      ownership: "",
-      zoning: "",
-      permits: "",
-      documentsId: "",
-    },
+    }),
+    legalDetailsId: "",
   });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
     if (
       [
-        "asset_value",
-        "property_price",
-        "rental_income",
-        "maintenance_costs",
-        "min_investment_amount",
-        "available_staking_amount",
+        "assetValue",
+        "propertyPrice",
+        "rentalIncome",
+        "maintenanceCosts",
+        "minInvestmentAmount",
+        "availableStakingAmount",
       ].includes(field)
     ) {
-      value = BigInt(value || 0);
+      value = BigInt(value || 0).toString();
     } else if (field === "constructionYear") {
       value = Number(value || 0);
     }
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleMarketAnalysisChange = (
-    field: keyof MarketAnalysis,
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      market_analysis: {
-        ...prev.marketAnalysis!,
-        [field]: value,
-      },
-    }));
   };
 
   const validateFiles = (files: File[], isDocument: boolean = false) => {
@@ -172,10 +154,7 @@ const AddInvestment = () => {
       const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
 
       if (isDocuments) {
-        handleInputChange("legalDetails", {
-          ...formData.legalDetails,
-          documents_id: ipfsUrl,
-        });
+        handleInputChange("legalDetailsId", ipfsUrl);
       } else {
         handleInputChange("images", ipfsUrl);
       }
@@ -201,6 +180,7 @@ const AddInvestment = () => {
       return;
     }
 
+    setIsUploading(true);
     try {
       console.log("Form data before processing:", formData);
       
@@ -208,13 +188,6 @@ const AddInvestment = () => {
       const processedFormData = {
         ...formData,
         isActive: formData.isActive === true,
-        assetValue: formData.assetValue?.toString() || "0",
-        availableStakingAmount: formData.availableStakingAmount?.toString() || "0",
-        propertyPrice: formData.propertyPrice?.toString() || "0",
-        rentalIncome: formData.rentalIncome?.toString() || "0",
-        maintenanceCosts: formData.maintenanceCosts?.toString() || "0",
-        minInvestmentAmount: formData.minInvestmentAmount?.toString() || "0",
-        constructionYear: formData.constructionYear || 0,
         additionalFeatures: additionalFeatures.join("\n"),
         riskFactors: riskFactors.join("\n"),
         highlights: highlights.join("\n"),
@@ -222,20 +195,19 @@ const AddInvestment = () => {
 
       console.log("Submitting investment with processed data:", processedFormData);
       
-      const status = await handleListInvestmentProperty(processedFormData);
+      await handleListInvestmentProperty(processedFormData);
 
-      if (status.status === "success") {
-        toast.success("Investment created successfully!");
-        setSelectedFiles([]);
-        setSelectedDocs([]);
-        setUploadProgress(0);
-        setUploadedFiles(0);
-        setUploadedSize(0);
-        setTotalUploadSize(0);
-      }
+      toast.success("Investment created successfully!");
+      setSelectedFiles([]);
+      setSelectedDocs([]);
+      setUploadProgress(0);
+      setUploadedFiles(0);
+      setUploadedSize(0);
+      setTotalUploadSize(0);
+      
     } catch (error) {
       console.error("Error creating investment:", error);
-      toast.error("Failed to create investment");
+      // Error is already handled by usePropertyCreate hook
     } finally {
       setIsUploading(false);
     }
