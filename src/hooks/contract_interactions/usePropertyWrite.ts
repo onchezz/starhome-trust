@@ -1,10 +1,8 @@
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
-import { BigNumberish } from 'starknet';
 import { Property, StarknetProperty } from '@/types/property';
-import { dummyInvestmentProperties, InvestmentAsset } from '@/types/investment';
-
+import { InvestmentAsset } from '@/types/investment';
 
 export const usePropertyCreate = () => {
   const { address } = useAccount();
@@ -13,10 +11,6 @@ export const usePropertyCreate = () => {
   const handleListSaleProperty = async (property: Partial<Property>) => {
     console.log("Listing property before listing from form:", property);
     
-   
-  //  const agent_id:BigNumberish =property.agentId;
-  //  const asset_token:BigNumberish =property.assetToken;
-
     try {
       const defaultProperty: StarknetProperty = {
         id: property.id || "",
@@ -42,15 +36,14 @@ export const usePropertyCreate = () => {
         features_id: "00",
         images_id: property.imagesId || "",
         video_tour: property.videoId || "none",
-        agent_id:address|| "", //agent_id|| address ||
-        date_listed:Math.floor(Date.now() / 1000),
+        agent_id: address || "",
+        date_listed: Math.floor(Date.now() / 1000),
         has_garden: property.hasGarden || false,
         has_swimming_pool: property.hasSwimmingPool || false,
         pet_friendly: property.petFriendly || false,
         wheelchair_accessible: property.wheelchairAccessible || false,
-        asset_token:property.assetToken|| ""//asset_token
+        asset_token: property.assetToken || ""
       };
-
 
       console.log("Listing property after conversion:", defaultProperty);
 
@@ -66,51 +59,55 @@ export const usePropertyCreate = () => {
       throw error;
     }
   };
-const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>) => {
-    console.log("Listing investment property:", investment);
+
+  const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>) => {
+    console.log("Listing investment property before conversion:", investment);
 
     try {
-      const defaultInvestment: InvestmentAsset = {
+      // Convert boolean to 0/1 for Cairo contract
+      const isActive = investment.isActive ? 1 : 0;
+      
+      // Ensure all numeric values are properly formatted as strings
+      const defaultInvestment = {
         id: investment.id || "0",
         name: investment.name || "",
         description: investment.description || "",
-        isActive: investment.isActive || false,
+        is_active: isActive,
         location: investment.location || "",
         size: investment.size || "0",
-        investorId: investment.investorId || "0",
+        investor_id: investment.investorId || "0",
         owner: address || "",
-        constructionStatus:investment.constructionStatus,
-        assetValue: investment.assetValue || "0",
-        availableStakingAmount: investment.availableStakingAmount || "0",
-        investmentType: investment.investmentType || "0",
-        constructionYear: investment.constructionYear || 0,
-        propertyPrice: investment.propertyPrice || "0",
-        expectedRoi: investment.expectedRoi || "0",
-        rentalIncome: investment.rentalIncome || "0",
-        maintenanceCosts: investment.maintenanceCosts || "0",
-        taxBenefits: investment.taxBenefits || "0",
+        construction_status: investment.constructionStatus || "",
+        asset_value: BigInt(investment.assetValue || 0).toString(),
+        available_staking_amount: BigInt(investment.availableStakingAmount || 0).toString(),
+        investment_type: investment.investmentType || "0",
+        construction_year: Number(investment.constructionYear || 0),
+        property_price: BigInt(investment.propertyPrice || 0).toString(),
+        expected_roi: investment.expectedRoi || "0",
+        rental_income: BigInt(investment.rentalIncome || 0).toString(),
+        maintenance_costs: BigInt(investment.maintenanceCosts || 0).toString(),
+        tax_benefits: investment.taxBenefits || "0",
         highlights: investment.highlights || "",
-        marketAnalysis: {
-          areaGrowth: investment.marketAnalysis?.areaGrowth || "0",
-          occupancyRate: investment.marketAnalysis?.occupancyRate || "0",
-          comparableProperties: investment.marketAnalysis?.comparableProperties || "0",
-          demandTrend: investment.marketAnalysis?.demandTrend || "0",
-         
+        market_analysis: {
+          area_growth: investment.marketAnalysis?.areaGrowth || "0",
+          occupancy_rate: investment.marketAnalysis?.occupancyRate || "0",
+          comparable_properties: investment.marketAnalysis?.comparableProperties || "0",
+          demand_trend: investment.marketAnalysis?.demandTrend || "0",
         },
-        riskFactors: investment.riskFactors || "",
-        legalDetails: {
+        risk_factors: investment.riskFactors || "",
+        legal_details: {
           ownership: investment.legalDetails?.ownership || "0",
           zoning: investment.legalDetails?.zoning || "0",
           permits: investment.legalDetails?.permits || "0",
-          documentsId: investment.legalDetails?.documentsId || "0",
+          documents_id: investment.legalDetails?.documentsId || "0",
         },
-        additionalFeatures: investment.additionalFeatures || "",
+        additional_features: investment.additionalFeatures || "",
         images: investment.images || "",
-        investmentToken: investment.investmentToken || "",
-        minInvestmentAmount: investment.minInvestmentAmount || "0"
+        investment_token: investment.investmentToken || "",
+        min_investment_amount: BigInt(investment.minInvestmentAmount || 0).toString()
       };
 
-      console.log("Listing investment property after conversion:", defaultInvestment[0]);
+      console.log("Listing investment property after conversion:", defaultInvestment);
 
       const tx = await execute("list_investment_property", [defaultInvestment]);
       
@@ -124,7 +121,6 @@ const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>
       throw error;
     }
   };
-  
 
   return {
     handleListSaleProperty,
