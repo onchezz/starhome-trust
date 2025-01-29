@@ -1,7 +1,6 @@
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
-import { BigNumberish } from 'starknet';
 import { Property, StarknetProperty } from '@/types/property';
 import { InvestmentAsset } from '@/types/investment';
 
@@ -62,30 +61,31 @@ export const usePropertyCreate = () => {
   };
 
   const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>) => {
-    console.log("Listing investment property:", investment);
+    console.log("Listing investment property before conversion:", investment);
 
     try {
       // Convert boolean to 0/1 for Cairo contract
       const isActive = investment.isActive ? 1 : 0;
       
+      // Ensure all numeric values are properly formatted as strings
       const defaultInvestment = {
         id: investment.id || "0",
         name: investment.name || "",
         description: investment.description || "",
-        is_active: isActive, // Changed to use number instead of boolean
+        is_active: isActive,
         location: investment.location || "",
         size: investment.size || "0",
         investor_id: investment.investorId || "0",
         owner: address || "",
         construction_status: investment.constructionStatus || "",
-        asset_value: investment.assetValue || "0",
-        available_staking_amount: investment.availableStakingAmount || "0",
+        asset_value: BigInt(investment.assetValue || 0).toString(),
+        available_staking_amount: BigInt(investment.availableStakingAmount || 0).toString(),
         investment_type: investment.investmentType || "0",
-        construction_year: investment.constructionYear || 0,
-        property_price: investment.propertyPrice || "0",
+        construction_year: Number(investment.constructionYear || 0),
+        property_price: BigInt(investment.propertyPrice || 0).toString(),
         expected_roi: investment.expectedRoi || "0",
-        rental_income: investment.rentalIncome || "0",
-        maintenance_costs: investment.maintenanceCosts || "0",
+        rental_income: BigInt(investment.rentalIncome || 0).toString(),
+        maintenance_costs: BigInt(investment.maintenanceCosts || 0).toString(),
         tax_benefits: investment.taxBenefits || "0",
         highlights: investment.highlights || "",
         market_analysis: {
@@ -104,7 +104,7 @@ export const usePropertyCreate = () => {
         additional_features: investment.additionalFeatures || "",
         images: investment.images || "",
         investment_token: investment.investmentToken || "",
-        min_investment_amount: investment.minInvestmentAmount || "0"
+        min_investment_amount: BigInt(investment.minInvestmentAmount || 0).toString()
       };
 
       console.log("Listing investment property after conversion:", defaultInvestment);
