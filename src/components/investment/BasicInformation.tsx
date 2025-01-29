@@ -60,6 +60,19 @@ const BasicInformation: React.FC<BasicInformationProps> = ({
       </div>
 
       <div className="space-y-2">
+        <Label>Construction Year</Label>
+        <Input
+          type="number"
+          required
+          min={1800}
+          max={new Date().getFullYear()}
+          value={formData.constructionYear || ""}
+          onChange={(e) => handleInputChange("constructionYear", parseInt(e.target.value))}
+          placeholder="Year of construction"
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label>Construction Status</Label>
         <Select
           value={formData.constructionStatus}
