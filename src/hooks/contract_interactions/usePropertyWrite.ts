@@ -110,9 +110,9 @@ const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>
         minInvestmentAmount: investment.minInvestmentAmount || "0"
       };
 
-      console.log("Listing investment property after conversion:", dummyInvestmentProperties[0]);
+      console.log("Listing investment property after conversion:", defaultInvestment[0]);
 
-      const tx = await execute("list_investment_property", [dummyInvestmentProperties[0]]);
+      const tx = await execute("list_investment_property", [defaultInvestment]);
       
       toast.success(`Investment property listed successfully! ${tx.response.transaction_hash}`);
       return {
