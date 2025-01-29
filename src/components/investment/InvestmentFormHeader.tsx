@@ -13,17 +13,24 @@ const InvestmentFormHeader: React.FC<InvestmentFormHeaderProps> = ({
   onStatusChange,
 }) => {
   return (
-    <CardHeader className="relative">
+    <CardHeader className="relative border-b dark:border-gray-800">
       <div className="flex items-center justify-between">
-        <CardTitle>Create New Investment Property</CardTitle>
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="investment-status">Investment Status</Label>
+        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+          Create New Investment Property
+        </CardTitle>
+        <div className="flex items-center space-x-3">
+          <Label htmlFor="investment-status" className="text-sm font-medium">
+            Investment Status
+          </Label>
           <Switch
             id="investment-status"
             checked={isActive}
             onCheckedChange={onStatusChange}
+            className="data-[state=checked]:bg-primary"
           />
-          <Label>{isActive ? `Active` : `Deactivated`}</Label>
+          <Label className="text-sm font-medium">
+            {isActive ? `Active` : `Deactivated`}
+          </Label>
         </div>
       </div>
     </CardHeader>

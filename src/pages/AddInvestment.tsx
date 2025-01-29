@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
+import { Loader2 } from "lucide-react";
 
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
@@ -228,9 +229,9 @@ const AddInvestment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-24">
-        <Card className="animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80 dark:from-slate-900 dark:to-slate-800/90 transition-colors duration-300">
+      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="animate-fade-in backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-none shadow-xl">
           <InvestmentFormHeader
             isActive={formData.isActive || false}
             onStatusChange={(checked) =>
@@ -238,46 +239,77 @@ const AddInvestment = () => {
             }
           />
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <BasicInformation
-                formData={formData}
-                handleInputChange={handleInputChange}
-              />
-              <FinancialDetails
-                formData={formData}
-                handleInputChange={handleInputChange}
-              />
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-8">
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Basic Information
+                  </h2>
+                  <BasicInformation
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
+                </section>
 
-              <BulletPointsGrid
-                highlights={highlights}
-                riskFactors={riskFactors}
-                additionalFeatures={additionalFeatures}
-                setHighlights={setHighlights}
-                setRiskFactors={setRiskFactors}
-                setAdditionalFeatures={setAdditionalFeatures}
-              />
-              <UploadGrid
-                selectedFiles={selectedFiles}
-                selectedDocs={selectedDocs}
-                isUploading={isUploading}
-                uploadProgress={uploadProgress}
-                uploadedFiles={uploadedFiles}
-                uploadedSize={uploadedSize}
-                totalUploadSize={totalUploadSize}
-                handleFileSelect={handleFileSelect}
-                handleDrop={handleDrop}
-                setSelectedFiles={setSelectedFiles}
-                setSelectedDocs={setSelectedDocs}
-                setPreviewUrl={setPreviewUrl}
-                setShowPreviewModal={setShowPreviewModal}
-              />
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Financial Details
+                  </h2>
+                  <FinancialDetails
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Property Features & Analysis
+                  </h2>
+                  <BulletPointsGrid
+                    highlights={highlights}
+                    riskFactors={riskFactors}
+                    additionalFeatures={additionalFeatures}
+                    setHighlights={setHighlights}
+                    setRiskFactors={setRiskFactors}
+                    setAdditionalFeatures={setAdditionalFeatures}
+                  />
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Documents & Images
+                  </h2>
+                  <UploadGrid
+                    selectedFiles={selectedFiles}
+                    selectedDocs={selectedDocs}
+                    isUploading={isUploading}
+                    uploadProgress={uploadProgress}
+                    uploadedFiles={uploadedFiles}
+                    uploadedSize={uploadedSize}
+                    totalUploadSize={totalUploadSize}
+                    handleFileSelect={handleFileSelect}
+                    handleDrop={handleDrop}
+                    setSelectedFiles={setSelectedFiles}
+                    setSelectedDocs={setSelectedDocs}
+                    setPreviewUrl={setPreviewUrl}
+                    setShowPreviewModal={setShowPreviewModal}
+                  />
+                </section>
+              </div>
 
               <Button
                 type="submit"
-                disabled={isUploading}
-                className="w-full animate-fade-in"
+                disabled={isUploading || contractStatus.loading}
+                className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                {isUploading ? "Creating Investment..." : "Create Investment"}
+                {isUploading || contractStatus.loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Processing...</span>
+                  </div>
+                ) : (
+                  "Create Investment"
+                )}
               </Button>
             </form>
           </CardContent>
@@ -286,17 +318,19 @@ const AddInvestment = () => {
 
       {/* Preview Modal */}
       {showPreviewModal && previewUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fade-in">
-          <div className="bg-white rounded-lg p-4 w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-4 w-full max-w-4xl max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Document Preview</h3>
+              <h3 className="text-lg font-semibold dark:text-white">
+                Document Preview
+              </h3>
               <button
                 type="button"
                 onClick={() => {
                   setShowPreviewModal(false);
                   setPreviewUrl(null);
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 <svg
                   className="h-6 w-6"
@@ -316,7 +350,7 @@ const AddInvestment = () => {
             <div className="flex-1 overflow-auto">
               <iframe
                 src={previewUrl}
-                className="w-full h-full min-h-[60vh]"
+                className="w-full h-full min-h-[60vh] rounded-lg border border-gray-200 dark:border-gray-700"
                 title="Document Preview"
               />
             </div>
