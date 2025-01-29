@@ -299,10 +299,10 @@ const AddInvestment = () => {
 
               <Button
                 type="submit"
-                disabled={isUploading || contractStatus.loading}
+                disabled={isUploading || contractStatus.isPending}
                 className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                {isUploading || contractStatus.loading ? (
+                {isUploading || contractStatus.isPending ? (
                   <div className="flex items-center justify-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Processing...</span>
