@@ -202,23 +202,25 @@ const AddInvestment = () => {
     }
 
     try {
-      // Convert string values to appropriate types using correct camelCase properties
+      console.log("Form data before processing:", formData);
+      
+      // Convert values to strings while maintaining numeric validation
       const processedFormData = {
         ...formData,
-        isActive: formData.isActive === true, // Ensure boolean
-        assetValue: BigInt(formData.assetValue || 0),
-        availableStakingAmount: BigInt(formData.availableStakingAmount || 0),
-        propertyPrice: BigInt(formData.propertyPrice || 0),
-        rentalIncome: BigInt(formData.rentalIncome || 0),
-        maintenanceCosts: BigInt(formData.maintenanceCosts || 0),
-        minInvestmentAmount: BigInt(formData.minInvestmentAmount || 0),
-        constructionYear: Number(formData.constructionYear || 0),
+        isActive: formData.isActive === true,
+        assetValue: formData.assetValue?.toString() || "0",
+        availableStakingAmount: formData.availableStakingAmount?.toString() || "0",
+        propertyPrice: formData.propertyPrice?.toString() || "0",
+        rentalIncome: formData.rentalIncome?.toString() || "0",
+        maintenanceCosts: formData.maintenanceCosts?.toString() || "0",
+        minInvestmentAmount: formData.minInvestmentAmount?.toString() || "0",
+        constructionYear: formData.constructionYear || 0,
         additionalFeatures: additionalFeatures.join("\n"),
         riskFactors: riskFactors.join("\n"),
         highlights: highlights.join("\n"),
       };
 
-      console.log("Submitting investment with data:", processedFormData);
+      console.log("Submitting investment with processed data:", processedFormData);
       
       const status = await handleListInvestmentProperty(processedFormData);
 
