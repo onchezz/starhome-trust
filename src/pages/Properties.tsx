@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Building, AlertCircle } from "lucide-react";
 
 const Properties = () => {
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { 
     saleProperties: properties, 
     salePropertiesLoading: isLoading,
@@ -25,19 +26,21 @@ const Properties = () => {
   });
 
   useEffect(() => {
+    // Set initial loading to false after properties are fetched
+    if (!isLoading && properties) {
+      setIsInitialLoading(false);
+    }
+  }, [isLoading, properties]);
+
+  useEffect(() => {
     if (error) {
       console.error("[Properties] Error loading properties:", error);
       toast.error("Failed to load properties. Please try again later.");
     }
   }, [error]);
 
-  useEffect(() => {
-    console.log("[Properties] Current properties:", properties);
-  }, [properties]);
-
   const filteredProperties = properties
     ?.filter((property: Property) => {
-      // Ensure all values are strings before using toLowerCase()
       const titleMatch = property.title
         .toString()
         .toLowerCase()
@@ -133,8 +136,8 @@ const Properties = () => {
   );
 
   const renderContent = () => {
-    // Always show loading state first
-    if (isLoading) {
+    // Always show initial loading state first
+    if (isInitialLoading || isLoading) {
       return <LoadingState />;
     }
 
