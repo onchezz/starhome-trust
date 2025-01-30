@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAccount } from "@starknet-react/core";
-import { SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
@@ -27,14 +27,6 @@ const InvestmentDetails = () => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const handleInvest = () => {
     if (!address) {
@@ -188,41 +180,43 @@ const InvestmentDetails = () => {
             </CardContent>
           </Card>
 
-          <SheetContent className="w-[400px]">
-            <div className="space-y-6 py-6">
-              <h3 className="text-lg font-semibold">Additional Information</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium mb-2">Highlights</h4>
-                  <p className="text-sm text-gray-600">
-                    {getBigIntValue(investment.highlights)}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Market Analysis</h4>
-                  <p className="text-sm text-gray-600">
-                    {getBigIntValue(investment.market_analysis)}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Risk Factors</h4>
-                  <p className="text-sm text-gray-600">
-                    {getBigIntValue(investment.risk_factors)}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Legal Details</h4>
-                  <DocumentList documentsId={investment.legal_detail || ""} />
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Additional Features</h4>
-                  <p className="text-sm text-gray-600">
-                    {getBigIntValue(investment.additional_features)}
-                  </p>
+          <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+            <SheetContent className="w-[400px]">
+              <div className="space-y-6 py-6">
+                <h3 className="text-lg font-semibold">Additional Information</h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Highlights</h4>
+                    <p className="text-sm text-gray-600">
+                      {getBigIntValue(investment.highlights)}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Market Analysis</h4>
+                    <p className="text-sm text-gray-600">
+                      {getBigIntValue(investment.market_analysis)}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Risk Factors</h4>
+                    <p className="text-sm text-gray-600">
+                      {getBigIntValue(investment.risk_factors)}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Legal Details</h4>
+                    <DocumentList documentsId={investment.legal_detail || ""} />
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Additional Features</h4>
+                    <p className="text-sm text-gray-600">
+                      {getBigIntValue(investment.additional_features)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </SheetContent>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </div>
