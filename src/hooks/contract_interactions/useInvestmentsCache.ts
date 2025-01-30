@@ -14,7 +14,9 @@ export const useInvestmentsCache = () => {
     queryKey: ["investments"],
     queryFn: async () => {
       if (!rawInvestments) return [];
-      return (rawInvestments as any[]).map((inv: any) => 
+      // Ensure rawInvestments is treated as an array
+      const investmentsArray = Array.isArray(rawInvestments) ? rawInvestments : [];
+      return investmentsArray.map((inv: any) => 
         InvestmentAssetConverter.fromStarknetProperty(inv)
       );
     },
