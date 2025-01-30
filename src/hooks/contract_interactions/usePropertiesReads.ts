@@ -7,21 +7,27 @@ import { useQuery } from '@tanstack/react-query';
 const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 export const usePropertyRead = () => {
+  // Move hooks to top level
+  const salePropertiesHook = useStarHomeReadContract({
+    functionName: "get_sale_properties",
+  });
+
+  const investmentPropertiesHook = useStarHomeReadContract({
+    functionName: "get_investment_properties",
+  });
+
+  // Use the hooks' data in the queries
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
-    queryFn: async () => {
-      const contractHook = useStarHomeReadContract({
-        functionName: "get_sale_properties",
-      });
+    queryFn: () => {
+      console.log("[usePropertyRead] Contract hook result:", salePropertiesHook);
       
-      console.log("[usePropertyRead] Contract hook result:", contractHook);
-      
-      if (contractHook.error) {
-        console.error("[usePropertyRead] Error fetching properties:", contractHook.error);
-        throw contractHook.error;
+      if (salePropertiesHook.error) {
+        console.error("[usePropertyRead] Error fetching properties:", salePropertiesHook.error);
+        throw salePropertiesHook.error;
       }
       
-      return contractHook.data;
+      return salePropertiesHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -30,19 +36,15 @@ export const usePropertyRead = () => {
 
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
-    queryFn: async () => {
-      const contractHook = useStarHomeReadContract({
-        functionName: "get_investment_properties",
-      });
+    queryFn: () => {
+      console.log("[usePropertyRead] Raw investment properties data:", investmentPropertiesHook);
       
-      console.log("[usePropertyRead] Raw investment properties data:", contractHook);
-      
-      if (contractHook.error) {
-        console.error("[usePropertyRead] Error fetching investment properties:", contractHook.error);
-        throw contractHook.error;
+      if (investmentPropertiesHook.error) {
+        console.error("[usePropertyRead] Error fetching investment properties:", investmentPropertiesHook.error);
+        throw investmentPropertiesHook.error;
       }
       
-      return contractHook.data;
+      return investmentPropertiesHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -115,22 +117,23 @@ export const usePropertyReadById = (id: string) => {
 };
 
 export const useAgentProperties = (agentAddress: string) => {
+  // Move hook to top level
+  const agentPropertiesHook = useStarHomeReadContract({
+    functionName: "get_sale_properties_by_agent",
+    args: [agentAddress],
+  });
+
   const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['agent_properties', agentAddress],
-    queryFn: async () => {
-      const contractHook = useStarHomeReadContract({
-        functionName: "get_sale_properties_by_agent",
-        args: [agentAddress],
-      });
+    queryFn: () => {
+      console.log("[useAgentProperties] Raw agent properties data:", agentPropertiesHook);
       
-      console.log("[useAgentProperties] Raw agent properties data:", contractHook);
-      
-      if (contractHook.error) {
-        console.error("[useAgentProperties] Error fetching agent properties:", contractHook.error);
-        throw contractHook.error;
+      if (agentPropertiesHook.error) {
+        console.error("[useAgentProperties] Error fetching agent properties:", agentPropertiesHook.error);
+        throw agentPropertiesHook.error;
       }
       
-      return contractHook.data;
+      return agentPropertiesHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
