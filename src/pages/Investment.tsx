@@ -228,7 +228,7 @@ const Investment = () => {
                   </div>
                   <CardHeader>
                     <CardTitle>{displayData.title}</CardTitle>
-                    <p className="text-sm text-gray-500">{property.location}</p>
+                    <p className="text-sm text-gray-500">{`${property.location.address} , ${property.location.city}, ${property.location.country}`}</p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">

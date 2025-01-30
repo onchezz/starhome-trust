@@ -37,6 +37,14 @@ export interface MarketAnalysis {
   comparable_properties: string;
   demand_trend: string;
 }
+export interface Location{
+  address: string,
+    city: string,
+    state: string,
+    country: string,
+     latitude: string,
+     longitude: string,
+}
 
 
 export type InvestmentType = typeof investmentTypes[number];
@@ -49,16 +57,14 @@ export interface InvestmentAsset {
   name: string;
   description: string;
   is_active: boolean;
-  location: string;
-  latitude: string;
-  longitude: string;
+  location: Location;
   size: number;
   investor_id: string;
   owner: string;
   construction_status: string;
   asset_value: number;
   available_staking_amount: number;
-  min_investment:number;
+  // min_investment:number;
   investment_type: string;
   construction_year: number;
   property_price: number;
@@ -91,14 +97,21 @@ export class InvestmentAssetConverter {
             name: this.feltToString(starknetProperty.name),
             description: starknetProperty.description,
             is_active: Boolean(starknetProperty.is_active),
-            location: this.feltToString(starknetProperty.location),
+            location: {
+              address:this.feltToString(starknetProperty.location),
+    city:this.feltToString(starknetProperty.location),
+    state: this.feltToString(starknetProperty.location),
+    country: this.feltToString(starknetProperty.location),
+     latitude: this.feltToString(starknetProperty.location),
+     longitude: this.feltToString(starknetProperty.location),
+              },
             size: Number(starknetProperty.size),
             investor_id: this.addressToString(starknetProperty.investor_id),
             owner: this.addressToString(starknetProperty.owner),
             construction_status: this.feltToString(starknetProperty.construction_status),
             asset_value: Number(starknetProperty.asset_value),
             available_staking_amount: Number(starknetProperty.available_staking_amount),
-            min_investment:Number(starknetProperty.min_investment),
+            // min_investment:Number(starknetProperty.min_investment),
             investment_type: this.feltToString(starknetProperty.investment_type),
             construction_year: Number(starknetProperty.construction_year),
             property_price: Number(starknetProperty.property_price),
