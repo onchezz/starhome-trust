@@ -11,10 +11,10 @@ import { Building, AlertCircle } from "lucide-react";
 
 const Properties = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const { 
-    saleProperties: properties, 
+  const {
+    saleProperties: properties,
     salePropertiesLoading: isLoading,
-    salePropertiesError: error 
+    salePropertiesError: error,
   } = usePropertyRead();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,8 +39,8 @@ const Properties = () => {
     }
   }, [error]);
 
-  const filteredProperties = properties
-    ?.filter((property: Property) => {
+  const filteredProperties =
+    properties?.filter((property: Property) => {
       const titleMatch = property.title
         .toString()
         .toLowerCase()
@@ -94,7 +94,7 @@ const Properties = () => {
             {error ? "Failed to Load Properties" : "No Properties Found"}
           </h3>
           <p className="text-muted-foreground">
-            {error 
+            {error
               ? "There was an error loading the properties. Please try again later."
               : "No properties found matching your criteria"}
           </p>
@@ -140,23 +140,20 @@ const Properties = () => {
     if (isInitialLoading || isLoading) {
       return <LoadingState />;
     }
-
-    // Show error state if there's an error
     if (error) {
       return <EmptyState />;
     }
 
-    // Show properties if we have them after filtering
     if (properties && properties.length > 0) {
-      // If we have properties but none match the filters, show empty state
       if (filteredProperties.length === 0) {
         return <EmptyState />;
       }
       return <PropertiesList />;
+    } else if (!properties) {
+      return <EmptyState />;
     }
 
-    // Show empty state if we have no properties at all
-    return <EmptyState />;
+    return <LoadingState />;
   };
 
   return (
