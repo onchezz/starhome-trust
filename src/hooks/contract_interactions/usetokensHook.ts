@@ -60,7 +60,7 @@ export const useToken = (tokenAddress: string) => {
     address: formattedTokenAddress as `0x${string}`,
   });
 
-  const { sendTransaction } = useSendTransaction({
+  const { sendAsync } = useSendTransaction({
     calls: [],
   });
 
@@ -94,7 +94,7 @@ export const useToken = (tokenAddress: string) => {
 
       // If we have calls to make before investing
       if (calls.length > 0) {
-        const tx = await sendTransaction({ calls });
+        const tx = await sendAsync(calls);
         console.log("Approval transaction:", tx);
       }
 
