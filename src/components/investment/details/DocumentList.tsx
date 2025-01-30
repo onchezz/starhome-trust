@@ -1,32 +1,49 @@
-import React from "react";
-import { FileIcon } from "@/components/FileIcon";
-import { parseImagesData } from "@/utils/imageUtils";
+import React from 'react';
+import { FileIcon } from '@/components/FileIcon';
+import { parseIpfsData } from '@/utils/uploadUtils';
 
 interface DocumentListProps {
   documentsId: string;
 }
 
 export const DocumentList = ({ documentsId }: DocumentListProps) => {
-  const { imageUrls, imageNames } = parseImagesData(documentsId);
+  const { urls, fileNames } = parseIpfsData(documentsId);
 
-  console.log("[DocumentList] Rendering with:", { imageUrls, imageNames });
+  const getFileExtension = (fileName: string) => {
+    const parts = fileName.split('.');
+    return parts.length > 1 ? parts.pop()?.toLowerCase() : '';
+  };
+
+  const formatFileName = (fileName: string) => {
+    // Remove file extension and replace hyphens/underscores with spaces
+    return fileName
+      .replace(/\.[^/.]+$/, '')
+      .replace(/[-_]/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {imageUrls.map((url, index) => {
-        const fileName = imageNames[index] || `Document ${index + 1}`;
-        const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-        
+    <div className="space-y-2">
+      {urls.map((url, index) => {
+        const fileName = fileNames[index];
+        const extension = getFileExtension(fileName);
+        const displayName = formatFileName(fileName);
+
         return (
           <a
-            key={index}
+            key={url}
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center p-4 space-x-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center p-2 space-x-3 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <FileIcon filename={fileName} />
-            <span className="text-sm font-medium truncate">{fileName}</span>
+            <FileIcon extension={extension || ''} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-700">{displayName}</p>
+              <p className="text-xs text-gray-500">{extension?.toUpperCase()}</p>
+            </div>
           </a>
         );
       })}
