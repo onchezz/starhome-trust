@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { Property, StarknetProperty } from '@/types/property';
 import { InvestmentAsset } from '@/types/investment';
 import { dummyInvestment } from '@/types/starknet_types/investment_daummy';
-
 
 export const usePropertyCreate = () => {
   const { address } = useAccount();
@@ -67,58 +67,48 @@ export const usePropertyCreate = () => {
     console.log("Listing investment property before conversion:", investment);
 
     try {
-      // Convert boolean to 0/1 for Cairo contract
-      const isActive = investment.is_active ? 1 : 0;
-      
-      // Helper function to safely convert values to BigInt strings
-      const toBigIntString = (value: any): string => {
-        if (value === undefined || value === null || value === '') return '0';
-        // Remove any non-numeric characters except decimal point
-        const cleanValue = value.toString().replace(/[^\d.]/g, '');
-        // Convert to BigInt by removing decimal places
-        const [whole = '0', decimal = ''] = cleanValue.split('.');
-        return whole + decimal.padEnd(18, '0'); // Add 18 decimal places
+      // Initialize the location object with default values if not provided
+      const location = {
+        address: investment.location?.address || '',
+        city: investment.location?.city || '',
+        state: investment.location?.state || '',
+        country: investment.location?.country || '',
+        latitude: investment.location?.latitude || '',
+        longitude: investment.location?.longitude || '',
       };
 
-      const defaultInvestment:InvestmentAsset = {
+      const defaultInvestment: InvestmentAsset = {
         id: investment.id || '0',
         name: investment.name || '',
         description: investment.description || '',
-        is_active: investment.is_active,
-        location: {
-          address:investment.location.address ||  '',
-          city:investment.location.city || '',
-          state: investment.location.country || '',
-          country: investment.location.latitude || '',
-          latitude: investment.location.latitude || '',
-          longitude: investment.location.longitude || '',
-        },
+        is_active: investment.is_active || false,
+        location: location,
         size: investment.size || 0,
-        investor_id: address|| '0',
+        investor_id: address || '0',
         owner: address || '',
         construction_status: investment.construction_status || '',
-        asset_value: investment.asset_value,
-        available_staking_amount: investment.available_staking_amount,
+        asset_value: investment.asset_value || 0,
+        available_staking_amount: investment.available_staking_amount || 0,
         investment_type: investment.investment_type || '',
-        construction_year:investment.construction_year || 0,
-        property_price: investment.property_price,
+        construction_year: investment.construction_year || 0,
+        property_price: investment.property_price || 0,
         expected_roi: investment.expected_roi || '0',
-        rental_income: investment.rental_income||0,
-        maintenance_costs: investment.maintenance_costs||0,
+        rental_income: investment.rental_income || 0,
+        maintenance_costs: investment.maintenance_costs || 0,
         tax_benefits: investment.tax_benefits || '0',
         highlights: investment.highlights || '',
         market_analysis: investment.market_analysis || '',
         risk_factors: investment.risk_factors || '',
         legal_detail: investment.legal_detail || '',
         additional_features: investment.additional_features || '',
-        images:investment.images,
+        images: investment.images || '',
         investment_token: investment.investment_token || '',
-        min_investment_amount: investment.min_investment_amount||0,
+        min_investment_amount: investment.min_investment_amount || 0,
       };
 
-      console.log("Listing investment property after conversion:", dummyInvestment);
+      console.log("Listing investment property after conversion:", defaultInvestment);
 
-      const tx = await execute("list_investment_property", [dummyInvestment]);
+      const tx = await execute("list_investment_property", [defaultInvestment]);
       
       toast.success(`Investment property listed successfully! ${tx.response.transaction_hash}`);
       return {

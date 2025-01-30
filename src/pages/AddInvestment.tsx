@@ -75,9 +75,17 @@ const AddInvestment = () => {
     state: string;
     country: string;
   }) => {
-    handleInputChange("location", location.address);
-    handleInputChange("latitude", location.latitude);
-    handleInputChange("longitude", location.longitude);
+    setFormData((prev) => ({
+      ...prev,
+      location: {
+        address: location.address,
+        city: location.city,
+        state: location.state,
+        country: location.country,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      }
+    }));
     console.log("[AddInvestment] Location selected:", location);
   };
 
