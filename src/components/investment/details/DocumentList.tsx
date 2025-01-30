@@ -11,10 +11,16 @@ export const DocumentList = ({ documentsId }: DocumentListProps) => {
 
   const extractFileName = (url: string): string => {
     try {
-      // Split the URL by '/' and get the last segment
-      const segments = url.split('/');
-      const fileName = segments[segments.length - 1];
-      // URL decode to handle any encoded characters
+      // First check if it's an IPFS URL
+      if (url.includes('ipfs')) {
+        // Split by the last '/' to get the filename
+        const parts = url.split('/');
+        const fileName = parts[parts.length - 1];
+        // Decode any URL encoded characters
+        return decodeURIComponent(fileName);
+      }
+      // For regular URLs, just get the last part
+      const fileName = url.split('/').pop() || 'Unknown Document';
       return decodeURIComponent(fileName);
     } catch (error) {
       console.error("[DocumentList] Error extracting filename:", error);
