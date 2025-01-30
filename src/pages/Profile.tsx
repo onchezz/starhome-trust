@@ -1,4 +1,4 @@
-import { useAccount } from "@starknet-react/core";
+import { useAccount, useDisconnect } from "@starknet-react/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances";
 import { UserX } from "lucide-react";
@@ -19,6 +19,7 @@ import { toast } from "sonner";
 const Profile = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
+  const { disconnect, error: disconnectError } = useDisconnect({});
   const navigate = useNavigate();
   const { balances, isLoading: isLoadingBal } = useTokenBalances();
   const {
@@ -35,6 +36,13 @@ const Profile = () => {
       navigate("/");
     }
   }, [address, navigate]);
+
+  useEffect(() => {
+    if (disconnectError) {
+      console.error("Disconnect error:", disconnectError);
+      toast.error("Error disconnecting wallet");
+    }
+  }, [disconnectError]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
