@@ -7,155 +7,113 @@ import {
   useAccount,
 } from "@starknet-react/core";
 import { starhomesContract } from "@/utils/constants";
+import { universalErc20Abi } from "@/data/universalTokenabi";
+import { num } from "starknet";
+
 // Token decimals (assuming 18 decimals for all tokens)
 const tokenDecimals = {
   USDT: 18,
   STRK: 18,
   ETH: 18,
 };
- const tokenAddresses = {
-  USDT: "0x02ab8758891e84b968ff11361789070c6b1af2df618d6d2f4a78b0757573c6eb",
-  STRK: "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
-  ETH: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-} as const;
 
-// Helper function to convert user input to token decimals
-// const toTokenAmount = (amount, decimals) => {
-//   return BigInt(amount) * 10n ** BigInt(decimals);
-// };
-
-// Custom hook to interact with the token contract
-const useToken = (tokenAddress) => {
+export const useToken = (tokenAddress: string) => {
   const { address: owner } = useAccount();
   const spender = starhomesContract;
-  const amount = 10000000000000; // Replace with the spender's address
 
-  // Read token metadata
+  // Read token metadata using universal ERC20 ABI
   const { data: name } = useReadContract({
-    abi: [
-      {
-        name: "name",
-        type: "function",
-        inputs: [],
-        outputs: [
-          {
-            type: "core::felt252",
-          },
-        ],
-        state_mutability: "view",
-      },
-    ] as const,
     functionName: "name",
     address: tokenAddress,
+    abi: universalErc20Abi,
   });
 
   const { data: symbol } = useReadContract({
-    abi: [
-      {
-        name: "symbol",
-        type: "function",
-        inputs: [],
-        outputs: [
-          {
-            type: "core::felt252",
-          },
-        ],
-        state_mutability: "view",
-      },
-    ] as const,
     functionName: "symbol",
     address: tokenAddress,
+    abi: universalErc20Abi,
   });
 
   const { data: decimals } = useReadContract({
-    abi: [
-      {
-        name: "decimals",
-        type: "function",
-        inputs: [],
-        outputs: [
-          {
-            type: "core::integer::u8",
-          },
-        ],
-        state_mutability: "view",
-      },
-    ] as const,
     functionName: "decimals",
     address: tokenAddress,
+    abi: universalErc20Abi,
+  });
+
+  // Check balance
+  const { data: balance } = useReadContract({
+    functionName: "balance_of",
+    address: tokenAddress,
+    abi: universalErc20Abi,
+    args: [owner || "0x0"],
   });
 
   // Check allowance
   const { data: allowance, error: allowanceError } = useReadContract({
-    abi: [
-      {
-        name: "allowance",
-        type: "function",
-        inputs: [
-          {
-            name: "owner",
-            type: "core::starknet::contract_address::ContractAddress",
-          },
-          {
-            name: "spender",
-            type: "core::starknet::contract_address::ContractAddress",
-          },
-        ],
-        outputs: [
-          {
-            type: "core::integer::u256",
-          },
-        ],
-        state_mutability: "view",
-      },
-    ] as const,
     functionName: "allowance",
     address: tokenAddress,
+    abi: universalErc20Abi,
     args: [owner || "0x0", spender],
   });
 
-  // Approve tokens
+  // Contract interactions
   const { contract } = useContract({
-    abi: [
-      {
-        name: "approve",
-        type: "function",
-        inputs: [
-          {
-            name: "spender",
-            type: "core::starknet::contract_address::ContractAddress",
-          },
-          {
-            name: "amount",
-            type: "core::integer::u256",
-          },
-        ],
-        outputs: [
-          {
-            type: "core::bool",
-          },
-        ],
-        state_mutability: "external",
-      },
-    ] as const,
+    abi: universalErc20Abi,
     address: tokenAddress,
   });
 
-  const { send, error: approveError } = useSendTransaction({
-    calls:
-      contract && owner
-        ? [contract.populate("approve", [spender, amount])]
-        : undefined, // Default to 0, will be overridden
-  });
+  const { sendAsync: sendTransaction } = useSendTransaction();
+
+  const approveAndInvest = async (amount: string, investmentId: string, investCallback: (id: string, amount: string) => Promise<any>) => {
+    if (!contract || !owner) {
+      throw new Error("Contract or owner not initialized");
+    }
+
+    try {
+      const amountBigInt = num.toBigInt(amount);
+      const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
+      const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
+
+      console.log("Investment check:", {
+        amount: amountBigInt.toString(),
+        allowance: currentAllowance.toString(),
+        balance: currentBalance.toString()
+      });
+
+      if (currentBalance < amountBigInt) {
+        throw new Error("Insufficient balance");
+      }
+
+      const calls = [];
+
+      if (currentAllowance < amountBigInt) {
+        // Need to increase allowance first
+        const approveCall = contract.populate("approve", [spender, amountBigInt]);
+        calls.push(approveCall);
+      }
+
+      // If we have calls to make before investing
+      if (calls.length > 0) {
+        const tx = await sendTransaction(calls);
+        console.log("Approval transaction:", tx);
+      }
+
+      // Now proceed with investment
+      await investCallback(investmentId, amount);
+
+    } catch (error) {
+      console.error("Error in approveAndInvest:", error);
+      throw error;
+    }
+  };
 
   return {
     name,
     symbol,
     decimals,
+    balance,
     allowance,
     allowanceError,
-    send,
-    approveError,
+    approveAndInvest,
   };
 };
-

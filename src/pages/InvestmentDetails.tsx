@@ -4,6 +4,8 @@ import { useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 import { shortString } from "starknet";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
+import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { InvestmentGallery } from "@/components/investment/details/InvestmentGallery";
 import { InvestmentLocation } from "@/components/investment/details/InvestmentLocation";
 import { InvestmentProgress } from "@/components/investment/details/InvestmentProgress";
@@ -17,8 +19,12 @@ const InvestmentDetails = () => {
   const { address } = useAccount();
   const [investmentAmount, setInvestmentAmount] = React.useState("");
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
+  const { handleInvestInProperty } = usePropertyCreate();
+  
+  // Initialize token hook with investment token address
+  const { approveAndInvest } = useToken(investment?.investment_token || "");
 
-  const handleInvest = () => {
+  const handleInvest = async () => {
     if (!address) {
       toast.error("Please connect your wallet first");
       return;
@@ -29,8 +35,19 @@ const InvestmentDetails = () => {
       return;
     }
 
-    console.log("Investing amount:", investmentAmount);
-    toast.success("Investment initiated");
+    try {
+      await approveAndInvest(
+        investmentAmount,
+        id || "",
+        handleInvestInProperty
+      );
+      
+      toast.success("Investment successful!");
+      setInvestmentAmount("");
+    } catch (error) {
+      console.error("Investment error:", error);
+      toast.error(error instanceof Error ? error.message : "Investment failed");
+    }
   };
 
   const getBigIntValue = (value: any): string => {
