@@ -29,7 +29,6 @@ import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
 import { parseImagesData } from "@/utils/imageUtils";
 
-// Create a new ImageGallery component for better organization
 const ImageGallery = ({ imagesId }: { imagesId: string }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +82,7 @@ const ImageGallery = ({ imagesId }: { imagesId: string }) => {
 
 const Investment = () => {
   const { investmentProperties, investmentPropertiesLoading, investmentPropertiesError } =
-      usePropertyRead();
+    usePropertyRead();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
     [key: string]: string;
@@ -97,6 +96,18 @@ const Investment = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
+
+  // Calculate total statistics
+  const totalStats = investmentProperties?.reduce((acc, property) => {
+    return {
+      totalInvestors: acc.totalInvestors + 0, // This would come from contract
+      averageROI: acc.averageROI + Number(property.expected_roi || 0),
+      totalInvestment: acc.totalInvestment + Number(property.asset_value || 0)
+    };
+  }, { totalInvestors: 0, averageROI: 0, totalInvestment: 0 });
+
+  const averageROI = totalStats ? 
+    (totalStats.averageROI / (investmentProperties?.length || 1)).toFixed(1) : "0";
 
   // Simulate loading
   useState(() => {
@@ -180,12 +191,24 @@ const Investment = () => {
               {[
                 {
                   title: "Total Properties",
-                  value: investmentProperties.length,
+                  value: investmentProperties?.length || 0,
                   icon: Building,
                 },
-                { title: "Total Investors", value: "243", icon: Users },
-                { title: "Average ROI", value: "15%", icon: TrendingUp },
-                { title: "Total Investment", value: "$25M", icon: DollarSign },
+                { 
+                  title: "Total Investors", 
+                  value: totalStats?.totalInvestors || 0, 
+                  icon: Users 
+                },
+                { 
+                  title: "Average ROI", 
+                  value: `${averageROI}%`, 
+                  icon: TrendingUp 
+                },
+                { 
+                  title: "Total Investment", 
+                  value: formatCurrency(totalStats?.totalInvestment || 0), 
+                  icon: DollarSign 
+                },
               ].map((stat, index) => (
                 <Card
                   key={stat.title}
@@ -243,7 +266,7 @@ const Investment = () => {
                 </CardContent>
               </Card>
             ))
-          ) : investmentProperties.length > 0 ? (
+          ) : investmentProperties?.length > 0 ? (
             investmentProperties.map((property: InvestmentAsset, index) => {
               const displayData = {
                 ...property,
@@ -255,6 +278,11 @@ const Investment = () => {
                 title: property.name,
                 image: property.images
               };
+
+              const progress = calculateProgress(
+                displayData.asset_value - displayData.available_staking_amount,
+                displayData.asset_value
+              );
 
               return (
                 <Card
@@ -271,7 +299,9 @@ const Investment = () => {
                   <ImageGallery imagesId={displayData.image} />
                   <CardHeader>
                     <CardTitle>{displayData.title}</CardTitle>
-                    <p className="text-sm text-gray-500">{`${property.location.address}, ${property.location.city}, ${property.location.country}`}</p>
+                    <p className="text-sm text-gray-500">
+                      {`${property.location.address}, ${property.location.city}, ${property.location.country}`}
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -279,16 +309,11 @@ const Investment = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <span>Investment Progress</span>
                           <span>
-                            {formatCurrency(displayData.currentInvestment)} of{" "}
-                            {formatCurrency(displayData.totalInvestment)}
+                            {formatCurrency(displayData.asset_value - displayData.available_staking_amount)} of{" "}
+                            {formatCurrency(displayData.asset_value)}
                           </span>
                         </div>
-                        <Progress
-                          value={calculateProgress(
-                            displayData.currentInvestment,
-                            displayData.totalInvestment
-                          )}
-                        />
+                        <Progress value={progress} />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 text-sm">

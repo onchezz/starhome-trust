@@ -15,60 +15,9 @@ const InvestmentDetails = () => {
   const { id } = useParams();
   const { address } = useAccount();
   const [investmentAmount, setInvestmentAmount] = useState("");
+  const { data: investment, isLoading } = useInvestmentAssetReadById(id || "");
 
   console.log("Investment ID:", id);
-
-  // This would typically come from an API call using the ID
-  const investment = {
-    id: 1,
-    name: "Downtown Commercial Complex",
-    location: "Los Angeles, CA",
-    size: "50,000 sq ft",
-    type: "Commercial",
-    constructionYear: 2015,
-    askingPrice: 5000000,
-    expectedROI: "12%",
-    rentalIncome: 450000,
-    maintenanceCosts: 75000,
-    taxBenefits: "Opportunity Zone Tax Benefits",
-    highlights: [
-      "Prime downtown location",
-      "Recently renovated",
-      "100% occupancy rate",
-      "Long-term tenants",
-      "Energy-efficient building"
-    ],
-    marketAnalysis: {
-      areaGrowth: "15% YoY",
-      occupancyRate: "98%",
-      comparableProperties: "10% below market average",
-      demandTrend: "High and increasing"
-    },
-    riskFactors: [
-      "Market volatility in commercial real estate",
-      "Potential changes in zoning laws",
-      "Competition from new developments"
-    ],
-    legalDetails: {
-      ownership: "Clear title",
-      zoning: "Commercial C-2",
-      permits: "All current",
-      documents: ["Title deed", "Property survey", "Environmental assessment"]
-    },
-    additionalFeatures: [
-      "LEED Gold certified",
-      "Smart building management system",
-      "24/7 security",
-      "EV charging stations",
-      "Rooftop garden"
-    ],
-    images: [
-      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-      "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
-      "https://images.unsplash.com/photo-1496307653780-42ee777d4833"
-    ],
-    minAmount: 25000
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -76,6 +25,10 @@ const InvestmentDetails = () => {
       currency: 'USD',
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const calculateProgress = (current: number, total: number) => {
+    return (current / total) * 100;
   };
 
   const handleInvest = () => {
@@ -93,40 +46,64 @@ const InvestmentDetails = () => {
     toast.success("Investment initiated");
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!investment) {
+    return <div>Investment not found</div>;
+  }
+
+  const progress = calculateProgress(
+    investment.asset_value - investment.available_staking_amount,
+    investment.asset_value
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="container mx-auto py-24">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Image Gallery */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {investment.images.map((image, index) => (
-              <img 
-                key={index}
-                src={image}
-                alt={`${investment.name} - View ${index + 1}`}
-                className="w-full h-64 object-cover rounded-lg"
-              />
-            ))}
-          </div>
+          <ImageGallery imagesId={investment.images} />
 
           {/* Investment Action */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <DollarSign className="h-6 w-6" />
-                Invest Now
+                Investment Progress
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Current Investment</span>
+                    <span>
+                      {formatCurrency(investment.asset_value - investment.available_staking_amount)} of{" "}
+                      {formatCurrency(investment.asset_value)}
+                    </span>
+                  </div>
+                  <Progress value={progress} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Available for Investment</p>
+                    <p className="font-semibold">{formatCurrency(investment.available_staking_amount)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Minimum Investment</p>
+                    <p className="font-semibold">{formatCurrency(investment.min_investment_amount)}</p>
+                  </div>
+                </div>
                 <div>
                   <Label>Investment Amount</Label>
                   <Input
                     type="number"
                     value={investmentAmount}
                     onChange={(e) => setInvestmentAmount(e.target.value)}
-                    placeholder={`Min. ${formatCurrency(investment.minAmount)}`}
+                    placeholder={`Min. ${formatCurrency(investment.min_investment_amount)}`}
                   />
                 </div>
                 <Button onClick={handleInvest} className="w-full">
