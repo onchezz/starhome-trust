@@ -152,8 +152,8 @@ const AddInvestment = () => {
             uploadDate: new Date().toISOString(),
           },
         });
-        const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
-        handleInputChange("legal_detail", ipfsUrl);
+        
+        handleInputChange("legal_detail", upload.IpfsHash);
       } else {
         const combinedString = await handleImageUpload(files, pinata, formData.id);
         handleInputChange("images", combinedString);
