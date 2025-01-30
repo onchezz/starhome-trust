@@ -17,7 +17,7 @@ const tokenDecimals = {
   ETH: 18,
 };
 
-export const useToken = (tokenAddress: string) => {
+export const useToken = (tokenAddress) => {
   const { address: owner } = useAccount();
   const spender = starhomesContract;
 
@@ -62,33 +62,35 @@ export const useToken = (tokenAddress: string) => {
     address: tokenAddress,
   });
 
-  const { sendAsync: sendTransaction } = useSendTransaction();
+  const { sendAsync: sendTransaction } = useSendTransaction({});
 
-  const approveAndInvest = async (amount: string, investmentId: string, investCallback: (id: string, amount: string) => Promise<any>) => {
+  const approveAndInvest = async (amount: number, investmentId: string, investCallback: (id: string, amount: number) => Promise<any>) => {
     if (!contract || !owner) {
       throw new Error("Contract or owner not initialized");
     }
 
     try {
-      const amountBigInt = num.toBigInt(amount);
-      const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
-      const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
+      // const amountBigInt = num.toBigInt(amount);
+      const currentAllowance = Number(allowance)
+      // allowance ? BigInt(allowance.toString()) : BigInt(0);
+      const currentBalance = Number(balance)
+      //  balance ? BigInt(balance.toString()) : BigInt(0);
 
       console.log("Investment check:", {
-        amount: amountBigInt.toString(),
+        amount: amount.toString(),
         allowance: currentAllowance.toString(),
         balance: currentBalance.toString()
       });
 
-      if (currentBalance < amountBigInt) {
+      if (currentBalance < amount) {
         throw new Error("Insufficient balance");
       }
 
       const calls = [];
 
-      if (currentAllowance < amountBigInt) {
+      if (currentAllowance < amount) {
         // Need to increase allowance first
-        const approveCall = contract.populate("approve", [spender, amountBigInt]);
+        const approveCall = contract.populate("approve", [spender, amount]);
         calls.push(approveCall);
       }
 
@@ -97,6 +99,27 @@ export const useToken = (tokenAddress: string) => {
         const tx = await sendTransaction(calls);
         console.log("Approval transaction:", tx);
       }
+    
+         
+            // if (!contract) {
+            //   throw new Error("Contract not initialized");
+            // }
+      
+            // try {
+            //   // Create all calls using the contract's populate method
+            //   const populatedCalls = calls.map(({ functionName, args }) =>
+            //     contract.populate(functionName, args)
+            //   );
+              
+            //   // Send the batch transaction
+            //   const response = await sendTransaction(populatedCalls);
+            //   return { response, status: txStatus };
+            // } catch (err) {
+            //   console.error("Error executing batch transaction:", err);
+            //   throw err;
+            // }
+        
+         
 
       // Now proceed with investment
       await investCallback(investmentId, amount);

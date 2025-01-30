@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const InvestmentDetails = () => {
   const { id } = useParams();
   const { address } = useAccount();
-  const [investmentAmount, setInvestmentAmount] = React.useState("");
+  const [investmentAmount, setInvestmentAmount] = React.useState(0);
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
   const { handleInvestInProperty } = usePropertyCreate();
   
@@ -39,11 +39,11 @@ const InvestmentDetails = () => {
       await approveAndInvest(
         investmentAmount,
         id || "",
-        handleInvestInProperty
+        handleInvestInProperty(id,investmentAmount)
       );
       
       toast.success("Investment successful!");
-      setInvestmentAmount("");
+      setInvestmentAmount(0);
     } catch (error) {
       console.error("Investment error:", error);
       toast.error(error instanceof Error ? error.message : "Investment failed");
@@ -122,7 +122,7 @@ const InvestmentDetails = () => {
               assetValue={assetValue}
               availableStakingAmount={availableStakingAmount}
               minInvestmentAmount={minInvestmentAmount}
-              investmentAmount={investmentAmount}
+              investmentAmount={investmentAmount.toString()}
               setInvestmentAmount={setInvestmentAmount}
               handleInvest={handleInvest}
             />

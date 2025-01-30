@@ -63,7 +63,7 @@ export const usePropertyCreate = () => {
     }
   };
 
-  const handleInvestInProperty = async (investmentId: string, amount: string) => {
+  const handleInvestInProperty = async (investmentId: string, amount: number) => {
     console.log("Investing in property:", { investmentId, amount });
     
     try {
