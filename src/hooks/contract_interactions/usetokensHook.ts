@@ -10,59 +10,59 @@ import { starhomesContract } from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
 import { num } from "starknet";
 
-// Token decimals (assuming 18 decimals for all tokens)
-const tokenDecimals = {
-  USDT: 18,
-  STRK: 18,
-  ETH: 18,
-};
-
 export const useToken = (tokenAddress: string) => {
   const { address: owner } = useAccount();
   const spender = starhomesContract;
 
+  // Ensure addresses are properly formatted with 0x prefix
+  const formattedTokenAddress = tokenAddress.startsWith('0x') ? tokenAddress : `0x${tokenAddress}`;
+  const formattedSpender = spender.startsWith('0x') ? spender : `0x${spender}`;
+  const formattedOwner = owner ? (owner.startsWith('0x') ? owner : `0x${owner}`) : '0x0';
+
   // Read token metadata using universal ERC20 ABI
   const { data: name } = useReadContract({
     functionName: "name",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
   });
 
   const { data: symbol } = useReadContract({
     functionName: "symbol",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
   });
 
   const { data: decimals } = useReadContract({
     functionName: "decimals",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
   });
 
   // Check balance
   const { data: balance } = useReadContract({
     functionName: "balance_of",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
-    args: [owner || "0x0"],
+    args: [formattedOwner as `0x${string}`],
   });
 
   // Check allowance
   const { data: allowance, error: allowanceError } = useReadContract({
     functionName: "allowance",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
-    args: [owner || "0x0", spender],
+    args: [formattedOwner as `0x${string}`, formattedSpender as `0x${string}`],
   });
 
   // Contract interactions
   const { contract } = useContract({
     abi: universalErc20Abi,
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
   });
 
-  const { sendAsync: sendTransaction } = useSendTransaction();
+  const { sendTransaction } = useSendTransaction({
+    calls: [],
+  });
 
   const approveAndInvest = async (amount: string, investmentId: string, investCallback: (id: string, amount: string) => Promise<any>) => {
     if (!contract || !owner) {
@@ -88,13 +88,13 @@ export const useToken = (tokenAddress: string) => {
 
       if (currentAllowance < amountBigInt) {
         // Need to increase allowance first
-        const approveCall = contract.populate("approve", [spender, amountBigInt]);
+        const approveCall = contract.populate("approve", [formattedSpender as `0x${string}`, amountBigInt]);
         calls.push(approveCall);
       }
 
       // If we have calls to make before investing
       if (calls.length > 0) {
-        const tx = await sendTransaction(calls);
+        const tx = await sendTransaction({ calls });
         console.log("Approval transaction:", tx);
       }
 
