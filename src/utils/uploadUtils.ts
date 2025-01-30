@@ -1,8 +1,11 @@
 import { PinataSDK } from "pinata-web3";
-
+const pinata = new PinataSDK({
+  pinataJwt: import.meta.env.VITE_PINATA_JWT,
+  pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
+});
 export const handleImageUpload = async (
   files: File[],
-  pinata: PinataSDK,
+  
   propertyId: string
 ) => {
   if (files.length === 0) return "";

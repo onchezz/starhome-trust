@@ -146,7 +146,6 @@ const CreateProperty = () => {
       try {
         const combinedString = await handleImageUpload(
           selectedFiles,
-          pinata,
           formData.id
         );
         setUrl(combinedString);

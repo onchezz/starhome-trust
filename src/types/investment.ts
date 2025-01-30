@@ -1,3 +1,4 @@
+import { useAccount } from "@starknet-react/core";
 import { BigNumberish, num, shortString } from "starknet";
 
 export const investmentTypes = [
@@ -128,7 +129,8 @@ export class InvestmentAssetConverter {
             min_investment_amount: Number(starknetProperty.min_investment_amount)
         };
     }
-    static toStarknetProperty(formData: InvestmentAsset): InvestmentAsset {
+    static toStarknetProperty(formData: InvestmentAsset, address: string): InvestmentAsset {
+
         return {
             id: formData.id,
             name: formData.name,
@@ -143,8 +145,8 @@ export class InvestmentAssetConverter {
                 longitude: formData.location.longitude
             },
             size: formData.size,
-            investor_id: formData.investor_id,
-            owner: formData.owner,
+            investor_id: address|| formData.investor_id,
+            owner:address||formData.owner,
             construction_status: formData.construction_status,
             asset_value: formData.asset_value,
             available_staking_amount: formData.available_staking_amount,

@@ -1,4 +1,5 @@
 
+
 import { BigNumberish, num, shortString } from "starknet";
 
 export interface StarknetProperty {
@@ -110,6 +111,40 @@ export class PropertyConverter {
             wheelchairAccessible: Boolean(starknetProperty.wheelchair_accessible),
             assetToken: this.addressToString(starknetProperty.asset_token),
         };
+    }
+    static convertToStarknetProperty(property:Partial<Property>, address): StarknetProperty{
+        return {
+        id: property.id || "",
+        title: property.title || "",
+        description: property.description || "",
+        location_address: property.locationAddress?.split(",")[0] || "",
+        city: property.city || "",
+        state: property.state || "",
+        country: property.country || "",
+        latitude: property.latitude || "",
+        longitude: property.longitude || "",
+        price: property.price || 0,
+        asking_price: property.asking_price || 0,
+        currency: property.currency || "USD",
+        area: property.area || 0,
+        bedrooms: property.bedrooms || 0,
+        bathrooms: property.bathrooms || 0,
+        parking_spaces: property.parkingSpaces || 0,
+        property_type: property.propertyType || "",
+        status: property.status || "",
+        interested_clients: property.interestedClients || 0,
+        annual_growth_rate: property.annualGrowthRate || 0,
+        features_id: "00",
+        images_id: property.imagesId || "",
+        video_tour: property.videoId || "none",
+        agent_id: address || "",
+        date_listed: Math.floor(Date.now() / 1000),
+        has_garden: property.hasGarden || false,
+        has_swimming_pool: property.hasSwimmingPool || false,
+        pet_friendly: property.petFriendly || false,
+        wheelchair_accessible: property.wheelchairAccessible || false,
+        asset_token: property.assetToken || ""
+      };
     }
 
     // Example usage:
