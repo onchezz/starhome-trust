@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { parseImagesData } from "@/utils/imageUtils";
 
 interface PropertyCardProps {
   id: string | number;
@@ -48,6 +49,12 @@ export const PropertyCard = ({
     }).format(price);
   };
 
+  // Parse the imagesUrl to get the first image URL
+  const { imageUrls } = parseImagesData(imagesUrl);
+  const displayImageUrl = imageUrls[0] || "/placeholder.svg";
+
+  console.log("Property Card Image URL:", displayImageUrl);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,7 +65,7 @@ export const PropertyCard = ({
       <Card className="overflow-hidden group bg-card text-card-foreground hover:shadow-lg transition-all duration-300">
         <div className="relative">
           <img
-            src={imagesUrl}
+            src={displayImageUrl}
             alt={title}
             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
           />
