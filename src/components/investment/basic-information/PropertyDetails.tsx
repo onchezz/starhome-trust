@@ -21,7 +21,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           required
           value={formData.name || ""}
           onChange={(e) => handleInputChange("name", e.target.value)}
-          placeholder="Investment property name"
+          placeholder="Enter investment property name"
         />
       </div>
 
@@ -31,7 +31,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           required
           value={formData.description || ""}
           onChange={(e) => handleInputChange("description", e.target.value)}
-          placeholder="Detailed property description"
+          placeholder="Enter detailed property description"
         />
       </div>
 
@@ -42,7 +42,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           required
           value={formData.size || ""}
           onChange={(e) => handleInputChange("size", Number(e.target.value))}
-          placeholder="Property size"
+          placeholder="Enter property size"
         />
       </div>
 
@@ -55,7 +55,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           max={new Date().getFullYear()}
           value={formData.construction_year || ""}
           onChange={(e) => handleInputChange("construction_year", Number(e.target.value))}
-          placeholder="Year of construction"
+          placeholder="Enter year of construction"
         />
       </div>
     </>
