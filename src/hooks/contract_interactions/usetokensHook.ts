@@ -95,21 +95,21 @@ export const useToken = (tokenAddress: string) => {
         throw new Error("Insufficient balance");
       }
 
-      const calls = [];
-
-      if (currentAllowance < amountBigInt) {
-        // Need to increase allowance first
-        const approveCall = contract.populate("approve", [formattedSpender as `0x${string}`, amountBigInt]);
-        calls.push(approveCall);
+      // Check if current allowance is sufficient
+      if (currentAllowance >= amountBigInt) {
+        console.log("Sufficient allowance exists, proceeding with investment");
+        // If allowance is sufficient, proceed directly with investment
+        await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
+        return;
       }
 
-      // If we have calls to make before investing
-      if (calls.length > 0) {
-        const tx = await sendAsync(calls);
-        console.log("Approval transaction:", tx);
-      }
+      // If allowance is insufficient, approve first
+      console.log("Insufficient allowance, requesting approval");
+      const approveCall = contract.populate("approve", [formattedSpender as `0x${string}`, amountBigInt]);
+      const tx = await sendAsync([approveCall]);
+      console.log("Approval transaction:", tx);
 
-      // Now proceed with investment using the amount in token units
+      // After approval, proceed with investment
       await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
 
     } catch (error) {
