@@ -1,8 +1,6 @@
-import { Abi, useCall, useContract, useReadContract } from "@starknet-react/core";
-import { useQuery } from "@tanstack/react-query";
+import { Abi, useContract, useReadContract } from "@starknet-react/core";
 import { starhomes_abi } from "@/data/starhomes_abi";
 import { starhomesContract } from "@/utils/constants";
-import { Property } from "@/types/property";
 
 export const useStarHomeReadContract = ({ 
   functionName, 
@@ -23,7 +21,13 @@ export const useStarHomeReadContract = ({
     abi: starhomes_abi as Abi,
   });
 
-  console.log(`Contract read ${functionName}:`, { data, isLoading, error });
+  console.log(`[useStarHomeReadContract] ${functionName}:`, {
+    data,
+    isLoading,
+    error,
+    args,
+    contractAddress: starhomesContract
+  });
 
   return { data, isLoading, error };
 };

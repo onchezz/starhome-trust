@@ -10,11 +10,18 @@ export const usePropertyRead = () => {
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
-      const result = await useStarHomeReadContract({
+      const { data, error } = await useStarHomeReadContract({
         functionName: "get_sale_properties",
-      }).data;
-      console.log("Raw properties data:", result);
-      return result;
+      });
+      
+      console.log("[usePropertyRead] Raw properties data:", data);
+      
+      if (error) {
+        console.error("[usePropertyRead] Error fetching properties:", error);
+        throw error;
+      }
+      
+      return data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -24,11 +31,18 @@ export const usePropertyRead = () => {
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
     queryFn: async () => {
-      const result = await useStarHomeReadContract({
+      const { data, error } = await useStarHomeReadContract({
         functionName: "get_investment_properties",
-      }).data;
-      console.log("Raw investment properties data:", result);
-      return result;
+      });
+      
+      console.log("[usePropertyRead] Raw investment properties data:", data);
+      
+      if (error) {
+        console.error("[usePropertyRead] Error fetching investment properties:", error);
+        throw error;
+      }
+      
+      return data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -37,14 +51,31 @@ export const usePropertyRead = () => {
 
   // Convert the raw data to Property objects
   const saleProperties = propertiesData ? propertiesData.map((prop: any) => {
-    console.log("Converting property:", prop);
-    return PropertyConverter.fromStarknetProperty(prop);
-  }) : [];
+    console.log("[usePropertyRead] Converting property:", prop);
+    try {
+      return PropertyConverter.fromStarknetProperty(prop);
+    } catch (error) {
+      console.error("[usePropertyRead] Error converting property:", error, prop);
+      return null;
+    }
+  }).filter(Boolean) : [];
 
   const investmentProperties = investmentPropertiesData ? investmentPropertiesData.map((prop: any) => {
-    console.log("Converting investment property:", prop);
-    return PropertyConverter.fromStarknetProperty(prop);
-  }) : [];
+    console.log("[usePropertyRead] Converting investment property:", prop);
+    try {
+      return PropertyConverter.fromStarknetProperty(prop);
+    } catch (error) {
+      console.error("[usePropertyRead] Error converting investment property:", error, prop);
+      return null;
+    }
+  }).filter(Boolean) : [];
+
+  console.log("[usePropertyRead] Final properties:", {
+    saleProperties,
+    investmentProperties,
+    salePropertiesLoading,
+    investmentPropertiesLoading
+  });
  
   return {
     saleProperties,
@@ -66,9 +97,14 @@ export const usePropertyReadById = (id: string) => {
 
   useEffect(() => {
     if (propertyData) {
-      console.log("Property data by ID:", propertyData);
-      const convertedProperty = PropertyConverter.fromStarknetProperty(propertyData);
-      setProperty(convertedProperty);
+      console.log("[usePropertyReadById] Property data:", propertyData);
+      try {
+        const convertedProperty = PropertyConverter.fromStarknetProperty(propertyData);
+        setProperty(convertedProperty);
+      } catch (error) {
+        console.error("[usePropertyReadById] Error converting property:", error);
+        setProperty(null);
+      }
     }
   }, [propertyData]);
 
@@ -83,12 +119,19 @@ export const useAgentProperties = (agentAddress: string) => {
   const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['agent_properties', agentAddress],
     queryFn: async () => {
-      const result = await useStarHomeReadContract({
+      const { data, error } = await useStarHomeReadContract({
         functionName: "get_sale_properties_by_agent",
         args: [agentAddress],
-      }).data;
-      console.log("Agent properties data:", result);
-      return result;
+      });
+      
+      console.log("[useAgentProperties] Raw agent properties data:", data);
+      
+      if (error) {
+        console.error("[useAgentProperties] Error fetching agent properties:", error);
+        throw error;
+      }
+      
+      return data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -97,9 +140,20 @@ export const useAgentProperties = (agentAddress: string) => {
   });
 
   const properties = propertiesData ? propertiesData.map((prop: any) => {
-    console.log("Converting agent property:", prop);
-    return PropertyConverter.fromStarknetProperty(prop);
-  }) : [];
+    console.log("[useAgentProperties] Converting agent property:", prop);
+    try {
+      return PropertyConverter.fromStarknetProperty(prop);
+    } catch (error) {
+      console.error("[useAgentProperties] Error converting agent property:", error, prop);
+      return null;
+    }
+  }).filter(Boolean) : [];
+
+  console.log("[useAgentProperties] Final properties:", {
+    properties,
+    isLoading,
+    error
+  });
 
   return { properties, isLoading, error };
 };

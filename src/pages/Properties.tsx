@@ -5,10 +5,15 @@ import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesRead
 import { Property, PropertyConverter } from "@/types/property";
 import { PropertySearch } from "@/components/property/PropertySearch";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
+import { toast } from "sonner";
 
 const Properties = () => {
-  const { saleProperties: properties, salePropertiesLoading: isLoading } =
-    usePropertyRead();
+  const { 
+    saleProperties: properties, 
+    salePropertiesLoading: isLoading,
+    salePropertiesError: error 
+  } = usePropertyRead();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     priceRange: [0, 15000000],
@@ -17,18 +22,19 @@ const Properties = () => {
     propertyType: "any",
   });
 
-  // const fetchData
-  // const properties =  propertiesData.map((prop) => {
-  //   const property = PropertyConverter.fromStarknetProperty(prop);
+  useEffect(() => {
+    if (error) {
+      console.error("[Properties] Error loading properties:", error);
+      toast.error("Failed to load properties. Please try again later.");
+    }
+  }, [error]);
 
-  //   console.log(property);
-  //   return properties;
-  // });
+  useEffect(() => {
+    console.log("[Properties] Current properties:", properties);
+  }, [properties]);
 
   const filteredProperties = properties
-    ?.filter((starknetProperty: any) => {
-      const property = PropertyConverter.fromStarknetProperty(starknetProperty);
-
+    ?.filter((property: Property) => {
       // Ensure all values are strings before using toLowerCase()
       const titleMatch = property.title
         .toString()
@@ -68,10 +74,9 @@ const Properties = () => {
         matchesBathrooms &&
         matchesPropertyType
       );
-    })
-    .map((property: any) => PropertyConverter.fromStarknetProperty(property));
+    }) || [];
 
-  console.log("Filtered properties:", filteredProperties);
+  console.log("[Properties] Filtered properties:", filteredProperties);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -95,9 +100,9 @@ const Properties = () => {
                     <PropertyShimmerCard key={index} />
                   ))}
                 </div>
-              ) : (
+              ) : filteredProperties.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProperties?.map((property) => (
+                  {filteredProperties.map((property: Property) => (
                     <PropertyCard
                       key={property.id}
                       id={property.id}
@@ -116,6 +121,12 @@ const Properties = () => {
                       status={property.status}
                     />
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-lg text-muted-foreground">
+                    No properties found matching your criteria
+                  </p>
                 </div>
               )}
             </div>
