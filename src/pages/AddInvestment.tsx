@@ -48,19 +48,11 @@ const AddInvestment = () => {
     return fullUUID.replace(/-/g, "").substring(0, 21);
   };
 
-  const [formData, setFormData] = useState<Partial<InvestmentAsset>>({
+  const [formData, setFormData] = useState<InvestmentAsset>({
     id: generateShortUUID(),
-    owner: address,
-    investor_id: address,
+    name: "",
+    description: "",
     is_active: true,
-    investment_token: "",
-    market_analysis: JSON.stringify({
-      areaGrowth: "",
-      occupancyRate: "",
-      comparableProperties: "",
-      demandTrend: "",
-    }),
-    legal_detail: "",
     location: {
       address: "",
       city: "",
@@ -69,6 +61,27 @@ const AddInvestment = () => {
       latitude: "",
       longitude: "",
     },
+    size: 0,
+    investor_id: address || "",
+    owner: address || "",
+    construction_status: "",
+    asset_value: 0,
+    available_staking_amount: 0,
+    investment_type: "",
+    construction_year: 0,
+    property_price: 0,
+    expected_roi: "",
+    rental_income: 0,
+    maintenance_costs: 0,
+    tax_benefits: "",
+    highlights: "",
+    market_analysis: "",
+    risk_factors: "",
+    legal_detail: "",
+    additional_features: "",
+    images: "",
+    investment_token: "",
+    min_investment_amount: 0,
   });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
@@ -196,18 +209,15 @@ const AddInvestment = () => {
     try {
       console.log("Form data before processing:", formData);
 
-      const processedFormData = {
+      const processedFormData: InvestmentAsset = {
         ...formData,
-        isActive: formData.is_active === true,
-        additionalFeatures: additionalFeatures.join(","),
-        riskFactors: riskFactors.join(","),
+        is_active: true,
+        additional_features: additionalFeatures.join(","),
+        risk_factors: riskFactors.join(","),
         highlights: highlights.join(","),
       };
 
-      console.log(
-        "Submitting investment with processed data:",
-        processedFormData
-      );
+      console.log("Submitting investment with processed data:", processedFormData);
 
       await handleListInvestmentProperty(processedFormData);
 
