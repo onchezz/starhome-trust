@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -18,6 +19,8 @@ const InvestmentDetails = () => {
   const { address } = useAccount();
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { data: investment, isLoading } = useInvestmentAssetReadById(id || "");
+
+  console.log("[InvestmentDetails] Investment data:", investment);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -54,10 +57,26 @@ const InvestmentDetails = () => {
     return <div>Investment not found</div>;
   }
 
+  // Convert BigInt values to numbers
+  const assetValue = Number(investment.asset_value?.value || 0);
+  const availableStakingAmount = Number(investment.available_staking_amount?.value || 0);
+  const minInvestmentAmount = Number(investment.min_investment_amount?.value || 0);
+  const propertyPrice = Number(investment.property_price?.value || 0);
+  const rentalIncome = Number(investment.rental_income?.value || 0);
+  const maintenanceCosts = Number(investment.maintenance_costs?.value || 0);
+  const size = Number(investment.size?.value || 0);
+  const constructionYear = Number(investment.construction_year?.value || 0);
+
   const progress = calculateProgress(
-    Number(investment.asset_value) - Number(investment.available_staking_amount),
-    Number(investment.asset_value)
+    assetValue - availableStakingAmount,
+    assetValue
   );
+
+  // Helper function to safely split strings
+  const safeSplit = (str: string | undefined | null, separator: string = ',') => {
+    if (!str) return [];
+    return String(str).split(separator);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,7 +84,7 @@ const InvestmentDetails = () => {
       <div className="container mx-auto py-24">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Image Gallery */}
-          <ImageGallery imagesId={investment.images} />
+          <ImageGallery imagesId={investment.images || ''} />
 
           {/* Investment Action */}
           <Card>
@@ -81,8 +100,8 @@ const InvestmentDetails = () => {
                   <div className="flex justify-between text-sm mb-2">
                     <span>Current Investment</span>
                     <span>
-                      {formatCurrency(Number(investment.asset_value) - Number(investment.available_staking_amount))} of{" "}
-                      {formatCurrency(Number(investment.asset_value))}
+                      {formatCurrency(assetValue - availableStakingAmount)} of{" "}
+                      {formatCurrency(assetValue)}
                     </span>
                   </div>
                   <Progress value={progress} />
@@ -90,11 +109,11 @@ const InvestmentDetails = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Available for Investment</p>
-                    <p className="font-semibold">{formatCurrency(Number(investment.available_staking_amount))}</p>
+                    <p className="font-semibold">{formatCurrency(availableStakingAmount)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Minimum Investment</p>
-                    <p className="font-semibold">{formatCurrency(Number(investment.min_investment_amount))}</p>
+                    <p className="font-semibold">{formatCurrency(minInvestmentAmount)}</p>
                   </div>
                 </div>
                 <div>
@@ -103,7 +122,7 @@ const InvestmentDetails = () => {
                     type="number"
                     value={investmentAmount}
                     onChange={(e) => setInvestmentAmount(e.target.value)}
-                    placeholder={`Min. ${formatCurrency(Number(investment.min_investment_amount))}`}
+                    placeholder={`Min. ${formatCurrency(minInvestmentAmount)}`}
                   />
                 </div>
                 <Button onClick={handleInvest} className="w-full">
@@ -128,28 +147,28 @@ const InvestmentDetails = () => {
                     <Home className="h-4 w-4" />
                     Property Type
                   </div>
-                  <p className="font-semibold">{investment.investment_type}</p>
+                  <p className="font-semibold">{String(investment.investment_type?.value || '')}</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-500">
                     <MapPin className="h-4 w-4" />
                     Location
                   </div>
-                  <p className="font-semibold">{investment.location.address}</p>
+                  <p className="font-semibold">{String(investment.location?.address?.value || '')}</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-500">
                     <Ruler className="h-4 w-4" />
                     Size
                   </div>
-                  <p className="font-semibold">{Number(investment.size).toLocaleString()} sq ft</p>
+                  <p className="font-semibold">{size.toLocaleString()} sq ft</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-500">
                     <Building className="h-4 w-4" />
                     Year Built
                   </div>
-                  <p className="font-semibold">{Number(investment.construction_year)}</p>
+                  <p className="font-semibold">{constructionYear}</p>
                 </div>
               </div>
             </CardContent>
@@ -165,7 +184,7 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {typeof investment.highlights === 'string' && investment.highlights.split(',').map((highlight, index) => (
+                {safeSplit(investment.highlights).map((highlight, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <div className="h-2 w-2 bg-primary rounded-full" />
                     {highlight.trim()}
@@ -187,19 +206,19 @@ const InvestmentDetails = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
                   <p className="text-gray-500">Asking Price</p>
-                  <p className="text-2xl font-bold">{formatCurrency(Number(investment.property_price))}</p>
+                  <p className="text-2xl font-bold">{formatCurrency(propertyPrice)}</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Expected ROI</p>
-                  <p className="text-2xl font-bold">{investment.expected_roi}%</p>
+                  <p className="text-2xl font-bold">{String(investment.expected_roi?.value || 0)}%</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Annual Rental Income</p>
-                  <p className="text-2xl font-bold">{formatCurrency(Number(investment.rental_income))}</p>
+                  <p className="text-2xl font-bold">{formatCurrency(rentalIncome)}</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Maintenance Costs</p>
-                  <p className="text-2xl font-bold">{formatCurrency(Number(investment.maintenance_costs))}</p>
+                  <p className="text-2xl font-bold">{formatCurrency(maintenanceCosts)}</p>
                 </div>
               </div>
             </CardContent>
@@ -222,19 +241,17 @@ const InvestmentDetails = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {typeof investment.market_analysis === 'string' && 
-                    investment.market_analysis.split(',').map((analysis, index) => {
-                      const [key, value] = analysis.split(':').map(item => item.trim());
-                      return (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium capitalize">
-                            {key}
-                          </TableCell>
-                          <TableCell>{value}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  }
+                  {safeSplit(investment.market_analysis).map((analysis, index) => {
+                    const [key, value] = analysis.split(':').map(item => item.trim());
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium capitalize">
+                          {key}
+                        </TableCell>
+                        <TableCell>{value}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -250,14 +267,12 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
-                {typeof investment.risk_factors === 'string' && 
-                  investment.risk_factors.split(',').map((risk, index) => (
-                    <li key={index} className="flex items-center gap-2 text-gray-700">
-                      <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                      {risk.trim()}
-                    </li>
-                  ))
-                }
+                {safeSplit(investment.risk_factors).map((risk, index) => (
+                  <li key={index} className="flex items-center gap-2 text-gray-700">
+                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                    {risk.trim()}
+                  </li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -272,21 +287,17 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {typeof investment.legal_detail === 'string' && (
-                  <>
-                    <div>
-                      <h4 className="font-semibold mb-2">Legal Details</h4>
-                      <ul className="space-y-2">
-                        {investment.legal_detail.split(',').map((detail, index) => (
-                          <li key={index} className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" />
-                            {detail.trim()}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </>
-                )}
+                <div>
+                  <h4 className="font-semibold mb-2">Legal Details</h4>
+                  <ul className="space-y-2">
+                    {safeSplit(investment.legal_detail).map((detail, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        {detail.trim()}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -298,14 +309,12 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {typeof investment.additional_features === 'string' && 
-                  investment.additional_features.split(',').map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="h-2 w-2 bg-secondary rounded-full" />
-                      {feature.trim()}
-                    </div>
-                  ))
-                }
+                {safeSplit(investment.additional_features).map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="h-2 w-2 bg-secondary rounded-full" />
+                    {feature.trim()}
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
