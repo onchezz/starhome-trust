@@ -70,7 +70,18 @@ export const useToken = (tokenAddress: string) => {
     }
 
     try {
-      const amountBigInt = num.toBigInt(amount);
+      // Convert amount to token units based on decimals
+      const tokenDecimals = decimals ? Number(decimals.toString()) : 18; // Default to 18 if not available
+      const amountInTokenUnits = Number(amount) * Math.pow(10, tokenDecimals);
+      const amountBigInt = num.toBigInt(Math.floor(amountInTokenUnits).toString());
+      
+      console.log("Investment amount conversion:", {
+        originalAmount: amount,
+        tokenDecimals,
+        amountInTokenUnits,
+        amountBigInt: amountBigInt.toString()
+      });
+
       const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
       const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
 
@@ -98,8 +109,8 @@ export const useToken = (tokenAddress: string) => {
         console.log("Approval transaction:", tx);
       }
 
-      // Now proceed with investment
-      await investCallback(investmentId, amount);
+      // Now proceed with investment using the amount in token units
+      await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
 
     } catch (error) {
       console.error("Error in approveAndInvest:", error);
