@@ -18,7 +18,7 @@ export const usePropertyRead = () => {
   // Use the hooks' data in the queries
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
-    queryFn: () => {
+    queryFn: async () => {
       console.log("[usePropertyRead] Contract hook result:", salePropertiesHook);
       
       if (salePropertiesHook.error) {
@@ -26,7 +26,7 @@ export const usePropertyRead = () => {
         throw salePropertiesHook.error;
       }
       
-      return Promise.resolve(salePropertiesHook.data);
+      return salePropertiesHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -36,7 +36,7 @@ export const usePropertyRead = () => {
 
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
-    queryFn: () => {
+    queryFn: async () => {
       console.log("[usePropertyRead] Raw investment properties data:", investmentPropertiesHook);
       
       if (investmentPropertiesHook.error) {
@@ -44,7 +44,7 @@ export const usePropertyRead = () => {
         throw investmentPropertiesHook.error;
       }
       
-      return Promise.resolve(investmentPropertiesHook.data);
+      return investmentPropertiesHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -118,7 +118,6 @@ export const usePropertyReadById = (id: string) => {
 };
 
 export const useAgentProperties = (agentAddress: string) => {
-  // Move hook to top level
   const agentPropertiesHook = useStarHomeReadContract({
     functionName: "get_sale_properties_by_agent",
     args: [agentAddress],
@@ -126,7 +125,7 @@ export const useAgentProperties = (agentAddress: string) => {
 
   const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['agent_properties', agentAddress],
-    queryFn: () => {
+    queryFn: async () => {
       console.log("[useAgentProperties] Raw agent properties data:", agentPropertiesHook);
       
       if (agentPropertiesHook.error) {
@@ -134,7 +133,7 @@ export const useAgentProperties = (agentAddress: string) => {
         throw agentPropertiesHook.error;
       }
       
-      return Promise.resolve(agentPropertiesHook.data);
+      return agentPropertiesHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
