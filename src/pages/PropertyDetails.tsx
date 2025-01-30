@@ -9,12 +9,11 @@ import { PropertyAbout } from "@/components/property/PropertyAbout";
 import { SimilarProperties } from "@/components/property/SimilarProperties";
 import { usePropertyReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
-import { PageLoader } from "@/components/ui/page-loader";
 import { Copy, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { parseImagesData } from "@/utils/imageUtils";
 
 const PropertyDetailsShimmer = () => {
   return (
@@ -57,6 +56,10 @@ const PropertyDetails = () => {
     property?.agentId || ""
   );
 
+  // Parse images data using our utility
+  const { imageUrls } = parseImagesData(property?.imagesId || "");
+  console.log("Parsed image URLs:", imageUrls);
+
   const handleCopyAddress = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -92,14 +95,12 @@ const PropertyDetails = () => {
     ? new Date(property.dateListed * 1000).toISOString()
     : new Date().toISOString();
 
-  const imageUrl = property.imagesId || "/placeholder.svg";
-
   return (
     <div className="min-h-screen bg-background">
       <PropertyHero
         title={property.title.toString()}
         location={`${property.locationAddress}, ${property.city}, ${property.state}`}
-        images={[imageUrl]}
+        images={imageUrls.length > 0 ? imageUrls : ["/placeholder.svg"]}
         totalInvestment={Number(property.price)}
       />
 
@@ -166,7 +167,7 @@ const PropertyDetails = () => {
             />
 
             <PropertyGallery
-              images={[imageUrl]}
+              images={imageUrls.length > 0 ? imageUrls : ["/placeholder.svg"]}
               title={property.title.toString()}
               onImageClick={setSelectedImage}
             />
