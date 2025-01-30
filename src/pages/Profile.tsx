@@ -15,6 +15,7 @@ import { ProfileWallet } from "@/components/profile/ProfileWallet";
 import { AgentProperties } from "@/components/profile/AgentProperties";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { UserInvestments } from "@/components/profile/UserInvestments";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -114,7 +115,7 @@ const Profile = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto space-y-6"
         >
           <Card
             className={cn(
@@ -146,7 +147,6 @@ const Profile = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-6"
           >
             <ProfileWallet
               address={address || ""}
@@ -155,12 +155,19 @@ const Profile = () => {
             />
           </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <UserInvestments />
+          </motion.div>
+
           {user?.is_agent && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="mt-6"
+              transition={{ delay: 0.9 }}
             >
               <AgentProperties />
             </motion.div>
