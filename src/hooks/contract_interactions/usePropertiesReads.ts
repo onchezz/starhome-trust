@@ -53,7 +53,7 @@ export const usePropertyRead = () => {
   });
 
   // Convert the raw data to Property objects
-  const saleProperties = propertiesData ? propertiesData.map((prop: any) => {
+  const saleProperties = Array.isArray(propertiesData) ? propertiesData.map((prop: any) => {
     console.log("[usePropertyRead] Converting property:", prop);
     try {
       return PropertyConverter.fromStarknetProperty(prop);
@@ -63,7 +63,7 @@ export const usePropertyRead = () => {
     }
   }).filter(Boolean) : [];
 
-  const investmentProperties = investmentPropertiesData ? investmentPropertiesData.map((prop: any) => {
+  const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData.map((prop: any) => {
     console.log("[usePropertyRead] Converting investment property:", prop);
     try {
       return PropertyConverter.fromStarknetProperty(prop);
@@ -142,7 +142,7 @@ export const useAgentProperties = (agentAddress: string) => {
     enabled: !!agentAddress && !agentPropertiesHook.isLoading,
   });
 
-  const properties = propertiesData ? propertiesData.map((prop: any) => {
+  const properties = Array.isArray(propertiesData) ? propertiesData.map((prop: any) => {
     console.log("[useAgentProperties] Converting agent property:", prop);
     try {
       return PropertyConverter.fromStarknetProperty(prop);
