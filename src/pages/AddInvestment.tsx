@@ -59,8 +59,14 @@ const AddInvestment = () => {
       demandTrend: "",
     }),
     legal_detail: "",
-    latitude: "",
-    longitude: "",
+    location: {
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      latitude: "",
+      longitude: "",
+    },
   });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
@@ -255,10 +261,10 @@ const AddInvestment = () => {
                   <MapLocationPicker
                     onLocationSelect={handleLocationSelect}
                     initialLocation={
-                      formData.latitude && formData.longitude
+                      formData.location.latitude && formData.location.longitude
                         ? {
-                            latitude: formData.latitude.toString(),
-                            longitude: formData.longitude.toString(),
+                            latitude: formData.location.latitude.toString(),
+                            longitude: formData.location.longitude.toString(),
                           }
                         : undefined
                     }
