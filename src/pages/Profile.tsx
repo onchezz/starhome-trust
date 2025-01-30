@@ -13,10 +13,13 @@ import { useEffect, useState } from "react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileWallet } from "@/components/profile/ProfileWallet";
 import { AgentProperties } from "@/components/profile/AgentProperties";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Profile = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
+  const navigate = useNavigate();
   const { balances, isLoading: isLoadingBal } = useTokenBalances();
   const {
     user,
@@ -25,6 +28,13 @@ const Profile = () => {
   } = useUserReadByAddress(address || "");
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (!address) {
+      toast.error("Wallet disconnected. Redirecting to home page...");
+      navigate("/");
+    }
+  }, [address, navigate]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
