@@ -154,7 +154,6 @@ const Investment = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      {/* <Navbar /> */}
       <div className="container mx-auto py-24">
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -241,6 +240,17 @@ const Investment = () => {
           ) : (
             investmentProperties.map((investmentProperty, index) => {
               const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
+              const displayData = {
+                ...property,
+                currentInvestment: property.available_staking_amount,
+                totalInvestment: property.asset_value,
+                minInvestment: property.min_investment_amount,
+                roi: property.expected_roi,
+                type: property.investment_type,
+                title: property.name,
+                image: property.images
+              };
+
               return (
                 <Card
                   key={property.id}
@@ -255,14 +265,14 @@ const Investment = () => {
                 >
                   <div className="relative overflow-hidden group">
                     <img
-                      src={property.images}
-                      alt={property.name}
+                      src={displayData.image}
+                      alt={displayData.title}
                       className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <CardHeader>
-                    <CardTitle>{property.name}</CardTitle>
+                    <CardTitle>{displayData.title}</CardTitle>
                     <p className="text-sm text-gray-500">{property.location}</p>
                   </CardHeader>
                   <CardContent>
@@ -271,14 +281,14 @@ const Investment = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <span>Investment Progress</span>
                           <span>
-                            {formatCurrency(property.currentInvestment)} of{" "}
-                            {formatCurrency(property.totalInvestment)}
+                            {formatCurrency(displayData.currentInvestment)} of{" "}
+                            {formatCurrency(displayData.totalInvestment)}
                           </span>
                         </div>
                         <Progress
                           value={calculateProgress(
-                            property.currentInvestment,
-                            property.totalInvestment
+                            displayData.currentInvestment,
+                            displayData.totalInvestment
                           )}
                         />
                       </div>
@@ -286,21 +296,21 @@ const Investment = () => {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-500">Number of Investors</p>
-                          <p className="font-semibold">{property.investors}</p>
+                          <p className="font-semibold">0</p>
                         </div>
                         <div>
                           <p className="text-gray-500">Minimum Investment</p>
                           <p className="font-semibold">
-                            {formatCurrency(property.minInvestment)}
+                            {formatCurrency(displayData.minInvestment)}
                           </p>
                         </div>
                         <div>
                           <p className="text-gray-500">Expected ROI</p>
-                          <p className="font-semibold">{property.roi}</p>
+                          <p className="font-semibold">{displayData.roi}%</p>
                         </div>
                         <div>
                           <p className="text-gray-500">Property Type</p>
-                          <p className="font-semibold">{property.type}</p>
+                          <p className="font-semibold">{displayData.type}</p>
                         </div>
                       </div>
 

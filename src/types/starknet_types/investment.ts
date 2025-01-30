@@ -40,7 +40,6 @@ export interface StarknetInvestmentAsset {
   roi?: string;
   type?: string;
   minInvestment?: number;
-  image?: string;
 }
 
 export const dummyInvestment = {
