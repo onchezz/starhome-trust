@@ -20,6 +20,7 @@ import { InvestmentLocation } from "@/components/investment/details/InvestmentLo
 import { InvestmentHeader } from "@/components/investment/details/InvestmentHeader";
 import { InvestmentProgress } from "@/components/investment/details/InvestmentProgress";
 import { DocumentList } from "@/components/investment/details/DocumentList";
+import { formatCurrency } from "@/utils/utils";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
