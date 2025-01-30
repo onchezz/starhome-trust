@@ -44,6 +44,11 @@ const InvestmentDetails = () => {
     return String(value);
   };
 
+  const convertToList = (commaSeparatedString: string): string[] => {
+    if (!commaSeparatedString) return [];
+    return commaSeparatedString.split(",").map(item => item.trim()).filter(Boolean);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -71,6 +76,12 @@ const InvestmentDetails = () => {
     state: getBigIntValue(investment.location?.state),
     country: getBigIntValue(investment.location?.country),
   };
+
+  // Convert comma-separated strings to arrays
+  const highlights = convertToList(getBigIntValue(investment.highlights));
+  const marketAnalysis = convertToList(getBigIntValue(investment.market_analysis));
+  const riskFactors = convertToList(getBigIntValue(investment.risk_factors));
+  const additionalFeatures = convertToList(getBigIntValue(investment.additional_features));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,16 +121,18 @@ const InvestmentDetails = () => {
             maintenanceCosts={maintenanceCosts}
           />
 
-          {/* Additional Information Section */}
+          {/* Additional Information Section with Bullet Points */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Highlights</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  {getBigIntValue(investment.highlights)}
-                </p>
+                <ul className="list-disc pl-6 space-y-2">
+                  {highlights.map((highlight, index) => (
+                    <li key={index} className="text-gray-600">{highlight}</li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
 
@@ -128,9 +141,11 @@ const InvestmentDetails = () => {
                 <CardTitle>Market Analysis</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  {getBigIntValue(investment.market_analysis)}
-                </p>
+                <ul className="list-disc pl-6 space-y-2">
+                  {marketAnalysis.map((analysis, index) => (
+                    <li key={index} className="text-gray-600">{analysis}</li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
 
@@ -139,9 +154,11 @@ const InvestmentDetails = () => {
                 <CardTitle>Risk Factors</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  {getBigIntValue(investment.risk_factors)}
-                </p>
+                <ul className="list-disc pl-6 space-y-2">
+                  {riskFactors.map((risk, index) => (
+                    <li key={index} className="text-gray-600">{risk}</li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
 
@@ -150,9 +167,11 @@ const InvestmentDetails = () => {
                 <CardTitle>Additional Features</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  {getBigIntValue(investment.additional_features)}
-                </p>
+                <ul className="list-disc pl-6 space-y-2">
+                  {additionalFeatures.map((feature, index) => (
+                    <li key={index} className="text-gray-600">{feature}</li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
 
