@@ -1,7 +1,6 @@
 import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 import { Property, PropertyConverter } from '@/types/property';
-import { UserConverter } from '@/types/user';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -27,11 +26,12 @@ export const usePropertyRead = () => {
         throw salePropertiesHook.error;
       }
       
-      return salePropertiesHook.data;
+      return Promise.resolve(salePropertiesHook.data);
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
+    enabled: !salePropertiesHook.isLoading,
   });
 
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
@@ -44,11 +44,12 @@ export const usePropertyRead = () => {
         throw investmentPropertiesHook.error;
       }
       
-      return investmentPropertiesHook.data;
+      return Promise.resolve(investmentPropertiesHook.data);
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
+    enabled: !investmentPropertiesHook.isLoading,
   });
 
   // Convert the raw data to Property objects
@@ -133,12 +134,12 @@ export const useAgentProperties = (agentAddress: string) => {
         throw agentPropertiesHook.error;
       }
       
-      return agentPropertiesHook.data;
+      return Promise.resolve(agentPropertiesHook.data);
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
-    enabled: !!agentAddress,
+    enabled: !!agentAddress && !agentPropertiesHook.isLoading,
   });
 
   const properties = propertiesData ? propertiesData.map((prop: any) => {
