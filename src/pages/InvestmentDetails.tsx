@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/useInvestmentAssetReadById";
 import { ImageGallery } from "@/components/investment/ImageGallery";
+import { shortString } from "starknet";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
@@ -49,6 +50,14 @@ const InvestmentDetails = () => {
     toast.success("Investment initiated");
   };
 
+  const getBigIntValue = (value: any): string => {
+    if (!value) return "";
+    if (typeof value === 'object' && value._type === 'BigInt') {
+      return shortString.decodeShortString(value.value.toString());
+    }
+    return value.toString();
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -77,6 +86,16 @@ const InvestmentDetails = () => {
     if (!str) return [];
     return String(str).split(separator);
   };
+
+  const investmentName = getBigIntValue(investment.name);
+  const investmentType = getBigIntValue(investment.investment_type);
+  const locationAddress = getBigIntValue(investment.location?.address);
+  const locationCity = getBigIntValue(investment.location?.city);
+  const locationState = getBigIntValue(investment.location?.state);
+  const locationCountry = getBigIntValue(investment.location?.country);
+  const constructionStatus = getBigIntValue(investment.construction_status);
+  const expectedRoi = getBigIntValue(investment.expected_roi);
+  const taxBenefits = getBigIntValue(investment.tax_benefits);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -147,14 +166,14 @@ const InvestmentDetails = () => {
                     <Home className="h-4 w-4" />
                     Property Type
                   </div>
-                  <p className="font-semibold">{String(investment.investment_type?.value || '')}</p>
+                  <p className="font-semibold">{investmentType}</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-500">
                     <MapPin className="h-4 w-4" />
                     Location
                   </div>
-                  <p className="font-semibold">{String(investment.location?.address?.value || '')}</p>
+                  <p className="font-semibold">{locationAddress}</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-500">
@@ -210,7 +229,7 @@ const InvestmentDetails = () => {
                 </div>
                 <div>
                   <p className="text-gray-500">Expected ROI</p>
-                  <p className="text-2xl font-bold">{String(investment.expected_roi?.value || 0)}%</p>
+                  <p className="text-2xl font-bold">{expectedRoi}%</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Annual Rental Income</p>
