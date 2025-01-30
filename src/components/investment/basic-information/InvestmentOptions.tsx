@@ -24,8 +24,8 @@ const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
       <div className="space-y-2">
         <Label>Investment Type</Label>
         <Select
-          value={formData.investmentType}
-          onValueChange={(value) => handleInputChange("investmentType", value)}
+          value={formData.investment_type}
+          onValueChange={(value) => handleInputChange("investment_type", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select investment type" />
@@ -43,8 +43,8 @@ const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
       <div className="space-y-2">
         <Label>Investment Token</Label>
         <Select
-          value={formData.investmentToken}
-          onValueChange={(value) => handleInputChange("investmentToken", value)}
+          value={formData.investment_token}
+          onValueChange={(value) => handleInputChange("investment_token", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select token" />

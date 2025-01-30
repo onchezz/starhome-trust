@@ -41,7 +41,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           type="number"
           required
           value={formData.size || ""}
-          onChange={(e) => handleInputChange("size", e.target.value)}
+          onChange={(e) => handleInputChange("size", Number(e.target.value))}
           placeholder="Property size"
         />
       </div>
@@ -53,8 +53,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           required
           min={1800}
           max={new Date().getFullYear()}
-          value={formData.constructionYear || ""}
-          onChange={(e) => handleInputChange("constructionYear", parseInt(e.target.value))}
+          value={formData.construction_year || ""}
+          onChange={(e) => handleInputChange("construction_year", Number(e.target.value))}
           placeholder="Year of construction"
         />
       </div>

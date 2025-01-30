@@ -1,20 +1,26 @@
-
+export interface MarketAnalysis {
+  area_growth: string;
+  occupancy_rate: string;
+  comparable_properties: string;
+  demand_trend: string;
+}
 
 export interface StarknetInvestmentAsset {
   id: string;
   name: string;
+  title?: string;
   description: string;
-  is_active:boolean,
+  is_active: boolean;
   location: string;
   size: number;
   investor_id: string;
   owner: string;
-  construction_status:string,
+  construction_status: string;
   asset_value: number;
   available_staking_amount: number;
   investment_type: string;
   construction_year: number;
-  property_price:number;
+  property_price: number;
   expected_roi: string;
   rental_income: number;
   maintenance_costs: number;
@@ -27,7 +33,16 @@ export interface StarknetInvestmentAsset {
   images: string;
   investment_token: string;
   min_investment_amount: number;
+  // UI specific fields
+  currentInvestment?: number;
+  totalInvestment?: number;
+  investors?: number;
+  roi?: string;
+  type?: string;
+  minInvestment?: number;
+  image?: string;
 }
+
 export const dummyInvestment = {
   id: "4354bf6d4175404495df",
   name: "Skyline Luxury Residences",
@@ -94,8 +109,3 @@ const dummyInvestments: StarknetInvestmentAsset[] = [
 
 export const defaultInvestment = dummyInvestment;
 export const testInvestments = dummyInvestments;
-
-
-
-
-

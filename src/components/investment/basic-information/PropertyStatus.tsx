@@ -24,8 +24,8 @@ const PropertyStatus: React.FC<PropertyStatusProps> = ({
       <div className="space-y-2">
         <Label>Construction Status</Label>
         <Select
-          value={formData.constructionStatus}
-          onValueChange={(value) => handleInputChange("constructionStatus", value)}
+          value={formData.construction_status}
+          onValueChange={(value) => handleInputChange("construction_status", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select construction status" />
@@ -45,12 +45,12 @@ const PropertyStatus: React.FC<PropertyStatusProps> = ({
         <div className="flex items-center space-x-3">
           <Switch
             id="investment-status"
-            checked={formData.isActive}
-            onCheckedChange={(checked) => handleInputChange("isActive", checked)}
+            checked={formData.is_active}
+            onCheckedChange={(checked) => handleInputChange("is_active", checked)}
             className="data-[state=checked]:bg-primary"
           />
           <Label htmlFor="investment-status" className="text-sm font-medium">
-            {formData.isActive ? `Active` : `Deactivated`}
+            {formData.is_active ? `Active` : `Deactivated`}
           </Label>
         </div>
       </div>

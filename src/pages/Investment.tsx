@@ -72,7 +72,7 @@ const investmentProperties = [
 ];
 
 const Investment = () => {
-  const { investmentProperties,investmentPropertiesLoading,investmentPropertiesError} =
+  const { investmentProperties, investmentPropertiesLoading, investmentPropertiesError } =
       usePropertyRead();
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
@@ -255,14 +255,14 @@ const Investment = () => {
                 >
                   <div className="relative overflow-hidden group">
                     <img
-                      src={property.image}
-                      alt={property.title}
+                      src={property.images}
+                      alt={property.name}
                       className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <CardHeader>
-                    <CardTitle>{property.title}</CardTitle>
+                    <CardTitle>{property.name}</CardTitle>
                     <p className="text-sm text-gray-500">{property.location}</p>
                   </CardHeader>
                   <CardContent>
