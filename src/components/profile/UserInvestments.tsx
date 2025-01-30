@@ -1,14 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Link } from "react-router-dom";
 import { Skeleton } from "../ui/skeleton";
 import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
+import { useAccount } from "@starknet-react/core";
 
 export const UserInvestments = () => {
   const { theme } = useTheme();
+  const { address } = useAccount();
   const { userInvestments, isLoading } = useInvestmentAssetsRead();
+
+  // Filter investments where the owner matches the user's address
+  const userOwnedInvestments = userInvestments?.filter(
+    (investment) => investment.owner.toLowerCase() === address?.toLowerCase()
+  );
+
+  console.log("[UserInvestments] User address:", address);
+  console.log("[UserInvestments] Filtered investments:", userOwnedInvestments);
 
   if (isLoading) {
     return (
@@ -17,7 +26,7 @@ export const UserInvestments = () => {
         theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
       )}>
         <CardHeader>
-          <CardTitle>Your Investments</CardTitle>
+          <CardTitle>Your Listed Investments</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -29,14 +38,14 @@ export const UserInvestments = () => {
     );
   }
 
-  if (!userInvestments?.length) {
+  if (!userOwnedInvestments?.length) {
     return (
       <Card className={cn(
         "backdrop-blur-xl border transition-all duration-300",
         theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
       )}>
         <CardHeader>
-          <CardTitle>Your Investments</CardTitle>
+          <CardTitle>Your Listed Investments</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">No investments found.</p>
@@ -51,11 +60,11 @@ export const UserInvestments = () => {
       theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
     )}>
       <CardHeader>
-        <CardTitle>Your Investments</CardTitle>
+        <CardTitle>Your Listed Investments</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {userInvestments.map((investment) => (
+          {userOwnedInvestments.map((investment) => (
             <Link 
               key={investment.id} 
               to={`/investments/${investment.id}`}
