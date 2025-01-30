@@ -26,6 +26,7 @@ import { useInView } from "react-intersection-observer";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { InvestmentAssetConverter } from "@/types/investment";
 import { num } from "starknet";
+import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
 
 const Investment = () => {
   const { investmentProperties, investmentPropertiesLoading, investmentPropertiesError } =
@@ -189,7 +190,7 @@ const Investment = () => {
                 </CardContent>
               </Card>
             ))
-          ) : (
+          ) : investmentProperties.length > 0 ? (
             investmentProperties.map((investmentProperty, index) => {
               const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
               const propertyId = num.toHex(property.id);
@@ -321,6 +322,10 @@ const Investment = () => {
                 </Card>
               );
             })
+          ) : (
+            <div className="col-span-full">
+              <EmptyInvestmentState error={!!investmentPropertiesError} />
+            </div>
           )}
         </div>
       </div>

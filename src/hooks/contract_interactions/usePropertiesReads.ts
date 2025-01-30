@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 export const usePropertyRead = () => {
-  // Move hooks to top level
   const salePropertiesHook = useStarHomeReadContract({
     functionName: "get_sale_properties",
   });
@@ -15,7 +14,6 @@ export const usePropertyRead = () => {
     functionName: "get_investment_properties",
   });
 
-  // Use the hooks' data in the queries
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
@@ -26,7 +24,7 @@ export const usePropertyRead = () => {
         throw salePropertiesHook.error;
       }
       
-      return salePropertiesHook.data;
+      return salePropertiesHook.data || [];
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -44,7 +42,7 @@ export const usePropertyRead = () => {
         throw investmentPropertiesHook.error;
       }
       
-      return investmentPropertiesHook.data;
+      return investmentPropertiesHook.data || [];
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -52,7 +50,6 @@ export const usePropertyRead = () => {
     enabled: !investmentPropertiesHook.isLoading,
   });
 
-  // Convert the raw data to Property objects
   const saleProperties = Array.isArray(propertiesData) ? propertiesData.map((prop: any) => {
     console.log("[usePropertyRead] Converting property:", prop);
     try {
@@ -79,7 +76,7 @@ export const usePropertyRead = () => {
     salePropertiesLoading,
     investmentPropertiesLoading
   });
- 
+
   return {
     saleProperties,
     salePropertiesLoading,
@@ -133,7 +130,7 @@ export const useAgentProperties = (agentAddress: string) => {
         throw agentPropertiesHook.error;
       }
       
-      return agentPropertiesHook.data;
+      return agentPropertiesHook.data || [];
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,

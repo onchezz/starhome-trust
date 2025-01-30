@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyShimmerCard } from "@/components/ui/shimmer-cards";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { Property, PropertyConverter } from "@/types/property";
+import { Property } from "@/types/property";
 import { PropertySearch } from "@/components/property/PropertySearch";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Building, AlertCircle } from "lucide-react";
 
 const Properties = () => {
   const { 
@@ -76,7 +78,21 @@ const Properties = () => {
       );
     }) || [];
 
-  console.log("[Properties] Filtered properties:", filteredProperties);
+  const EmptyState = () => (
+    <Card className="p-6 text-center">
+      <div className="flex flex-col items-center gap-4">
+        <Building className="h-12 w-12 text-muted-foreground" />
+        <div>
+          <h3 className="text-lg font-semibold">No Properties Found</h3>
+          <p className="text-muted-foreground">
+            {error 
+              ? "Failed to load properties. Please try again later."
+              : "No properties found matching your criteria"}
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -123,11 +139,7 @@ const Properties = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-lg text-muted-foreground">
-                    No properties found matching your criteria
-                  </p>
-                </div>
+                <EmptyState />
               )}
             </div>
           </div>
