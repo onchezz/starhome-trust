@@ -55,7 +55,10 @@ const InvestmentDetails = () => {
     if (typeof value === 'object' && value._type === 'BigInt') {
       return shortString.decodeShortString(value.value.toString());
     }
-    return value.toString();
+    if (typeof value === 'object' && value.value) {
+      return value.value.toString();
+    }
+    return String(value);
   };
 
   if (isLoading) {
@@ -96,14 +99,18 @@ const InvestmentDetails = () => {
   const constructionStatus = getBigIntValue(investment.construction_status);
   const expectedRoi = getBigIntValue(investment.expected_roi);
   const taxBenefits = getBigIntValue(investment.tax_benefits);
+  const highlights = getBigIntValue(investment.highlights);
+  const marketAnalysis = getBigIntValue(investment.market_analysis);
+  const riskFactors = getBigIntValue(investment.risk_factors);
+  const legalDetail = getBigIntValue(investment.legal_detail);
+  const additionalFeatures = getBigIntValue(investment.additional_features);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="container mx-auto py-24">
         <div className="max-w-6xl mx-auto space-y-8">
-          {/* Image Gallery */}
-          <ImageGallery imagesId={investment.images || ''} />
+          <ImageGallery imagesId={getBigIntValue(investment.images)} />
 
           {/* Investment Action */}
           <Card>
@@ -203,7 +210,7 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {safeSplit(investment.highlights).map((highlight, index) => (
+                {safeSplit(highlights).map((highlight, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <div className="h-2 w-2 bg-primary rounded-full" />
                     {highlight.trim()}
@@ -260,7 +267,7 @@ const InvestmentDetails = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {safeSplit(investment.market_analysis).map((analysis, index) => {
+                  {safeSplit(marketAnalysis).map((analysis, index) => {
                     const [key, value] = analysis.split(':').map(item => item.trim());
                     return (
                       <TableRow key={index}>
@@ -286,7 +293,7 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
-                {safeSplit(investment.risk_factors).map((risk, index) => (
+                {safeSplit(riskFactors).map((risk, index) => (
                   <li key={index} className="flex items-center gap-2 text-gray-700">
                     <AlertTriangle className="h-4 w-4 text-yellow-500" />
                     {risk.trim()}
@@ -309,7 +316,7 @@ const InvestmentDetails = () => {
                 <div>
                   <h4 className="font-semibold mb-2">Legal Details</h4>
                   <ul className="space-y-2">
-                    {safeSplit(investment.legal_detail).map((detail, index) => (
+                    {safeSplit(legalDetail).map((detail, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <FileText className="h-4 w-4" />
                         {detail.trim()}
@@ -328,7 +335,7 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {safeSplit(investment.additional_features).map((feature, index) => (
+                {safeSplit(additionalFeatures).map((feature, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <div className="h-2 w-2 bg-secondary rounded-full" />
                     {feature.trim()}
