@@ -13,7 +13,7 @@ export const usePropertyRead = () => {
       functionName: "get_sale_properties",
     }).data,
     staleTime: CACHE_TIME, // Data will be considered fresh for 5 minutes
-    cacheTime: CACHE_TIME,
+    gcTime: CACHE_TIME, // Renamed from cacheTime to gcTime
     refetchInterval: CACHE_TIME,
   });
 
@@ -23,7 +23,7 @@ export const usePropertyRead = () => {
       functionName: "get_investment_properties",
     }).data,
     staleTime: CACHE_TIME,
-    cacheTime: CACHE_TIME,
+    gcTime: CACHE_TIME, // Renamed from cacheTime to gcTime
     refetchInterval: CACHE_TIME,
   });
 
@@ -72,7 +72,7 @@ export const useAgentProperties = (agentAddress: string) => {
       args: [agentAddress],
     }).data,
     staleTime: CACHE_TIME,
-    cacheTime: CACHE_TIME,
+    gcTime: CACHE_TIME, // Renamed from cacheTime to gcTime
     refetchInterval: CACHE_TIME,
     enabled: !!agentAddress,
   });
