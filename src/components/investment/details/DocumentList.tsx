@@ -7,14 +7,27 @@ interface DocumentListProps {
 }
 
 export const DocumentList = ({ documentsId }: DocumentListProps) => {
-  const { imageUrls, imageNames } = parseImagesData(documentsId);
+  const { imageUrls } = parseImagesData(documentsId);
 
-  console.log("[DocumentList] Rendering with:", { imageUrls, imageNames });
+  const extractFileName = (url: string): string => {
+    try {
+      // Split the URL by '/' and get the last segment
+      const segments = url.split('/');
+      const fileName = segments[segments.length - 1];
+      // URL decode to handle any encoded characters
+      return decodeURIComponent(fileName);
+    } catch (error) {
+      console.error("[DocumentList] Error extracting filename:", error);
+      return "Unknown Document";
+    }
+  };
+
+  console.log("[DocumentList] Rendering with URLs:", imageUrls);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {imageUrls.map((url, index) => {
-        const fileName = imageNames[index] || `Document ${index + 1}`;
+        const fileName = extractFileName(url);
         const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
         
         return (

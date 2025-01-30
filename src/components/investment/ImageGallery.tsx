@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Shimmer } from "@/components/ui/shimmer";
 import { parseImagesData } from "@/utils/imageUtils";
+import { Loader2 } from "lucide-react";
 
 interface ImageGalleryProps {
   imagesId: string;
@@ -24,8 +25,8 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ imagesId }) => {
   return (
     <div className="relative overflow-hidden group h-48">
       {isLoading && (
-        <div className="absolute inset-0">
-          <Shimmer className="w-full h-full" />
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       )}
       <img
