@@ -24,59 +24,15 @@ import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
-
-const investmentProperties = [
-  {
-    id: 1,
-    title: "Downtown Commercial Complex",
-    location: "Los Angeles, CA",
-    totalInvestment: 5000000,
-    currentInvestment: 3750000,
-    investors: 45,
-    minInvestment: 25000,
-    roi: "12%",
-    type: "Commercial",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    description:
-      "Prime commercial property in downtown LA featuring retail spaces and office units. High-traffic location with excellent growth potential.",
-  },
-  {
-    id: 2,
-    title: "Luxury Apartment Building",
-    location: "Miami, FL",
-    totalInvestment: 8000000,
-    currentInvestment: 6000000,
-    investors: 78,
-    minInvestment: 50000,
-    roi: "15%",
-    type: "Residential",
-    image: "https://images.unsplash.com/photo-1481253127861-534498168948",
-    description:
-      "Luxury residential complex with premium amenities, located in Miami's most sought-after neighborhood.",
-  },
-  {
-    id: 3,
-    title: "Tech Park Development",
-    location: "Austin, TX",
-    totalInvestment: 12000000,
-    currentInvestment: 9600000,
-    investors: 120,
-    minInvestment: 100000,
-    roi: "18%",
-    type: "Mixed-Use",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-    description:
-      "Modern tech park featuring office spaces, research facilities, and innovative workspace solutions.",
-  },
-];
+import { InvestmentAssetConverter } from "@/types/investment";
+import { num } from "starknet";
 
 const Investment = () => {
   const { investmentProperties, investmentPropertiesLoading, investmentPropertiesError } =
       usePropertyRead();
-  const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
-    [key: number]: string;
+    [key: string]: string;
   }>({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -123,7 +79,7 @@ const Investment = () => {
     }
   };
 
-  const handleInvest = async (propertyId: number) => {
+  const handleInvest = async (propertyId: string) => {
     try {
       const amount = investmentAmounts[propertyId];
       console.log(`Investing ${amount} in property ${propertyId}`);
@@ -133,11 +89,7 @@ const Investment = () => {
         return;
       }
 
-      // Convert amount to BigInt for contract interaction
       const amountBigInt = BigInt(Number(amount) * 10 ** 18);
-      // Assuming 18 decimals
-      // await handleStake(amountBigInt);
-
       toast.success("Investment transaction initiated");
     } catch (error) {
       console.error("Investment error:", error);
@@ -145,7 +97,7 @@ const Investment = () => {
     }
   };
 
-  const handleAmountChange = (propertyId: number, value: string) => {
+  const handleAmountChange = (propertyId: string, value: string) => {
     setInvestmentAmounts((prev) => ({
       ...prev,
       [propertyId]: value,
@@ -239,10 +191,9 @@ const Investment = () => {
             ))
           ) : (
             investmentProperties.map((investmentProperty, index) => {
-              const property: InvestmentAsset =
-                InvestmentAssetConverter.fromStarknetProperty(
-                  investmentProperty
-                );
+              const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
+              const propertyId = num.toHex(property.id);
+              
               const displayData = {
                 ...property,
                 currentInvestment: property.available_staking_amount,
@@ -256,7 +207,7 @@ const Investment = () => {
 
               return (
                 <Card
-                  key={property.id}
+                  key={propertyId}
                   className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
                   style={{
                     opacity: inView ? 1 : 0,
@@ -320,9 +271,9 @@ const Investment = () => {
                       <div className="flex gap-2">
                         <Collapsible
                           className="flex-1"
-                          open={expandedCardId === property.id}
+                          open={expandedCardId === propertyId}
                           onOpenChange={(open) =>
-                            setExpandedCardId(open ? property.id : null)
+                            setExpandedCardId(open ? propertyId : null)
                           }
                         >
                           <CollapsibleTrigger asChild>
@@ -336,19 +287,19 @@ const Investment = () => {
                             <Input
                               type="number"
                               placeholder={`Min. ${formatCurrency(
-                                property.min_investment
+                                displayData.minInvestment
                               )}`}
-                              value={investmentAmounts[property.id] || ""}
+                              value={investmentAmounts[propertyId] || ""}
                               onChange={(e) =>
-                                handleAmountChange(property.id, e.target.value)
+                                handleAmountChange(propertyId, e.target.value)
                               }
-                              min={property.min_investment}
+                              min={displayData.minInvestment}
                             />
                             <Button
                               className="w-full bg-primary hover:bg-primary/90"
                               onClick={
                                 address
-                                  ? () => handleInvest(property.id)
+                                  ? () => handleInvest(propertyId)
                                   : handleConnectWallet
                               }
                             >
@@ -358,7 +309,7 @@ const Investment = () => {
                           </CollapsibleContent>
                         </Collapsible>
 
-                        <Link to={`/investment/${property.id}`}>
+                        <Link to={`/investment/${propertyId}`}>
                           <Button variant="outline">
                             <ExternalLink className="mr-2 h-4 w-4" />
                             More Details
