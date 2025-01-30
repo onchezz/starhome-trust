@@ -31,6 +31,7 @@ import { InvestmentAsset } from "@/types/investment";
 import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
 import { parseImagesData } from "@/utils/imageUtils";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 
 const ImageGallery = ({ imagesId }: { imagesId: string }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -103,6 +104,8 @@ const Investment = () => {
     threshold: 0.1,
   });
 
+  const { handleInvestInProperty } = usePropertyCreate();
+
   // Calculate total statistics
   const totalStats = investmentProperties?.reduce(
     (acc, property) => {
@@ -157,6 +160,11 @@ const Investment = () => {
 
   const handleInvest = async (propertyId: string) => {
     try {
+      if (!address) {
+        toast.error("Please connect your wallet first");
+        return;
+      }
+
       const amount = investmentAmounts[propertyId];
       console.log(`Investing ${amount} in property ${propertyId}`);
 
@@ -165,8 +173,17 @@ const Investment = () => {
         return;
       }
 
-      const amountBigInt = BigInt(Number(amount) * 10 ** 18);
-      toast.success("Investment transaction initiated");
+      await handleInvestInProperty(propertyId, amount);
+      
+      // Reset the investment amount after successful investment
+      setInvestmentAmounts(prev => ({
+        ...prev,
+        [propertyId]: ''
+      }));
+      
+      // Close the collapsible after successful investment
+      setExpandedCardId(null);
+      
     } catch (error) {
       console.error("Investment error:", error);
       toast.error("Investment failed");

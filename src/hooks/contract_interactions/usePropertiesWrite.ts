@@ -1,10 +1,9 @@
-
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { Property, PropertyConverter, StarknetProperty } from '@/types/property';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
-import { dummyInvestment } from '@/types/investment_daummy';
+import { num } from 'starknet';
 
 export const usePropertyCreate = () => {
   const { address } = useAccount();
@@ -33,13 +32,10 @@ export const usePropertyCreate = () => {
   };
 
   const handleListInvestmentProperty = async (investment:InvestmentAsset) => {
-  
     console.log("Listing investment property before conversion:", investment);
 
     try {
-    
-      const investmentProp =  InvestmentAssetConverter.toStarknetProperty(investment, address)
-
+      const investmentProp = InvestmentAssetConverter.toStarknetProperty(investment, address)
       console.log("Listing investment property after conversion:", investmentProp);
 
       const tx = await execute("list_investment_property", [investmentProp]);
@@ -53,10 +49,41 @@ export const usePropertyCreate = () => {
       console.error("Error listing investment property:", error);
       let errorMessage = "Failed to list investment property";
       
-      // Extract error message from Starknet error if available
       if (error instanceof Error) {
         if (error.message.includes("Error in the called contract")) {
-          // Extract contract error message
+          const match = error.message.match(/Error message: (.*?)(?:\n|$)/);
+          errorMessage = match ? match[1] : error.message;
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const handleInvestInProperty = async (investmentId: string, amount: string) => {
+    console.log("Investing in property:", { investmentId, amount });
+    
+    try {
+      // Convert amount to the correct format (wei)
+      const amountInWei = num.toBigInt(amount);
+      console.log("Amount in wei:", amountInWei.toString());
+
+      const tx = await execute("invest_in_property", [investmentId, amountInWei]);
+      
+      toast.success(`Investment successful! Transaction hash: ${tx.response.transaction_hash}`);
+      return {
+        status: 'success' as const,
+        data: tx
+      };
+    } catch (error) {
+      console.error("Error investing in property:", error);
+      let errorMessage = "Failed to invest in property";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("Error in the called contract")) {
           const match = error.message.match(/Error message: (.*?)(?:\n|$)/);
           errorMessage = match ? match[1] : error.message;
         } else {
@@ -72,6 +99,7 @@ export const usePropertyCreate = () => {
   return {
     handleListSaleProperty,
     handleListInvestmentProperty,
+    handleInvestInProperty,
     contractStatus
   };
 };
