@@ -19,7 +19,7 @@ import { toast } from "sonner";
 const Profile = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
-  const { disconnect, error: disconnectError } = useDisconnect({});
+  const { disconnect, error: disconnectError, status } = useDisconnect({});
   const navigate = useNavigate();
   const { balances, isLoading: isLoadingBal } = useTokenBalances();
   const {
@@ -30,20 +30,8 @@ const Profile = () => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (!address) {
-      toast.error("Wallet disconnected. Redirecting to home page...");
-      navigate("/");
-    }
-  }, [address, navigate]);
-
-  useEffect(() => {
-    if (disconnectError) {
-      console.error("Disconnect error:", disconnectError);
-      toast.error("Error disconnecting wallet");
-    }
-  }, [disconnectError]);
-
+  
+  
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
