@@ -176,7 +176,12 @@ const AddInvestment = () => {
     }
   };
 
-  const handleUpload = async (files: File[], isDocuments: boolean = false) => {
+  // Add new state for tracking upload status
+  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
+  const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
+
+  const handleUploadFiles = async (files: File[], isDocuments: boolean = false) => {
+    console.log(`Starting ${isDocuments ? 'document' : 'image'} upload...`);
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     setTotalUploadSize((prev) => prev + totalSize);
 
@@ -188,14 +193,18 @@ const AddInvestment = () => {
         isDocuments ? 'documents' : 'images'
       );
       
+      console.log(`Upload successful for ${isDocuments ? 'documents' : 'images'}:`, result);
+      
       if (isDocuments) {
+        setUploadedDocHash(result);
         handleInputChange("legal_detail", result);
       } else {
+        setUploadedImageHash(result);
         handleInputChange("images", result);
       }
 
       toast.success(`${isDocuments ? "Documents" : "Images"} uploaded successfully!`);
-      return isDocuments ? formData.legal_detail : formData.images;
+      return result;
     } catch (error) {
       console.error(`Error uploading ${isDocuments ? "documents" : "images"}:`, error);
       toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
@@ -212,7 +221,21 @@ const AddInvestment = () => {
 
     setIsUploading(true);
     try {
-      console.log("Form data before processing:", formData);
+      console.log("Starting form submission with data:", formData);
+
+      // Handle image uploads if not already uploaded
+      let imagesHash = uploadedImageHash;
+      if (selectedFiles.length > 0 && !uploadedImageHash) {
+        console.log("Uploading images...");
+        imagesHash = await handleUploadFiles(selectedFiles, false);
+      }
+
+      // Handle document uploads if not already uploaded
+      let docsHash = uploadedDocHash;
+      if (selectedDocs.length > 0 && !uploadedDocHash) {
+        console.log("Uploading documents...");
+        docsHash = await handleUploadFiles(selectedDocs, true);
+      }
 
       const processedFormData: InvestmentAsset = {
         ...formData,
@@ -220,6 +243,8 @@ const AddInvestment = () => {
         additional_features: additionalFeatures.join(","),
         risk_factors: riskFactors.join(","),
         highlights: highlights.join(","),
+        images: imagesHash || "",
+        legal_detail: docsHash || "",
       };
 
       console.log("Submitting investment with processed data:", processedFormData);
@@ -227,14 +252,19 @@ const AddInvestment = () => {
       await handleListInvestmentProperty(processedFormData);
 
       toast.success("Investment created successfully!");
+      
+      // Reset upload states after successful submission
       setSelectedFiles([]);
       setSelectedDocs([]);
       setUploadProgress(0);
       setUploadedFiles(0);
       setUploadedSize(0);
       setTotalUploadSize(0);
+      setUploadedImageHash(null);
+      setUploadedDocHash(null);
     } catch (error) {
       console.error("Error creating investment:", error);
+      toast.error("Failed to create investment. Your uploads are saved and won't be repeated if you try again.");
     } finally {
       setIsUploading(false);
     }
