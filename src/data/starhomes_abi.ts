@@ -211,6 +211,10 @@ export const starhomes_abi =[
         "type": "core::integer::u64"
       },
       {
+        "name": "min_investment",
+        "type": "core::integer::u64"
+      },
+      {
         "name": "investment_type",
         "type": "core::felt252"
       },
@@ -394,6 +398,38 @@ export const starhomes_abi =[
         "type": "function",
         "name": "get_sale_properties",
         "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<starhomes::models::property_models::Property>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_investment_properties_by_lister",
+        "inputs": [
+          {
+            "name": "lister_id",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<starhomes::models::investment_model::InvestmentAsset>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_sale_properties_by_agent",
+        "inputs": [
+          {
+            "name": "agent_id",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
         "outputs": [
           {
             "type": "core::array::Array::<starhomes::models::property_models::Property>"

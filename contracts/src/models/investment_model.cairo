@@ -30,6 +30,7 @@ pub struct InvestmentAsset {
     pub construction_status:felt252,
     pub asset_value: u64,
     pub available_staking_amount: u64,
+    pub min_investment:u64,
     pub investment_type: felt252,
     pub construction_year: u64,
     pub property_price: u64,

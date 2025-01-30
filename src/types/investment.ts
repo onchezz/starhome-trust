@@ -49,6 +49,7 @@ export interface InvestmentAsset {
   construction_status:string,
   asset_value: number;
   available_staking_amount: number;
+  min_investment:number;
   investment_type: string;
   construction_year: number;
   property_price:number;
@@ -87,6 +88,7 @@ export class InvestmentAssetConverter {
             construction_status: this.feltToString(starknetProperty.construction_status),
             asset_value: Number(starknetProperty.asset_value),
             available_staking_amount: Number(starknetProperty.available_staking_amount),
+            min_investment:Number(starknetProperty.min_investment),
             investment_type: this.feltToString(starknetProperty.investment_type),
             construction_year: Number(starknetProperty.construction_year),
             property_price: Number(starknetProperty.property_price),

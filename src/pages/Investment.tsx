@@ -24,7 +24,7 @@ import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { InvestmentAssetConverter } from "@/types/investment";
+import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 
 const investmentProperties = [
   {
@@ -239,7 +239,10 @@ const Investment = () => {
             ))
           ) : (
             investmentProperties.map((investmentProperty, index) => {
-              const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
+              const property: InvestmentAsset =
+                InvestmentAssetConverter.fromStarknetProperty(
+                  investmentProperty
+                );
               const displayData = {
                 ...property,
                 currentInvestment: property.available_staking_amount,
@@ -324,20 +327,22 @@ const Investment = () => {
                         >
                           <CollapsibleTrigger asChild>
                             <Button className="w-full">
-                              {address ? "Invest Now" : "invest in this property"}
+                              {address
+                                ? "Invest Now"
+                                : "invest in this property"}
                             </Button>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="mt-4 space-y-4">
                             <Input
                               type="number"
                               placeholder={`Min. ${formatCurrency(
-                                property.minInvestment
+                                property.min_investment
                               )}`}
                               value={investmentAmounts[property.id] || ""}
                               onChange={(e) =>
                                 handleAmountChange(property.id, e.target.value)
                               }
-                              min={property.minInvestment}
+                              min={property.min_investment}
                             />
                             <Button
                               className="w-full bg-primary hover:bg-primary/90"
