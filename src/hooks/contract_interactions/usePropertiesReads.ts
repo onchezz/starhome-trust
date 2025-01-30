@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { num, shortString } from 'starknet';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
+import { useAccount } from '@starknet-react/core';
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 export const usePropertyRead = () => {
+  const { address } = useAccount();
   const salePropertiesHook = useStarHomeReadContract({
     functionName: "get_sale_properties",
   });
@@ -35,7 +37,7 @@ export const usePropertyRead = () => {
   });
 
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
-    queryKey: ['investment_properties'],
+    queryKey: ['investment_properties', address],
     queryFn: async () => {
       console.log("[usePropertyRead] Raw investment properties data:", investmentPropertiesHook);
       
@@ -44,12 +46,14 @@ export const usePropertyRead = () => {
         throw investmentPropertiesHook.error;
       }
       
-      return investmentPropertiesHook.data || [];
+      const investments = investmentPropertiesHook.data || [];
+      console.log("[usePropertyRead] Fetched investments:", investments);
+      return investments;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
-    enabled: !investmentPropertiesHook.isLoading,
+    enabled: !investmentPropertiesHook.isLoading && !!address,
   });
 
   const saleProperties = Array.isArray(propertiesData) ? propertiesData.map((prop: any) => {
@@ -63,10 +67,8 @@ export const usePropertyRead = () => {
   }).filter(Boolean) : [];
 
   const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData.map((prop: any) => {
-    
     console.log("[usePropertyRead] Converting investment property:", prop);
     try {   
-     
       return InvestmentAssetConverter.fromStarknetProperty(prop);
     } catch (error) {
       console.error("[usePropertyRead] Error converting investment property:", error, prop);
@@ -74,11 +76,18 @@ export const usePropertyRead = () => {
     }
   }).filter(Boolean) : [];
 
+  // Filter investments by the current user's address
+  const userInvestments = investmentProperties.filter(inv => 
+    inv?.owner?.toLowerCase() === address?.toLowerCase()
+  );
+
   console.log("[usePropertyRead] Final properties:", {
     saleProperties,
     investmentProperties,
+    userInvestments,
     salePropertiesLoading,
-    investmentPropertiesLoading
+    investmentPropertiesLoading,
+    userAddress: address
   });
 
   return {
@@ -86,6 +95,7 @@ export const usePropertyRead = () => {
     salePropertiesLoading,
     salePropertiesError,
     investmentProperties,
+    userInvestments,
     investmentPropertiesLoading,
     investmentPropertiesError
   };
