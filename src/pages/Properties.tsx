@@ -81,18 +81,64 @@ const Properties = () => {
   const EmptyState = () => (
     <Card className="p-6 text-center">
       <div className="flex flex-col items-center gap-4">
-        <Building className="h-12 w-12 text-muted-foreground" />
+        {error ? (
+          <AlertCircle className="h-12 w-12 text-destructive" />
+        ) : (
+          <Building className="h-12 w-12 text-muted-foreground" />
+        )}
         <div>
-          <h3 className="text-lg font-semibold">No Properties Found</h3>
+          <h3 className="text-lg font-semibold">
+            {error ? "Failed to Load Properties" : "No Properties Found"}
+          </h3>
           <p className="text-muted-foreground">
             {error 
-              ? "Failed to load properties. Please try again later."
+              ? "There was an error loading the properties. Please try again later."
               : "No properties found matching your criteria"}
           </p>
         </div>
       </div>
     </Card>
   );
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <PropertyShimmerCard key={index} />
+          ))}
+        </div>
+      );
+    }
+
+    if (error || !filteredProperties.length) {
+      return <EmptyState />;
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProperties.map((property: Property) => (
+          <PropertyCard
+            key={property.id}
+            id={property.id}
+            title={property.title}
+            location={{
+              city: property.city,
+              state: property.state,
+              country: property.country,
+            }}
+            price={property.price}
+            askingPrice={property.asking_price}
+            interestedClients={property.interestedClients}
+            annualGrowthRate={property.annualGrowthRate}
+            imagesUrl={property.imagesId}
+            propertyType={property.propertyType}
+            status={property.status}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -110,37 +156,7 @@ const Properties = () => {
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
               />
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <PropertyShimmerCard key={index} />
-                  ))}
-                </div>
-              ) : filteredProperties.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProperties.map((property: Property) => (
-                    <PropertyCard
-                      key={property.id}
-                      id={property.id}
-                      title={property.title}
-                      location={{
-                        city: property.city,
-                        state: property.state,
-                        country: property.country,
-                      }}
-                      price={property.price}
-                      askingPrice={property.asking_price}
-                      interestedClients={property.interestedClients}
-                      annualGrowthRate={property.annualGrowthRate}
-                      imagesUrl={property.imagesId}
-                      propertyType={property.propertyType}
-                      status={property.status}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState />
-              )}
+              {renderContent()}
             </div>
           </div>
         </div>
