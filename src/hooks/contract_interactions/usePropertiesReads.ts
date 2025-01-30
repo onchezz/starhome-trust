@@ -10,18 +10,18 @@ export const usePropertyRead = () => {
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
-      const { data, error } = await useStarHomeReadContract({
+      const contractHook = useStarHomeReadContract({
         functionName: "get_sale_properties",
       });
       
-      console.log("[usePropertyRead] Raw properties data:", data);
+      console.log("[usePropertyRead] Contract hook result:", contractHook);
       
-      if (error) {
-        console.error("[usePropertyRead] Error fetching properties:", error);
-        throw error;
+      if (contractHook.error) {
+        console.error("[usePropertyRead] Error fetching properties:", contractHook.error);
+        throw contractHook.error;
       }
       
-      return data;
+      return contractHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -31,18 +31,18 @@ export const usePropertyRead = () => {
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
     queryFn: async () => {
-      const { data, error } = await useStarHomeReadContract({
+      const contractHook = useStarHomeReadContract({
         functionName: "get_investment_properties",
       });
       
-      console.log("[usePropertyRead] Raw investment properties data:", data);
+      console.log("[usePropertyRead] Raw investment properties data:", contractHook);
       
-      if (error) {
-        console.error("[usePropertyRead] Error fetching investment properties:", error);
-        throw error;
+      if (contractHook.error) {
+        console.error("[usePropertyRead] Error fetching investment properties:", contractHook.error);
+        throw contractHook.error;
       }
       
-      return data;
+      return contractHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
@@ -89,29 +89,28 @@ export const usePropertyRead = () => {
 
 export const usePropertyReadById = (id: string) => {
   const [property, setProperty] = useState<Property | null>(null);
-  
-  const { data: propertyData, isLoading, error } = useStarHomeReadContract({
+  const contractHook = useStarHomeReadContract({
     functionName: "get_property",
     args: [id],
   });
 
   useEffect(() => {
-    if (propertyData) {
-      console.log("[usePropertyReadById] Property data:", propertyData);
+    if (contractHook.data) {
+      console.log("[usePropertyReadById] Property data:", contractHook.data);
       try {
-        const convertedProperty = PropertyConverter.fromStarknetProperty(propertyData);
+        const convertedProperty = PropertyConverter.fromStarknetProperty(contractHook.data);
         setProperty(convertedProperty);
       } catch (error) {
         console.error("[usePropertyReadById] Error converting property:", error);
         setProperty(null);
       }
     }
-  }, [propertyData]);
+  }, [contractHook.data]);
 
   return { 
     property, 
-    isLoading, 
-    error 
+    isLoading: contractHook.isLoading, 
+    error: contractHook.error 
   };
 };
 
@@ -119,19 +118,19 @@ export const useAgentProperties = (agentAddress: string) => {
   const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['agent_properties', agentAddress],
     queryFn: async () => {
-      const { data, error } = await useStarHomeReadContract({
+      const contractHook = useStarHomeReadContract({
         functionName: "get_sale_properties_by_agent",
         args: [agentAddress],
       });
       
-      console.log("[useAgentProperties] Raw agent properties data:", data);
+      console.log("[useAgentProperties] Raw agent properties data:", contractHook);
       
-      if (error) {
-        console.error("[useAgentProperties] Error fetching agent properties:", error);
-        throw error;
+      if (contractHook.error) {
+        console.error("[useAgentProperties] Error fetching agent properties:", contractHook.error);
+        throw contractHook.error;
       }
       
-      return data;
+      return contractHook.data;
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
