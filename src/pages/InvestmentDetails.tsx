@@ -72,7 +72,10 @@ const InvestmentDetails = () => {
     if (typeof value === "object" && value._type === "BigInt") {
       return shortString.decodeShortString(value.value.toString());
     }
-    return value.toString();
+    if (typeof value === 'object' && value.value) {
+      return value.value.toString();
+    }
+    return String(value);
   };
 
   if (isLoading) {
@@ -118,6 +121,11 @@ const InvestmentDetails = () => {
   const constructionStatus = getBigIntValue(investment.construction_status);
   const expectedRoi = getBigIntValue(investment.expected_roi);
   const taxBenefits = getBigIntValue(investment.tax_benefits);
+  const highlights = getBigIntValue(investment.highlights);
+  const marketAnalysis = getBigIntValue(investment.market_analysis);
+  const riskFactors = getBigIntValue(investment.risk_factors);
+  const legalDetail = getBigIntValue(investment.legal_detail);
+  const additionalFeatures = getBigIntValue(investment.additional_features);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -230,7 +238,7 @@ const InvestmentDetails = () => {
             </CardHeader>
             <CardContent>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {safeSplit(investment.highlights).map((highlight, index) => (
+                {safeSplit(highlights).map((highlight, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <div className="h-2 w-2 bg-primary rounded-full" />
                     {highlight.trim()}
@@ -349,7 +357,7 @@ const InvestmentDetails = () => {
                 <div>
                   <h4 className="font-semibold mb-2">Legal Details</h4>
                   <ul className="space-y-2">
-                    {safeSplit(investment.legal_detail).map((detail, index) => (
+                    {safeSplit(legalDetail).map((detail, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <FileText className="h-4 w-4" />
                         {detail.trim()}
