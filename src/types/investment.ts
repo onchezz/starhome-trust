@@ -87,19 +87,29 @@ export class InvestmentAssetConverter {
     static feltToString(felt: BigNumberish | null): string {
         if (!felt) return '';
         
-        if (typeof felt === 'object' && '_type' in felt && felt._type === 'BigInt') {
-            return shortString.decodeShortString(felt.value.toString());
+        try {
+            if (typeof felt === 'object' && '_type' in felt && felt._type === 'BigInt') {
+                return shortString.decodeShortString(felt.value?.toString() || '');
+            }
+            return shortString.decodeShortString(felt.toString());
+        } catch (error) {
+            console.error("Error converting felt to string:", error);
+            return '';
         }
-        return shortString.decodeShortString(felt.toString());
     }
 
     static addressToString(address: BigNumberish | null): string {
         if (!address) return '';
         
-        if (typeof address === 'object' && '_type' in address && address._type === 'BigInt') {
-            return num.toHex(address.value.toString());
+        try {
+            if (typeof address === 'object' && '_type' in address && address._type === 'BigInt') {
+                return num.toHex(address.value?.toString() || '0');
+            }
+            return num.toHex(address);
+        } catch (error) {
+            console.error("Error converting address to string:", error);
+            return '';
         }
-        return num.toHex(address);
     }
 
     static fromStarknetProperty(starknetProperty: any): InvestmentAsset {
@@ -147,7 +157,6 @@ export class InvestmentAssetConverter {
     }
 
     static toStarknetProperty(formData: InvestmentAsset, address: string): InvestmentAsset {
-
         return {
             id: formData.id,
             name: formData.name,
@@ -162,21 +171,21 @@ export class InvestmentAssetConverter {
                 longitude: formData.location.longitude
             },
             size: formData.size,
-            investor_id: address|| formData.investor_id,
-            owner:address||formData.owner,
+            investor_id: address || formData.investor_id,
+            owner: address || formData.owner,
             construction_status: formData.construction_status,
             asset_value: formData.available_staking_amount,
             available_staking_amount: formData.available_staking_amount,
             investment_type: formData.investment_type,
             construction_year: formData.construction_year,
-            property_price: formData.property_price||formData.available_staking_amount,
+            property_price: formData.property_price || formData.available_staking_amount,
             expected_roi: formData.expected_roi,
             rental_income: formData.rental_income,
             maintenance_costs: formData.maintenance_costs,
-            tax_benefits: formData.tax_benefits||"none yet",
+            tax_benefits: formData.tax_benefits || "none yet",
             highlights: formData.highlights,
             market_analysis: formData.market_analysis,
-            risk_factors: formData.risk_factors||"no risk factors",
+            risk_factors: formData.risk_factors || "no risk factors",
             legal_detail: formData.legal_detail,
             additional_features: formData.additional_features,
             images: formData.images,
