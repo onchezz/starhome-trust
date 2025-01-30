@@ -68,10 +68,10 @@ export const usePropertyCreate = () => {
     
     try {
       // Convert amount to the correct format (wei)
-      const amountInWei = num.toBigInt(amount);
-      console.log("Amount in wei:", amountInWei.toString());
+      // const amountInWei = num.toBigInt(amount);
+      console.log("Amount :", amount);
 
-      const tx = await execute("invest_in_property", [investmentId, amountInWei]);
+      const tx = await execute("invest_in_property", [investmentId, amount]);
       
       toast.success(`Investment successful! Transaction hash: ${tx.response.transaction_hash}`);
       return {

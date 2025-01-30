@@ -23,6 +23,7 @@ pub mod AssetStakingComponent {
         pub reward_rate: Map::<ContractAddress, u256>,
         pub duration: Map::<ContractAddress, u256>,
         pub finish_at: Map::<ContractAddress, u256>,
+        pub number_of_investors_per_investment: Map::<felt252, u256>,
         // Reward tracking
         pub current_reward_per_staked_token: Map::<
             ContractAddress, u256,
@@ -75,6 +76,7 @@ pub mod AssetStakingComponent {
             self._update_rewards(user, property_id);
 
             self.balance_of.write(user, self.balance_of.read(user) + amount);
+
             self.total_supply.write(self.total_supply.read() + amount);
             self
                 .staking_token
@@ -82,6 +84,7 @@ pub mod AssetStakingComponent {
                 .read()
                 .transfer_from(user, get_contract_address(), amount);
             self.emit(Deposit { user, amount });
+            self.add_number_of_investor_per_investment_made(property_id);
             true
         }
 
@@ -102,6 +105,7 @@ pub mod AssetStakingComponent {
             self.balance_of.write(user, self.balance_of.read(user) - amount);
             self.total_supply.write(self.total_supply.read() - amount);
             self.staking_token.entry(property_id).read().transfer(user, amount);
+            self.reduce_number_of_investor_per_investment_made(property_id);
 
             self.emit(Withdrawal { user, amount });
             true
@@ -199,17 +203,38 @@ pub mod AssetStakingComponent {
             token_address: ContractAddress,
             property_id: felt252,
         ) {
+            self.number_of_investors_per_investment.write(property_id, 0);
             self
                 .staking_token
                 .write(property_id, IERC20Dispatcher { contract_address: token_address })
         }
 
+
         fn get_property_token(
-            ref self: ComponentState<TContractState>, property_id: felt252,
+            self: @ComponentState<TContractState>, property_id: felt252,
         ) -> ContractAddress {
             let token = self.staking_token.entry(property_id).read();
             token.contract_address
         }
+        fn get_number_of_investor_per_investment(
+            self: @ComponentState<TContractState>, property_id: felt252,
+        ) -> u256 {
+            let investors = self.number_of_investors_per_investment.entry(property_id).read();
+            investors
+        }
+        fn add_number_of_investor_per_investment_made(
+            ref self: ComponentState<TContractState>, property_id: felt252,
+        ) {
+            let investors = self.number_of_investors_per_investment.entry(property_id).read();
+            self.number_of_investors_per_investment.entry(property_id).write(investors + 1);
+        }
+        fn reduce_number_of_investor_per_investment_made(
+            ref self: ComponentState<TContractState>, property_id: felt252,
+        ) {
+            let investors = self.number_of_investors_per_investment.entry(property_id).read();
+            self.number_of_investors_per_investment.entry(property_id).write(investors - 1);
+        }
+
 
         fn _update_rewards(
             ref self: ComponentState<TContractState>,
