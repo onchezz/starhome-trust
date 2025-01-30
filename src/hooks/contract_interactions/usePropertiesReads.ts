@@ -3,7 +3,7 @@ import { Property, PropertyConverter } from '@/types/property';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { num, shortString } from 'starknet';
-import { InvestmentAssetConverter } from '@/types/investment';
+import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -118,7 +118,7 @@ export const usePropertyReadById = (id: string) => {
   };
 };
 export const useInvestmentAssetReadById = (id: string) => {
-  const [property, setProperty] = useState<Property | null>(null);
+  const [investment, setInvestment] = useState<InvestmentAsset | null>(null);
   const contractHook = useStarHomeReadContract({
     functionName: "get_investment",
     args: [id],
@@ -128,17 +128,17 @@ export const useInvestmentAssetReadById = (id: string) => {
     if (contractHook.data) {
       console.log("[useInvestmentAssetReadById] Property data:", contractHook.data);
       try {
-        const convertedProperty = PropertyConverter.fromStarknetProperty(contractHook.data);
-        setProperty(convertedProperty);
+        const convertedProperty:InvestmentAsset = InvestmentAssetConverter.fromStarknetProperty(contractHook.data);
+        setInvestment(convertedProperty);
       } catch (error) {
         console.error("[usePropertyReadById] Error converting property:", error);
-        setProperty(null);
+        setInvestment(null);
       }
     }
   }, [contractHook.data]);
 
   return { 
-    property, 
+    investment, 
     isLoading: contractHook.isLoading, 
     error: contractHook.error 
   };
