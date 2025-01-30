@@ -13,6 +13,7 @@ import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrit
 import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
 import UploadGrid from "@/components/investment/UploadGrid";
 import BulletPointsGrid from "@/components/investment/BulletPointsGrid";
+import { handleImageUpload } from "@/utils/imageUploadUtils";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -65,7 +66,7 @@ const AddInvestment = () => {
         "property_price",
         "rental_income",
         "maintenance_costs",
-        "min_Investment_amount",
+        "min_investment_amount",
         "available_staking_amount",
       ].includes(field)
     ) {
@@ -142,27 +143,26 @@ const AddInvestment = () => {
     setTotalUploadSize((prev) => prev + totalSize);
 
     try {
-      const upload = await pinata.upload.fileArray(files).addMetadata({
-        name: `investment-${formData.id}-${isDocuments ? "docs" : "images"}`,
-        keyValues: {
-          type: isDocuments ? "documents" : "images",
-          propertyId: formData.id,
-          uploadDate: new Date().toISOString(),
-        },
-      });
-
-      const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
-
       if (isDocuments) {
+        const upload = await pinata.upload.fileArray(files).addMetadata({
+          name: `investment-${formData.id}-docs`,
+          keyValues: {
+            type: "documents",
+            propertyId: formData.id,
+            uploadDate: new Date().toISOString(),
+          },
+        });
+        const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
         handleInputChange("legal_detail", ipfsUrl);
       } else {
-        handleInputChange("images", ipfsUrl);
+        const combinedString = await handleImageUpload(files, pinata, formData.id);
+        handleInputChange("images", combinedString);
       }
 
       toast.success(
         `${isDocuments ? "Documents" : "Images"} uploaded successfully!`
       );
-      return ipfsUrl;
+      return isDocuments ? formData.legal_detail : formData.images;
     } catch (error) {
       console.error(
         `Error uploading ${isDocuments ? "documents" : "images"}:`,
@@ -172,16 +172,18 @@ const AddInvestment = () => {
       throw error;
     }
   };
-const handleTest = async ()=>{
-   const processedFormData = {
-     ...formData,
-     isActive: formData.is_active === true,
-     additionalFeatures: additionalFeatures.join(","),
-     riskFactors: riskFactors.join(","),
-     highlights: highlights.join(","),
-   };
-  await handleListInvestmentProperty(processedFormData);
-}
+
+  const handleTest = async () => {
+    const processedFormData = {
+      ...formData,
+      isActive: formData.is_active === true,
+      additionalFeatures: additionalFeatures.join(","),
+      riskFactors: riskFactors.join(","),
+      highlights: highlights.join(","),
+    };
+    await handleListInvestmentProperty(processedFormData);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {

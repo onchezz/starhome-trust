@@ -4,7 +4,6 @@ import { useAccount } from "@starknet-react/core";
 import { Property } from "@/types/property";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
@@ -17,6 +16,7 @@ import ImageUploader from "@/components/property/form/ImageUploader";
 import { useParams } from "react-router-dom";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import pinata from "@/hooks/services_hooks/pinata";
+import { handleImageUpload } from "@/utils/imageUploadUtils";
 
 const generateShortUUID = () => {
   const fullUUID = uuidv4();
@@ -32,7 +32,6 @@ const CreateProperty = () => {
     salePropertiesLoading: isLoadingProperty,
   } = usePropertyRead();
 
-  // Find the existing property if we have an ID
   const existingProperty =
     id && properties
       ? properties.find((p: Property) => p.id === id)
@@ -145,30 +144,16 @@ const CreateProperty = () => {
       setUploadProgress(0);
 
       try {
-        // const group = await pinata.groups.create({
-        //   name: `property-${formData.id}-images`,
-        // });
-
-        const upload = await pinata.upload
-          .fileArray(selectedFiles)
-          .addMetadata({
-            name: `property-${formData.id}-images`,
-            keyValues: {
-              propertyId: formData.id,
-              uploadDate: new Date().toISOString(),
-            },
-          });
-
-        // const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
-        setUrl(upload.IpfsHash);
-        handleInputChange("imagesId", upload.IpfsHash);
+        const combinedString = await handleImageUpload(selectedFiles, pinata, formData.id);
+        setUrl(combinedString);
+        handleInputChange("imagesId", combinedString);
         toast.success("Images uploaded successfully!");
 
         const status = await handleListSaleProperty({
           ...formData,
           owner: address,
           agentId: address,
-          imagesId: upload.IpfsHash,
+          imagesId: combinedString,
         } as Property);
 
         if (status.status === "success") {
@@ -213,7 +198,6 @@ const CreateProperty = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* <Navbar /> */}
       <div className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
         <Card className="animate-fade-in shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader className="space-y-2 border-b border-gray-100 bg-white/50 backdrop-blur-sm">
