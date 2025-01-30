@@ -133,19 +133,27 @@ const Properties = () => {
   );
 
   const renderContent = () => {
+    // Always show loading state first
     if (isLoading) {
       return <LoadingState />;
     }
 
+    // Show error state if there's an error
     if (error) {
       return <EmptyState />;
     }
 
-    if (!filteredProperties.length) {
-      return <EmptyState />;
+    // Show properties if we have them after filtering
+    if (properties && properties.length > 0) {
+      // If we have properties but none match the filters, show empty state
+      if (filteredProperties.length === 0) {
+        return <EmptyState />;
+      }
+      return <PropertiesList />;
     }
 
-    return <PropertiesList />;
+    // Show empty state if we have no properties at all
+    return <EmptyState />;
   };
 
   return (
