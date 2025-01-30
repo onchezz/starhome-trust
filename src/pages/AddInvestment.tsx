@@ -13,7 +13,8 @@ import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrit
 import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
 import UploadGrid from "@/components/investment/UploadGrid";
 import BulletPointsGrid from "@/components/investment/BulletPointsGrid";
-import { handleImageUpload } from "@/utils/imageUploadUtils";
+import { handleFileUpload } from "@/utils/uploadUtils";
+import MapLocationPicker from "@/components/MapLocationPicker";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -33,6 +34,7 @@ const AddInvestment = () => {
   const [totalUploadSize, setTotalUploadSize] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
 
   // State for bullet points
   const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
@@ -60,21 +62,19 @@ const AddInvestment = () => {
   });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
-    if (
-      [
-        "asset_value",
-        "property_price",
-        "rental_income",
-        "maintenance_costs",
-        "min_investment_amount",
-        "available_staking_amount",
-      ].includes(field)
-    ) {
-      value = BigInt(value || 0).toString();
-    } else if (field === "construction_year") {
-      value = Number(value || 0);
-    }
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleLocationSelect = (location: {
+    latitude: string;
+    longitude: string;
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+  }) => {
+    handleInputChange("location", location.address);
+    console.log("[AddInvestment] Location selected:", location);
   };
 
   const validateFiles = (files: File[], isDocument: boolean = false) => {
@@ -143,31 +143,23 @@ const AddInvestment = () => {
     setTotalUploadSize((prev) => prev + totalSize);
 
     try {
+      const result = await handleFileUpload(
+        files, 
+        pinata, 
+        formData.id || "", 
+        isDocuments ? 'documents' : 'images'
+      );
+      
       if (isDocuments) {
-        const upload = await pinata.upload.fileArray(files).addMetadata({
-          name: `investment-${formData.id}-docs`,
-          keyValues: {
-            type: "documents",
-            propertyId: formData.id,
-            uploadDate: new Date().toISOString(),
-          },
-        });
-        
-        handleInputChange("legal_detail", upload.IpfsHash);
+        handleInputChange("legal_detail", result);
       } else {
-        const combinedString = await handleImageUpload(files, pinata, formData.id);
-        handleInputChange("images", combinedString);
+        handleInputChange("images", result);
       }
 
-      toast.success(
-        `${isDocuments ? "Documents" : "Images"} uploaded successfully!`
-      );
+      toast.success(`${isDocuments ? "Documents" : "Images"} uploaded successfully!`);
       return isDocuments ? formData.legal_detail : formData.images;
     } catch (error) {
-      console.error(
-        `Error uploading ${isDocuments ? "documents" : "images"}:`,
-        error
-      );
+      console.error(`Error uploading ${isDocuments ? "documents" : "images"}:`, error);
       toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
       throw error;
     }
@@ -239,6 +231,23 @@ const AddInvestment = () => {
                   <BasicInformation
                     formData={formData}
                     handleInputChange={handleInputChange}
+                  />
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Location
+                  </h2>
+                  <MapLocationPicker
+                    onLocationSelect={handleLocationSelect}
+                    initialLocation={
+                      formData.latitude && formData.longitude
+                        ? {
+                            latitude: formData.latitude.toString(),
+                            longitude: formData.longitude.toString(),
+                          }
+                        : undefined
+                    }
                   />
                 </section>
 
