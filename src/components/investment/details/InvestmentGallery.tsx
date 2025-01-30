@@ -15,6 +15,11 @@ export const InvestmentGallery = ({ imagesId, documentsId }: InvestmentGalleryPr
   const { imageUrls } = parseImagesData(imagesId);
   const { imageUrls: documentUrls } = parseImagesData(documentsId);
 
+  const getFileExtension = (url: string) => {
+    const parts = url.split('.');
+    return parts.length > 1 ? parts.pop()?.toLowerCase() || '' : '';
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -54,7 +59,7 @@ export const InvestmentGallery = ({ imagesId, documentsId }: InvestmentGalleryPr
                 rel="noopener noreferrer"
                 className="flex items-center p-4 space-x-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <FileIcon filename={url} />
+                <FileIcon extension={getFileExtension(url)} />
                 <span className="text-sm font-medium">Document {index + 1}</span>
               </a>
             ))}

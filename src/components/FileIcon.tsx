@@ -2,42 +2,42 @@ import React from 'react';
 import { 
   FileText, 
   FileImage, 
-  FilePdf, 
+  File,
   FileCode, 
-  FileArchive,
-  File
+  FileArchive
 } from 'lucide-react';
 
 interface FileIconProps {
   extension: string;
+  className?: string;
 }
 
-export const FileIcon = ({ extension }: FileIconProps) => {
+export const FileIcon = ({ extension, className = "w-6 h-6" }: FileIconProps) => {
   const getIcon = () => {
     switch (extension.toLowerCase()) {
       case 'pdf':
-        return <FilePdf className="w-6 h-6 text-red-500" />;
+        return <FileText className={`${className} text-red-500`} />;
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
-        return <FileImage className="w-6 h-6 text-blue-500" />;
+        return <FileImage className={`${className} text-blue-500`} />;
       case 'txt':
       case 'doc':
       case 'docx':
-        return <FileText className="w-6 h-6 text-gray-500" />;
+        return <FileText className={`${className} text-gray-500`} />;
       case 'zip':
       case 'rar':
-        return <FileArchive className="w-6 h-6 text-yellow-500" />;
+        return <FileArchive className={`${className} text-yellow-500`} />;
       case 'js':
       case 'ts':
       case 'jsx':
       case 'tsx':
       case 'html':
       case 'css':
-        return <FileCode className="w-6 h-6 text-green-500" />;
+        return <FileCode className={`${className} text-green-500`} />;
       default:
-        return <File className="w-6 h-6 text-gray-400" />;
+        return <File className={`${className} text-gray-400`} />;
     }
   };
 
