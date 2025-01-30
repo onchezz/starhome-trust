@@ -15,6 +15,8 @@ import UploadGrid from "@/components/investment/UploadGrid";
 import BulletPointsGrid from "@/components/investment/BulletPointsGrid";
 import { handleFileUpload } from "@/utils/uploadUtils";
 import MapLocationPicker from "@/components/MapLocationPicker";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -183,17 +185,6 @@ const AddInvestment = () => {
     }
   };
 
-  // const handleTest = async () => {
-  //   const processedFormData = {
-  //     ...formData,
-  //     isActive: formData.is_active === true,
-  //     additionalFeatures: additionalFeatures.join(","),
-  //     riskFactors: riskFactors.join(","),
-  //     highlights: highlights.join(","),
-  //   };
-  //   await handleListInvestmentProperty(processedFormData);
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {
@@ -205,7 +196,6 @@ const AddInvestment = () => {
     try {
       console.log("Form data before processing:", formData);
 
-      // Convert values to strings while maintaining numeric validation
       const processedFormData = {
         ...formData,
         isActive: formData.is_active === true,
@@ -230,7 +220,6 @@ const AddInvestment = () => {
       setTotalUploadSize(0);
     } catch (error) {
       console.error("Error creating investment:", error);
-      // Error is already handled by usePropertyCreate hook
     } finally {
       setIsUploading(false);
     }
@@ -269,6 +258,58 @@ const AddInvestment = () => {
                         : undefined
                     }
                   />
+                  
+                  {/* Display selected location details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="space-y-2">
+                      <Label>Address</Label>
+                      <Input
+                        value={formData.location.address}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>City</Label>
+                      <Input
+                        value={formData.location.city}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>State</Label>
+                      <Input
+                        value={formData.location.state}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Country</Label>
+                      <Input
+                        value={formData.location.country}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Latitude</Label>
+                      <Input
+                        value={formData.location.latitude}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Longitude</Label>
+                      <Input
+                        value={formData.location.longitude}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                  </div>
                 </section>
 
                 <section className="space-y-4">
@@ -319,7 +360,6 @@ const AddInvestment = () => {
 
               <Button
                 type="submit"
-                // onClick={handleTest}
                 disabled={isUploading || contractStatus.isPending}
                 className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >
