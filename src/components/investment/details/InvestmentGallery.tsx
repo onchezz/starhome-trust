@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ImageGallery } from "@/components/investment/ImageGallery";
-import { FileIcon } from "@/components/FileIcon";
 import { parseImagesData } from "@/utils/imageUtils";
 
 interface InvestmentGalleryProps {
