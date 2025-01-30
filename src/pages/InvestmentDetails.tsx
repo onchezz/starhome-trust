@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/useInvestmentAssetReadById";
+import { ImageGallery } from "@/components/investment/ImageGallery";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
