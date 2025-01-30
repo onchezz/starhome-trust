@@ -27,24 +27,6 @@ export const tokenOptions = [
   { symbol: "STRK", address: universalStrkAddress },
 ] as const;
 
-export const propertyTypes = [
-  "House",
-  "Apartment",
-  "Condo",
-  "Townhouse",
-  "Villa",
-  "Land",
-  "Commercial",
-  "Other",
-] as const;
-
-export const statusOptions = [
-  "Available",
-  "Sold",
-  "Under Contract",
-  "Pending",
-  "Off Market",
-] as const;
 
 export {
   pinataImageUrl,

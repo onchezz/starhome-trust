@@ -97,7 +97,7 @@ const AddInvestment = () => {
     country: string;
   }) => {
     // Trim the address to only include the street part
-    const addressParts = location.address.split(',');
+    const addressParts = location.address.split(",");
     const streetAddress = addressParts[0].trim();
 
     setFormData((prev) => ({
@@ -109,14 +109,14 @@ const AddInvestment = () => {
         country: location.country,
         latitude: location.latitude,
         longitude: location.longitude,
-      }
+      },
     }));
     console.log("[AddInvestment] Location selected:", location);
     console.log("[AddInvestment] Trimmed address:", streetAddress);
   };
 
   const validateFiles = (files: File[], isDocument: boolean = false) => {
-    const maxSize = isDocument ? 20 * 1024 * 1024 : 10 * 1024 * 1024;
+    const maxSize = isDocument ? 10 * 1024 * 1024 : 10 * 1024 * 1024;
 
     return files.filter((file) => {
       if (isDocument) {
@@ -177,24 +177,32 @@ const AddInvestment = () => {
   };
 
   // Add new state for tracking upload status
-  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
+  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(
+    null
+  );
   const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
 
-  const handleUploadFiles = async (files: File[], isDocuments: boolean = false) => {
-    console.log(`Starting ${isDocuments ? 'document' : 'image'} upload...`);
+  const handleUploadFiles = async (
+    files: File[],
+    isDocuments: boolean = false
+  ) => {
+    console.log(`Starting ${isDocuments ? "document" : "image"} upload...`);
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     setTotalUploadSize((prev) => prev + totalSize);
 
     try {
       const result = await handleFileUpload(
-        files, 
-        pinata, 
-        formData.id || "", 
-        isDocuments ? 'documents' : 'images'
+        files,
+        pinata,
+        formData.id || "",
+        isDocuments ? "documents" : "images"
       );
-      
-      console.log(`Upload successful for ${isDocuments ? 'documents' : 'images'}:`, result);
-      
+
+      console.log(
+        `Upload successful for ${isDocuments ? "documents" : "images"}:`,
+        result
+      );
+
       if (isDocuments) {
         setUploadedDocHash(result);
         handleInputChange("legal_detail", result);
@@ -203,10 +211,15 @@ const AddInvestment = () => {
         handleInputChange("images", result);
       }
 
-      toast.success(`${isDocuments ? "Documents" : "Images"} uploaded successfully!`);
+      toast.success(
+        `${isDocuments ? "Documents" : "Images"} uploaded successfully!`
+      );
       return result;
     } catch (error) {
-      console.error(`Error uploading ${isDocuments ? "documents" : "images"}:`, error);
+      console.error(
+        `Error uploading ${isDocuments ? "documents" : "images"}:`,
+        error
+      );
       toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
       throw error;
     }
@@ -225,6 +238,7 @@ const AddInvestment = () => {
 
       // Handle image uploads if not already uploaded
       let imagesHash = uploadedImageHash;
+      
       if (selectedFiles.length > 0 && !uploadedImageHash) {
         console.log("Uploading images...");
         imagesHash = await handleUploadFiles(selectedFiles, false);
@@ -247,12 +261,15 @@ const AddInvestment = () => {
         legal_detail: docsHash || "",
       };
 
-      console.log("Submitting investment with processed data:", processedFormData);
+      console.log(
+        "Submitting investment with processed data:",
+        processedFormData
+      );
 
       await handleListInvestmentProperty(processedFormData);
 
       toast.success("Investment created successfully!");
-      
+
       // Reset upload states after successful submission
       setSelectedFiles([]);
       setSelectedDocs([]);
@@ -264,7 +281,9 @@ const AddInvestment = () => {
       setUploadedDocHash(null);
     } catch (error) {
       console.error("Error creating investment:", error);
-      toast.error("Failed to create investment. Your uploads are saved and won't be repeated if you try again.");
+      toast.error(
+        "Failed to create investment. Your uploads are saved and won't be repeated if you try again."
+      );
     } finally {
       setIsUploading(false);
     }
@@ -303,7 +322,7 @@ const AddInvestment = () => {
                         : undefined
                     }
                   />
-                  
+
                   {/* Display selected location details */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div className="space-y-2">

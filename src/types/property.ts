@@ -1,6 +1,24 @@
 
 
 import { BigNumberish, num, shortString } from "starknet";
+export const propertyTypes = [
+  "House",
+  "Apartment",
+  "Condo",
+  "Townhouse",
+  "Villa",
+  "Land",
+  "Commercial",
+  "Other",
+] as const;
+
+export const statusOptions = [
+  "Available",
+  "Sold",
+  "Under Contract",
+  "Pending",
+  "Off Market",
+] as const;
 
 export interface StarknetProperty {
   id: string;

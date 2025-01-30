@@ -1,4 +1,4 @@
-import { InvestmentAsset } from "../investment";
+import { InvestmentAsset } from "./investment";
 
 // export interface MarketAnalysis {
 //   area_growth: string;

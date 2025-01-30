@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { Property, PropertyConverter, StarknetProperty } from '@/types/property';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
-import { dummyInvestment } from '@/types/starknet_types/investment_daummy';
+import { dummyInvestment } from '@/types/investment_daummy';
 
 export const usePropertyCreate = () => {
   const { address } = useAccount();

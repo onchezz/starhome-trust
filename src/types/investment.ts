@@ -148,7 +148,7 @@ export class InvestmentAssetConverter {
             investor_id: address|| formData.investor_id,
             owner:address||formData.owner,
             construction_status: formData.construction_status,
-            asset_value: formData.asset_value,
+            asset_value: formData.available_staking_amount,
             available_staking_amount: formData.available_staking_amount,
             investment_type: formData.investment_type,
             construction_year: formData.construction_year,

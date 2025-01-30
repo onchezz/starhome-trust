@@ -16,10 +16,7 @@ interface FileUploadSectionProps {
     event: React.ChangeEvent<HTMLInputElement>,
     isDocument: boolean
   ) => void;
-  handleDrop: (
-    e: React.DragEvent<HTMLDivElement>,
-    isDocument: boolean
-  ) => void;
+  handleDrop: (e: React.DragEvent<HTMLDivElement>, isDocument: boolean) => void;
   setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedDocs: React.Dispatch<React.SetStateAction<File[]>>;
   setPreviewUrl: React.Dispatch<React.SetStateAction<string | null>>;
@@ -45,7 +42,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
 }) => {
   const isDocuments = type === "documents";
   const files = isDocuments ? selectedDocs : selectedFiles;
-  
+
   return (
     <div className="space-y-6 animate-fade-in">
       <Label>{isDocuments ? "Legal Documents" : "Property Images"}</Label>
@@ -91,7 +88,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
           </p>
           <p className="text-xs text-gray-500 mt-1">
             {isDocuments
-              ? "PDF, DOC, DOCX up to 20MB each"
+              ? "PDF, DOC, DOCX up to 10MB each"
               : "PNG, JPG, WEBP up to 10MB each"}
           </p>
         </div>
@@ -99,12 +96,14 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
 
       {/* File Preview */}
       {files.length > 0 && (
-        <div className={`mt-4 ${
-          isDocuments 
-            ? "space-y-2" 
-            : "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
-        }`}>
-          {files.map((file, index) => (
+        <div
+          className={`mt-4 ${
+            isDocuments
+              ? "space-y-2"
+              : "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+          }`}
+        >
+          {files.map((file, index) =>
             isDocuments ? (
               <div
                 key={index}
@@ -117,9 +116,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
                       {file.name}
                     </p>
                     <div className="flex space-x-2 text-xs text-gray-500">
-                      <span>
-                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                      </span>
+                      <span>{(file.size / 1024 / 1024).toFixed(2)} MB</span>
                       <span>•</span>
                       <span>{file.type}</span>
                     </div>
@@ -223,7 +220,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
                 </button>
               </div>
             )
-          ))}
+          )}
         </div>
       )}
 
