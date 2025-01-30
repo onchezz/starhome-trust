@@ -11,6 +11,14 @@ import { toast } from "sonner";
 import { useInvestmentsCache } from "@/hooks/contract_interactions/useInvestmentsCache";
 import { ImageGallery } from "@/components/investment/ImageGallery";
 import { InvestmentAsset } from "@/types/investment";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
@@ -315,3 +323,4 @@ const InvestmentDetails = () => {
 };
 
 export default InvestmentDetails;
+
