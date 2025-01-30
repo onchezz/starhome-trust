@@ -55,10 +55,6 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
     },
   };
 
-  const getFileExtension = (filename: string) => {
-    return filename.split('.').pop() || '';
-  };
-
   return (
     <div className="space-y-6 animate-fade-in">
       <Label>{isDocuments ? "Legal Documents" : "Property Images"}</Label>
@@ -126,7 +122,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <FileIcon extension={getFileExtension(file.name)} />
+                  <FileIcon filename={file.name} className="h-6 w-6" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">
                       {file.name}
