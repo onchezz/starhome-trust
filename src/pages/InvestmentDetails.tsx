@@ -1,24 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useAccount } from "@starknet-react/core";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { shortString } from "starknet";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { InvestmentGallery } from "@/components/investment/details/InvestmentGallery";
 import { InvestmentLocation } from "@/components/investment/details/InvestmentLocation";
-import { InvestmentHeader } from "@/components/investment/details/InvestmentHeader";
 import { InvestmentProgress } from "@/components/investment/details/InvestmentProgress";
 import { DocumentList } from "@/components/investment/details/DocumentList";
 import { PropertyOverview } from "@/components/investment/details/PropertyOverview";
 import { FinancialOverview } from "@/components/investment/details/FinancialOverview";
-import { formatCurrency } from "@/utils/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
   const { address } = useAccount();
-  const [investmentAmount, setInvestmentAmount] = useState("");
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [investmentAmount, setInvestmentAmount] = React.useState("");
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
 
   const handleInvest = () => {
@@ -79,11 +76,7 @@ const InvestmentDetails = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-24">
         <div className="max-w-6xl mx-auto space-y-8">
-          <InvestmentHeader
-            name={getBigIntValue(investment.name)}
-            isDrawerOpen={isDrawerOpen}
-            setIsDrawerOpen={setIsDrawerOpen}
-          />
+          <h1 className="text-3xl font-bold">{getBigIntValue(investment.name)}</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InvestmentProgress
@@ -117,43 +110,61 @@ const InvestmentDetails = () => {
             maintenanceCosts={maintenanceCosts}
           />
 
-          <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-            <SheetContent className="w-[400px]">
-              <div className="space-y-6 py-6">
-                <h3 className="text-lg font-semibold">Additional Information</h3>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Highlights</h4>
-                    <p className="text-sm text-gray-600">
-                      {getBigIntValue(investment.highlights)}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Market Analysis</h4>
-                    <p className="text-sm text-gray-600">
-                      {getBigIntValue(investment.market_analysis)}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Risk Factors</h4>
-                    <p className="text-sm text-gray-600">
-                      {getBigIntValue(investment.risk_factors)}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Legal Details</h4>
-                    <DocumentList documentsId={investment.legal_detail || ""} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Additional Features</h4>
-                    <p className="text-sm text-gray-600">
-                      {getBigIntValue(investment.additional_features)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+          {/* Additional Information Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Highlights</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  {getBigIntValue(investment.highlights)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Market Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  {getBigIntValue(investment.market_analysis)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Risk Factors</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  {getBigIntValue(investment.risk_factors)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Additional Features</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  {getBigIntValue(investment.additional_features)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle>Legal Documents</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DocumentList documentsId={investment.legal_detail || ""} />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
