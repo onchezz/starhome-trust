@@ -303,20 +303,6 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
-    "name": "core::integer::u256",
-    "members": [
-      {
-        "name": "low",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "high",
-        "type": "core::integer::u128"
-      }
-    ]
-  },
-  {
     "type": "interface",
     "name": "starhomes::interfaces::iStarhomes::IStarhomesContract",
     "items": [
@@ -358,7 +344,7 @@ export const starhomes_abi =[
           },
           {
             "name": "amount",
-            "type": "core::integer::u256"
+            "type": "core::integer::u64"
           }
         ],
         "outputs": [],
@@ -978,6 +964,20 @@ export const starhomes_abi =[
         "name": "Upgraded",
         "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
         "kind": "nested"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
       }
     ]
   },
