@@ -43,6 +43,18 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
   const isDocuments = type === "documents";
   const files = isDocuments ? selectedDocs : selectedFiles;
 
+  // Create uploadStatus object based on type
+  const uploadStatus = {
+    images: {
+      isUploading: isUploading && !isDocuments,
+      progress: !isDocuments ? uploadProgress : 0,
+    },
+    documents: {
+      isUploading: isUploading && isDocuments,
+      progress: isDocuments ? uploadProgress : 0,
+    },
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <Label>{isDocuments ? "Legal Documents" : "Property Images"}</Label>
@@ -233,6 +245,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
           totalSize={totalUploadSize}
           uploadedSize={uploadedSize}
           status={isUploading ? "uploading" : undefined}
+          uploadStatus={uploadStatus}
         />
       )}
     </div>
