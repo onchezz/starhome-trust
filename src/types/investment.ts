@@ -41,18 +41,20 @@ export interface InvestmentAsset {
   id: string;
   name: string;
   description: string;
-  is_active:boolean,
+  is_active: boolean;
   location: string;
+  latitude: string;
+  longitude: string;
   size: number;
   investor_id: string;
   owner: string;
-  construction_status:string,
+  construction_status: string;
   asset_value: number;
   available_staking_amount: number;
-  min_investment:number;
+  min_investment: number;
   investment_type: string;
   construction_year: number;
-  property_price:number;
+  property_price: number;
   expected_roi: string;
   rental_income: number;
   maintenance_costs: number;
@@ -64,8 +66,9 @@ export interface InvestmentAsset {
   additional_features: string;
   images: string;
   investment_token: string;
-  min_investment_amount: number;  
+  min_investment_amount: number;
 }
+
 export class InvestmentAssetConverter {
     static feltToString(felt: string): string {
         return shortString.decodeShortString(felt);

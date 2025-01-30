@@ -59,6 +59,8 @@ const AddInvestment = () => {
       demandTrend: "",
     }),
     legal_detail: "",
+    latitude: "",
+    longitude: "",
   });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
@@ -74,6 +76,8 @@ const AddInvestment = () => {
     country: string;
   }) => {
     handleInputChange("location", location.address);
+    handleInputChange("latitude", location.latitude);
+    handleInputChange("longitude", location.longitude);
     console.log("[AddInvestment] Location selected:", location);
   };
 

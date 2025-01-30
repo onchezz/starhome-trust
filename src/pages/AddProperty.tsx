@@ -16,7 +16,7 @@ import ImageUploader from "@/components/property/form/ImageUploader";
 import { useParams } from "react-router-dom";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import pinata from "@/hooks/services_hooks/pinata";
-import { handleImageUpload } from "@/utils/imageUploadUtils";
+import { handleImageUpload } from "@/utils/uploadUtils";
 
 const generateShortUUID = () => {
   const fullUUID = uuidv4();
