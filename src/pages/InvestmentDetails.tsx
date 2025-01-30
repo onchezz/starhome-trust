@@ -1,28 +1,25 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAccount } from "@starknet-react/core";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { SheetContent } from "@/components/ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   Building,
   DollarSign,
   TrendingUp,
-  AlertTriangle,
   FileText,
   MapPin,
   Home,
   Ruler,
-  Menu,
 } from "lucide-react";
 import { shortString } from "starknet";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { InvestmentGallery } from "@/components/investment/details/InvestmentGallery";
 import { InvestmentLocation } from "@/components/investment/details/InvestmentLocation";
+import { InvestmentHeader } from "@/components/investment/details/InvestmentHeader";
+import { InvestmentProgress } from "@/components/investment/details/InvestmentProgress";
+import { DocumentList } from "@/components/investment/details/DocumentList";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
@@ -31,18 +28,12 @@ const InvestmentDetails = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
 
-  console.log("[InvestmentDetails] Investment data:", investment);
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       maximumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const calculateProgress = (current: number, total: number) => {
-    return (current / total) * 100;
   };
 
   const handleInvest = () => {
@@ -89,8 +80,6 @@ const InvestmentDetails = () => {
   const size = Number(investment.size || 0);
   const constructionYear = Number(investment.construction_year || 0);
 
-  const progress = calculateProgress(assetValue - availableStakingAmount, assetValue);
-
   // Get location data
   const location = {
     latitude: Number(getBigIntValue(investment.location?.latitude)),
@@ -105,113 +94,21 @@ const InvestmentDetails = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-24">
         <div className="max-w-6xl mx-auto space-y-8">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">
-              {getBigIntValue(investment.name)}
-            </h1>
-            <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline">
-                  <Menu className="h-4 w-4 mr-2" />
-                  More Details
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="w-[400px]">
-                <div className="space-y-6 py-6">
-                  <h3 className="text-lg font-semibold">Additional Information</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2">Highlights</h4>
-                      <p className="text-sm text-gray-600">
-                        {getBigIntValue(investment.highlights)}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Market Analysis</h4>
-                      <p className="text-sm text-gray-600">
-                        {getBigIntValue(investment.market_analysis)}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Risk Factors</h4>
-                      <p className="text-sm text-gray-600">
-                        {getBigIntValue(investment.risk_factors)}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Legal Details</h4>
-                      <p className="text-sm text-gray-600">
-                        {getBigIntValue(investment.legal_detail)}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Additional Features</h4>
-                      <p className="text-sm text-gray-600">
-                        {getBigIntValue(investment.additional_features)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
-          <InvestmentGallery 
-            imagesId={investment.images || ""} 
-            documentsId={investment.legal_detail || ""}
+          <InvestmentHeader
+            name={getBigIntValue(investment.name)}
+            isDrawerOpen={isDrawerOpen}
+            setIsDrawerOpen={setIsDrawerOpen}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-6 w-6" />
-                  Investment Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>Current Investment</span>
-                      <span>
-                        {formatCurrency(assetValue - availableStakingAmount)} of{" "}
-                        {formatCurrency(assetValue)}
-                      </span>
-                    </div>
-                    <Progress value={progress} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">
-                        Available for Investment
-                      </p>
-                      <p className="font-semibold">
-                        {formatCurrency(availableStakingAmount)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Minimum Investment</p>
-                      <p className="font-semibold">
-                        {formatCurrency(minInvestmentAmount)}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Investment Amount</Label>
-                    <Input
-                      type="number"
-                      value={investmentAmount}
-                      onChange={(e) => setInvestmentAmount(e.target.value)}
-                      placeholder={`Min. ${formatCurrency(minInvestmentAmount)}`}
-                    />
-                  </div>
-                  <Button onClick={handleInvest} className="w-full">
-                    Invest Now
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <InvestmentProgress
+              assetValue={assetValue}
+              availableStakingAmount={availableStakingAmount}
+              minInvestmentAmount={minInvestmentAmount}
+              investmentAmount={investmentAmount}
+              setInvestmentAmount={setInvestmentAmount}
+              handleInvest={handleInvest}
+            />
 
             <Card>
               <CardHeader>
@@ -246,6 +143,11 @@ const InvestmentDetails = () => {
               </CardContent>
             </Card>
           </div>
+
+          <InvestmentGallery 
+            imagesId={investment.images || ""} 
+            documentsId={investment.legal_detail || ""}
+          />
 
           <InvestmentLocation location={location} />
 
@@ -285,6 +187,42 @@ const InvestmentDetails = () => {
               </div>
             </CardContent>
           </Card>
+
+          <SheetContent className="w-[400px]">
+            <div className="space-y-6 py-6">
+              <h3 className="text-lg font-semibold">Additional Information</h3>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium mb-2">Highlights</h4>
+                  <p className="text-sm text-gray-600">
+                    {getBigIntValue(investment.highlights)}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Market Analysis</h4>
+                  <p className="text-sm text-gray-600">
+                    {getBigIntValue(investment.market_analysis)}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Risk Factors</h4>
+                  <p className="text-sm text-gray-600">
+                    {getBigIntValue(investment.risk_factors)}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Legal Details</h4>
+                  <DocumentList documentsId={investment.legal_detail || ""} />
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Additional Features</h4>
+                  <p className="text-sm text-gray-600">
+                    {getBigIntValue(investment.additional_features)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </SheetContent>
         </div>
       </div>
     </div>
