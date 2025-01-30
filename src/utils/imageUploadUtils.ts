@@ -18,7 +18,7 @@ export const handleImageUpload = async (
 
     // Create a string that combines IPFS hash and filenames
     const fileNames = files.map(file => file.name).join(",");
-    const combinedString = `${upload.IpfsHash}:${fileNames}`;
+    const combinedString = `${upload.IpfsHash},${fileNames}`;
 
     console.log("Upload successful:", {
       ipfsHash: upload.IpfsHash,
