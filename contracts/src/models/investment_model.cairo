@@ -16,6 +16,15 @@ struct LegalDetails {
     pub documents_id: felt252,
 }
 
+#[derive(Copy, Drop, Serde, starknet::Store)]
+pub struct Location {
+    pub address: felt252,
+    pub city: felt252,
+    pub state: felt252,
+    pub country: felt252,
+    pub latitude: felt252,
+    pub longitude: felt252,
+}
 
 #[derive(Clone, Drop, Serde, starknet::Store)]
 pub struct InvestmentAsset {
@@ -23,14 +32,13 @@ pub struct InvestmentAsset {
     pub name: felt252,
     pub description: ByteArray,
     pub is_active: bool,
-    pub location: ByteArray,
+    pub location: Location,
     pub size: felt252,
     pub investor_id: ContractAddress,
     pub owner: ContractAddress,
     pub construction_status:felt252,
     pub asset_value: u64,
     pub available_staking_amount: u64,
-    pub min_investment:u64,
     pub investment_type: felt252,
     pub construction_year: u64,
     pub property_price: u64,

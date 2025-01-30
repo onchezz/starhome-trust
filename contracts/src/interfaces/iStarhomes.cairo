@@ -10,7 +10,7 @@ use starknet::ContractAddress;
 pub trait IStarhomesContract<TContractState> {
     fn list_property(ref self: TContractState, property: Property) -> felt252;
     fn list_investment_property(ref self: TContractState, investment_asset: InvestmentAsset);
-    fn invest_in_property(ref self: TContractState, investment_id: u256, amount: u256);
+    fn invest_in_property(ref self: TContractState, investment_id: felt252, amount: u256);
     fn edit_property(ref self: TContractState, property_id: felt252, property: Property) -> felt252;
     fn edit_listed_investment_property(
         ref self: TContractState, investment_id: felt252, investment: InvestmentAsset,

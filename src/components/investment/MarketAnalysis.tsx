@@ -1,7 +1,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MarketAnalysis as MarketAnalysisType } from "@/types/starknet_types/investment";
+import { MarketAnalysis as MarketAnalysisType } from "@/types/investment";
 
 interface MarketAnalysisProps {
   marketAnalysis: Partial<MarketAnalysisType>;
@@ -17,7 +17,9 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
 }) => {
   return (
     <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg animate-fade-in">
-      <h3 className="text-lg font-semibold mb-4 dark:text-white">Market Analysis</h3>
+      <h3 className="text-lg font-semibold mb-4 dark:text-white">
+        Market Analysis
+      </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label className="dark:text-gray-200">Area Growth Rate (%)</Label>

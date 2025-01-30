@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
 import { InvestmentAsset } from "@/types/investment";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
 import UploadGrid from "@/components/investment/UploadGrid";
 import BulletPointsGrid from "@/components/investment/BulletPointsGrid";
@@ -152,10 +152,14 @@ const AddInvestment = () => {
             uploadDate: new Date().toISOString(),
           },
         });
-        
+
         handleInputChange("legal_detail", upload.IpfsHash);
       } else {
-        const combinedString = await handleImageUpload(files, pinata, formData.id);
+        const combinedString = await handleImageUpload(
+          files,
+          pinata,
+          formData.id
+        );
         handleInputChange("images", combinedString);
       }
 
@@ -194,7 +198,7 @@ const AddInvestment = () => {
     setIsUploading(true);
     try {
       console.log("Form data before processing:", formData);
-      
+
       // Convert values to strings while maintaining numeric validation
       const processedFormData = {
         ...formData,
@@ -204,8 +208,11 @@ const AddInvestment = () => {
         highlights: highlights.join(","),
       };
 
-      console.log("Submitting investment with processed data:", processedFormData);
-      
+      console.log(
+        "Submitting investment with processed data:",
+        processedFormData
+      );
+
       await handleListInvestmentProperty(processedFormData);
 
       toast.success("Investment created successfully!");
@@ -215,7 +222,6 @@ const AddInvestment = () => {
       setUploadedFiles(0);
       setUploadedSize(0);
       setTotalUploadSize(0);
-      
     } catch (error) {
       console.error("Error creating investment:", error);
       // Error is already handled by usePropertyCreate hook

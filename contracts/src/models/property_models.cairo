@@ -58,18 +58,17 @@ pub struct Property {
 }
 
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
-pub struct TrustAssetProperty {
-    pub id: u256,
-    pub property_id: felt252,
-    pub owner: ContractAddress,
-    pub price: u256,
-    pub payment_token: IERC20Dispatcher,
-    pub total_amount: u256,
-    pub available_staking_amount: u256,
-    pub is_active: bool,
-}
-
+// #[derive(Copy, Drop, Serde, starknet::Store)]
+// pub struct TrustAssetProperty {
+//     pub id: u256,
+//     pub property_id: felt252,
+//     pub owner: ContractAddress,
+//     pub price: u256,
+//     pub payment_token: IERC20Dispatcher,
+//     pub total_amount: u256,
+//     pub available_staking_amount: u256,
+//     pub is_active: bool,
+// }
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 pub struct Investment {

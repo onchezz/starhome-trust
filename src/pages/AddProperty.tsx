@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertyWrite";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import BasicInformation from "@/components/property/form/BasicInformation";
 import PricingInformation from "@/components/property/form/PricingInformation";
 import PropertyFeatures from "@/components/property/form/PropertyFeatures";
@@ -144,7 +144,11 @@ const CreateProperty = () => {
       setUploadProgress(0);
 
       try {
-        const combinedString = await handleImageUpload(selectedFiles, pinata, formData.id);
+        const combinedString = await handleImageUpload(
+          selectedFiles,
+          pinata,
+          formData.id
+        );
         setUrl(combinedString);
         handleInputChange("imagesId", combinedString);
         toast.success("Images uploaded successfully!");

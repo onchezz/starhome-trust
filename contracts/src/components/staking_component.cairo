@@ -203,6 +203,7 @@ pub mod AssetStakingComponent {
                 .staking_token
                 .write(property_id, IERC20Dispatcher { contract_address: token_address })
         }
+
         fn get_property_token(
             ref self: ComponentState<TContractState>, property_id: felt252,
         ) -> ContractAddress {

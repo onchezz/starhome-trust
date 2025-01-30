@@ -211,10 +211,6 @@ export const starhomes_abi =[
         "type": "core::integer::u64"
       },
       {
-        "name": "min_investment",
-        "type": "core::integer::u64"
-      },
-      {
         "name": "investment_type",
         "type": "core::felt252"
       },
@@ -328,7 +324,7 @@ export const starhomes_abi =[
         "inputs": [
           {
             "name": "investment_id",
-            "type": "core::integer::u256"
+            "type": "core::felt252"
           },
           {
             "name": "amount",

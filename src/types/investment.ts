@@ -31,6 +31,13 @@ export const constructionStatus = [
   "Pre-Construction",
   "Renovation"
 ] as const;
+export interface MarketAnalysis {
+  area_growth: string;
+  occupancy_rate: string;
+  comparable_properties: string;
+  demand_trend: string;
+}
+
 
 export type InvestmentType = typeof investmentTypes[number];
 export type RiskLevel = typeof riskLevels[number];
@@ -49,7 +56,6 @@ export interface InvestmentAsset {
   construction_status:string,
   asset_value: number;
   available_staking_amount: number;
-  min_investment:number;
   investment_type: string;
   construction_year: number;
   property_price:number;
@@ -81,14 +87,13 @@ export class InvestmentAssetConverter {
             name: this.feltToString(starknetProperty.name),
             description: starknetProperty.description,
             is_active: Boolean(starknetProperty.is_active),
-            location: this.feltToString(starknetProperty.location),
+            location: starknetProperty.location,
             size: Number(starknetProperty.size),
             investor_id: this.addressToString(starknetProperty.investor_id),
             owner: this.addressToString(starknetProperty.owner),
             construction_status: this.feltToString(starknetProperty.construction_status),
             asset_value: Number(starknetProperty.asset_value),
             available_staking_amount: Number(starknetProperty.available_staking_amount),
-            min_investment:Number(starknetProperty.min_investment),
             investment_type: this.feltToString(starknetProperty.investment_type),
             construction_year: Number(starknetProperty.construction_year),
             property_price: Number(starknetProperty.property_price),
@@ -96,12 +101,12 @@ export class InvestmentAssetConverter {
             rental_income: Number(starknetProperty.rental_income),
             maintenance_costs: Number(starknetProperty.maintenance_costs),
             tax_benefits: this.feltToString(starknetProperty.tax_benefits),
-            highlights: this.feltToString(starknetProperty.highlights),
-            market_analysis: this.feltToString(starknetProperty.market_analysis),
-            risk_factors: this.feltToString(starknetProperty.risk_factors),
-            legal_detail: this.feltToString(starknetProperty.legal_detail),
-            additional_features: this.feltToString(starknetProperty.additional_features),
-            images: this.feltToString(starknetProperty.images),
+            highlights: starknetProperty.highlights,
+            market_analysis:starknetProperty.market_analysis,
+            risk_factors: starknetProperty.risk_factors,
+            legal_detail: starknetProperty.legal_detail,
+            additional_features: starknetProperty.additional_features,
+            images: starknetProperty.images,
             investment_token: this.addressToString(starknetProperty.investment_token),
             min_investment_amount: Number(starknetProperty.min_investment_amount)
         };

@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { Property, StarknetProperty } from '@/types/property';
 import { InvestmentAsset } from '@/types/investment';
-import { dummyInvestment } from '@/types/starknet_types/investment';
+import { dummyInvestment } from '@/types/starknet_types/investment_daummy';
 
 
 export const usePropertyCreate = () => {
@@ -80,13 +80,13 @@ export const usePropertyCreate = () => {
         return whole + decimal.padEnd(18, '0'); // Add 18 decimal places
       };
 
-      const defaultInvestment = {
+      const defaultInvestment:InvestmentAsset = {
         id: investment.id || '0',
         name: investment.name || '',
         description: investment.description || '',
-        is_active: isActive,
+        is_active: investment.is_active,
         location: investment.location || '',
-        size: investment.size || '',
+        size: investment.size || 0,
         investor_id: address|| '0',
         owner: address || '',
         construction_status: investment.construction_status || '',
@@ -102,11 +102,11 @@ export const usePropertyCreate = () => {
         highlights: investment.highlights || '',
         market_analysis: investment.market_analysis || '',
         risk_factors: investment.risk_factors || '',
-        legal_detailId: investment.legal_detail || '',
+        legal_detail: investment.legal_detail || '',
         additional_features: investment.additional_features || '',
         images:investment.images,
         investment_token: investment.investment_token || '',
-        min_investment_amount: toBigIntString(investment.min_investment_amount)
+        min_investment_amount: investment.min_investment_amount||0,
       };
 
       console.log("Listing investment property after conversion:", dummyInvestment);

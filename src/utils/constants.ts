@@ -1,7 +1,6 @@
-const starhomesContract ="0x026e90d3e7cb7e4f240104e41bb0659ccb48c6f9d479069bbf91c2075572208c"as const;
+const starhomesContract =
+"0x026e90d3e7cb7e4f240104e41bb0659ccb48c6f9d479069bbf91c2075572208c"as const; //new
 // "0x05ac9fe7a619672c4ac2c98193266d5e429b13e0d76c2c7bd5a1ab96ee2326cf"as const;
-// "0x04ca966dbe927ab79127eaf0415fd90d07b802b857beee3fe8840088a9c10493" as const;
-// "0x030e7db139490658ebdc76d6fed7645e85d792edd981ad0aa5ed9df28cc62b14" as const;
 
 const rpcProvideUr =  "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
 

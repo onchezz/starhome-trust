@@ -128,9 +128,12 @@ pub mod StarhomesContract {
             self.properties.edit_listed_investment_property(investment_id, investment)
         }
 
-        fn invest_in_property(
-            ref self: ContractState, investment_id: u256, amount: u256,
-        ) { // self.properties.invest_in_property(investment_id, amount);
+        fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u256) {
+            assert(
+                self.properties._is_investment_added(investment_id) == true,
+                'Investment not added',
+            );
+            self.stake_to_property.stake(investment_id, amount);
         }
         fn get_property(self: @ContractState, property_id: felt252) -> Property {
             self.properties.get_property_by_id(property_id)
@@ -169,8 +172,6 @@ pub mod StarhomesContract {
             self.ownable.assert_only_owner();
             let contract_version = self.version.read();
             self.version.write(contract_version + 1);
-
-            // Replace the class hash upgrading the contract
             self.upgradeable.upgrade(new_class_hash);
         }
     }
