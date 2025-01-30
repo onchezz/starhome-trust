@@ -183,16 +183,16 @@ const AddInvestment = () => {
     }
   };
 
-  const handleTest = async () => {
-    const processedFormData = {
-      ...formData,
-      isActive: formData.is_active === true,
-      additionalFeatures: additionalFeatures.join(","),
-      riskFactors: riskFactors.join(","),
-      highlights: highlights.join(","),
-    };
-    await handleListInvestmentProperty(processedFormData);
-  };
+  // const handleTest = async () => {
+  //   const processedFormData = {
+  //     ...formData,
+  //     isActive: formData.is_active === true,
+  //     additionalFeatures: additionalFeatures.join(","),
+  //     riskFactors: riskFactors.join(","),
+  //     highlights: highlights.join(","),
+  //   };
+  //   await handleListInvestmentProperty(processedFormData);
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -319,7 +319,7 @@ const AddInvestment = () => {
 
               <Button
                 type="submit"
-                onClick={handleTest}
+                // onClick={handleTest}
                 disabled={isUploading || contractStatus.isPending}
                 className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >
