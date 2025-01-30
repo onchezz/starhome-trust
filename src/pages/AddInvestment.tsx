@@ -96,10 +96,14 @@ const AddInvestment = () => {
     state: string;
     country: string;
   }) => {
+    // Trim the address to only include the street part
+    const addressParts = location.address.split(',');
+    const streetAddress = addressParts[0].trim();
+
     setFormData((prev) => ({
       ...prev,
       location: {
-        address: location.address,
+        address: streetAddress,
         city: location.city,
         state: location.state,
         country: location.country,
@@ -108,6 +112,7 @@ const AddInvestment = () => {
       }
     }));
     console.log("[AddInvestment] Location selected:", location);
+    console.log("[AddInvestment] Trimmed address:", streetAddress);
   };
 
   const validateFiles = (files: File[], isDocument: boolean = false) => {
