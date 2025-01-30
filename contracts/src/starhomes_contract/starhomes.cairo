@@ -128,12 +128,22 @@ pub mod StarhomesContract {
             self.properties.edit_listed_investment_property(investment_id, investment)
         }
 
-        fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u256) {
+        fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u64) {
             assert(
-                self.properties._is_investment_added(investment_id) == true,
-                'Investment not added',
+                self.properties._is_investment_added(investment_id) == true, 'Investment not added',
             );
-            self.stake_to_property.stake(investment_id, amount);
+            self.stake_to_property.stake(investment_id, amount.into());
+            let investment = self.get_investment(investment_id);
+            assert(investment.available_staking_amount >amount, 'Stake Lower amount');
+            self
+                .properties
+                .edit_listed_investment(
+                    investment_id,
+                    InvestmentAsset {
+                        available_staking_amount: investment.available_staking_amount - amount,
+                        ..investment,
+                    },
+                );
         }
         fn get_property(self: @ContractState, property_id: felt252) -> Property {
             self.properties.get_property_by_id(property_id)
