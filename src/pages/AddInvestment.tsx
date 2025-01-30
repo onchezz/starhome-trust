@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -180,7 +180,30 @@ const AddInvestment = () => {
   const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
   const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
 
+  // Add effect to check for existing uploads when form data changes
+  useEffect(() => {
+    console.log("Checking for existing uploads in form data...");
+    if (formData.images) {
+      console.log("Found existing image uploads:", formData.images);
+      setUploadedImageHash(formData.images);
+    }
+    if (formData.legal_detail) {
+      console.log("Found existing document uploads:", formData.legal_detail);
+      setUploadedDocHash(formData.legal_detail);
+    }
+  }, [formData.images, formData.legal_detail]);
+
   const handleUploadFiles = async (files: File[], isDocuments: boolean = false) => {
+    // If we already have uploads, reuse them
+    if (isDocuments && uploadedDocHash) {
+      console.log("Reusing existing document uploads:", uploadedDocHash);
+      return uploadedDocHash;
+    }
+    if (!isDocuments && uploadedImageHash) {
+      console.log("Reusing existing image uploads:", uploadedImageHash);
+      return uploadedImageHash;
+    }
+
     console.log(`Starting ${isDocuments ? 'document' : 'image'} upload...`);
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     setTotalUploadSize((prev) => prev + totalSize);
@@ -228,6 +251,8 @@ const AddInvestment = () => {
       if (selectedFiles.length > 0 && !uploadedImageHash) {
         console.log("Uploading images...");
         imagesHash = await handleUploadFiles(selectedFiles, false);
+      } else if (uploadedImageHash) {
+        console.log("Reusing existing image hash:", uploadedImageHash);
       }
 
       // Handle document uploads if not already uploaded
@@ -235,6 +260,8 @@ const AddInvestment = () => {
       if (selectedDocs.length > 0 && !uploadedDocHash) {
         console.log("Uploading documents...");
         docsHash = await handleUploadFiles(selectedDocs, true);
+      } else if (uploadedDocHash) {
+        console.log("Reusing existing document hash:", uploadedDocHash);
       }
 
       const processedFormData: InvestmentAsset = {
@@ -253,15 +280,14 @@ const AddInvestment = () => {
 
       toast.success("Investment created successfully!");
       
-      // Reset upload states after successful submission
+      // Don't reset upload states after successful submission
+      // This allows reuse of the uploaded files
       setSelectedFiles([]);
       setSelectedDocs([]);
       setUploadProgress(0);
       setUploadedFiles(0);
       setUploadedSize(0);
       setTotalUploadSize(0);
-      setUploadedImageHash(null);
-      setUploadedDocHash(null);
     } catch (error) {
       console.error("Error creating investment:", error);
       toast.error("Failed to create investment. Your uploads are saved and won't be repeated if you try again.");
