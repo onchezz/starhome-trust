@@ -40,27 +40,7 @@ export const InvestmentGallery = ({ imagesId, documentsId }: InvestmentGalleryPr
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Documents</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {documentUrls.map((url, index) => (
-              <a
-                key={index}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center p-4 space-x-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <FileIcon filename={url} />
-                <span className="text-sm font-medium">Document {index + 1}</span>
-              </a>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+     
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
         <DialogContent className="max-w-4xl">
