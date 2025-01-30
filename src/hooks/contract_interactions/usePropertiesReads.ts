@@ -2,6 +2,8 @@ import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContra
 import { Property, PropertyConverter } from '@/types/property';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { num, shortString } from 'starknet';
+import { InvestmentAssetConverter } from '@/types/investment';
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -61,9 +63,11 @@ export const usePropertyRead = () => {
   }).filter(Boolean) : [];
 
   const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData.map((prop: any) => {
+    
     console.log("[usePropertyRead] Converting investment property:", prop);
-    try {
-      return PropertyConverter.fromStarknetProperty(prop);
+    try {   
+     
+      return InvestmentAssetConverter.fromStarknetProperty(prop);
     } catch (error) {
       console.error("[usePropertyRead] Error converting investment property:", error, prop);
       return null;
@@ -113,7 +117,32 @@ export const usePropertyReadById = (id: string) => {
     error: contractHook.error 
   };
 };
+export const useInvestmentAssetReadById = (id: string) => {
+  const [property, setProperty] = useState<Property | null>(null);
+  const contractHook = useStarHomeReadContract({
+    functionName: "get_investment",
+    args: [id],
+  });
 
+  useEffect(() => {
+    if (contractHook.data) {
+      console.log("[useInvestmentAssetReadById] Property data:", contractHook.data);
+      try {
+        const convertedProperty = PropertyConverter.fromStarknetProperty(contractHook.data);
+        setProperty(convertedProperty);
+      } catch (error) {
+        console.error("[usePropertyReadById] Error converting property:", error);
+        setProperty(null);
+      }
+    }
+  }, [contractHook.data]);
+
+  return { 
+    property, 
+    isLoading: contractHook.isLoading, 
+    error: contractHook.error 
+  };
+};
 export const useAgentProperties = (agentAddress: string) => {
   const agentPropertiesHook = useStarHomeReadContract({
     functionName: "get_sale_properties_by_agent",

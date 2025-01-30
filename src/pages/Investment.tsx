@@ -24,7 +24,7 @@ import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { InvestmentAssetConverter } from "@/types/investment";
+import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
 
@@ -191,9 +191,9 @@ const Investment = () => {
               </Card>
             ))
           ) : investmentProperties.length > 0 ? (
-            investmentProperties.map((investmentProperty, index) => {
-              const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
-              const propertyId = num.toHex(property.id);
+            investmentProperties.map((property:InvestmentAsset, index) => {
+              // const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
+              // const propertyId = num.toHex(property.id);
               
               const displayData = {
                 ...property,
@@ -208,7 +208,7 @@ const Investment = () => {
 
               return (
                 <Card
-                  key={propertyId}
+                  key={property.id}
                   className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
                   style={{
                     opacity: inView ? 1 : 0,
@@ -272,9 +272,9 @@ const Investment = () => {
                       <div className="flex gap-2">
                         <Collapsible
                           className="flex-1"
-                          open={expandedCardId === propertyId}
+                          open={expandedCardId === property.id}
                           onOpenChange={(open) =>
-                            setExpandedCardId(open ? propertyId : null)
+                            setExpandedCardId(open ? property.id : null)
                           }
                         >
                           <CollapsibleTrigger asChild>
@@ -290,9 +290,9 @@ const Investment = () => {
                               placeholder={`Min. ${formatCurrency(
                                 displayData.minInvestment
                               )}`}
-                              value={investmentAmounts[propertyId] || ""}
+                              value={investmentAmounts[property.id] || ""}
                               onChange={(e) =>
-                                handleAmountChange(propertyId, e.target.value)
+                                handleAmountChange(property.id, e.target.value)
                               }
                               min={displayData.minInvestment}
                             />
@@ -300,7 +300,7 @@ const Investment = () => {
                               className="w-full bg-primary hover:bg-primary/90"
                               onClick={
                                 address
-                                  ? () => handleInvest(propertyId)
+                                  ? () => handleInvest(property.id)
                                   : handleConnectWallet
                               }
                             >
@@ -310,7 +310,7 @@ const Investment = () => {
                           </CollapsibleContent>
                         </Collapsible>
 
-                        <Link to={`/investment/${propertyId}`}>
+                        <Link to={`/investment/${property.id}`}>
                           <Button variant="outline">
                             <ExternalLink className="mr-2 h-4 w-4" />
                             More Details
