@@ -128,6 +128,43 @@ export class InvestmentAssetConverter {
             min_investment_amount: Number(starknetProperty.min_investment_amount)
         };
     }
+    static toStarknetProperty(formData: InvestmentAsset): InvestmentAsset {
+        return {
+            id: formData.id,
+            name: formData.name,
+            description: formData.description,
+            is_active: formData.is_active,
+            location: {
+                address: formData.location.address,
+                city: formData.location.city,
+                state: formData.location.state,
+                country: formData.location.country,
+                latitude: formData.location.latitude,
+                longitude: formData.location.longitude
+            },
+            size: formData.size,
+            investor_id: formData.investor_id,
+            owner: formData.owner,
+            construction_status: formData.construction_status,
+            asset_value: formData.asset_value,
+            available_staking_amount: formData.available_staking_amount,
+            investment_type: formData.investment_type,
+            construction_year: formData.construction_year,
+            property_price: formData.property_price,
+            expected_roi: formData.expected_roi,
+            rental_income: formData.rental_income,
+            maintenance_costs: formData.maintenance_costs,
+            tax_benefits: formData.tax_benefits,
+            highlights: formData.highlights,
+            market_analysis: formData.market_analysis,
+            risk_factors: formData.risk_factors,
+            legal_detail: formData.legal_detail,
+            additional_features: formData.additional_features,
+            images: formData.images,
+            investment_token: formData.investment_token,
+            min_investment_amount: formData.min_investment_amount
+        };
+    }
 
     static async getProperty(contract: any, propertyId: BigNumberish): Promise<InvestmentAsset> {
         const starknetProperty = await contract.get_property(propertyId);

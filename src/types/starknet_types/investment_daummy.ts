@@ -43,6 +43,44 @@ import { InvestmentAsset } from "../investment";
 // //   type?: string;
 // //   minInvestment?: number;
 // // }
+  // Initialize the location object with default values if not provided
+      // const location = {
+      //   address: investment.location?.address || '',
+      //   city: investment.location?.city || '',
+      //   state: investment.location?.state || '',
+      //   country: investment.location?.country || '',
+      //   latitude: investment.location?.latitude || '',
+      //   longitude: investment.location?.longitude || '',
+      // };
+
+      // const defaultInvestment: InvestmentAsset = {
+      //   id: investment.id || '0',
+      //   name: investment.name || '',
+      //   description: investment.description || '',
+      //   is_active: investment.is_active || false,
+      //   location: location,
+      //   size: investment.size || 0,
+      //   investor_id: address || '0',
+      //   owner: address || '',
+      //   construction_status: investment.construction_status || '',
+      //   asset_value: investment.asset_value || 0,
+      //   available_staking_amount: investment.available_staking_amount || 0,
+      //   investment_type: investment.investment_type || '',
+      //   construction_year: investment.construction_year || 0,
+      //   property_price: investment.property_price || 0,
+      //   expected_roi: investment.expected_roi || '0',
+      //   rental_income: investment.rental_income || 0,
+      //   maintenance_costs: investment.maintenance_costs || 0,
+      //   tax_benefits: investment.tax_benefits || '0',
+      //   highlights: investment.highlights || '',
+      //   market_analysis: investment.market_analysis || '',
+      //   risk_factors: investment.risk_factors || '',
+      //   legal_detail: investment.legal_detail || '',
+      //   additional_features: investment.additional_features || '',
+      //   images: investment.images || '',
+      //   investment_token: investment.investment_token || '',
+      //   min_investment_amount: investment.min_investment_amount || 0,
+      // };
 
 export const dummyInvestment:InvestmentAsset = {
   id: "4354bf6d4175404495df",
