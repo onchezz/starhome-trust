@@ -12,6 +12,7 @@ import { ProfileShimmer } from "@/components/profile/ProfileShimmer";
 import { useEffect, useState } from "react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileWallet } from "@/components/profile/ProfileWallet";
+import { AgentProperties } from "@/components/profile/AgentProperties";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -147,6 +148,17 @@ const Profile = () => {
               isLoadingBal={isLoadingBal}
             />
           </motion.div>
+
+          {user?.is_agent && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="mt-6"
+            >
+              <AgentProperties />
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </div>
