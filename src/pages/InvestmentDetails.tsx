@@ -2,17 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAccount } from "@starknet-react/core";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import {
-  Building,
-  DollarSign,
-  TrendingUp,
-  FileText,
-  MapPin,
-  Home,
-  Ruler,
-} from "lucide-react";
 import { shortString } from "starknet";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { InvestmentGallery } from "@/components/investment/details/InvestmentGallery";
@@ -20,6 +10,8 @@ import { InvestmentLocation } from "@/components/investment/details/InvestmentLo
 import { InvestmentHeader } from "@/components/investment/details/InvestmentHeader";
 import { InvestmentProgress } from "@/components/investment/details/InvestmentProgress";
 import { DocumentList } from "@/components/investment/details/DocumentList";
+import { PropertyOverview } from "@/components/investment/details/PropertyOverview";
+import { FinancialOverview } from "@/components/investment/details/FinancialOverview";
 import { formatCurrency } from "@/utils/utils";
 
 const InvestmentDetails = () => {
@@ -103,38 +95,12 @@ const InvestmentDetails = () => {
               handleInvest={handleInvest}
             />
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building className="h-6 w-6" />
-                  Property Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-gray-500">Type</p>
-                    <p className="font-semibold">
-                      {getBigIntValue(investment.investment_type)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Size</p>
-                    <p className="font-semibold">{size} sq ft</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Construction Year</p>
-                    <p className="font-semibold">{constructionYear}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Status</p>
-                    <p className="font-semibold">
-                      {getBigIntValue(investment.construction_status)}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PropertyOverview
+              investmentType={getBigIntValue(investment.investment_type)}
+              size={size}
+              constructionYear={constructionYear}
+              constructionStatus={getBigIntValue(investment.construction_status)}
+            />
           </div>
 
           <InvestmentGallery 
@@ -144,42 +110,12 @@ const InvestmentDetails = () => {
 
           <InvestmentLocation location={location} />
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-6 w-6" />
-                Financial Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div>
-                  <p className="text-gray-500">Property Price</p>
-                  <p className="text-2xl font-bold">
-                    {formatCurrency(propertyPrice)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Expected ROI</p>
-                  <p className="text-2xl font-bold">
-                    {getBigIntValue(investment.expected_roi)}%
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Annual Rental Income</p>
-                  <p className="text-2xl font-bold">
-                    {formatCurrency(rentalIncome)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Maintenance Costs</p>
-                  <p className="text-2xl font-bold">
-                    {formatCurrency(maintenanceCosts)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <FinancialOverview
+            propertyPrice={propertyPrice}
+            expectedRoi={getBigIntValue(investment.expected_roi)}
+            rentalIncome={rentalIncome}
+            maintenanceCosts={maintenanceCosts}
+          />
 
           <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <SheetContent className="w-[400px]">
