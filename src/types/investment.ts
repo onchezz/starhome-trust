@@ -1,4 +1,3 @@
-import { useAccount } from "@starknet-react/core";
 import { BigNumberish, num, shortString } from "starknet";
 
 export const investmentTypes = [
@@ -89,50 +88,57 @@ export class InvestmentAssetConverter {
         return shortString.decodeShortString(felt);
     }
 
-    static addressToString(address: BigNumberish): string {
-        return num.toHex(address);
+    static addressToString(address: BigNumberish | null): string {
+            // Use optional chaining and nullish coalescing for safe access
+            return num.toHex(address?.toString() || '0');
+       
     }
 
     static fromStarknetProperty(starknetProperty: any): InvestmentAsset {
-      
-        return {
-            id: shortString.decodeShortString(starknetProperty.id),
-            name: shortString.decodeShortString(starknetProperty.name),
-            description: starknetProperty.description,
-            is_active: Boolean(starknetProperty.is_active),
-            location: {
-                address:shortString.decodeShortString(starknetProperty.location.address),
-                city:  shortString.decodeShortString(starknetProperty.location.city),
-                state: shortString.decodeShortString(starknetProperty.location.state),
-                country: shortString.decodeShortString(starknetProperty.location.country),
-                latitude: shortString.decodeShortString(starknetProperty.location.latitude),
-                longitude: shortString.decodeShortString(starknetProperty.location.longitude),
-            },
-            size: Number(starknetProperty.size),
-            investor_id: num.toHex(starknetProperty.investor_id),
-            owner: num.toHex(starknetProperty.owner),
-            construction_status: shortString.decodeShortString(starknetProperty.construction_status),
-            asset_value: Number(starknetProperty.asset_value),
-            available_staking_amount: Number(starknetProperty.available_staking_amount),
-            investment_type: shortString.decodeShortString(starknetProperty.investment_type),
-            construction_year: Number(starknetProperty.construction_year),
-            property_price: Number(starknetProperty.property_price),
-            expected_roi: shortString.decodeShortString(starknetProperty.expected_roi),
-            rental_income: Number(starknetProperty.rental_income),
-            maintenance_costs: Number(starknetProperty.maintenance_costs),
-            tax_benefits: shortString.decodeShortString(starknetProperty.tax_benefits),
-            highlights: starknetProperty.highlights,
-            market_analysis: "none yey",//starknetProperty.market_analysis,
-            risk_factors: starknetProperty.risk_factors,
-            legal_detail: starknetProperty.legal_detail,
-            additional_features: starknetProperty.additional_features,
-            images: starknetProperty.images,
-            investment_token: num.toHex(starknetProperty.investment_token),
-            min_investment_amount: Number(starknetProperty.min_investment_amount)
-        };
+        console.log("Converting property:", starknetProperty);
+        try {
+            return {
+                id: this.feltToString(starknetProperty.id),
+                name: this.feltToString(starknetProperty.name),
+                description: starknetProperty.description,
+                is_active: Boolean(starknetProperty.is_active),
+                location: {
+                    address: this.feltToString(starknetProperty.location?.address),
+                    city: this.feltToString(starknetProperty.location?.city),
+                    state: this.feltToString(starknetProperty.location?.state),
+                    country: this.feltToString(starknetProperty.location?.country),
+                    latitude: this.feltToString(starknetProperty.location?.latitude),
+                    longitude: this.feltToString(starknetProperty.location?.longitude),
+                },
+                size: Number(starknetProperty.size?.value || starknetProperty.size || 0),
+                investor_id: this.addressToString(starknetProperty.investor_id),
+                owner: this.addressToString(starknetProperty.owner),
+                construction_status: this.feltToString(starknetProperty.construction_status),
+                asset_value: Number(starknetProperty.asset_value?.value || starknetProperty.asset_value || 0),
+                available_staking_amount: Number(starknetProperty.available_staking_amount?.value || starknetProperty.available_staking_amount || 0),
+                investment_type: this.feltToString(starknetProperty.investment_type),
+                construction_year: Number(starknetProperty.construction_year?.value || starknetProperty.construction_year || 0),
+                property_price: Number(starknetProperty.property_price?.value || starknetProperty.property_price || 0),
+                expected_roi: this.feltToString(starknetProperty.expected_roi),
+                rental_income: Number(starknetProperty.rental_income?.value || starknetProperty.rental_income || 0),
+                maintenance_costs: Number(starknetProperty.maintenance_costs?.value || starknetProperty.maintenance_costs || 0),
+                tax_benefits: this.feltToString(starknetProperty.tax_benefits),
+                highlights: starknetProperty.highlights || '',
+                market_analysis: starknetProperty.market_analysis || '',
+                risk_factors: starknetProperty.risk_factors || '',
+                legal_detail: starknetProperty.legal_detail || '',
+                additional_features: starknetProperty.additional_features || '',
+                images: starknetProperty.images || '',
+                investment_token: this.addressToString(starknetProperty.investment_token),
+                min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)
+            };
+        } catch (error) {
+            console.error("Error converting Starknet property:", error, starknetProperty);
+            throw error;
+        }
     }
-    static toStarknetProperty(formData: InvestmentAsset, address: string): InvestmentAsset {
 
+    static toStarknetProperty(formData: InvestmentAsset, address: string): InvestmentAsset {
         return {
             id: formData.id,
             name: formData.name,
@@ -147,21 +153,21 @@ export class InvestmentAssetConverter {
                 longitude: formData.location.longitude
             },
             size: formData.size,
-            investor_id: address|| formData.investor_id,
-            owner:address||formData.owner,
+            investor_id: address || formData.investor_id,
+            owner: address || formData.owner,
             construction_status: formData.construction_status,
             asset_value: formData.available_staking_amount,
             available_staking_amount: formData.available_staking_amount,
             investment_type: formData.investment_type,
             construction_year: formData.construction_year,
-            property_price: formData.property_price||formData.available_staking_amount,
+            property_price: formData.property_price || formData.available_staking_amount,
             expected_roi: formData.expected_roi,
             rental_income: formData.rental_income,
             maintenance_costs: formData.maintenance_costs,
-            tax_benefits: formData.tax_benefits||"none yet",
+            tax_benefits: formData.tax_benefits || "none yet",
             highlights: formData.highlights,
             market_analysis: formData.market_analysis,
-            risk_factors: formData.risk_factors||"no risk factors",
+            risk_factors: formData.risk_factors || "no risk factors",
             legal_detail: formData.legal_detail,
             additional_features: formData.additional_features,
             images: formData.images,

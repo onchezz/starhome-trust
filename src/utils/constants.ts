@@ -1,6 +1,5 @@
 const starhomesContract =
 "0x026e90d3e7cb7e4f240104e41bb0659ccb48c6f9d479069bbf91c2075572208c"as const; //new
-// "0x05ac9fe7a619672c4ac2c98193266d5e429b13e0d76c2c7bd5a1ab96ee2326cf"as const;
 
 const rpcProvideUr =  "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
 
@@ -20,13 +19,31 @@ const usdTTokenAddress =
 
 export const LAST_CONNECTED_TIME_LOCALSTORAGE_KEY = "lastConnectedTime";
 
+export const propertyTypes = [
+  "House",
+  "Apartment",
+  "Condo",
+  "Townhouse",
+  "Villa",
+  "Land",
+  "Commercial",
+  "Other",
+] as const;
+
+export const statusOptions = [
+  "Available",
+  "Sold",
+  "Under Contract",
+  "Pending",
+  "Off Market",
+] as const;
+
 export const tokenOptions = [
   { symbol: "USDC", address: usdcTokenAddress },
   { symbol: "USDT", address: usdTTokenAddress },
   { symbol: "ETH", address: universalEthAddress },
   { symbol: "STRK", address: universalStrkAddress },
 ] as const;
-
 
 export {
   pinataImageUrl,
