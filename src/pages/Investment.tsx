@@ -12,7 +12,7 @@ import {
   Wallet,
   ExternalLink,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Collapsible,
@@ -24,9 +24,62 @@ import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
+import { InvestmentAsset } from "@/types/investment";
 import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
+import { parseImagesData } from "@/utils/imageUtils";
+
+// Create a new ImageGallery component for better organization
+const ImageGallery = ({ imagesId }: { imagesId: string }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const { imageUrls } = parseImagesData(imagesId);
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, [imagesId]);
+
+  if (!imageUrls.length) {
+    return (
+      <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+        <p className="text-gray-500">No images available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative overflow-hidden group h-48">
+      {isLoading && (
+        <div className="absolute inset-0">
+          <Shimmer className="w-full h-full" />
+        </div>
+      )}
+      <img
+        src={imageUrls[currentImageIndex]}
+        alt={`Property ${currentImageIndex + 1}`}
+        className={`w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110 ${
+          isLoading ? 'opacity-0' : 'opacity-100'
+        }`}
+        onLoad={() => setIsLoading(false)}
+        onError={() => setIsLoading(false)}
+      />
+      {imageUrls.length > 1 && (
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+          {imageUrls.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${
+                currentImageIndex === index ? 'bg-white' : 'bg-white/50'
+              }`}
+              onClick={() => setCurrentImageIndex(index)}
+            />
+          ))}
+        </div>
+      )}
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    </div>
+  );
+};
 
 const Investment = () => {
   const { investmentProperties, investmentPropertiesLoading, investmentPropertiesError } =
@@ -191,10 +244,7 @@ const Investment = () => {
               </Card>
             ))
           ) : investmentProperties.length > 0 ? (
-            investmentProperties.map((property:InvestmentAsset, index) => {
-              // const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
-              // const propertyId = num.toHex(property.id);
-              
+            investmentProperties.map((property: InvestmentAsset, index) => {
               const displayData = {
                 ...property,
                 currentInvestment: property.available_staking_amount,
@@ -218,17 +268,10 @@ const Investment = () => {
                     transition: `all 0.5s ease-out ${index * 0.1}s`,
                   }}
                 >
-                  <div className="relative overflow-hidden group">
-                    <img
-                      src={displayData.image}
-                      alt={displayData.title}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
+                  <ImageGallery imagesId={displayData.image} />
                   <CardHeader>
                     <CardTitle>{displayData.title}</CardTitle>
-                    <p className="text-sm text-gray-500">{`${property.location.address} , ${property.location.city}, ${property.location.country}`}</p>
+                    <p className="text-sm text-gray-500">{`${property.location.address}, ${property.location.city}, ${property.location.country}`}</p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
