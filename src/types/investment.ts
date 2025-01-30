@@ -92,7 +92,7 @@ export class InvestmentAssetConverter {
                 if (!value) return '';
                 return shortString.decodeShortString(value.toString());
             }
-            return shortString.decodeShortString(felt.toString());
+            return shortString.decodeShortString(felt?.toString() || '');
         } catch (error) {
             console.error("Error converting felt to string:", error);
             return '';
@@ -100,7 +100,7 @@ export class InvestmentAssetConverter {
     }
 
     static addressToString(address: BigNumberish | null): string {
-        if (!address) return '';
+        if (!address) return '0x0';
         
         try {
             if (typeof address === 'object' && '_type' in address && address._type === 'BigInt') {
@@ -108,7 +108,7 @@ export class InvestmentAssetConverter {
                 if (!value) return '0x0';
                 return num.toHex(value.toString());
             }
-            return num.toHex(address as BigNumberish);
+            return num.toHex(address?.toString() || '0');
         } catch (error) {
             console.error("Error converting address to string:", error);
             return '0x0';
