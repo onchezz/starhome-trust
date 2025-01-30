@@ -235,6 +235,7 @@ const FileUploadSection: React.FC<FileUploadSectionProps> = ({
           uploadedFiles={uploadedFiles}
           totalSize={totalUploadSize}
           uploadedSize={uploadedSize}
+          status={isUploading ? "uploading" : undefined}
         />
       )}
     </div>
