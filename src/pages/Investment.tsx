@@ -239,125 +239,122 @@ const Investment = () => {
               </Card>
             ))
           ) : (
-            investmentProperties.map((investmentproperty, index) => (
-           const property =  new InvestmentAssetConverter.fromStarknetProperty(investmentproperty);
-              
-              <Card
-                key={property.id}
-                className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
-                style={{
-                  opacity: inView ? 1 : 0,
-                  transform: inView
-                    ? "translateY(0)"
-                    : `translateY(${20 + index * 10}px)`,
-                  transition: `all 0.5s ease-out ${index * 0.1}s`,
-                }}
-              >
-                <div className="relative overflow-hidden group">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <CardHeader>
-                  <CardTitle>{property.title}</CardTitle>
-                  <p className="text-sm text-gray-500">{property.location}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Investment Progress</span>
-                        <span>
-                          {formatCurrency(property.currentInvestment)} of{" "}
-                          {formatCurrency(property.totalInvestment)}
-                        </span>
-                      </div>
-                      <Progress
-                        value={calculateProgress(
-                          property.currentInvestment,
-                          property.totalInvestment
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-500">Number of Investors</p>
-                        <p className="font-semibold">{property.investors}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Minimum Investment</p>
-                        <p className="font-semibold">
-                          {formatCurrency(property.minInvestment)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Expected ROI</p>
-                        <p className="font-semibold">{property.roi}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Property Type</p>
-                        <p className="font-semibold">{property.type}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Collapsible
-                        className="flex-1"
-                        open={expandedCardId === property.id}
-                        onOpenChange={(open) =>
-                          setExpandedCardId(open ? property.id : null)
-                        }
-                      >
-                        <CollapsibleTrigger asChild>
-                          <Button className="w-full">
-                            {address ? "Invest Now" : "invest in this property"}
-                          </Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-4 space-y-4">
-                          <Input
-                            type="number"
-                            placeholder={`Min. ${formatCurrency(
-                              property.minInvestment
-                            )}`}
-                            value={investmentAmounts[property.id] || ""}
-                            onChange={(e) =>
-                              handleAmountChange(property.id, e.target.value)
-                            }
-                            min={property.minInvestment}
-                          />
-                          <Button
-                            className="w-full bg-primary hover:bg-primary/90"
-                            onClick={
-                              address
-                                ? () => handleInvest(property.id)
-                                : handleConnectWallet
-                            }
-                          >
-                            {
-                              <>
-                                <Wallet className="mr-2 h-4 w-4" />
-                                {address ? "Invest" : "Connect Wallet"}
-                              </>
-                            }
-                          </Button>
-                        </CollapsibleContent>
-                      </Collapsible>
-
-                      <Link to={`/investment/${property.id}`}>
-                        <Button variant="outline">
-                          <ExternalLink className="mr-2 h-4 w-4" />
-                          More Details
-                        </Button>
-                      </Link>
-                    </div>
+            investmentProperties.map((investmentProperty, index) => {
+              const property = InvestmentAssetConverter.fromStarknetProperty(investmentProperty);
+              return (
+                <Card
+                  key={property.id}
+                  className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
+                  style={{
+                    opacity: inView ? 1 : 0,
+                    transform: inView
+                      ? "translateY(0)"
+                      : `translateY(${20 + index * 10}px)`,
+                    transition: `all 0.5s ease-out ${index * 0.1}s`,
+                  }}
+                >
+                  <div className="relative overflow-hidden group">
+                    <img
+                      src={property.image}
+                      alt={property.title}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                </CardContent>
-              </Card>
-            ))
+                  <CardHeader>
+                    <CardTitle>{property.title}</CardTitle>
+                    <p className="text-sm text-gray-500">{property.location}</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Investment Progress</span>
+                          <span>
+                            {formatCurrency(property.currentInvestment)} of{" "}
+                            {formatCurrency(property.totalInvestment)}
+                          </span>
+                        </div>
+                        <Progress
+                          value={calculateProgress(
+                            property.currentInvestment,
+                            property.totalInvestment
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-500">Number of Investors</p>
+                          <p className="font-semibold">{property.investors}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Minimum Investment</p>
+                          <p className="font-semibold">
+                            {formatCurrency(property.minInvestment)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Expected ROI</p>
+                          <p className="font-semibold">{property.roi}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Property Type</p>
+                          <p className="font-semibold">{property.type}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Collapsible
+                          className="flex-1"
+                          open={expandedCardId === property.id}
+                          onOpenChange={(open) =>
+                            setExpandedCardId(open ? property.id : null)
+                          }
+                        >
+                          <CollapsibleTrigger asChild>
+                            <Button className="w-full">
+                              {address ? "Invest Now" : "invest in this property"}
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-4 space-y-4">
+                            <Input
+                              type="number"
+                              placeholder={`Min. ${formatCurrency(
+                                property.minInvestment
+                              )}`}
+                              value={investmentAmounts[property.id] || ""}
+                              onChange={(e) =>
+                                handleAmountChange(property.id, e.target.value)
+                              }
+                              min={property.minInvestment}
+                            />
+                            <Button
+                              className="w-full bg-primary hover:bg-primary/90"
+                              onClick={
+                                address
+                                  ? () => handleInvest(property.id)
+                                  : handleConnectWallet
+                              }
+                            >
+                              <Wallet className="mr-2 h-4 w-4" />
+                              {address ? "Invest" : "Connect Wallet"}
+                            </Button>
+                          </CollapsibleContent>
+                        </Collapsible>
+
+                        <Link to={`/investment/${property.id}`}>
+                          <Button variant="outline">
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            More Details
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
           )}
         </div>
       </div>
