@@ -1,4 +1,3 @@
-import { useAccount } from "@starknet-react/core";
 import { BigNumberish, num, shortString } from "starknet";
 
 export const investmentTypes = [
@@ -89,7 +88,9 @@ export class InvestmentAssetConverter {
         
         try {
             if (typeof felt === 'object' && '_type' in felt && felt._type === 'BigInt') {
-                return shortString.decodeShortString(felt.value?.toString() || '');
+                const value = felt.value;
+                if (!value) return '';
+                return shortString.decodeShortString(value.toString());
             }
             return shortString.decodeShortString(felt.toString());
         } catch (error) {
@@ -103,12 +104,14 @@ export class InvestmentAssetConverter {
         
         try {
             if (typeof address === 'object' && '_type' in address && address._type === 'BigInt') {
-                return num.toHex(address.value?.toString() || '0');
+                const value = address.value;
+                if (!value) return '0x0';
+                return num.toHex(value.toString());
             }
-            return num.toHex(address);
+            return num.toHex(address as BigNumberish);
         } catch (error) {
             console.error("Error converting address to string:", error);
-            return '';
+            return '0x0';
         }
     }
 
@@ -151,7 +154,7 @@ export class InvestmentAssetConverter {
                 min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)
             };
         } catch (error) {
-            console.error("Error converting investment property:", error, starknetProperty);
+            console.error("Error converting Starknet property:", error, starknetProperty);
             throw error;
         }
     }
