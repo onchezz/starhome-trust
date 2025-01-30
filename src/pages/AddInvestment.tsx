@@ -180,7 +180,38 @@ const AddInvestment = () => {
   const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
   const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
 
-  // Modified handleSubmit to handle uploads first
+  const handleUploadFiles = async (files: File[], isDocuments: boolean = false) => {
+    console.log(`Starting ${isDocuments ? 'document' : 'image'} upload...`);
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    setTotalUploadSize((prev) => prev + totalSize);
+
+    try {
+      const result = await handleFileUpload(
+        files, 
+        pinata, 
+        formData.id || "", 
+        isDocuments ? 'documents' : 'images'
+      );
+      
+      console.log(`Upload successful for ${isDocuments ? 'documents' : 'images'}:`, result);
+      
+      if (isDocuments) {
+        setUploadedDocHash(result);
+        handleInputChange("legal_detail", result);
+      } else {
+        setUploadedImageHash(result);
+        handleInputChange("images", result);
+      }
+
+      toast.success(`${isDocuments ? "Documents" : "Images"} uploaded successfully!`);
+      return result;
+    } catch (error) {
+      console.error(`Error uploading ${isDocuments ? "documents" : "images"}:`, error);
+      toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {
@@ -196,16 +227,14 @@ const AddInvestment = () => {
       let imagesHash = uploadedImageHash;
       if (selectedFiles.length > 0 && !uploadedImageHash) {
         console.log("Uploading images...");
-        imagesHash = await handleUpload(selectedFiles, false);
-        setUploadedImageHash(imagesHash);
+        imagesHash = await handleUploadFiles(selectedFiles, false);
       }
 
       // Handle document uploads if not already uploaded
       let docsHash = uploadedDocHash;
       if (selectedDocs.length > 0 && !uploadedDocHash) {
         console.log("Uploading documents...");
-        docsHash = await handleUpload(selectedDocs, true);
-        setUploadedDocHash(docsHash);
+        docsHash = await handleUploadFiles(selectedDocs, true);
       }
 
       const processedFormData: InvestmentAsset = {
