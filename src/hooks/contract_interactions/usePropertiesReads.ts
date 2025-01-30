@@ -9,28 +9,42 @@ const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 export const usePropertyRead = () => {
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
-    queryFn: () => useStarHomeReadContract({
-      functionName: "get_sale_properties",
-    }).data,
-    staleTime: CACHE_TIME, // Data will be considered fresh for 5 minutes
-    gcTime: CACHE_TIME, // Renamed from cacheTime to gcTime
+    queryFn: async () => {
+      const result = await useStarHomeReadContract({
+        functionName: "get_sale_properties",
+      }).data;
+      console.log("Raw properties data:", result);
+      return result;
+    },
+    staleTime: CACHE_TIME,
+    gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
   });
 
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
-    queryFn: () => useStarHomeReadContract({
-      functionName: "get_investment_properties",
-    }).data,
+    queryFn: async () => {
+      const result = await useStarHomeReadContract({
+        functionName: "get_investment_properties",
+      }).data;
+      console.log("Raw investment properties data:", result);
+      return result;
+    },
     staleTime: CACHE_TIME,
-    gcTime: CACHE_TIME, // Renamed from cacheTime to gcTime
+    gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
   });
 
-  console.log("Sale properties:", propertiesData);
+  // Convert the raw data to Property objects
+  const saleProperties = propertiesData ? propertiesData.map((prop: any) => {
+    console.log("Converting property:", prop);
+    return PropertyConverter.fromStarknetProperty(prop);
+  }) : [];
 
-  const saleProperties = Array.isArray(propertiesData) ? propertiesData : [];
-  const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData : [];
+  const investmentProperties = investmentPropertiesData ? investmentPropertiesData.map((prop: any) => {
+    console.log("Converting investment property:", prop);
+    return PropertyConverter.fromStarknetProperty(prop);
+  }) : [];
  
   return {
     saleProperties,
@@ -51,11 +65,12 @@ export const usePropertyReadById = (id: string) => {
   });
 
   useEffect(() => {
-    if (propertyData && !isLoading) {
+    if (propertyData) {
+      console.log("Property data by ID:", propertyData);
       const convertedProperty = PropertyConverter.fromStarknetProperty(propertyData);
       setProperty(convertedProperty);
     }
-  }, [propertyData, isLoading]);
+  }, [propertyData]);
 
   return { 
     property, 
@@ -67,19 +82,24 @@ export const usePropertyReadById = (id: string) => {
 export const useAgentProperties = (agentAddress: string) => {
   const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['agent_properties', agentAddress],
-    queryFn: () => useStarHomeReadContract({
-      functionName: "get_sale_properties_by_agent",
-      args: [agentAddress],
-    }).data,
+    queryFn: async () => {
+      const result = await useStarHomeReadContract({
+        functionName: "get_sale_properties_by_agent",
+        args: [agentAddress],
+      }).data;
+      console.log("Agent properties data:", result);
+      return result;
+    },
     staleTime: CACHE_TIME,
-    gcTime: CACHE_TIME, // Renamed from cacheTime to gcTime
+    gcTime: CACHE_TIME,
     refetchInterval: CACHE_TIME,
     enabled: !!agentAddress,
   });
 
-  const properties = Array.isArray(propertiesData) 
-    ? propertiesData.map(prop => PropertyConverter.fromStarknetProperty(prop))
-    : [];
+  const properties = propertiesData ? propertiesData.map((prop: any) => {
+    console.log("Converting agent property:", prop);
+    return PropertyConverter.fromStarknetProperty(prop);
+  }) : [];
 
   return { properties, isLoading, error };
 };
