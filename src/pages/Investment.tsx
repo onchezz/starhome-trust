@@ -23,7 +23,10 @@ import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
-import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
+import {
+  useInvestmentAssetsRead,
+  usePropertyRead,
+} from "@/hooks/contract_interactions/usePropertiesReads";
 import { InvestmentAsset } from "@/types/investment";
 import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
@@ -57,7 +60,7 @@ const ImageGallery = ({ imagesId }: { imagesId: string }) => {
         src={imageUrls[currentImageIndex]}
         alt={`Property ${currentImageIndex + 1}`}
         className={`w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110 ${
-          isLoading ? 'opacity-0' : 'opacity-100'
+          isLoading ? "opacity-0" : "opacity-100"
         }`}
         onLoad={() => setIsLoading(false)}
         onError={() => setIsLoading(false)}
@@ -68,7 +71,7 @@ const ImageGallery = ({ imagesId }: { imagesId: string }) => {
             <button
               key={index}
               className={`w-2 h-2 rounded-full transition-all ${
-                currentImageIndex === index ? 'bg-white' : 'bg-white/50'
+                currentImageIndex === index ? "bg-white" : "bg-white/50"
               }`}
               onClick={() => setCurrentImageIndex(index)}
             />
@@ -81,8 +84,11 @@ const ImageGallery = ({ imagesId }: { imagesId: string }) => {
 };
 
 const Investment = () => {
-  const { investmentProperties, investmentPropertiesLoading, investmentPropertiesError } =
-    usePropertyRead();
+  const {
+    investmentProperties,
+    isLoading: investmentPropertiesLoading,
+    investmentPropertiesError,
+  } = useInvestmentAssetsRead();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [investmentAmounts, setInvestmentAmounts] = useState<{
     [key: string]: string;
@@ -98,16 +104,21 @@ const Investment = () => {
   });
 
   // Calculate total statistics
-  const totalStats = investmentProperties?.reduce((acc, property) => {
-    return {
-      totalInvestors: acc.totalInvestors + 0, // This would come from contract
-      averageROI: acc.averageROI + Number(property.expected_roi || 0),
-      totalInvestment: acc.totalInvestment + Number(property.asset_value || 0)
-    };
-  }, { totalInvestors: 0, averageROI: 0, totalInvestment: 0 });
+  const totalStats = investmentProperties?.reduce(
+    (acc, property) => {
+      return {
+        totalInvestors: acc.totalInvestors + 0, // This would come from contract
+        averageROI: acc.averageROI + Number(property.expected_roi || 0),
+        totalInvestment:
+          acc.totalInvestment + Number(property.asset_value || 0),
+      };
+    },
+    { totalInvestors: 0, averageROI: 0, totalInvestment: 0 }
+  );
 
-  const averageROI = totalStats ? 
-    (totalStats.averageROI / (investmentProperties?.length || 1)).toFixed(1) : "0";
+  const averageROI = totalStats
+    ? (totalStats.averageROI / (investmentProperties?.length || 1)).toFixed(1)
+    : "0";
 
   // Simulate loading
   useState(() => {
@@ -194,20 +205,20 @@ const Investment = () => {
                   value: investmentProperties?.length || 0,
                   icon: Building,
                 },
-                { 
-                  title: "Total Investors", 
-                  value: totalStats?.totalInvestors || 0, 
-                  icon: Users 
+                {
+                  title: "Total Investors",
+                  value: totalStats?.totalInvestors || 0,
+                  icon: Users,
                 },
-                { 
-                  title: "Average ROI", 
-                  value: `${averageROI}%`, 
-                  icon: TrendingUp 
+                {
+                  title: "Average ROI",
+                  value: `${averageROI}%`,
+                  icon: TrendingUp,
                 },
-                { 
-                  title: "Total Investment", 
-                  value: formatCurrency(totalStats?.totalInvestment || 0), 
-                  icon: DollarSign 
+                {
+                  title: "Total Investment",
+                  value: formatCurrency(totalStats?.totalInvestment || 0),
+                  icon: DollarSign,
                 },
               ].map((stat, index) => (
                 <Card
@@ -240,10 +251,7 @@ const Investment = () => {
         <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, index) => (
-              <Card
-                key={index}
-                className="overflow-hidden animate-pulse"
-              >
+              <Card key={index} className="overflow-hidden animate-pulse">
                 <Shimmer className="w-full h-48" />
                 <CardHeader>
                   <Shimmer className="h-6 w-3/4 mb-2" />
@@ -276,7 +284,7 @@ const Investment = () => {
                 roi: property.expected_roi,
                 type: property.investment_type,
                 title: property.name,
-                image: property.images
+                image: property.images,
               };
 
               const progress = calculateProgress(
@@ -309,8 +317,11 @@ const Investment = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <span>Investment Progress</span>
                           <span>
-                            {formatCurrency(displayData.asset_value - displayData.available_staking_amount)} of{" "}
-                            {formatCurrency(displayData.asset_value)}
+                            {formatCurrency(
+                              displayData.asset_value -
+                                displayData.available_staking_amount
+                            )}{" "}
+                            of {formatCurrency(displayData.asset_value)}
                           </span>
                         </div>
                         <Progress value={progress} />

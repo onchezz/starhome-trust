@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { jsonRpcProvider, useContract, useSendTransaction } from "@starknet-react/core";
-import type { Abi, Contract, Call } from "starknet";
+
+import {  useContract, useSendTransaction } from "@starknet-react/core";
+import type { Abi,  } from "starknet";
 import { useMemo, useCallback } from "react";
-import { rpcProvideUr, starhomesContract } from "@/utils/constants";
+import {  starhomesContract } from "@/utils/constants";
 import { starhomes_abi } from "@/data/starhomes_abi";
-import { Chain } from "@starknet-react/chains";
+
 
 interface TransactionStatus {
   isError: boolean;

@@ -1,13 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useInvestmentsCache } from "@/hooks/contract_interactions/useInvestmentsCache";
+
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Link } from "react-router-dom";
 import { Skeleton } from "../ui/skeleton";
+import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 
 export const UserInvestments = () => {
   const { theme } = useTheme();
-  const { userInvestments, isLoading } = useInvestmentsCache();
+  const { userInvestments, isLoading } = useInvestmentAssetsRead();
 
   if (isLoading) {
     return (
