@@ -100,44 +100,52 @@ const Properties = () => {
     </Card>
   );
 
+  const LoadingState = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <PropertyShimmerCard key={index} />
+      ))}
+    </div>
+  );
+
+  const PropertiesList = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filteredProperties.map((property: Property) => (
+        <PropertyCard
+          key={property.id}
+          id={property.id}
+          title={property.title}
+          location={{
+            city: property.city,
+            state: property.state,
+            country: property.country,
+          }}
+          price={property.price}
+          askingPrice={property.asking_price}
+          interestedClients={property.interestedClients}
+          annualGrowthRate={property.annualGrowthRate}
+          imagesUrl={property.imagesId}
+          propertyType={property.propertyType}
+          status={property.status}
+        />
+      ))}
+    </div>
+  );
+
   const renderContent = () => {
     if (isLoading) {
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <PropertyShimmerCard key={index} />
-          ))}
-        </div>
-      );
+      return <LoadingState />;
     }
 
-    if (error || !filteredProperties.length) {
+    if (error) {
       return <EmptyState />;
     }
 
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProperties.map((property: Property) => (
-          <PropertyCard
-            key={property.id}
-            id={property.id}
-            title={property.title}
-            location={{
-              city: property.city,
-              state: property.state,
-              country: property.country,
-            }}
-            price={property.price}
-            askingPrice={property.asking_price}
-            interestedClients={property.interestedClients}
-            annualGrowthRate={property.annualGrowthRate}
-            imagesUrl={property.imagesId}
-            propertyType={property.propertyType}
-            status={property.status}
-          />
-        ))}
-      </div>
-    );
+    if (!filteredProperties.length) {
+      return <EmptyState />;
+    }
+
+    return <PropertiesList />;
   };
 
   return (
