@@ -64,7 +64,6 @@ export interface InvestmentAsset {
   construction_status: string;
   asset_value: number;
   available_staking_amount: number;
-  // min_investment:number;
   investment_type: string;
   construction_year: number;
   property_price: number;

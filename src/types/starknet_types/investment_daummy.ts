@@ -49,7 +49,8 @@ export const dummyInvestment:InvestmentAsset = {
   name: "Skyline Luxury Residences",
   description: "Premium residential complex featuring modern amenities and sustainable design",
   is_active: true,
-  location:  {address:'address',
+  location:  {
+    address:'address',
     city:"city",
     state: 'state',
     country: 'country',

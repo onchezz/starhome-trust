@@ -164,6 +164,36 @@ export const starhomes_abi =[
   },
   {
     "type": "struct",
+    "name": "starhomes::models::investment_model::Location",
+    "members": [
+      {
+        "name": "address",
+        "type": "core::felt252"
+      },
+      {
+        "name": "city",
+        "type": "core::felt252"
+      },
+      {
+        "name": "state",
+        "type": "core::felt252"
+      },
+      {
+        "name": "country",
+        "type": "core::felt252"
+      },
+      {
+        "name": "latitude",
+        "type": "core::felt252"
+      },
+      {
+        "name": "longitude",
+        "type": "core::felt252"
+      }
+    ]
+  },
+  {
+    "type": "struct",
     "name": "starhomes::models::investment_model::InvestmentAsset",
     "members": [
       {
@@ -184,7 +214,7 @@ export const starhomes_abi =[
       },
       {
         "name": "location",
-        "type": "core::byte_array::ByteArray"
+        "type": "starhomes::models::investment_model::Location"
       },
       {
         "name": "size",
