@@ -1,13 +1,18 @@
 import React from "react";
 import * as Progress from "@radix-ui/react-progress";
 import * as Separator from "@radix-ui/react-separator";
-import { UploadIcon, Cross2Icon, UpdateIcon } from "@radix-ui/react-icons";
+import { LoaderCircle, CheckCircle2, XCircle, UploadCloud } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@radix-ui/react-tooltip";
+} from "@/components/ui/tooltip";
+
+interface UploadStatus {
+  isUploading: boolean;
+  progress: number;
+}
 
 interface UploadProgressProps {
   progress: number;
@@ -17,6 +22,10 @@ interface UploadProgressProps {
   uploadedSize: number;
   onCancel?: () => void;
   status?: "uploading" | "processing" | "error" | "success";
+  uploadStatus: {
+    images: UploadStatus;
+    documents: UploadStatus;
+  };
 }
 
 const UploadProgress: React.FC<UploadProgressProps> = ({
@@ -27,6 +36,7 @@ const UploadProgress: React.FC<UploadProgressProps> = ({
   uploadedSize,
   onCancel,
   status = "uploading",
+  uploadStatus,
 }) => {
   const formatSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -36,88 +46,91 @@ const UploadProgress: React.FC<UploadProgressProps> = ({
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
-  const getStatusColor = () => {
-    switch (status) {
-      case "error":
-        return "bg-red-500";
-      case "success":
-        return "bg-green-500";
-      case "processing":
-        return "bg-yellow-500";
-      default:
-        return "bg-blue-500";
-    }
+  const getStatusColor = (type: "images" | "documents") => {
+    if (uploadStatus[type].isUploading) return "bg-blue-500";
+    if (uploadStatus[type].progress === 100) return "bg-green-500";
+    return "bg-gray-200";
   };
 
-  const getStatusIcon = () => {
-    switch (status) {
-      case "error":
-        return <Cross2Icon className="text-red-500" />;
-      case "success":
-        return <UploadIcon className="text-green-500" />;
-      case "processing":
-        return <UpdateIcon className="text-yellow-500 animate-spin" />;
-      default:
-        return <UploadIcon className="text-blue-500" />;
+  const getStatusIcon = (type: "images" | "documents") => {
+    if (uploadStatus[type].isUploading) {
+      return <LoaderCircle className="h-4 w-4 text-blue-500 animate-spin" />;
     }
+    if (uploadStatus[type].progress === 100) {
+      return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+    }
+    return <UploadCloud className="h-4 w-4 text-gray-500" />;
   };
 
   return (
-    <div className="w-full space-y-2">
-      <div className="flex items-center justify-between text-sm">
-        <div className="flex items-center space-x-2">
-          {getStatusIcon()}
-          <span className="font-medium">
-            {status === "uploading"
-              ? "Uploading..."
-              : status === "processing"
-              ? "Processing..."
-              : status === "error"
-              ? "Upload failed"
-              : "Upload complete"}
+    <div className="w-full space-y-4">
+      {/* Images Upload Progress */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            {getStatusIcon("images")}
+            <span className="text-sm font-medium">Images</span>
+          </div>
+          <span className="text-sm text-gray-500">
+            {uploadStatus.images.progress}%
           </span>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="text-sm text-gray-500">
-                {uploadedFiles} of {totalFiles} files
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              {formatSize(uploadedSize)} of {formatSize(totalSize)}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Progress.Root
+          className="relative overflow-hidden bg-gray-200 rounded-full w-full h-2"
+          value={uploadStatus.images.progress}
+        >
+          <Progress.Indicator
+            className={`h-full transition-transform duration-500 ease-out ${getStatusColor(
+              "images"
+            )}`}
+            style={{ transform: `translateX(-${100 - uploadStatus.images.progress}%)` }}
+          />
+        </Progress.Root>
       </div>
 
-      <Progress.Root
-        className="relative overflow-hidden bg-slate-200 rounded-full w-full h-2"
-        value={progress}
-      >
-        <Progress.Indicator
-          className={`h-full transition-transform duration-500 ease-out ${getStatusColor()}`}
-          style={{ transform: `translateX(-${100 - progress}%)` }}
-        />
-      </Progress.Root>
+      {/* Documents Upload Progress */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            {getStatusIcon("documents")}
+            <span className="text-sm font-medium">Documents</span>
+          </div>
+          <span className="text-sm text-gray-500">
+            {uploadStatus.documents.progress}%
+          </span>
+        </div>
+        <Progress.Root
+          className="relative overflow-hidden bg-gray-200 rounded-full w-full h-2"
+          value={uploadStatus.documents.progress}
+        >
+          <Progress.Indicator
+            className={`h-full transition-transform duration-500 ease-out ${getStatusColor(
+              "documents"
+            )}`}
+            style={{
+              transform: `translateX(-${100 - uploadStatus.documents.progress}%)`,
+            }}
+          />
+        </Progress.Root>
+      </div>
 
       <div className="flex justify-between text-xs text-gray-500">
-        <span>{progress.toFixed(1)}% complete</span>
         <span>{formatSize(totalSize - uploadedSize)} remaining</span>
+        <span>
+          {uploadedFiles} of {totalFiles} files
+        </span>
       </div>
 
-      <Separator.Root className="h-[1px] bg-slate-200 my-2" />
-
-      <div className="flex justify-end">
-        {status === "uploading" && onCancel && (
+      {onCancel && (status === "uploading" || status === "processing") && (
+        <div className="flex justify-end">
           <button
             onClick={onCancel}
             className="text-sm text-red-500 hover:text-red-700 focus:outline-none"
           >
             Cancel Upload
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

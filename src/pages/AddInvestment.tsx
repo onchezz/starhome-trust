@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
-import { Loader2 } from "lucide-react";
+import { Loader2, LoaderCircle } from "lucide-react";
 
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
@@ -17,6 +17,7 @@ import { handleFileUpload } from "@/utils/uploadUtils";
 import MapLocationPicker from "@/components/MapLocationPicker";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import CommaInputField from "@/components/investment/CommaInputField";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -252,13 +253,31 @@ const AddInvestment = () => {
       return;
     }
 
+    // Validate required fields
+    const requiredFields = [
+      "tax_benefits",
+      "highlights",
+      "market_analysis",
+      "risk_factors",
+      "legal_detail",
+      "additional_features",
+    ];
+
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field as keyof InvestmentAsset]
+    );
+
+    if (missingFields.length > 0) {
+      toast.error(`Please fill in the following fields: ${missingFields.join(", ")}`);
+      return;
+    }
+
     setIsUploading(true);
     try {
       console.log("Starting form submission with data:", formData);
 
       // Handle image uploads if not already uploaded
       let imagesHash = uploadedImageHash;
-      
       if (selectedFiles.length > 0 && !uploadedImageHash) {
         console.log("Uploading images...");
         imagesHash = await handleUploadFiles(selectedFiles, false);
@@ -425,6 +444,44 @@ const AddInvestment = () => {
 
                 <section className="space-y-4">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Additional Details
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <CommaInputField
+                      label="Tax Benefits"
+                      value={formData.tax_benefits || ""}
+                      onChange={(value) => handleInputChange("tax_benefits", value)}
+                      placeholder="Enter tax benefits, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Highlights"
+                      value={formData.highlights || ""}
+                      onChange={(value) => handleInputChange("highlights", value)}
+                      placeholder="Enter highlights, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Market Analysis"
+                      value={formData.market_analysis || ""}
+                      onChange={(value) => handleInputChange("market_analysis", value)}
+                      placeholder="Enter market analysis points, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Risk Factors"
+                      value={formData.risk_factors || ""}
+                      onChange={(value) => handleInputChange("risk_factors", value)}
+                      placeholder="Enter risk factors, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Additional Features"
+                      value={formData.additional_features || ""}
+                      onChange={(value) => handleInputChange("additional_features", value)}
+                      placeholder="Enter additional features, separated by commas"
+                    />
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Documents & Images
                   </h2>
                   <UploadGrid
@@ -452,7 +509,7 @@ const AddInvestment = () => {
               >
                 {isUploading || contractStatus.isPending ? (
                   <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
                     <span>Processing...</span>
                   </div>
                 ) : (
