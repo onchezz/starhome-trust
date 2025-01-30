@@ -12,11 +12,21 @@ export const UserInvestments = () => {
   const { userInvestments, isLoading } = useInvestmentAssetsRead();
 
   // Filter investments where the owner matches the user's address
-  const userOwnedInvestments = userInvestments?.filter(
-    (investment) => investment.owner.toLowerCase() === address?.toLowerCase()
-  );
+  const userOwnedInvestments = userInvestments?.filter((investment) => {
+    console.log("[UserInvestments] Comparing addresses:", {
+      investmentOwner: investment?.owner?.toLowerCase(),
+      userAddress: address?.toLowerCase(),
+      isMatch: investment?.owner?.toLowerCase() === address?.toLowerCase()
+    });
+    
+    // Make sure both addresses exist and compare them case-insensitively
+    return investment?.owner && 
+           address && 
+           investment.owner.toLowerCase() === address.toLowerCase();
+  });
 
   console.log("[UserInvestments] User address:", address);
+  console.log("[UserInvestments] All investments:", userInvestments);
   console.log("[UserInvestments] Filtered investments:", userOwnedInvestments);
 
   if (isLoading) {
