@@ -75,7 +75,7 @@ export const useToken = (tokenAddress: string) => {
       const amountInTokenUnits = Number(amount) * Math.pow(10, tokenDecimals);
       const amountBigInt = num.toBigInt(Math.floor(amountInTokenUnits).toString());
       
-      console.log("Investment amount conversion:", {
+      console.log("Investment amount details:", {
         originalAmount: amount,
         tokenDecimals,
         amountInTokenUnits,
@@ -85,10 +85,11 @@ export const useToken = (tokenAddress: string) => {
       const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
       const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
 
-      console.log("Investment check:", {
-        amount: amountBigInt.toString(),
-        allowance: currentAllowance.toString(),
-        balance: currentBalance.toString()
+      console.log("Current allowance check:", {
+        currentAllowance: currentAllowance.toString(),
+        requiredAmount: amountBigInt.toString(),
+        hasEnoughAllowance: currentAllowance >= amountBigInt,
+        currentBalance: currentBalance.toString()
       });
 
       if (currentBalance < amountBigInt) {
@@ -97,17 +98,23 @@ export const useToken = (tokenAddress: string) => {
 
       // Check if current allowance is sufficient
       if (currentAllowance >= amountBigInt) {
-        console.log("Sufficient allowance exists, proceeding with investment");
+        console.log("Sufficient allowance exists:", {
+          currentAllowance: currentAllowance.toString(),
+          requiredAmount: amountBigInt.toString()
+        });
         // If allowance is sufficient, proceed directly with investment
         await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
         return;
       }
 
       // If allowance is insufficient, approve first
-      console.log("Insufficient allowance, requesting approval");
+      console.log("Insufficient allowance, requesting approval:", {
+        currentAllowance: currentAllowance.toString(),
+        requestingApprovalFor: amountBigInt.toString()
+      });
       const approveCall = contract.populate("approve", [formattedSpender as `0x${string}`, amountBigInt]);
       const tx = await sendAsync([approveCall]);
-      console.log("Approval transaction:", tx);
+      console.log("Approval transaction completed:", tx);
 
       // After approval, proceed with investment
       await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
