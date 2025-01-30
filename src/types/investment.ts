@@ -48,17 +48,20 @@ export interface InvestmentAsset {
   id: string;
   name: string;
   description: string;
-  is_active:boolean,
+  is_active: boolean;
   location: string;
+  latitude: string;
+  longitude: string;
   size: number;
   investor_id: string;
   owner: string;
-  construction_status:string,
+  construction_status: string;
   asset_value: number;
   available_staking_amount: number;
+  min_investment:number;
   investment_type: string;
   construction_year: number;
-  property_price:number;
+  property_price: number;
   expected_roi: string;
   rental_income: number;
   maintenance_costs: number;
@@ -70,8 +73,9 @@ export interface InvestmentAsset {
   additional_features: string;
   images: string;
   investment_token: string;
-  min_investment_amount: number;  
+  min_investment_amount: number;
 }
+
 export class InvestmentAssetConverter {
     static feltToString(felt: string): string {
         return shortString.decodeShortString(felt);
@@ -87,13 +91,14 @@ export class InvestmentAssetConverter {
             name: this.feltToString(starknetProperty.name),
             description: starknetProperty.description,
             is_active: Boolean(starknetProperty.is_active),
-            location: starknetProperty.location,
+            location: this.feltToString(starknetProperty.location),
             size: Number(starknetProperty.size),
             investor_id: this.addressToString(starknetProperty.investor_id),
             owner: this.addressToString(starknetProperty.owner),
             construction_status: this.feltToString(starknetProperty.construction_status),
             asset_value: Number(starknetProperty.asset_value),
             available_staking_amount: Number(starknetProperty.available_staking_amount),
+            min_investment:Number(starknetProperty.min_investment),
             investment_type: this.feltToString(starknetProperty.investment_type),
             construction_year: Number(starknetProperty.construction_year),
             property_price: Number(starknetProperty.property_price),
