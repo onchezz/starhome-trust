@@ -17,7 +17,7 @@ export const ProfileSidebar = ({ activeTab, onTabChange, isAgent }: ProfileSideb
     { id: 'wallet', label: 'Wallet', icon: Wallet },
     { id: 'investments', label: 'Investments', icon: Building2 },
     ...(isAgent ? [{ id: 'properties', label: 'Properties', icon: Home }] : []),
-    { id: 'settings', label: 'Settings', icon: Settings },
+    // { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (

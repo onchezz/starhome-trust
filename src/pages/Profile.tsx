@@ -52,18 +52,18 @@ const Profile = () => {
         return <UserInvestments />;
       case "properties":
         return user?.is_agent ? <AgentProperties /> : null;
-      case "settings":
-        return (
-          <Card className={cn(
-            "backdrop-blur-xl border transition-all duration-300",
-            theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-          )}>
-            <CardContent className="p-6">
-              <h2 className="text-2xl font-semibold mb-4">Settings</h2>
-              <p className="text-muted-foreground">Settings coming soon...</p>
-            </CardContent>
-          </Card>
-        );
+      // case "settings":
+      //   return (
+      //     <Card className={cn(
+      //       "backdrop-blur-xl border transition-all duration-300",
+      //       theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+      //     )}>
+      //       <CardContent className="p-6">
+      //         <h2 className="text-2xl font-semibold mb-4">Settings</h2>
+      //         <p className="text-muted-foreground">Settings coming soon...</p>
+      //       </CardContent>
+      //     </Card>
+      //   );
       default:
         return null;
     }
