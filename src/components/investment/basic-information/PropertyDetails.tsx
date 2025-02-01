@@ -7,13 +7,11 @@ import { InvestmentAsset } from "@/types/investment";
 interface PropertyDetailsProps {
   formData: Partial<InvestmentAsset>;
   handleInputChange: (field: keyof InvestmentAsset, value: any) => void;
-  editMode?: boolean;
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({
   formData,
   handleInputChange,
-  editMode = false,
 }) => {
   return (
     <>
