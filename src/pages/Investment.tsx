@@ -173,17 +173,16 @@ const Investment = () => {
         return;
       }
 
-      await handleInvestInProperty(propertyId, amount);
-      
+      await handleInvestInProperty(propertyId, Number(amount));
+
       // Reset the investment amount after successful investment
-      setInvestmentAmounts(prev => ({
+      setInvestmentAmounts((prev) => ({
         ...prev,
-        [propertyId]: ''
+        [propertyId]: "",
       }));
-      
+
       // Close the collapsible after successful investment
       setExpandedCardId(null);
-      
     } catch (error) {
       console.error("Investment error:", error);
       toast.error("Investment failed");
@@ -401,7 +400,9 @@ const Investment = () => {
                               }
                             >
                               <Wallet className="mr-2 h-4 w-4" />
-                              {address ? "Invest" : "Connect Wallet"}
+                              {address
+                                ? "Invest"
+                                : "Connect Wallet"}
                             </Button>
                           </CollapsibleContent>
                         </Collapsible>

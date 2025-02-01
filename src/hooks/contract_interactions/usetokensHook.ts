@@ -8,7 +8,7 @@ import {
 } from "@starknet-react/core";
 import { starhomesContract } from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
-import { num } from "starknet";
+// import { num } from "starknet";
 
 export const useToken = (tokenAddress) => {
   const { address: owner } = useAccount();
@@ -60,7 +60,7 @@ export const useToken = (tokenAddress) => {
     address: formattedTokenAddress as `0x${string}`,
   });
 
-  const { sendAsync: sendTransaction } = useSendTransaction();
+  const { sendAsync: sendTransaction } = useSendTransaction({});
 
   const approveAndInvest = async (amount: number, investmentId: string, investCallback: (id: string, amount: number) => Promise<any>) => {
     if (!contract || !owner) {
@@ -68,12 +68,12 @@ export const useToken = (tokenAddress) => {
     }
 
     try {
-      const amountBigInt = num.toBigInt(amount);
+      // const amountBigInt = num.toBigInt(amount);
       const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
       const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
 
       console.log("Investment check:", {
-        amount: amountBigInt.toString(),
+        amount:amount,
         allowance: currentAllowance.toString(),
         balance: currentBalance.toString()
       });
@@ -84,9 +84,9 @@ export const useToken = (tokenAddress) => {
 
       const calls = [];
 
-      if (currentAllowance < amountBigInt) {
+      if (currentAllowance < amount) {
         // Need to increase allowance first
-        const approveCall = contract.populate("approve", [spender, amountBigInt]);
+        const approveCall = contract.populate("approve", [spender, allowance]);
         calls.push(approveCall);
       }
 
@@ -97,7 +97,7 @@ export const useToken = (tokenAddress) => {
       }
 
       // After approval, proceed with investment
-      await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
+      await investCallback(investmentId, amount);
 
     } catch (error) {
       console.error("Error in approveAndInvest:", error);

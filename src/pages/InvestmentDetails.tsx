@@ -39,7 +39,7 @@ const InvestmentDetails = () => {
       await approveAndInvest(
         investmentAmount,
         id || "",
-        handleInvestInProperty(id,investmentAmount)
+        await handleInvestInProperty(id, investmentAmount)
       );
       
       toast.success("Investment successful!");
