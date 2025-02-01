@@ -1,54 +1,59 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
-import { parseImagesData } from "@/utils/imageUtils";
-import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { Button } from "../ui/button";
 
 interface InvestmentListingCardProps {
-  investment: {
-    id: string;
-    name: string;
-    description: string;
-    asset_value: number;
-    expected_roi: number;
-    images: string;
-  };
+  id: string;
+  name: string;
+  description: string;
+  asset_value: number;
+  expected_roi: string | number;  // Updated to accept both string and number
+  images: string;
 }
 
-export const InvestmentListingCard = ({ investment }: InvestmentListingCardProps) => {
-  const navigate = useNavigate();
-  const { imageUrls } = parseImagesData(investment.images);
+export const InvestmentListingCard = ({
+  id,
+  name,
+  description,
+  asset_value,
+  expected_roi,
+  images,
+}: InvestmentListingCardProps) => {
+  const { theme } = useTheme();
 
-  const handleUpdate = () => {
-    navigate(`/investment/edit/${investment.id}`);
-  };
+  // Convert ROI to number for display, fallback to 0 if invalid
+  const roiValue = typeof expected_roi === 'string' 
+    ? parseFloat(expected_roi) || 0 
+    : expected_roi;
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative h-48">
+    <Card
+      className={cn(
+        "backdrop-blur-xl border transition-all duration-300 hover:scale-105",
+        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white/80"
+      )}
+    >
+      <CardHeader className="p-0">
         <img
-          src={imageUrls[0] || '/placeholder.svg'}
-          alt={investment.name}
-          className="w-full h-full object-cover"
+          src={images || "/placeholder.svg"}
+          alt={name}
+          className="w-full h-48 object-cover rounded-t-lg"
         />
-      </div>
-      <CardHeader className="p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-semibold text-lg">{investment.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              {investment.description.slice(0, 100)}...
-            </p>
-          </div>
-          <Button variant="outline" size="icon" onClick={handleUpdate}>
-            <Edit className="h-4 w-4" />
-          </Button>
-        </div>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <div className="flex justify-between text-sm">
-          <span>Value: ${investment.asset_value.toLocaleString()}</span>
-          <span>ROI: {investment.expected_roi}%</span>
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          <h3 className="font-semibold text-lg">{name}</h3>
+          <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm font-medium">Value: ${asset_value.toLocaleString()}</p>
+              <p className="text-sm font-medium">ROI: {roiValue}%</p>
+            </div>
+            <Button variant="outline" size="sm">
+              Update
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

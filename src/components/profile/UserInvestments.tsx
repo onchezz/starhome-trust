@@ -82,14 +82,30 @@ export const UserInvestments = () => {
           <TabsContent value="owned">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {userOwnedInvestments?.map((investment) => (
-                <InvestmentListingCard key={investment.id} investment={investment} />
+                <InvestmentListingCard
+                  key={investment.id}
+                  id={investment.id}
+                  name={investment.name}
+                  description={investment.description}
+                  asset_value={investment.asset_value}
+                  expected_roi={investment.expected_roi}
+                  images={investment.images}
+                />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="listed">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {userListedInvestments?.map((investment) => (
-                <InvestmentListingCard key={investment.id} investment={investment} />
+                <InvestmentListingCard
+                  key={investment.id}
+                  id={investment.id}
+                  name={investment.name}
+                  description={investment.description}
+                  asset_value={investment.asset_value}
+                  expected_roi={investment.expected_roi}
+                  images={investment.images}
+                />
               ))}
             </div>
           </TabsContent>
