@@ -42,32 +42,29 @@ const AddInvestment = () => {
   const editMode = location.state?.mode === 'edit';
   const initialInvestmentData = location.state?.investmentData;
 
+  console.log("Initial investment data:", initialInvestmentData);
+
+  const defaultLocation = {
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    latitude: "",
+    longitude: "",
+  };
+
   const [formData, setFormData] = useState<InvestmentAsset>(
     editMode && initialInvestmentData 
       ? {
           ...initialInvestmentData,
-          location: initialInvestmentData.location || {
-            address: "",
-            city: "",
-            state: "",
-            country: "",
-            latitude: "",
-            longitude: "",
-          }
+          location: initialInvestmentData.location || defaultLocation
         }
       : {
           id: generateShortUUID(),
           name: "",
           description: "",
           is_active: true,
-          location: {
-            address: "",
-            city: "",
-            state: "",
-            country: "",
-            latitude: "",
-            longitude: "",
-          },
+          location: defaultLocation,
           size: 0,
           investor_id: address || "",
           owner: address || "",
@@ -110,6 +107,7 @@ const AddInvestment = () => {
   const [legalDetails, setLegalDetails] = useState<string[]>([]);
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
+    console.log(`Updating field ${field} with value:`, value);
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
