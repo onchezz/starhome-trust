@@ -16,11 +16,13 @@ import { AgentProperties } from "@/components/profile/AgentProperties";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UserInvestments } from "@/components/profile/UserInvestments";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 
 const Profile = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
-  const { disconnect, error: disconnectError, status } = useDisconnect({});
+  const { disconnect } = useDisconnect();
   const navigate = useNavigate();
   const { balances, isLoading: isLoadingBal } = useTokenBalances();
   const {
@@ -31,8 +33,6 @@ const Profile = () => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  
-  
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
@@ -104,77 +104,82 @@ const Profile = () => {
   }
 
   return (
-    <div
-      className={cn(
-        "min-h-screen transition-colors duration-300 px-2 sm:px-4 md:px-6",
-        theme === "dark" ? "bg-[#1A1F2C]" : "bg-gray-50"
-      )}
-    >
-      <div className="container mx-auto py-12 sm:py-16 md:py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto space-y-6"
-        >
-          <Card
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <ProfileSidebar />
+        <main className="flex-1 p-4 sm:p-6 md:p-8">
+          <div
             className={cn(
-              "backdrop-blur-xl border transition-all duration-300",
-              theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+              "container mx-auto transition-colors duration-300",
+              theme === "dark" ? "bg-[#1A1F2C]" : "bg-gray-50"
             )}
           >
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl md:text-2xl">
-                Profile Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              <div className="space-y-6 sm:space-y-8">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <ProfileHeader user={user} />
-                </motion.div>
-
-                <ProfileActions user={user} isLoading={isLoadingUser} />
-              </div>
-            </CardContent>
-          </Card>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <ProfileWallet
-              address={address || ""}
-              balances={balances}
-              isLoadingBal={isLoadingBal}
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <UserInvestments />
-          </motion.div>
-
-          {user?.is_agent && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
             >
-              <AgentProperties />
+              <Card
+                className={cn(
+                  "backdrop-blur-xl border transition-all duration-300",
+                  theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+                )}
+              >
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl md:text-2xl">
+                    Profile Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="space-y-6 sm:space-y-8">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <ProfileHeader user={user} />
+                    </motion.div>
+
+                    <ProfileActions user={user} isLoading={isLoadingUser} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <ProfileWallet
+                  address={address || ""}
+                  balances={balances}
+                  isLoadingBal={isLoadingBal}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <UserInvestments />
+              </motion.div>
+
+              {user?.is_agent && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <AgentProperties />
+                </motion.div>
+              )}
             </motion.div>
-          )}
-        </motion.div>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
