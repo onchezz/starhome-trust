@@ -4,8 +4,7 @@ import { useAccount } from "@starknet-react/core";
 import { toast } from "sonner";
 import { shortString } from "starknet";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
-import { useToken } from "@/hooks/contract_interactions/usetokensHook";
+import { useInvestment } from "@/hooks/useInvestment";
 import { InvestmentGallery } from "@/components/investment/details/InvestmentGallery";
 import { InvestmentLocation } from "@/components/investment/details/InvestmentLocation";
 import { InvestmentProgress } from "@/components/investment/details/InvestmentProgress";
@@ -16,39 +15,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const InvestmentDetails = () => {
   const { id } = useParams();
-  const { address } = useAccount();
-  const [investmentAmount, setInvestmentAmount] = React.useState(0);
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
-  const { handleInvestInProperty } = usePropertyCreate();
-  
-  // Initialize token hook with investment token address
-  const { approveAndInvest } = useToken(investment?.investment_token || "");
-
-  const handleInvest = async () => {
-    if (!address) {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-
-    if (!investmentAmount || isNaN(Number(investmentAmount))) {
-      toast.error("Please enter a valid investment amount");
-      return;
-    }
-
-    try {
-      await approveAndInvest(
-        investmentAmount,
-        id || "",
-        await handleInvestInProperty(id, investmentAmount)
-      );
-      
-      toast.success("Investment successful!");
-      setInvestmentAmount(0);
-    } catch (error) {
-      console.error("Investment error:", error);
-      toast.error(error instanceof Error ? error.message : "Investment failed");
-    }
-  };
+  const { investmentAmount, setInvestmentAmount, handleInvest } = useInvestment(
+    investment?.investment_token
+  );
 
   const getBigIntValue = (value: any): string => {
     if (!value) return "";
@@ -77,7 +47,6 @@ const InvestmentDetails = () => {
     return <div>Investment not found</div>;
   }
 
-  // Convert BigInt values to numbers
   const assetValue = Number(investment.asset_value || 0);
   const availableStakingAmount = Number(
     investment.available_staking_amount || 0
@@ -89,7 +58,6 @@ const InvestmentDetails = () => {
   const size = Number(investment.size || 0);
   const constructionYear = Number(investment.construction_year || 0);
 
-  // Get location data
   const location = {
     latitude: Number(getBigIntValue(investment.location?.latitude)),
     longitude: Number(getBigIntValue(investment.location?.longitude)),
@@ -99,7 +67,6 @@ const InvestmentDetails = () => {
     country: getBigIntValue(investment.location?.country),
   };
 
-  // Convert comma-separated strings to arrays
   const highlights = convertToList(getBigIntValue(investment.highlights));
   const marketAnalysis = convertToList(
     getBigIntValue(investment.market_analysis)
@@ -124,7 +91,7 @@ const InvestmentDetails = () => {
               minInvestmentAmount={minInvestmentAmount}
               investmentAmount={investmentAmount.toString()}
               setInvestmentAmount={setInvestmentAmount}
-              handleInvest={handleInvest}
+              handleInvest={() => handleInvest(id || "")}
             />
 
             <PropertyOverview
@@ -158,7 +125,6 @@ const InvestmentDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Additional Information Section with Bullet Points */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>

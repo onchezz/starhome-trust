@@ -1,88 +1,15 @@
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Shimmer } from "@/components/ui/shimmer";
-import {
-  Users,
-  TrendingUp,
-  Building,
-  DollarSign,
-  Wallet,
-  ExternalLink,
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Users, TrendingUp, Building, DollarSign } from "lucide-react";
+import { useState } from "react";
 import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
-import {
-  useInvestmentAssetsRead,
-  usePropertyRead,
-} from "@/hooks/contract_interactions/usePropertiesReads";
-import { InvestmentAsset } from "@/types/investment";
-import { num } from "starknet";
+import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
-import { parseImagesData } from "@/utils/imageUtils";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
-
-const ImageGallery = ({ imagesId }: { imagesId: string }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const { imageUrls } = parseImagesData(imagesId);
-
-  useEffect(() => {
-    setIsLoading(true);
-  }, [imagesId]);
-
-  if (!imageUrls.length) {
-    return (
-      <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-        <p className="text-gray-500">No images available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative overflow-hidden group h-48">
-      {isLoading && (
-        <div className="absolute inset-0">
-          <Shimmer className="w-full h-full" />
-        </div>
-      )}
-      <img
-        src={imageUrls[currentImageIndex]}
-        alt={`Property ${currentImageIndex + 1}`}
-        className={`w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110 ${
-          isLoading ? "opacity-0" : "opacity-100"
-        }`}
-        onLoad={() => setIsLoading(false)}
-        onError={() => setIsLoading(false)}
-      />
-      {imageUrls.length > 1 && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-          {imageUrls.map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all ${
-                currentImageIndex === index ? "bg-white" : "bg-white/50"
-              }`}
-              onClick={() => setCurrentImageIndex(index)}
-            />
-          ))}
-        </div>
-      )}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    </div>
-  );
-};
+import { InvestmentCard } from "@/components/investment/InvestmentCard";
 
 const Investment = () => {
   const {
@@ -91,11 +18,7 @@ const Investment = () => {
     investmentPropertiesError,
   } = useInvestmentAssetsRead();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-  const [investmentAmounts, setInvestmentAmounts] = useState<{
-    [key: string]: string;
-  }>({});
   const [isLoading, setIsLoading] = useState(true);
-
   const { address } = useAccount();
   const { connect } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal();
@@ -103,43 +26,6 @@ const Investment = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  const { handleInvestInProperty } = usePropertyCreate();
-
-  // Calculate total statistics
-  const totalStats = investmentProperties?.reduce(
-    (acc, property) => {
-      return {
-        totalInvestors: acc.totalInvestors + 0, // This would come from contract
-        averageROI: acc.averageROI + Number(property.expected_roi || 0),
-        totalInvestment:
-          acc.totalInvestment + Number(property.asset_value || 0),
-      };
-    },
-    { totalInvestors: 0, averageROI: 0, totalInvestment: 0 }
-  );
-
-  const averageROI = totalStats
-    ? (totalStats.averageROI / (investmentProperties?.length || 1)).toFixed(1)
-    : "0";
-
-  // Simulate loading
-  useState(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  });
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const calculateProgress = (current: number, total: number) => {
-    return (current / total) * 100;
-  };
 
   const handleConnectWallet = async () => {
     try {
@@ -158,42 +44,29 @@ const Investment = () => {
     }
   };
 
-  const handleInvest = async (propertyId: string) => {
-    try {
-      if (!address) {
-        toast.error("Please connect your wallet first");
-        return;
-      }
-
-      const amount = investmentAmounts[propertyId];
-      console.log(`Investing ${amount} in property ${propertyId}`);
-
-      if (!amount || isNaN(Number(amount))) {
-        toast.error("Please enter a valid investment amount");
-        return;
-      }
-
-      await handleInvestInProperty(propertyId, Number(amount));
-
-      // Reset the investment amount after successful investment
-      setInvestmentAmounts((prev) => ({
-        ...prev,
-        [propertyId]: "",
-      }));
-
-      // Close the collapsible after successful investment
-      setExpandedCardId(null);
-    } catch (error) {
-      console.error("Investment error:", error);
-      toast.error("Investment failed");
-    }
+  // Calculate total statistics
+  const totalStats = {
+    totalInvestors: investmentProperties?.reduce((acc, property) => acc + 0, 0) || 0,
+    averageROI: investmentProperties?.reduce((acc, property) => acc + Number(property.expected_roi || 0), 0) || 0,
+    totalInvestment: investmentProperties?.reduce((acc, property) => acc + Number(property.asset_value || 0), 0) || 0,
   };
 
-  const handleAmountChange = (propertyId: string, value: string) => {
-    setInvestmentAmounts((prev) => ({
-      ...prev,
-      [propertyId]: value,
-    }));
+  const averageROI = investmentProperties?.length 
+    ? (totalStats.averageROI / investmentProperties.length).toFixed(1)
+    : "0";
+
+  // Simulate loading
+  useState(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  });
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
@@ -202,8 +75,8 @@ const Investment = () => {
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {isLoading ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <Card key={index}>
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <Shimmer className="h-6 w-24" />
                   <Shimmer className="h-4 w-4" />
@@ -223,7 +96,7 @@ const Investment = () => {
                 },
                 {
                   title: "Total Investors",
-                  value: totalStats?.totalInvestors || 0,
+                  value: totalStats.totalInvestors || 0,
                   icon: Users,
                 },
                 {
@@ -233,10 +106,10 @@ const Investment = () => {
                 },
                 {
                   title: "Total Investment",
-                  value: formatCurrency(totalStats?.totalInvestment || 0),
+                  value: formatCurrency(totalStats.totalInvestment || 0),
                   icon: DollarSign,
                 },
-              ].map((stat, index) => (
+              ].map((stat, i) => (
                 <Card
                   key={stat.title}
                   className="transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
@@ -244,8 +117,8 @@ const Investment = () => {
                     opacity: inView ? 1 : 0,
                     transform: inView
                       ? "translateY(0)"
-                      : `translateY(${20 + index * 10}px)`,
-                    transition: `all 0.5s ease-out ${index * 0.1}s`,
+                      : `translateY(${20 + i * 10}px)`,
+                    transition: `all 0.5s ease-out ${i * 0.1}s`,
                   }}
                 >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -266,8 +139,8 @@ const Investment = () => {
         {/* Investment Cards */}
         <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {isLoading ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <Card key={index} className="overflow-hidden animate-pulse">
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden animate-pulse">
                 <Shimmer className="w-full h-48" />
                 <CardHeader>
                   <Shimmer className="h-6 w-3/4 mb-2" />
@@ -276,8 +149,8 @@ const Investment = () => {
                 <CardContent className="space-y-4">
                   <Shimmer className="h-4 w-full" />
                   <div className="grid grid-cols-2 gap-4">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i}>
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <div key={j}>
                         <Shimmer className="h-4 w-24 mb-2" />
                         <Shimmer className="h-6 w-16" />
                       </div>
@@ -291,134 +164,16 @@ const Investment = () => {
               </Card>
             ))
           ) : investmentProperties?.length > 0 ? (
-            investmentProperties.map((property: InvestmentAsset, index) => {
-              const displayData = {
-                ...property,
-                currentInvestment: property.available_staking_amount,
-                totalInvestment: property.asset_value,
-                minInvestment: property.min_investment_amount,
-                roi: property.expected_roi,
-                type: property.investment_type,
-                title: property.name,
-                image: property.images,
-              };
-
-              const progress = calculateProgress(
-                displayData.asset_value - displayData.available_staking_amount,
-                displayData.asset_value
-              );
-
-              return (
-                <Card
-                  key={property.id}
-                  className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
-                  style={{
-                    opacity: inView ? 1 : 0,
-                    transform: inView
-                      ? "translateY(0)"
-                      : `translateY(${20 + index * 10}px)`,
-                    transition: `all 0.5s ease-out ${index * 0.1}s`,
-                  }}
-                >
-                  <ImageGallery imagesId={displayData.image} />
-                  <CardHeader>
-                    <CardTitle>{displayData.title}</CardTitle>
-                    <p className="text-sm text-gray-500">
-                      {`${property.location.address}, ${property.location.city}, ${property.location.country}`}
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Investment Progress</span>
-                          <span>
-                            {formatCurrency(
-                              displayData.asset_value -
-                                displayData.available_staking_amount
-                            )}{" "}
-                            of {formatCurrency(displayData.asset_value)}
-                          </span>
-                        </div>
-                        <Progress value={progress} />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-500">Number of Investors</p>
-                          <p className="font-semibold">0</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Minimum Investment</p>
-                          <p className="font-semibold">
-                            {formatCurrency(displayData.minInvestment)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Expected ROI</p>
-                          <p className="font-semibold">{displayData.roi}%</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Property Type</p>
-                          <p className="font-semibold">{displayData.type}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Collapsible
-                          className="flex-1"
-                          open={expandedCardId === property.id}
-                          onOpenChange={(open) =>
-                            setExpandedCardId(open ? property.id : null)
-                          }
-                        >
-                          <CollapsibleTrigger asChild>
-                            <Button className="w-full">
-                              {address
-                                ? "Invest Now"
-                                : "invest in this property"}
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="mt-4 space-y-4">
-                            <Input
-                              type="number"
-                              placeholder={`Min. ${formatCurrency(
-                                displayData.minInvestment
-                              )}`}
-                              value={investmentAmounts[property.id] || ""}
-                              onChange={(e) =>
-                                handleAmountChange(property.id, e.target.value)
-                              }
-                              min={displayData.minInvestment}
-                            />
-                            <Button
-                              className="w-full bg-primary hover:bg-primary/90"
-                              onClick={
-                                address
-                                  ? () => handleInvest(property.id)
-                                  : handleConnectWallet
-                              }
-                            >
-                              <Wallet className="mr-2 h-4 w-4" />
-                              {address
-                                ? "Invest"
-                                : "Connect Wallet"}
-                            </Button>
-                          </CollapsibleContent>
-                        </Collapsible>
-
-                        <Link to={`/investment/${property.id}`}>
-                          <Button variant="outline">
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            More Details
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
+            investmentProperties.map((property) => (
+              <InvestmentCard
+                key={property.id}
+                property={property}
+                expandedCardId={expandedCardId}
+                setExpandedCardId={setExpandedCardId}
+                handleConnectWallet={handleConnectWallet}
+                address={address}
+              />
+            ))
           ) : (
             <div className="col-span-full">
               <EmptyInvestmentState error={!!investmentPropertiesError} />
