@@ -12,6 +12,8 @@ export const UserInvestments = () => {
   const { address } = useAccount();
   const { userInvestments, investmentProperties, isLoading } = useInvestmentAssetsRead();
 
+  console.log("Investment data:", { userInvestments, investmentProperties, isLoading });
+
   const userOwnedInvestments = userInvestments?.filter((investment) => {
     if (!investment?.owner || !address) return false;
     const normalizeAddress = (addr: string) => addr.toLowerCase().replace("0x", "");
@@ -27,6 +29,8 @@ export const UserInvestments = () => {
     const userAddressNormalized = normalizeAddress(address);
     return investorIdNormalized === userAddressNormalized;
   });
+
+  console.log("Filtered investments:", { userOwnedInvestments, userListedInvestments });
 
   if (isLoading) {
     return (

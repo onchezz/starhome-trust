@@ -12,6 +12,7 @@ import { UserInvestments } from "@/components/profile/UserInvestments";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileShimmer } from "@/components/profile/ProfileShimmer";
 import { AgentProperties } from "@/components/profile/AgentProperties";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -29,10 +30,15 @@ const Profile = () => {
     switch (activeTab) {
       case "profile":
         return (
-          <div className="space-y-6">
-            <ProfileHeader user={user} />
-            <ProfileActions user={user} isLoading={isLoadingUser} />
-          </div>
+          <Card className={cn(
+            "backdrop-blur-xl border transition-all duration-300 w-full",
+            theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+          )}>
+            <CardContent className="p-6 space-y-6">
+              <ProfileHeader user={user} />
+              <ProfileActions user={user} isLoading={isLoadingUser} />
+            </CardContent>
+          </Card>
         );
       case "wallet":
         return (
@@ -48,10 +54,15 @@ const Profile = () => {
         return user?.is_agent ? <AgentProperties /> : null;
       case "settings":
         return (
-          <div className="p-4">
-            <h2 className="text-2xl font-semibold">Settings</h2>
-            <p className="text-muted-foreground">Settings coming soon...</p>
-          </div>
+          <Card className={cn(
+            "backdrop-blur-xl border transition-all duration-300",
+            theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+          )}>
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-semibold mb-4">Settings</h2>
+              <p className="text-muted-foreground">Settings coming soon...</p>
+            </CardContent>
+          </Card>
         );
       default:
         return null;
@@ -76,7 +87,7 @@ const Profile = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex-1 space-y-6"
+            className="flex-1 space-y-6 w-full"
           >
             {renderContent()}
           </motion.div>
