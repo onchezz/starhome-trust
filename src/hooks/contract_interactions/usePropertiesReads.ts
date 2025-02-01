@@ -103,6 +103,7 @@ export const useInvestmentAssetsRead = () => {
       if (userInvestmentsHook.error) {
         throw userInvestmentsHook.error;
       }
+      console.log(`user investment data is :${userInvestmentsHook.data}`)
       return userInvestmentsHook.data || [];
     },
     staleTime: CACHE_TIME,

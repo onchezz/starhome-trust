@@ -10,23 +10,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
-  const { userInvestments, investmentProperties, isLoading } = useInvestmentAssetsRead();
+  const { userInvestments, investmentProperties, isLoading } =
+    useInvestmentAssetsRead();
 
   // Filter investments where the owner matches the user's address
   const userOwnedInvestments = userInvestments?.filter((investment) => {
     if (!investment?.owner || !address) return false;
 
     // Normalize both addresses by removing '0x' prefix and converting to lowercase
-    const normalizeAddress = (addr: string) => addr.toLowerCase().replace('0x', '');
-    const investmentOwnerNormalized = normalizeAddress(investment.owner);
-    const userAddressNormalized = normalizeAddress(address);
+    const normalizeAddress = (addr: string) =>
+      addr.toLowerCase().replace("0x", "");
+    const investmentOwnerNormalized = investment.owner.trimEnd.toString;
+    const userAddressNormalized = address.trimEnd.toString;
 
     console.log("[UserInvestments] Comparing normalized addresses:", {
       investmentOwner: investmentOwnerNormalized,
       userAddress: userAddressNormalized,
-      isMatch: investmentOwnerNormalized === userAddressNormalized
+      isMatch: investmentOwnerNormalized === userAddressNormalized,
     });
-    
+
     return investmentOwnerNormalized === userAddressNormalized;
   });
 
@@ -34,30 +36,39 @@ export const UserInvestments = () => {
   const userListedInvestments = investmentProperties?.filter((investment) => {
     if (!investment?.investor_id || !address) return false;
 
-    const normalizeAddress = (addr: string) => addr.toLowerCase().replace('0x', '');
+    const normalizeAddress = (addr: string) =>
+      addr.toLowerCase().replace("0x", "");
     const investorIdNormalized = normalizeAddress(investment.investor_id);
     const userAddressNormalized = normalizeAddress(address);
 
     console.log("[UserInvestments] Comparing lister addresses:", {
       investorId: investorIdNormalized,
       userAddress: userAddressNormalized,
-      isMatch: investorIdNormalized === userAddressNormalized
+      isMatch: investorIdNormalized === userAddressNormalized,
     });
-    
+
     return investorIdNormalized === userAddressNormalized;
   });
 
   console.log("[UserInvestments] User address:", address);
   console.log("[UserInvestments] All investments:", userInvestments);
-  console.log("[UserInvestments] User owned investments:", userOwnedInvestments);
-  console.log("[UserInvestments] User listed investments:", userListedInvestments);
+  console.log(
+    "[UserInvestments] User owned investments:",
+    userOwnedInvestments
+  );
+  console.log(
+    "[UserInvestments] User listed investments:",
+    userListedInvestments
+  );
 
   if (isLoading) {
     return (
-      <Card className={cn(
-        "backdrop-blur-xl border transition-all duration-300",
-        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-      )}>
+      <Card
+        className={cn(
+          "backdrop-blur-xl border transition-all duration-300",
+          theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+        )}
+      >
         <CardHeader>
           <CardTitle>Your Investments</CardTitle>
         </CardHeader>
@@ -71,14 +82,17 @@ export const UserInvestments = () => {
     );
   }
 
-  const hasNoInvestments = (!userOwnedInvestments?.length && !userListedInvestments?.length);
+  const hasNoInvestments =
+    !userOwnedInvestments?.length && !userListedInvestments?.length;
 
   if (hasNoInvestments) {
     return (
-      <Card className={cn(
-        "backdrop-blur-xl border transition-all duration-300",
-        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-      )}>
+      <Card
+        className={cn(
+          "backdrop-blur-xl border transition-all duration-300",
+          theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+        )}
+      >
         <CardHeader>
           <CardTitle>Your Investments</CardTitle>
         </CardHeader>
@@ -90,10 +104,12 @@ export const UserInvestments = () => {
   }
 
   return (
-    <Card className={cn(
-      "backdrop-blur-xl border transition-all duration-300",
-      theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-    )}>
+    <Card
+      className={cn(
+        "backdrop-blur-xl border transition-all duration-300",
+        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+      )}
+    >
       <CardHeader>
         <CardTitle>Your Investments</CardTitle>
       </CardHeader>
@@ -106,8 +122,8 @@ export const UserInvestments = () => {
           <TabsContent value="owned">
             <div className="space-y-4 mt-4">
               {userOwnedInvestments?.map((investment) => (
-                <Link 
-                  key={investment.id} 
+                <Link
+                  key={investment.id}
                   to={`/investment/${investment.id}`}
                   className="block hover:opacity-80 transition-opacity"
                 >
@@ -117,7 +133,9 @@ export const UserInvestments = () => {
                       {investment.description.slice(0, 100)}...
                     </p>
                     <div className="mt-2 flex justify-between text-sm">
-                      <span>Value: ${investment.asset_value.toLocaleString()}</span>
+                      <span>
+                        Value: ${investment.asset_value.toLocaleString()}
+                      </span>
                       <span>ROI: {investment.expected_roi}%</span>
                     </div>
                   </div>
@@ -128,8 +146,8 @@ export const UserInvestments = () => {
           <TabsContent value="listed">
             <div className="space-y-4 mt-4">
               {userListedInvestments?.map((investment) => (
-                <Link 
-                  key={investment.id} 
+                <Link
+                  key={investment.id}
                   to={`/investment/${investment.id}`}
                   className="block hover:opacity-80 transition-opacity"
                 >
@@ -139,7 +157,9 @@ export const UserInvestments = () => {
                       {investment.description.slice(0, 100)}...
                     </p>
                     <div className="mt-2 flex justify-between text-sm">
-                      <span>Value: ${investment.asset_value.toLocaleString()}</span>
+                      <span>
+                        Value: ${investment.asset_value.toLocaleString()}
+                      </span>
                       <span>ROI: {investment.expected_roi}%</span>
                     </div>
                   </div>
