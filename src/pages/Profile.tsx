@@ -11,6 +11,7 @@ import { ProfileWallet } from "@/components/profile/ProfileWallet";
 import { UserInvestments } from "@/components/profile/UserInvestments";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileShimmer } from "@/components/profile/ProfileShimmer";
+import { AgentProperties } from "@/components/profile/AgentProperties";
 
 const Profile = () => {
   const { theme } = useTheme();
@@ -43,6 +44,8 @@ const Profile = () => {
         );
       case "investments":
         return <UserInvestments />;
+      case "properties":
+        return user?.is_agent ? <AgentProperties /> : null;
       case "settings":
         return (
           <div className="p-4">
@@ -58,13 +61,17 @@ const Profile = () => {
   return (
     <div
       className={cn(
-        "min-h-screen transition-colors duration-300",
+        "min-h-screen transition-colors duration-300 mt-16",
         theme === "dark" ? "bg-[#1A1F2C]" : "bg-gray-50"
       )}
     >
       <div className="container mx-auto py-6">
         <div className="flex gap-6">
-          <ProfileSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+          <ProfileSidebar 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+            isAgent={user?.is_agent}
+          />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
