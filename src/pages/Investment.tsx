@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,7 @@ import {
   Wallet,
   ExternalLink,
 } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Collapsible,
@@ -24,14 +23,9 @@ import { useConnect, useAccount } from "@starknet-react/core";
 import { useStarknetkitConnectModal } from "starknetkit";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
-import {
-  useInvestmentAssetsRead,
-  usePropertyRead,
-} from "@/hooks/contract_interactions/usePropertiesReads";
+import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { InvestmentAsset } from "@/types/investment";
-import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
-import { parseImagesData } from "@/utils/imageUtils";
 import { useInvestment } from "@/hooks/useInvestment";
 
 const Investment = () => {
@@ -49,16 +43,6 @@ const Investment = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  // Initialize investment hook for each property
-  const investmentHooks = useMemo(() => {
-    if (!investmentProperties) return {};
-    
-    return investmentProperties.reduce((acc, property) => {
-      acc[property.id] = useInvestment(property.investment_token);
-      return acc;
-    }, {} as { [key: string]: ReturnType<typeof useInvestment> });
-  }, [investmentProperties]);
 
   const handleConnectWallet = async () => {
     try {
@@ -78,31 +62,21 @@ const Investment = () => {
   };
 
   // Calculate total statistics
-  const totalStats = useMemo(() => {
-    if (!investmentProperties?.length) {
-      return { totalInvestors: 0, averageROI: 0, totalInvestment: 0 };
-    }
+  const totalStats = {
+    totalInvestors: investmentProperties?.reduce((acc, property) => acc + 0, 0) || 0,
+    averageROI: investmentProperties?.reduce((acc, property) => acc + Number(property.expected_roi || 0), 0) || 0,
+    totalInvestment: investmentProperties?.reduce((acc, property) => acc + Number(property.asset_value || 0), 0) || 0,
+  };
 
-    return investmentProperties.reduce(
-      (acc, property) => ({
-        totalInvestors: acc.totalInvestors + 0,
-        averageROI: acc.averageROI + Number(property.expected_roi || 0),
-        totalInvestment: acc.totalInvestment + Number(property.asset_value || 0),
-      }),
-      { totalInvestors: 0, averageROI: 0, totalInvestment: 0 }
-    );
-  }, [investmentProperties]);
-
-  const averageROI = useMemo(() => {
-    if (!investmentProperties?.length) return "0";
-    return (totalStats.averageROI / investmentProperties.length).toFixed(1);
-  }, [totalStats.averageROI, investmentProperties]);
+  const averageROI = investmentProperties?.length 
+    ? (totalStats.averageROI / investmentProperties.length).toFixed(1)
+    : "0";
 
   // Simulate loading
-  useEffect(() => {
+  useState(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -115,8 +89,6 @@ const Investment = () => {
   const calculateProgress = (current: number, total: number) => {
     return (current / total) * 100;
   };
-
-  // ... keep existing code (JSX for stats section)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -214,7 +186,8 @@ const Investment = () => {
             ))
           ) : investmentProperties?.length > 0 ? (
             investmentProperties.map((property: InvestmentAsset) => {
-              const hook = investmentHooks[property.id];
+              const { investmentAmount, setInvestmentAmount, handleInvest } = useInvestment(property.investment_token);
+              
               const displayData = {
                 ...property,
                 currentInvestment: property.available_staking_amount,
@@ -301,9 +274,9 @@ const Investment = () => {
                               placeholder={`Min. ${formatCurrency(
                                 displayData.minInvestment
                               )}`}
-                              value={hook.investmentAmount}
+                              value={investmentAmount}
                               onChange={(e) =>
-                                hook.setInvestmentAmount(e.target.value)
+                                setInvestmentAmount(e.target.value)
                               }
                               min={displayData.minInvestment}
                             />
@@ -311,7 +284,7 @@ const Investment = () => {
                               className="w-full bg-primary hover:bg-primary/90"
                               onClick={
                                 address
-                                  ? () => hook.handleInvest(property.id)
+                                  ? () => handleInvest(property.id)
                                   : handleConnectWallet
                               }
                             >

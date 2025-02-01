@@ -4,7 +4,7 @@ import { usePropertyCreate } from './contract_interactions/usePropertiesWrite';
 import { toast } from 'sonner';
 import { useAccount } from '@starknet-react/core';
 
-export const useInvestment = (investmentToken?: string) => {
+export const useInvestment = (investmentToken: string | undefined) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { address } = useAccount();
   const { handleInvestInProperty } = usePropertyCreate();
