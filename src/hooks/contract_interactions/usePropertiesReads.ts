@@ -1,12 +1,11 @@
 import { Property, PropertyConverter } from '@/types/property';
-import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { num } from 'starknet';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 import { useAccount } from '@starknet-react/core';
 import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 
-// Increase cache time for better performance
+// Cache time for better performance
 const CACHE_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 export const usePropertyRead = () => {
@@ -44,8 +43,34 @@ export const usePropertyRead = () => {
 
   return {
     saleProperties,
-    salePropertiesLoading,
-    salePropertiesError,
+    isLoading: salePropertiesLoading,
+    error: salePropertiesError,
+  };
+};
+
+export const usePropertyReadById = (propertyId: string) => {
+  const propertyHook = useStarHomeReadContract({
+    functionName: "get_property_by_id",
+    args: propertyId ? [propertyId] : undefined,
+  });
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['property', propertyId],
+    queryFn: async () => {
+      if (propertyHook.error) {
+        throw propertyHook.error;
+      }
+      return propertyHook.data ? PropertyConverter.fromStarknetProperty(propertyHook.data) : null;
+    },
+    staleTime: CACHE_TIME,
+    gcTime: CACHE_TIME,
+    enabled: !!propertyId && !propertyHook.isLoading,
+  });
+
+  return {
+    property: data,
+    isLoading,
+    error,
   };
 };
 
@@ -60,78 +85,101 @@ export const useInvestmentAssetsRead = () => {
     args: address ? [address] : undefined,
   });
 
-  console.log("[useInvestmentAssetsRead] User investments hook:", userInvestmentsHook);
-
-  const { data: investmentPropertiesData, isLoading: allInvestmentsLoading } = useQuery({
+  const { data: investmentPropertiesData, isLoading: allInvestmentsLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
     queryFn: async () => {
-      console.log("[useInvestmentAssetsRead] Raw investment properties data:", investmentPropertiesHook);
-      
       if (investmentPropertiesHook.error) {
-        console.error("[useInvestmentAssetsRead] Error fetching investment properties:", investmentPropertiesHook.error);
         throw investmentPropertiesHook.error;
       }
-      
-      const investments = investmentPropertiesHook.data || [];
-      console.log("[useInvestmentAssetsRead] Fetched investments:", investments);
-      return investments;
+      return investmentPropertiesHook.data || [];
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
-    refetchOnWindowFocus: false,
     enabled: !investmentPropertiesHook.isLoading,
   });
 
-  const { data: userInvestmentsData, isLoading: userInvestmentsLoading } = useQuery({
+  const { data: userInvestmentsData, isLoading: userInvestmentsLoading, error: userInvestmentsError } = useQuery({
     queryKey: ['user_investments', address],
     queryFn: async () => {
-      console.log("[useInvestmentAssetsRead] Raw user investments data:", userInvestmentsHook);
-      
       if (userInvestmentsHook.error) {
-        console.error("[useInvestmentAssetsRead] Error fetching user investments:", userInvestmentsHook.error);
         throw userInvestmentsHook.error;
       }
-      
-      const investments = userInvestmentsHook.data || [];
-      console.log("[useInvestmentAssetsRead] Fetched user investments:", investments);
-      return investments;
+      return userInvestmentsHook.data || [];
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
-    refetchOnWindowFocus: false,
     enabled: !!address && !userInvestmentsHook.isLoading,
   });
 
-  const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData.map((prop: any) => {
-    console.log("[useInvestmentAssetsRead] Converting investment property:", prop);
-    try {   
-      return InvestmentAssetConverter.fromStarknetProperty(prop);
-    } catch (error) {
-      console.error("[useInvestmentAssetsRead] Error converting investment property:", error, prop);
-      return null;
-    }
-  }).filter(Boolean) : [];
+  const investmentProperties = Array.isArray(investmentPropertiesData) 
+    ? investmentPropertiesData.map(InvestmentAssetConverter.fromStarknetProperty).filter(Boolean)
+    : [];
 
-  const userInvestments = Array.isArray(userInvestmentsData) ? userInvestmentsData.map((prop: any) => {
-    console.log("[useInvestmentAssetsRead] Converting user investment:", prop);
-    try {   
-      return InvestmentAssetConverter.fromStarknetProperty(prop);
-    } catch (error) {
-      console.error("[useInvestmentAssetsRead] Error converting user investment:", error, prop);
-      return null;
-    }
-  }).filter(Boolean) : [];
-
-  console.log("[useInvestmentAssetsRead] Final investments:", {
-    all: investmentProperties,
-    user: userInvestments,
-    userAddress: address
-  });
+  const userInvestments = Array.isArray(userInvestmentsData)
+    ? userInvestmentsData.map(InvestmentAssetConverter.fromStarknetProperty).filter(Boolean)
+    : [];
 
   return {
     investmentProperties,
     userInvestments,
     isLoading: allInvestmentsLoading || userInvestmentsLoading,
-    error: investmentPropertiesHook.error || userInvestmentsHook.error
+    error: investmentPropertiesError || userInvestmentsError,
+    investmentPropertiesError, // Added this for Investment.tsx
+  };
+};
+
+export const useInvestmentAssetReadById = (investmentId: string) => {
+  const investmentHook = useStarHomeReadContract({
+    functionName: "get_investment_by_id",
+    args: investmentId ? [investmentId] : undefined,
+  });
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['investment', investmentId],
+    queryFn: async () => {
+      if (investmentHook.error) {
+        throw investmentHook.error;
+      }
+      return investmentHook.data ? InvestmentAssetConverter.fromStarknetProperty(investmentHook.data) : null;
+    },
+    staleTime: CACHE_TIME,
+    gcTime: CACHE_TIME,
+    enabled: !!investmentId && !investmentHook.isLoading,
+  });
+
+  return {
+    investment: data,
+    isLoading,
+    error,
+  };
+};
+
+export const useAgentProperties = (agentId: string) => {
+  const agentPropertiesHook = useStarHomeReadContract({
+    functionName: "get_sale_properties_by_agent",
+    args: agentId ? [agentId] : undefined,
+  });
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['agent_properties', agentId],
+    queryFn: async () => {
+      if (agentPropertiesHook.error) {
+        throw agentPropertiesHook.error;
+      }
+      return agentPropertiesHook.data || [];
+    },
+    staleTime: CACHE_TIME,
+    gcTime: CACHE_TIME,
+    enabled: !!agentId && !agentPropertiesHook.isLoading,
+  });
+
+  const properties = Array.isArray(data) 
+    ? data.map(PropertyConverter.fromStarknetProperty).filter(Boolean)
+    : [];
+
+  return {
+    properties,
+    isLoading,
+    error,
   };
 };
