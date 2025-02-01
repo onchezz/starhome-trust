@@ -12,7 +12,7 @@ import {
   Wallet,
   ExternalLink,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Collapsible,
@@ -31,58 +31,7 @@ import { InvestmentAsset } from "@/types/investment";
 import { num } from "starknet";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
 import { parseImagesData } from "@/utils/imageUtils";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
-
-const ImageGallery = ({ imagesId }: { imagesId: string }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const { imageUrls } = parseImagesData(imagesId);
-
-  useEffect(() => {
-    setIsLoading(true);
-  }, [imagesId]);
-
-  if (!imageUrls.length) {
-    return (
-      <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-        <p className="text-gray-500">No images available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative overflow-hidden group h-48">
-      {isLoading && (
-        <div className="absolute inset-0">
-          <Shimmer className="w-full h-full" />
-        </div>
-      )}
-      <img
-        src={imageUrls[currentImageIndex]}
-        alt={`Property ${currentImageIndex + 1}`}
-        className={`w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110 ${
-          isLoading ? "opacity-0" : "opacity-100"
-        }`}
-        onLoad={() => setIsLoading(false)}
-        onError={() => setIsLoading(false)}
-      />
-      {imageUrls.length > 1 && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-          {imageUrls.map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all ${
-                currentImageIndex === index ? "bg-white" : "bg-white/50"
-              }`}
-              onClick={() => setCurrentImageIndex(index)}
-            />
-          ))}
-        </div>
-      )}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    </div>
-  );
-};
+import { useInvestment } from "@/hooks/useInvestment";
 
 const Investment = () => {
   const {
@@ -91,11 +40,7 @@ const Investment = () => {
     investmentPropertiesError,
   } = useInvestmentAssetsRead();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-  const [investmentAmounts, setInvestmentAmounts] = useState<{
-    [key: string]: string;
-  }>({});
   const [isLoading, setIsLoading] = useState(true);
-
   const { address } = useAccount();
   const { connect } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal();
@@ -104,7 +49,31 @@ const Investment = () => {
     threshold: 0.1,
   });
 
-  const { handleInvestInProperty } = usePropertyCreate();
+  // Initialize investment hook for each property
+  const investmentHooks = useMemo(() => {
+    const hooks: { [key: string]: ReturnType<typeof useInvestment> } = {};
+    investmentProperties?.forEach((property) => {
+      hooks[property.id] = useInvestment(property.investment_token);
+    });
+    return hooks;
+  }, [investmentProperties]);
+
+  const handleConnectWallet = async () => {
+    try {
+      console.log("Connecting StarkNet wallet");
+      const { connector } = await starknetkitConnectModal();
+
+      if (!connector) {
+        console.log("No connector selected");
+        return;
+      }
+
+      await connect({ connector });
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error("Failed to connect wallet");
+    }
+  };
 
   // Calculate total statistics
   const totalStats = investmentProperties?.reduce(
@@ -139,62 +108,6 @@ const Investment = () => {
 
   const calculateProgress = (current: number, total: number) => {
     return (current / total) * 100;
-  };
-
-  const handleConnectWallet = async () => {
-    try {
-      console.log("Connecting StarkNet wallet");
-      const { connector } = await starknetkitConnectModal();
-
-      if (!connector) {
-        console.log("No connector selected");
-        return;
-      }
-
-      await connect({ connector });
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      toast.error("Failed to connect wallet");
-    }
-  };
-
-  const handleInvest = async (propertyId: string) => {
-    try {
-      if (!address) {
-        toast.error("Please connect your wallet first");
-        return;
-      }
-
-      const amount = investmentAmounts[propertyId];
-      console.log(`Investing ${amount} in property ${propertyId}`);
-
-      if (!amount || isNaN(Number(amount))) {
-        toast.error("Please enter a valid investment amount");
-        return;
-      }
-
-      await handleInvestInProperty(propertyId, amount);
-      
-      // Reset the investment amount after successful investment
-      setInvestmentAmounts(prev => ({
-        ...prev,
-        [propertyId]: ''
-      }));
-      
-      // Close the collapsible after successful investment
-      setExpandedCardId(null);
-      
-    } catch (error) {
-      console.error("Investment error:", error);
-      toast.error("Investment failed");
-    }
-  };
-
-  const handleAmountChange = (propertyId: string, value: string) => {
-    setInvestmentAmounts((prev) => ({
-      ...prev,
-      [propertyId]: value,
-    }));
   };
 
   return (
@@ -292,7 +205,8 @@ const Investment = () => {
               </Card>
             ))
           ) : investmentProperties?.length > 0 ? (
-            investmentProperties.map((property: InvestmentAsset, index) => {
+            investmentProperties.map((property: InvestmentAsset) => {
+              const hook = investmentHooks[property.id];
               const displayData = {
                 ...property,
                 currentInvestment: property.available_staking_amount,
@@ -386,9 +300,9 @@ const Investment = () => {
                               placeholder={`Min. ${formatCurrency(
                                 displayData.minInvestment
                               )}`}
-                              value={investmentAmounts[property.id] || ""}
+                              value={hook.investmentAmount}
                               onChange={(e) =>
-                                handleAmountChange(property.id, e.target.value)
+                                hook.setInvestmentAmount(e.target.value)
                               }
                               min={displayData.minInvestment}
                             />
@@ -396,7 +310,7 @@ const Investment = () => {
                               className="w-full bg-primary hover:bg-primary/90"
                               onClick={
                                 address
-                                  ? () => handleInvest(property.id)
+                                  ? () => hook.handleInvest(property.id)
                                   : handleConnectWallet
                               }
                             >
