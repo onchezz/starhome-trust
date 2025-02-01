@@ -24,7 +24,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           value={formData.name || ""}
           onChange={(e) => handleInputChange("name", e.target.value)}
           placeholder="Enter investment property name"
-          disabled={editMode}
         />
       </div>
 
@@ -35,7 +34,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           value={formData.description || ""}
           onChange={(e) => handleInputChange("description", e.target.value)}
           placeholder="Enter detailed property description"
-          disabled={editMode}
         />
       </div>
 
@@ -47,7 +45,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           value={formData.size || ""}
           onChange={(e) => handleInputChange("size", Number(e.target.value))}
           placeholder="Enter property size"
-          disabled={editMode}
         />
       </div>
 
@@ -61,7 +58,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
           value={formData.construction_year || ""}
           onChange={(e) => handleInputChange("construction_year", Number(e.target.value))}
           placeholder="Enter year of construction"
-          disabled={editMode}
         />
       </div>
     </>

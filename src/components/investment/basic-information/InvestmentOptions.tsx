@@ -28,7 +28,6 @@ const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
         <Select
           value={formData.investment_type}
           onValueChange={(value) => handleInputChange("investment_type", value)}
-          disabled={editMode}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select investment type" />
@@ -48,7 +47,6 @@ const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
         <Select
           value={formData.investment_token}
           onValueChange={(value) => handleInputChange("investment_token", value)}
-          disabled={editMode}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select token" />
