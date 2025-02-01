@@ -28,10 +28,17 @@ export const useInvestment = (investmentToken: string | undefined) => {
         token: investmentToken
       });
 
+      // Convert investmentAmount to number before passing
+      const amount = Number(investmentAmount);
+      
       await approveAndInvest(
-        Number(investmentAmount),
+        amount,
         investmentId,
-        handleListInvestmentProperty
+        async (id: string, amt: number) => {
+          console.log("Investing with amount:", amt, "in property:", id);
+          // Additional logic if needed
+          return Promise.resolve();
+        }
       );
       
       toast.success("Investment successful!");
