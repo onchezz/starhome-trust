@@ -1,6 +1,5 @@
 import { Property, PropertyConverter } from '@/types/property';
 import { useQuery } from '@tanstack/react-query';
-import { num } from 'starknet';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 import { useAccount } from '@starknet-react/core';
 import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
@@ -13,7 +12,7 @@ export const usePropertyRead = () => {
     functionName: "get_sale_properties",
   });
 
-  const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
+  const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
       console.log("[usePropertyRead] Contract hook result:", salePropertiesHook);
@@ -43,8 +42,8 @@ export const usePropertyRead = () => {
 
   return {
     saleProperties,
-    isLoading: salePropertiesLoading,
-    error: salePropertiesError,
+    isLoading,
+    error,
   };
 };
 

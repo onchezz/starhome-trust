@@ -28,7 +28,8 @@ const CreateProperty = () => {
   const { handleListSaleProperty, contractStatus } = usePropertyCreate();
   const {
     saleProperties: properties,
-    salePropertiesLoading: isLoadingProperty,
+    isLoading,
+    error
   } = usePropertyRead();
 
   const existingProperty =
@@ -187,7 +188,7 @@ const CreateProperty = () => {
     }
   };
 
-  if (isLoadingProperty && id) {
+  if (isLoading && id) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
         <div className="text-center space-y-4">
