@@ -14,7 +14,19 @@ export const useInvestment = (tokenAddress?: string) => {
         toast.error("Please enter an investment amount");
         return;
       }
-      await approveAndInvest(Number(investmentAmount), investmentId, handleListInvestmentProperty);
+
+      // Call approveAndInvest with the correct callback function
+      await approveAndInvest(
+        Number(investmentAmount), 
+        investmentId,
+        async (id: string, amount: number) => {
+          console.log("Investment callback triggered with:", { id, amount });
+          // Here we could transform the data if needed before calling handleListInvestmentProperty
+          // For now we'll just log the attempt
+          console.log("Attempting to invest in property:", id, "with amount:", amount);
+        }
+      );
+      
       toast.success("Investment successful!");
     } catch (error) {
       console.error("Investment error:", error);
