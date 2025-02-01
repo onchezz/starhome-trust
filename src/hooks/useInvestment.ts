@@ -1,26 +1,34 @@
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
-import { useTokenApproval } from "@/hooks/contract_interactions/usetokensHook";
+import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { toast } from "sonner";
+import { useState } from "react";
 
-export const useInvestment = () => {
+export const useInvestment = (tokenAddress?: string) => {
+  const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
-  const { approveToken } = useTokenApproval();
+  const { approveAndInvest } = useToken(tokenAddress || "");
 
-  const approveAndInvest = async (tokenAddress: string, amount: string) => {
+  const handleInvest = async (investmentId: string) => {
     try {
-      await approveToken(tokenAddress, amount);
-      toast.success("Token approved successfully!");
+      if (!investmentAmount) {
+        toast.error("Please enter an investment amount");
+        return;
+      }
+      await approveAndInvest(Number(investmentAmount), investmentId, handleListInvestmentProperty);
+      toast.success("Investment successful!");
     } catch (error) {
-      console.error("Error approving token:", error);
-      toast.error("Failed to approve token");
-      throw error;
+      console.error("Investment error:", error);
+      toast.error("Investment failed");
     }
   };
 
   return {
-    approveAndInvest,
+    investmentAmount,
+    setInvestmentAmount,
+    handleInvest,
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
     contractStatus,
+    approveAndInvest
   };
 };
