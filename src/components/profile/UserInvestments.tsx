@@ -10,28 +10,38 @@ import { InvestmentListingCard } from "./InvestmentListingCard";
 export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
-  const { userInvestments, investmentProperties, isLoading } = useInvestmentAssetsRead();
+  const { userInvestments, investmentProperties, isLoading } =
+    useInvestmentAssetsRead();
 
-  console.log("Investment data:", { userInvestments, investmentProperties, isLoading });
+  console.log("Investment data:", {
+    userInvestments,
+    investmentProperties,
+    isLoading,
+  });
 
   const userOwnedInvestments = userInvestments?.filter((investment) => {
     if (!investment?.owner || !address) return false;
-    return investment.owner.toLowerCase() === address.toLowerCase();
+    return investment.owner.trimEnd.toString === address.trimEnd.toString;
   });
 
   const userListedInvestments = investmentProperties?.filter((investment) => {
     if (!investment?.investor_id || !address) return false;
-    return investment.investor_id.toLowerCase() === address.toLowerCase();
+    return investment.owner.trimEnd.toString === address.trimEnd.toString;
   });
 
-  console.log("Filtered investments:", { userOwnedInvestments, userListedInvestments });
+  console.log("Filtered investments:", {
+    userOwnedInvestments,
+    userListedInvestments,
+  });
 
   if (isLoading) {
     return (
-      <Card className={cn(
-        "backdrop-blur-xl border transition-all duration-300",
-        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-      )}>
+      <Card
+        className={cn(
+          "backdrop-blur-xl border transition-all duration-300",
+          theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+        )}
+      >
         <CardHeader>
           <CardTitle>Your Investments</CardTitle>
         </CardHeader>
@@ -45,15 +55,18 @@ export const UserInvestments = () => {
     );
   }
 
-  const hasNoInvestments = (!userOwnedInvestments || userOwnedInvestments.length === 0) && 
-                          (!userListedInvestments || userListedInvestments.length === 0);
+  const hasNoInvestments =
+    (!userOwnedInvestments || userOwnedInvestments.length === 0) &&
+    (!userListedInvestments || userListedInvestments.length === 0);
 
   if (hasNoInvestments) {
     return (
-      <Card className={cn(
-        "backdrop-blur-xl border transition-all duration-300",
-        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-      )}>
+      <Card
+        className={cn(
+          "backdrop-blur-xl border transition-all duration-300",
+          theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+        )}
+      >
         <CardHeader>
           <CardTitle>Your Investments</CardTitle>
         </CardHeader>
@@ -65,10 +78,12 @@ export const UserInvestments = () => {
   }
 
   return (
-    <Card className={cn(
-      "backdrop-blur-xl border transition-all duration-300",
-      theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-    )}>
+    <Card
+      className={cn(
+        "backdrop-blur-xl border transition-all duration-300",
+        theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+      )}
+    >
       <CardHeader>
         <CardTitle>Your Investments</CardTitle>
       </CardHeader>
