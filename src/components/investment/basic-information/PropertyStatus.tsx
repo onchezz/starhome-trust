@@ -13,11 +13,13 @@ import { InvestmentAsset, constructionStatus } from "@/types/investment";
 interface PropertyStatusProps {
   formData: Partial<InvestmentAsset>;
   handleInputChange: (field: keyof InvestmentAsset, value: any) => void;
+  editMode?: boolean;
 }
 
 const PropertyStatus: React.FC<PropertyStatusProps> = ({
   formData,
   handleInputChange,
+  editMode = false,
 }) => {
   return (
     <>
@@ -26,6 +28,7 @@ const PropertyStatus: React.FC<PropertyStatusProps> = ({
         <Select
           value={formData.construction_status}
           onValueChange={(value) => handleInputChange("construction_status", value)}
+          disabled={editMode}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select construction status" />
@@ -48,6 +51,7 @@ const PropertyStatus: React.FC<PropertyStatusProps> = ({
             checked={formData.is_active}
             onCheckedChange={(checked) => handleInputChange("is_active", checked)}
             className="data-[state=checked]:bg-primary"
+            disabled={editMode}
           />
           <Label htmlFor="investment-status" className="text-sm font-medium">
             {formData.is_active ? `Active` : `Deactivated`}
