@@ -11,7 +11,7 @@ pub mod AssetStakingComponent {
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use starknet::storage::{
         Map, StorageMapReadAccess, StorageMapWriteAccess, StoragePointerReadAccess,
-        StoragePointerWriteAccess,
+        StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait,
     };
 
     #[storage]
@@ -24,7 +24,8 @@ pub mod AssetStakingComponent {
         pub duration: Map::<ContractAddress, u256>,
         pub finish_at: Map::<ContractAddress, u256>,
         pub number_of_investors_per_investment: Map::<felt252, u256>,
-        // Reward tracking
+        pub investors_in_investment: Map::<ContractAddress, (felt252, u256)>,
+        // Reward tracking,
         pub current_reward_per_staked_token: Map::<
             ContractAddress, u256,
         >, // Accumulated rewards per staked token
@@ -83,8 +84,11 @@ pub mod AssetStakingComponent {
                 .entry(property_id)
                 .read()
                 .transfer_from(user, get_contract_address(), amount);
-            self.emit(Deposit { user, amount });
             self.add_number_of_investor_per_investment_made(property_id);
+            
+            self.investors_in_investment.write(user, (property_id, amount));
+            self.emit(Deposit { user, amount });
+
             true
         }
 

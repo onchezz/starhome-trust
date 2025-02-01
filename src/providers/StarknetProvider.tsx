@@ -8,6 +8,7 @@ import { mainnet, sepolia } from "@starknet-react/chains";
 import {
   StarknetConfig,
   jsonRpcProvider,
+  publicProvider,
 } from "@starknet-react/core";
 import { rpcProvideUr } from "@/utils/constants";
 import { Chain } from "@starknet-react/chains";
@@ -24,14 +25,14 @@ function rpc(chain: Chain) {
   };
 }
 
-const provider = jsonRpcProvider({ 
-  rpc,
-  // Add default fallback behavior
-  defaultProvider: {
-    network: sepolia.network,
-    chainId: sepolia.id,
-  }
-});
+// const provider = jsonRpcProvider({
+//   rpc,
+//   // Add default fallback behavior
+//   defaultProvider: {
+//     network: sepolia.network,
+//     chainId: sepolia.id,
+//   }
+// });
 
 export default function StarknetProvider({
   children,
@@ -39,7 +40,7 @@ export default function StarknetProvider({
   children: React.ReactNode;
 }) {
   const chains = [sepolia];
-  
+
   const connectors = isInArgentMobileAppBrowser()
     ? [
         ArgentMobileConnector.init({
@@ -66,8 +67,8 @@ export default function StarknetProvider({
 
   return (
     <StarknetConfig
-      chains={chains}
-      provider={provider}
+      chains={[sepolia]}
+      provider={publicProvider()}
       connectors={connectors}
       autoConnect={true}
     >
