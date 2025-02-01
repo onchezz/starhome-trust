@@ -52,6 +52,8 @@ const AddInvestment = () => {
     longitude: "",
   };
 
+  console.log("Initial investment data:", initialInvestmentData);
+
   // Initialize form data with all fields
   const [formData, setFormData] = useState<InvestmentAsset>(
     editMode && initialInvestmentData 
@@ -63,6 +65,13 @@ const AddInvestment = () => {
           additional_features: initialInvestmentData.additional_features || "",
           tax_benefits: initialInvestmentData.tax_benefits || "",
           market_analysis: initialInvestmentData.market_analysis || "",
+          rental_income: initialInvestmentData.rental_income || 0,
+          maintenance_costs: initialInvestmentData.maintenance_costs || 0,
+          min_investment_amount: initialInvestmentData.min_investment_amount || 0,
+          investment_token: initialInvestmentData.investment_token || "",
+          construction_status: initialInvestmentData.construction_status || "",
+          size: initialInvestmentData.size || 0,
+          is_active: initialInvestmentData.is_active ?? true,
         }
       : {
           id: generateShortUUID(),
@@ -97,6 +106,7 @@ const AddInvestment = () => {
   // Initialize state arrays from comma-separated strings if in edit mode
   useEffect(() => {
     if (editMode && initialInvestmentData) {
+      console.log("Setting initial values for arrays:", initialInvestmentData);
       setHighlights(initialInvestmentData.highlights?.split(',').filter(Boolean) || []);
       setRiskFactors(initialInvestmentData.risk_factors?.split(',').filter(Boolean) || []);
       setAdditionalFeatures(initialInvestmentData.additional_features?.split(',').filter(Boolean) || []);
@@ -435,44 +445,42 @@ const AddInvestment = () => {
                     Property Features & Analysis
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Investment Token</Label>
+                      <Input
+                        value={formData.investment_token}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
                     <CommaInputField
                       label="Tax Benefits"
                       value={formData.tax_benefits || ""}
-                      onChange={(value) =>
-                        handleInputChange("tax_benefits", value)
-                      }
+                      onChange={(value) => handleInputChange("tax_benefits", value)}
                       placeholder="Enter tax benefits, separated by commas"
                     />
                     <CommaInputField
                       label="Highlights"
                       value={formData.highlights || ""}
-                      onChange={(value) =>
-                        handleInputChange("highlights", value)
-                      }
+                      onChange={(value) => handleInputChange("highlights", value)}
                       placeholder="Enter highlights, separated by commas"
                     />
                     <CommaInputField
                       label="Market Analysis"
                       value={formData.market_analysis || ""}
-                      onChange={(value) =>
-                        handleInputChange("market_analysis", value)
-                      }
+                      onChange={(value) => handleInputChange("market_analysis", value)}
                       placeholder="Enter market analysis points, separated by commas"
                     />
                     <CommaInputField
                       label="Risk Factors"
                       value={formData.risk_factors || ""}
-                      onChange={(value) =>
-                        handleInputChange("risk_factors", value)
-                      }
+                      onChange={(value) => handleInputChange("risk_factors", value)}
                       placeholder="Enter risk factors, separated by commas"
                     />
                     <CommaInputField
                       label="Additional Features"
                       value={formData.additional_features || ""}
-                      onChange={(value) =>
-                        handleInputChange("additional_features", value)
-                      }
+                      onChange={(value) => handleInputChange("additional_features", value)}
                       placeholder="Enter additional features, separated by commas"
                     />
                   </div>
