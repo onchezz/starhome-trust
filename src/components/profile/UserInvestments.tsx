@@ -14,17 +14,19 @@ export const UserInvestments = () => {
 
   // Filter investments where the owner matches the user's address
   const userOwnedInvestments = userInvestments?.filter((investment) => {
+    if (!investment?.owner || !address) return false;
+
     // Convert both addresses to lowercase hex strings for comparison
-    const investmentOwnerHex = num.toHex(investment?.owner || '0x0');
-    const userAddressHex = address?.toLowerCase();
+    const investmentOwnerHex = num.toHex(investment.owner);
+    const userAddressHex = address.toLowerCase();
 
     console.log("[UserInvestments] Comparing addresses:", {
       investmentOwner: investmentOwnerHex,
       userAddress: userAddressHex,
-      isMatch: investmentOwnerHex === userAddressHex
+      isMatch: investmentOwnerHex.toLowerCase() === userAddressHex
     });
     
-    return investmentOwnerHex === userAddressHex;
+    return investmentOwnerHex.toLowerCase() === userAddressHex;
   });
 
   console.log("[UserInvestments] User address:", address);
