@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
 import { Loader2, LoaderCircle } from "lucide-react";
@@ -38,7 +38,6 @@ const AddInvestment = () => {
   const { address } = useAccount();
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
   
-  // Get investment data from location state if in edit mode
   const editMode = location.state?.mode === 'edit';
   const initialInvestmentData = location.state?.investmentData;
 
@@ -53,11 +52,17 @@ const AddInvestment = () => {
     longitude: "",
   };
 
+  // Initialize form data with all fields
   const [formData, setFormData] = useState<InvestmentAsset>(
     editMode && initialInvestmentData 
       ? {
           ...initialInvestmentData,
-          location: initialInvestmentData.location || defaultLocation
+          location: initialInvestmentData.location || defaultLocation,
+          highlights: initialInvestmentData.highlights || "",
+          risk_factors: initialInvestmentData.risk_factors || "",
+          additional_features: initialInvestmentData.additional_features || "",
+          tax_benefits: initialInvestmentData.tax_benefits || "",
+          market_analysis: initialInvestmentData.market_analysis || "",
         }
       : {
           id: generateShortUUID(),
@@ -88,6 +93,16 @@ const AddInvestment = () => {
           min_investment_amount: 0,
         }
   );
+
+  // Initialize state arrays from comma-separated strings if in edit mode
+  useEffect(() => {
+    if (editMode && initialInvestmentData) {
+      setHighlights(initialInvestmentData.highlights?.split(',').filter(Boolean) || []);
+      setRiskFactors(initialInvestmentData.risk_factors?.split(',').filter(Boolean) || []);
+      setAdditionalFeatures(initialInvestmentData.additional_features?.split(',').filter(Boolean) || []);
+      setLegalDetails(initialInvestmentData.legal_detail?.split(',').filter(Boolean) || []);
+    }
+  }, [editMode, initialInvestmentData]);
 
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -317,7 +332,13 @@ const AddInvestment = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80 dark:from-slate-900 dark:to-slate-800/90 transition-colors duration-300">
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <Card className="animate-fade-in backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-none shadow-xl">
-          <InvestmentFormHeader />
+          <CardHeader className="relative border-b dark:border-gray-800">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+                {editMode ? 'Update Investment Property' : 'Create New Investment Property'}
+              </CardTitle>
+            </div>
+          </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-8">
@@ -490,7 +511,7 @@ const AddInvestment = () => {
                     <span>Processing...</span>
                   </div>
                 ) : (
-                  "Create Investment"
+                  editMode ? "Update Investment" : "Create Investment"
                 )}
               </Button>
             </form>
