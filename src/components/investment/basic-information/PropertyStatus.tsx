@@ -13,13 +13,11 @@ import { InvestmentAsset, constructionStatus } from "@/types/investment";
 interface PropertyStatusProps {
   formData: Partial<InvestmentAsset>;
   handleInputChange: (field: keyof InvestmentAsset, value: any) => void;
-  editMode?: boolean;
 }
 
 const PropertyStatus: React.FC<PropertyStatusProps> = ({
   formData,
   handleInputChange,
-  editMode = false,
 }) => {
   return (
     <>
