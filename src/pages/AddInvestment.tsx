@@ -18,6 +18,7 @@ import MapLocationPicker from "@/components/MapLocationPicker";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import CommaInputField from "@/components/investment/CommaInputField";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -26,8 +27,55 @@ const pinata = new PinataSDK({
 });
 
 const AddInvestment = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { address } = useAccount();
-  const { handleListInvestmentProperty, contractStatus } = usePropertyCreate();
+  const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
+  
+  // Get investment data from location state if in edit mode
+  const editMode = location.state?.mode === 'edit';
+  const initialInvestmentData = location.state?.investmentData;
+
+  const [formData, setFormData] = useState<InvestmentAsset>(
+    editMode && initialInvestmentData 
+      ? initialInvestmentData 
+      : {
+          id: generateShortUUID(),
+          name: "",
+          description: "",
+          is_active: true,
+          location: {
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            latitude: "",
+            longitude: "",
+          },
+          size: 0,
+          investor_id: address || "",
+          owner: address || "",
+          construction_status: "",
+          asset_value: 0,
+          available_staking_amount: 0,
+          investment_type: "",
+          construction_year: 0,
+          property_price: 0,
+          expected_roi: "",
+          rental_income: 0,
+          maintenance_costs: 0,
+          tax_benefits: "",
+          highlights: "",
+          market_analysis: "",
+          risk_factors: "",
+          legal_detail: "",
+          additional_features: "",
+          images: "",
+          investment_token: "",
+          min_investment_amount: 0,
+        }
+  );
+
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<File[]>([]);
@@ -38,52 +86,17 @@ const AddInvestment = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
-
-  // State for bullet points
+  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
+  const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
   const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
   const [legalDetails, setLegalDetails] = useState<string[]>([]);
+
   const generateShortUUID = () => {
     const fullUUID = crypto.randomUUID();
     return fullUUID.replace(/-/g, "").substring(0, 21);
   };
-
-  const [formData, setFormData] = useState<InvestmentAsset>({
-    id: generateShortUUID(),
-    name: "",
-    description: "",
-    is_active: true,
-    location: {
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      latitude: "",
-      longitude: "",
-    },
-    size: 0,
-    investor_id: address || "",
-    owner: address || "",
-    construction_status: "",
-    asset_value: 0,
-    available_staking_amount: 0,
-    investment_type: "",
-    construction_year: 0,
-    property_price: 0,
-    expected_roi: "",
-    rental_income: 0,
-    maintenance_costs: 0,
-    tax_benefits: "",
-    highlights: "",
-    market_analysis: "",
-    risk_factors: "",
-    legal_detail: "",
-    additional_features: "",
-    images: "",
-    investment_token: "",
-    min_investment_amount: 0,
-  });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -97,7 +110,6 @@ const AddInvestment = () => {
     state: string;
     country: string;
   }) => {
-    // Trim the address to only include the street part
     const addressParts = location.address.split(",");
     const streetAddress = addressParts[0].trim();
 
@@ -112,8 +124,6 @@ const AddInvestment = () => {
         longitude: location.longitude,
       },
     }));
-    console.log("[AddInvestment] Location selected:", location);
-    console.log("[AddInvestment] Trimmed address:", streetAddress);
   };
 
   const validateFiles = (files: File[], isDocument: boolean = false) => {
@@ -177,21 +187,11 @@ const AddInvestment = () => {
     }
   };
 
-  // Add new state for tracking upload status
-  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(
-    null
-  );
-  const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
-
-  // Add effect to check for existing uploads when form data changes
   useEffect(() => {
-    console.log("Checking for existing uploads in form data...");
     if (formData.images) {
-      console.log("Found existing image uploads:", formData.images);
       setUploadedImageHash(formData.images);
     }
     if (formData.legal_detail) {
-      console.log("Found existing document uploads:", formData.legal_detail);
       setUploadedDocHash(formData.legal_detail);
     }
   }, [formData.images, formData.legal_detail]);
@@ -200,17 +200,13 @@ const AddInvestment = () => {
     files: File[],
     isDocuments: boolean = false
   ) => {
-    // If we already have uploads, reuse them
     if (isDocuments && uploadedDocHash) {
-      console.log("Reusing existing document uploads:", uploadedDocHash);
       return uploadedDocHash;
     }
     if (!isDocuments && uploadedImageHash) {
-      console.log("Reusing existing image uploads:", uploadedImageHash);
       return uploadedImageHash;
     }
 
-    console.log(`Starting ${isDocuments ? "document" : "image"} upload...`);
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     setTotalUploadSize((prev) => prev + totalSize);
 
@@ -220,11 +216,6 @@ const AddInvestment = () => {
         pinata,
         formData.id || "",
         isDocuments ? "documents" : "images"
-      );
-
-      console.log(
-        `Upload successful for ${isDocuments ? "documents" : "images"}:`,
-        result
       );
 
       if (isDocuments) {
@@ -240,10 +231,6 @@ const AddInvestment = () => {
       );
       return result;
     } catch (error) {
-      console.error(
-        `Error uploading ${isDocuments ? "documents" : "images"}:`,
-        error
-      );
       toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
       throw error;
     }
@@ -256,13 +243,11 @@ const AddInvestment = () => {
       return;
     }
 
-    // Validate required fields
     const requiredFields = [
       "tax_benefits",
       "highlights",
       "market_analysis",
       "risk_factors",
-      // "legal_detail",
       "additional_features",
     ];
 
@@ -279,24 +264,14 @@ const AddInvestment = () => {
 
     setIsUploading(true);
     try {
-      console.log("Starting form submission with data:", formData);
-
-      // Handle image uploads if not already uploaded
       let imagesHash = uploadedImageHash;
       if (selectedFiles.length > 0 && !uploadedImageHash) {
-        console.log("Uploading images...");
         imagesHash = await handleUploadFiles(selectedFiles, false);
-      } else if (uploadedImageHash) {
-        console.log("Reusing existing image hash:", uploadedImageHash);
       }
 
-      // Handle document uploads if not already uploaded
       let docsHash = uploadedDocHash;
       if (selectedDocs.length > 0 && !uploadedDocHash) {
-        console.log("Uploading documents...");
         docsHash = await handleUploadFiles(selectedDocs, true);
-      } else if (uploadedDocHash) {
-        console.log("Reusing existing document hash:", uploadedDocHash);
       }
 
       const processedFormData: InvestmentAsset = {
@@ -305,31 +280,23 @@ const AddInvestment = () => {
         additional_features: additionalFeatures.join(","),
         risk_factors: riskFactors.join(","),
         highlights: highlights.join(","),
-        images: imagesHash || "",
-        legal_detail: docsHash || "",
+        images: imagesHash || formData.images,
+        legal_detail: docsHash || formData.legal_detail,
       };
 
-      console.log(
-        "Submitting investment with processed data:",
-        processedFormData
-      );
+      if (editMode) {
+        await handleEditInvestmentProperty(formData.id, processedFormData);
+        toast.success("Investment updated successfully!");
+      } else {
+        await handleListInvestmentProperty(processedFormData);
+        toast.success("Investment created successfully!");
+      }
 
-      await handleListInvestmentProperty(processedFormData);
+      navigate('/profile');
 
-      toast.success("Investment created successfully!");
-
-      // Don't reset upload states after successful submission
-      // This allows reuse of the uploaded files
-      setSelectedFiles([]);
-      setSelectedDocs([]);
-      setUploadProgress(0);
-      setUploadedFiles(0);
-      setUploadedSize(0);
-      setTotalUploadSize(0);
     } catch (error) {
-      console.error("Error creating investment:", error);
       toast.error(
-        "Failed to create investment. Your uploads are saved and won't be repeated if you try again."
+        `Failed to ${editMode ? 'update' : 'create'} investment. Your uploads are saved and won't be repeated if you try again.`
       );
     } finally {
       setIsUploading(false);
@@ -370,7 +337,6 @@ const AddInvestment = () => {
                     }
                   />
 
-                  {/* Display selected location details */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div className="space-y-2">
                       <Label>Address</Label>
@@ -432,20 +398,6 @@ const AddInvestment = () => {
                     handleInputChange={handleInputChange}
                   />
                 </section>
-
-                {/* <section className="space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    Property Features & Analysis
-                  </h2>
-                  <BulletPointsGrid
-                    highlights={highlights}
-                    riskFactors={riskFactors}
-                    additionalFeatures={additionalFeatures}
-                    setHighlights={setHighlights}
-                    setRiskFactors={setRiskFactors}
-                    setAdditionalFeatures={setAdditionalFeatures}
-                  />
-                </section> */}
 
                 <section className="space-y-4">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -536,7 +488,6 @@ const AddInvestment = () => {
         </Card>
       </div>
 
-      {/* Preview Modal */}
       {showPreviewModal && previewUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white dark:bg-slate-900 rounded-lg p-4 w-full max-w-4xl max-h-[90vh] flex flex-col">
