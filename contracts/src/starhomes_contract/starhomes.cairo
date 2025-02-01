@@ -146,6 +146,7 @@ pub mod StarhomesContract {
                 );
         }
          fn withdraw_from_property(ref self: ContractState, investment_id: felt252, amount: u256) {
+            
             assert(
                 self.properties._is_investment_added(investment_id) == true, 'Investment not Available',
             );
