@@ -7,11 +7,13 @@ import { toast } from "sonner";
 interface FinancialDetailsProps {
   formData: Partial<InvestmentAsset>;
   handleInputChange: (field: keyof InvestmentAsset, value: any) => void;
+  editMode?: boolean;
 }
 
 const FinancialDetails: React.FC<FinancialDetailsProps> = ({
   formData,
   handleInputChange,
+  editMode = false,
 }) => {
   // Update Available Staking Amount when Asset Value changes
   useEffect(() => {
@@ -40,6 +42,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           value={formData.asset_value || ""}
           onChange={(e) => handleNonNegativeInput("asset_value", e.target.value)}
           placeholder="Enter asset value"
+          disabled={editMode}
         />
       </div>
 
@@ -64,6 +67,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           value={formData.min_investment_amount || ""}
           onChange={(e) => handleNonNegativeInput("min_investment_amount", e.target.value)}
           placeholder="Enter minimum investment amount"
+          disabled={editMode}
         />
       </div>
 
@@ -77,6 +81,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           value={formData.expected_roi || ""}
           onChange={(e) => handleNonNegativeInput("expected_roi", e.target.value)}
           placeholder="Enter expected ROI percentage"
+          disabled={editMode}
         />
       </div>
 
@@ -89,6 +94,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           value={formData.rental_income || ""}
           onChange={(e) => handleNonNegativeInput("rental_income", e.target.value)}
           placeholder="Enter annual rental income"
+          disabled={editMode}
         />
       </div>
 
@@ -101,6 +107,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
           value={formData.maintenance_costs || ""}
           onChange={(e) => handleNonNegativeInput("maintenance_costs", e.target.value)}
           placeholder="Enter annual maintenance costs"
+          disabled={editMode}
         />
       </div>
     </div>
