@@ -12,7 +12,7 @@ interface InvestmentProgressProps {
   availableStakingAmount: number;
   minInvestmentAmount: number;
   investmentAmount: string;
-  setInvestmentAmount: (amount: number) => void;
+  setInvestmentAmount: (amount: string) => void;
   handleInvest: () => void;
 }
 
@@ -61,8 +61,9 @@ export const InvestmentProgress = ({
             <Input
               type="number"
               value={investmentAmount}
-              onChange={(e) => setInvestmentAmount(Number(e.target.value))}
+              onChange={(e) => setInvestmentAmount(e.target.value)}
               placeholder={`Min. ${formatCurrency(minInvestmentAmount)}`}
+              min={minInvestmentAmount}
             />
           </div>
           <Button onClick={handleInvest} className="w-full">
