@@ -41,6 +41,44 @@ const AddProperty = () => {
     }));
   };
 
+  const convertToInvestmentAsset = (property: Property): InvestmentAsset => {
+    return {
+      id: property.id || "",
+      name: property.title || "",
+      description: property.description || "",
+      is_active: true,
+      location: {
+        address: property.locationAddress || "",
+        city: property.city || "",
+        state: property.state || "",
+        country: property.country || "",
+        latitude: property.latitude || "",
+        longitude: property.longitude || "",
+      },
+      size: property.area || 0,
+      investor_id: address || "",
+      owner: address || "",
+      construction_status: "Completed",
+      asset_value: property.price || 0,
+      available_staking_amount: property.asking_price || 0,
+      investment_type: property.propertyType || "",
+      construction_year: new Date().getFullYear(),
+      property_price: property.price || 0,
+      expected_roi: property.annualGrowthRate?.toString() || "0",
+      rental_income: 0,
+      maintenance_costs: 0,
+      tax_benefits: "",
+      highlights: "",
+      market_analysis: "",
+      risk_factors: "",
+      legal_detail: "",
+      additional_features: "",
+      images: property.imagesId || "",
+      investment_token: property.assetToken || "",
+      min_investment_amount: property.price ? property.price * 0.1 : 0,
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {
@@ -49,43 +87,7 @@ const AddProperty = () => {
     }
 
     try {
-      // Convert Property to InvestmentAsset
-      const investmentAsset: InvestmentAsset = {
-        id: formData.id || "",
-        name: formData.title || "",
-        description: formData.description || "",
-        is_active: true,
-        location: {
-          address: formData.locationAddress || "",
-          city: formData.city || "",
-          state: formData.state || "",
-          country: formData.country || "",
-          latitude: formData.latitude || "",
-          longitude: formData.longitude || "",
-        },
-        size: formData.area || 0,
-        investor_id: address,
-        owner: address,
-        construction_status: "Completed",
-        asset_value: formData.price || 0,
-        available_staking_amount: formData.asking_price || 0,
-        investment_type: formData.propertyType || "",
-        construction_year: new Date().getFullYear(),
-        property_price: formData.price || 0,
-        expected_roi: formData.annualGrowthRate?.toString() || "0",
-        rental_income: 0,
-        maintenance_costs: 0,
-        tax_benefits: "",
-        highlights: "",
-        market_analysis: "",
-        risk_factors: "",
-        legal_detail: "",
-        additional_features: "",
-        images: formData.imagesId || "",
-        investment_token: formData.assetToken || "",
-        min_investment_amount: formData.price ? formData.price * 0.1 : 0, // 10% of price as minimum investment
-      };
-
+      const investmentAsset = convertToInvestmentAsset(formData);
       await handleListInvestmentProperty(investmentAsset);
       toast.success("Property listed successfully!");
     } catch (error) {
@@ -103,6 +105,7 @@ const AddProperty = () => {
       />
       <PropertyLocation 
         formData={formData}
+        handleInputChange={handleInputChange}
         handleLocationSelect={handleLocationSelect}
         isLocationLoading={isLocationLoading}
       />

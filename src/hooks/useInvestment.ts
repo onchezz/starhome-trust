@@ -1,53 +1,26 @@
-import { useState } from 'react';
-import { useToken } from './contract_interactions/usetokensHook';
-import { usePropertyCreate } from './contract_interactions/usePropertiesWrite';
-import { toast } from 'sonner';
-import { useAccount } from '@starknet-react/core';
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
+import { useTokenApproval } from "@/hooks/contract_interactions/usetokensHook";
+import { toast } from "sonner";
 
-export const useInvestment = (investmentToken: string | undefined) => {
-  const [investmentAmount, setInvestmentAmount] = useState("");
-  const { address } = useAccount();
-  const { handleInvestInProperty } = usePropertyCreate();
-  const { approveAndInvest } = useToken(investmentToken || "");
+export const useInvestment = () => {
+  const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
+  const { approveToken } = useTokenApproval();
 
-  const handleInvest = async (investmentId: string) => {
-    if (!address) {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-
-    if (!investmentAmount || isNaN(Number(investmentAmount))) {
-      toast.error("Please enter a valid investment amount");
-      return;
-    }
-
+  const approveAndInvest = async (tokenAddress: string, amount: string) => {
     try {
-      console.log("Starting investment process:", {
-        investmentId,
-        amount: investmentAmount,
-        token: investmentToken
-      });
-
-      await approveAndInvest(
-        Number(investmentAmount),
-        investmentId,
-        handleInvestInProperty
-      );
-      
-      toast.success("Investment successful!");
-      setInvestmentAmount("");
-      
-      return true;
+      await approveToken(tokenAddress, amount);
+      toast.success("Token approved successfully!");
     } catch (error) {
-      console.error("Investment error:", error);
-      toast.error(error instanceof Error ? error.message : "Investment failed");
-      return false;
+      console.error("Error approving token:", error);
+      toast.error("Failed to approve token");
+      throw error;
     }
   };
 
   return {
-    investmentAmount,
-    setInvestmentAmount,
-    handleInvest
+    approveAndInvest,
+    handleListInvestmentProperty,
+    handleEditInvestmentProperty,
+    contractStatus,
   };
 };
