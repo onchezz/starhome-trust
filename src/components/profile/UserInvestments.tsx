@@ -16,17 +16,18 @@ export const UserInvestments = () => {
   const userOwnedInvestments = userInvestments?.filter((investment) => {
     if (!investment?.owner || !address) return false;
 
-    // Convert both addresses to lowercase hex strings for comparison
-    const investmentOwnerHex = num.toHex(investment.owner);
-    const userAddressHex = address.toLowerCase();
+    // Normalize both addresses by removing '0x' prefix and converting to lowercase
+    const normalizeAddress = (addr: string) => addr.toLowerCase().replace('0x', '');
+    const investmentOwnerNormalized = normalizeAddress(investment.owner);
+    const userAddressNormalized = normalizeAddress(address);
 
-    console.log("[UserInvestments] Comparing addresses:", {
-      investmentOwner: investmentOwnerHex,
-      userAddress: userAddressHex,
-      isMatch: investmentOwnerHex.toLowerCase() === userAddressHex
+    console.log("[UserInvestments] Comparing normalized addresses:", {
+      investmentOwner: investmentOwnerNormalized,
+      userAddress: userAddressNormalized,
+      isMatch: investmentOwnerNormalized === userAddressNormalized
     });
     
-    return investmentOwnerHex.toLowerCase() === userAddressHex;
+    return investmentOwnerNormalized === userAddressNormalized;
   });
 
   console.log("[UserInvestments] User address:", address);
