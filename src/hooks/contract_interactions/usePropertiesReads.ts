@@ -1,10 +1,10 @@
-import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 import { Property, PropertyConverter } from '@/types/property';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { num } from 'starknet';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 import { useAccount } from '@starknet-react/core';
+import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 
 // Increase cache time for better performance
 const CACHE_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
@@ -72,7 +72,6 @@ export const useInvestmentAssetsRead = () => {
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
-    cacheTime: CACHE_TIME,
     refetchOnWindowFocus: false,
     enabled: !investmentPropertiesHook.isLoading,
   });
