@@ -6,13 +6,15 @@ import { ImageGallery } from "../investment/ImageGallery";
 import { useNavigate } from "react-router-dom";
 import { InvestmentAsset } from "@/types/investment";
 
-interface InvestmentListingCardProps extends Partial<InvestmentAsset> {
+// Create a separate interface that doesn't extend InvestmentAsset
+interface InvestmentListingCardProps {
   id: string;
   name: string;
   description: string;
   asset_value: number;
   expected_roi: string | number;
   images: string;
+  [key: string]: any; // Allow additional properties
 }
 
 export const InvestmentListingCard = ({
@@ -39,7 +41,7 @@ export const InvestmentListingCard = ({
       name,
       description,
       asset_value,
-      expected_roi,
+      expected_roi: expected_roi.toString(), // Convert to string to match InvestmentAsset type
       images,
       ...rest
     } as InvestmentAsset;

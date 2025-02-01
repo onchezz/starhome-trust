@@ -26,6 +26,11 @@ const pinata = new PinataSDK({
   pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
 });
 
+const generateShortUUID = () => {
+  const fullUUID = crypto.randomUUID();
+  return fullUUID.replace(/-/g, "").substring(0, 21);
+};
+
 const AddInvestment = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -92,11 +97,6 @@ const AddInvestment = () => {
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
   const [legalDetails, setLegalDetails] = useState<string[]>([]);
-
-  const generateShortUUID = () => {
-    const fullUUID = crypto.randomUUID();
-    return fullUUID.replace(/-/g, "").substring(0, 21);
-  };
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

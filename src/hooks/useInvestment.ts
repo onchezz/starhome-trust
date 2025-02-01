@@ -7,7 +7,7 @@ import { useAccount } from '@starknet-react/core';
 export const useInvestment = (investmentToken: string | undefined) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { address } = useAccount();
-  const { handleInvestInProperty } = usePropertyCreate();
+  const { handleListInvestmentProperty } = usePropertyCreate();
   const { approveAndInvest } = useToken(investmentToken || "");
 
   const handleInvest = async (investmentId: string) => {
@@ -31,7 +31,7 @@ export const useInvestment = (investmentToken: string | undefined) => {
       await approveAndInvest(
         Number(investmentAmount),
         investmentId,
-        handleInvestInProperty
+        handleListInvestmentProperty
       );
       
       toast.success("Investment successful!");
