@@ -82,63 +82,60 @@ export interface InvestmentAsset {
   min_investment_amount: number;
 }
 
-export class InvestmentAssetConverter {
-    static feltToString(felt: string): string {
-      
+export const InvestmentAssetConverter = {
+    feltToString: (felt: string): string => {
         return shortString.decodeShortString(felt);
-    }
+    },
 
-    static addressToString(address: BigNumberish | null): string {
-            // Use optional chaining and nullish coalescing for safe access
-            return num.toHex(address?.toString() || '0');
-       
-    }
+    addressToString: (address: BigNumberish | null): string => {
+        return num.toHex(address?.toString() || '0');
+    },
 
-    static fromStarknetProperty(starknetProperty: any): InvestmentAsset {
+    fromStarknetProperty: (starknetProperty: any): InvestmentAsset => {
         console.log("Converting property:", starknetProperty);
         try {
             return {
-                id: this.feltToString(starknetProperty.id),
-                name: this.feltToString(starknetProperty.name),
+                id: InvestmentAssetConverter.feltToString(starknetProperty.id),
+                name: InvestmentAssetConverter.feltToString(starknetProperty.name),
                 description: starknetProperty.description,
                 is_active: Boolean(starknetProperty.is_active),
                 location: {
-                    address: this.feltToString(starknetProperty.location?.address),
-                    city: this.feltToString(starknetProperty.location?.city),
-                    state: this.feltToString(starknetProperty.location?.state),
-                    country: this.feltToString(starknetProperty.location?.country),
-                    latitude: this.feltToString(starknetProperty.location?.latitude),
-                    longitude: this.feltToString(starknetProperty.location?.longitude),
+                    address: InvestmentAssetConverter.feltToString(starknetProperty.location?.address),
+                    city: InvestmentAssetConverter.feltToString(starknetProperty.location?.city),
+                    state: InvestmentAssetConverter.feltToString(starknetProperty.location?.state),
+                    country: InvestmentAssetConverter.feltToString(starknetProperty.location?.country),
+                    latitude: InvestmentAssetConverter.feltToString(starknetProperty.location?.latitude),
+                    longitude: InvestmentAssetConverter.feltToString(starknetProperty.location?.longitude),
                 },
                 size: Number(starknetProperty.size?.value || starknetProperty.size || 0),
-                investor_id: this.addressToString(starknetProperty.investor_id),
-                owner: this.addressToString(starknetProperty.owner),
-                construction_status: this.feltToString(starknetProperty.construction_status),
+                investor_id: InvestmentAssetConverter.addressToString(starknetProperty.investor_id),
+                owner: InvestmentAssetConverter.addressToString(starknetProperty.owner),
+                construction_status: InvestmentAssetConverter.feltToString(starknetProperty.construction_status),
                 asset_value: Number(starknetProperty.asset_value?.value || starknetProperty.asset_value || 0)/ Math.pow(10, 6),
                 available_staking_amount: Number(starknetProperty.available_staking_amount?.value || starknetProperty.available_staking_amount || 0)/Math.pow(10, 6),
-                investment_type: this.feltToString(starknetProperty.investment_type),
+                investment_type: InvestmentAssetConverter.feltToString(starknetProperty.investment_type),
                 construction_year: Number(starknetProperty.construction_year?.value || starknetProperty.construction_year || 0),
                 property_price: Number(starknetProperty.property_price?.value || starknetProperty.property_price || 0)/ Math.pow(10, 6),
-                expected_roi: this.feltToString(starknetProperty.expected_roi),
+                expected_roi: InvestmentAssetConverter.feltToString(starknetProperty.expected_roi),
                 rental_income: Number(starknetProperty.rental_income?.value || starknetProperty.rental_income || 0)/ Math.pow(10, 6),
                 maintenance_costs: Number(starknetProperty.maintenance_costs?.value || starknetProperty.maintenance_costs || 0)/ Math.pow(10, 6),
-                tax_benefits: this.feltToString(starknetProperty.tax_benefits),
+                tax_benefits: InvestmentAssetConverter.feltToString(starknetProperty.tax_benefits),
                 highlights: starknetProperty.highlights || '',
                 market_analysis: starknetProperty.market_analysis || '',
                 risk_factors: starknetProperty.risk_factors || '',
                 legal_detail: starknetProperty.legal_detail || '',
                 additional_features: starknetProperty.additional_features || '',
                 images: starknetProperty.images || '',
-                investment_token: this.addressToString(starknetProperty.investment_token),
+                investment_token: InvestmentAssetConverter.addressToString(starknetProperty.investment_token),
                 min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)/ Math.pow(10, 6)
             };
         } catch (error) {
             console.error("Error converting Starknet property:", error, starknetProperty);
             throw error;
         }
-    }
+    },
 
-    static toStarknetProperty(formData: InvestmentAsset, address: string): InvestmentAsset {
+    toStarknetProperty: (formData: InvestmentAsset, address: string): InvestmentAsset => {
         return {
             id: formData.id,
             name: formData.name,
@@ -162,7 +159,7 @@ export class InvestmentAssetConverter {
             construction_year: formData.construction_year,
             property_price: formData.property_price || formData.available_staking_amount,
             expected_roi: formData.expected_roi,
-            rental_income: formData.rental_income* Math.pow(10, 6),
+            rental_income: formData.rental_income * Math.pow(10, 6),
             maintenance_costs: formData.maintenance_costs * Math.pow(10, 6),
             tax_benefits: formData.tax_benefits || "none yet",
             highlights: formData.highlights,
@@ -172,12 +169,12 @@ export class InvestmentAssetConverter {
             additional_features: formData.additional_features,
             images: formData.images,
             investment_token: formData.investment_token,
-            min_investment_amount: formData.min_investment_amount* Math.pow(10, 6)
+            min_investment_amount: formData.min_investment_amount * Math.pow(10, 6)
         };
-    }
+    },
 
-    static async getProperty(contract: any, propertyId: BigNumberish): Promise<InvestmentAsset> {
+    getProperty: async (contract: any, propertyId: BigNumberish): Promise<InvestmentAsset> => {
         const starknetProperty = await contract.get_property(propertyId);
-        return this.fromStarknetProperty(starknetProperty);
+        return InvestmentAssetConverter.fromStarknetProperty(starknetProperty);
     }
-}
+};
