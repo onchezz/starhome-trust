@@ -26,55 +26,67 @@ const pinata = new PinataSDK({
   pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
 });
 
-const AddInvestment = () => {
+interface AddInvestmentProps {
+  investmentToUpdate?: InvestmentAsset;
+}
+
+const AddInvestment: React.FC<AddInvestmentProps> = ({ investmentToUpdate }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { address } = useAccount();
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
-  
-  // Get investment data from location state if in edit mode
-  const editMode = location.state?.mode === 'edit';
-  const initialInvestmentData = location.state?.investmentData;
 
+  const generateShortUUID = () => {
+    const fullUUID = crypto.randomUUID();
+    return fullUUID.replace(/-/g, "").substring(0, 21);
+  };
+  
+  // Initialize form data with investmentToUpdate if provided, otherwise use default values
   const [formData, setFormData] = useState<InvestmentAsset>(
-    editMode && initialInvestmentData 
-      ? initialInvestmentData 
-      : {
-          id: generateShortUUID(),
-          name: "",
-          description: "",
-          is_active: true,
-          location: {
-            address: "",
-            city: "",
-            state: "",
-            country: "",
-            latitude: "",
-            longitude: "",
-          },
-          size: 0,
-          investor_id: address || "",
-          owner: address || "",
-          construction_status: "",
-          asset_value: 0,
-          available_staking_amount: 0,
-          investment_type: "",
-          construction_year: 0,
-          property_price: 0,
-          expected_roi: "",
-          rental_income: 0,
-          maintenance_costs: 0,
-          tax_benefits: "",
-          highlights: "",
-          market_analysis: "",
-          risk_factors: "",
-          legal_detail: "",
-          additional_features: "",
-          images: "",
-          investment_token: "",
-          min_investment_amount: 0,
-        }
+    investmentToUpdate || {
+      id: generateShortUUID(),
+      name: "",
+      description: "",
+      is_active: true,
+      location: {
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        latitude: "",
+        longitude: "",
+      },
+      size: 0,
+      investor_id: address || "",
+      owner: address || "",
+      construction_status: "",
+      asset_value: 0,
+      available_staking_amount: 0,
+      investment_type: "",
+      construction_year: 0,
+      property_price: 0,
+      expected_roi: "",
+      rental_income: 0,
+      maintenance_costs: 0,
+      tax_benefits: "",
+      highlights: "",
+      market_analysis: "",
+      risk_factors: "",
+      legal_detail: "",
+      additional_features: "",
+      images: "",
+      investment_token: "",
+      min_investment_amount: 0,
+    }
   );
+
+  // Update form data when investmentToUpdate changes
+  useEffect(() => {
+    if (investmentToUpdate) {
+      setFormData(investmentToUpdate);
+      console.log("[AddInvestment] Prefilling form with investment data:", investmentToUpdate);
+    }
+  }, [investmentToUpdate]);
 
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -92,11 +104,6 @@ const AddInvestment = () => {
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
   const [legalDetails, setLegalDetails] = useState<string[]>([]);
-
-  const generateShortUUID = () => {
-    const fullUUID = crypto.randomUUID();
-    return fullUUID.replace(/-/g, "").substring(0, 21);
-  };
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -284,7 +291,7 @@ const AddInvestment = () => {
         legal_detail: docsHash || formData.legal_detail,
       };
 
-      if (editMode) {
+      if (investmentToUpdate) {
         await handleEditInvestmentProperty(formData.id, processedFormData);
         toast.success("Investment updated successfully!");
       } else {
@@ -296,7 +303,7 @@ const AddInvestment = () => {
 
     } catch (error) {
       toast.error(
-        `Failed to ${editMode ? 'update' : 'create'} investment. Your uploads are saved and won't be repeated if you try again.`
+        `Failed to ${investmentToUpdate ? 'update' : 'create'} investment. Your uploads are saved and won't be repeated if you try again.`
       );
     } finally {
       setIsUploading(false);
