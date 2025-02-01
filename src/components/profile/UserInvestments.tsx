@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Skeleton } from "../ui/skeleton";
 import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useAccount } from "@starknet-react/core";
+import { num } from "starknet";
 
 export const UserInvestments = () => {
   const { theme } = useTheme();
@@ -13,16 +14,17 @@ export const UserInvestments = () => {
 
   // Filter investments where the owner matches the user's address
   const userOwnedInvestments = userInvestments?.filter((investment) => {
+    // Convert both addresses to lowercase hex strings for comparison
+    const investmentOwnerHex = num.toHex(investment?.owner || '0x0');
+    const userAddressHex = address?.toLowerCase();
+
     console.log("[UserInvestments] Comparing addresses:", {
-      investmentOwner: investment?.owner?.toLowerCase(),
-      userAddress: address?.toLowerCase(),
-      isMatch: investment?.owner?.toLowerCase() === address?.toLowerCase()
+      investmentOwner: investmentOwnerHex,
+      userAddress: userAddressHex,
+      isMatch: investmentOwnerHex === userAddressHex
     });
     
-    // Make sure both addresses exist and compare them case-insensitively
-    return investment?.owner && 
-           address && 
-           investment.owner.toLowerCase() === address.toLowerCase();
+    return investmentOwnerHex === userAddressHex;
   });
 
   console.log("[UserInvestments] User address:", address);
@@ -77,7 +79,7 @@ export const UserInvestments = () => {
           {userOwnedInvestments.map((investment) => (
             <Link 
               key={investment.id} 
-              to={`/investments/${investment.id}`}
+              to={`/investment/${investment.id}`}
               className="block hover:opacity-80 transition-opacity"
             >
               <div className="p-4 rounded-lg border">
