@@ -2,18 +2,18 @@ import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContra
 import { Property, PropertyConverter } from '@/types/property';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { num, shortString } from 'starknet';
+import { num } from 'starknet';
 import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 import { useAccount } from '@starknet-react/core';
 
-const CACHE_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+// Increase cache time for better performance
+const CACHE_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 export const usePropertyRead = () => {
   const { address } = useAccount();
   const salePropertiesHook = useStarHomeReadContract({
     functionName: "get_sale_properties",
   });
-
 
   const { data: propertiesData, isLoading: salePropertiesLoading, error: salePropertiesError } = useQuery({
     queryKey: ['properties'],
@@ -33,8 +33,6 @@ export const usePropertyRead = () => {
     enabled: !salePropertiesHook.isLoading,
   });
 
- 
-
   const saleProperties = Array.isArray(propertiesData) ? propertiesData.map((prop: any) => {
     console.log("[usePropertyRead] Converting property:", prop);
     try {
@@ -45,27 +43,21 @@ export const usePropertyRead = () => {
     }
   }).filter(Boolean) : [];
 
-
-  console.log("[usePropertyRead] Final properties:", {
-    saleProperties,
-    salePropertiesLoading, 
-    userAddress: address
-  });
-
   return {
     saleProperties,
     salePropertiesLoading,
     salePropertiesError,
-   
   };
 };
-export const useInvestmentAssetsRead =()=>{
-   const { address } = useAccount();
- const investmentPropertiesHook = useStarHomeReadContract({
+
+export const useInvestmentAssetsRead = () => {
+  const { address } = useAccount();
+  const investmentPropertiesHook = useStarHomeReadContract({
     functionName: "get_investment_properties",
   });
-   const { data: investmentPropertiesData, isLoading, error: investmentPropertiesError } = useQuery({
-    queryKey: ['investment_properties', address],
+
+  const { data: investmentPropertiesData, isLoading, error: investmentPropertiesError } = useQuery({
+    queryKey: ['investment_properties'],
     queryFn: async () => {
       console.log("[usePropertyRead] Raw investment properties data:", investmentPropertiesHook);
       
@@ -78,13 +70,14 @@ export const useInvestmentAssetsRead =()=>{
       console.log("[usePropertyRead] Fetched investments:", investments);
       return investments;
     },
-
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
-    refetchInterval: CACHE_TIME,
-    enabled: !investmentPropertiesHook.isLoading && !!address,
+    cacheTime: CACHE_TIME,
+    refetchOnWindowFocus: false,
+    enabled: !investmentPropertiesHook.isLoading,
   });
-    const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData.map((prop: any) => {
+
+  const investmentProperties = Array.isArray(investmentPropertiesData) ? investmentPropertiesData.map((prop: any) => {
     console.log("[usePropertyRead] Converting investment property:", prop);
     try {   
       return InvestmentAssetConverter.fromStarknetProperty(prop);
@@ -94,20 +87,34 @@ export const useInvestmentAssetsRead =()=>{
     }
   }).filter(Boolean) : [];
 
-  
-
   // Filter investments by the current user's address
-  const userInvestments = investmentProperties.filter(inv => 
-    inv?.owner?.toLowerCase() === address?.toLowerCase()
-  );
+  const userInvestments = address ? investmentProperties.filter(inv => {
+    if (!inv?.owner) return false;
+    const investmentOwnerHex = num.toHex(inv.owner).toLowerCase();
+    const userAddressHex = address.toLowerCase();
+    
+    console.log("[useInvestmentAssetsRead] Comparing addresses:", {
+      investmentOwner: investmentOwnerHex,
+      userAddress: userAddressHex,
+      isMatch: investmentOwnerHex === userAddressHex
+    });
+    
+    return investmentOwnerHex === userAddressHex;
+  }) : [];
+
+  console.log("[useInvestmentAssetsRead] Final investments:", {
+    all: investmentProperties,
+    user: userInvestments,
+    userAddress: address
+  });
 
   return {
-     investmentProperties,
+    investmentProperties,
     userInvestments,
     isLoading,
     investmentPropertiesError
   };
-}
+};
 
 export const usePropertyReadById = (id: string) => {
   const [property, setProperty] = useState<Property | null>(null);
