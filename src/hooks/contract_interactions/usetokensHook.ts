@@ -10,59 +10,57 @@ import { starhomesContract } from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
 import { num } from "starknet";
 
-// Token decimals (assuming 18 decimals for all tokens)
-const tokenDecimals = {
-  USDT: 18,
-  STRK: 18,
-  ETH: 18,
-};
-
 export const useToken = (tokenAddress) => {
   const { address: owner } = useAccount();
   const spender = starhomesContract;
 
+  // Ensure addresses are properly formatted with 0x prefix
+  const formattedTokenAddress = tokenAddress.startsWith('0x') ? tokenAddress : `0x${tokenAddress}`;
+  const formattedSpender = spender.startsWith('0x') ? spender : `0x${spender}`;
+  const formattedOwner = owner ? (owner.startsWith('0x') ? owner : `0x${owner}`) : '0x0';
+
   // Read token metadata using universal ERC20 ABI
   const { data: name } = useReadContract({
     functionName: "name",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
   });
 
   const { data: symbol } = useReadContract({
     functionName: "symbol",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
   });
 
   const { data: decimals } = useReadContract({
     functionName: "decimals",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
   });
 
   // Check balance
   const { data: balance } = useReadContract({
     functionName: "balance_of",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
-    args: [owner || "0x0"],
+    args: [formattedOwner as `0x${string}`],
   });
 
   // Check allowance
   const { data: allowance, error: allowanceError } = useReadContract({
     functionName: "allowance",
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
     abi: universalErc20Abi,
-    args: [owner || "0x0", spender],
+    args: [formattedOwner as `0x${string}`, formattedSpender as `0x${string}`],
   });
 
   // Contract interactions
   const { contract } = useContract({
     abi: universalErc20Abi,
-    address: tokenAddress,
+    address: formattedTokenAddress as `0x${string}`,
   });
 
-  const { sendAsync: sendTransaction } = useSendTransaction({});
+  const { sendAsync: sendTransaction } = useSendTransaction();
 
   const approveAndInvest = async (amount: number, investmentId: string, investCallback: (id: string, amount: number) => Promise<any>) => {
     if (!contract || !owner) {
@@ -70,14 +68,12 @@ export const useToken = (tokenAddress) => {
     }
 
     try {
-      // const amountBigInt = num.toBigInt(amount);
-      const currentAllowance = Number(allowance)
-      // allowance ? BigInt(allowance.toString()) : BigInt(0);
-      const currentBalance = Number(balance)
-      //  balance ? BigInt(balance.toString()) : BigInt(0);
+      const amountBigInt = num.toBigInt(amount);
+      const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
+      const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
 
       console.log("Investment check:", {
-        amount: amount.toString(),
+        amount: amountBigInt.toString(),
         allowance: currentAllowance.toString(),
         balance: currentBalance.toString()
       });
@@ -88,9 +84,9 @@ export const useToken = (tokenAddress) => {
 
       const calls = [];
 
-      if (currentAllowance < amount) {
+      if (currentAllowance < amountBigInt) {
         // Need to increase allowance first
-        const approveCall = contract.populate("approve", [spender, amount]);
+        const approveCall = contract.populate("approve", [spender, amountBigInt]);
         calls.push(approveCall);
       }
 
@@ -99,30 +95,9 @@ export const useToken = (tokenAddress) => {
         const tx = await sendTransaction(calls);
         console.log("Approval transaction:", tx);
       }
-    
-         
-            // if (!contract) {
-            //   throw new Error("Contract not initialized");
-            // }
-      
-            // try {
-            //   // Create all calls using the contract's populate method
-            //   const populatedCalls = calls.map(({ functionName, args }) =>
-            //     contract.populate(functionName, args)
-            //   );
-              
-            //   // Send the batch transaction
-            //   const response = await sendTransaction(populatedCalls);
-            //   return { response, status: txStatus };
-            // } catch (err) {
-            //   console.error("Error executing batch transaction:", err);
-            //   throw err;
-            // }
-        
-         
 
-      // Now proceed with investment
-      await investCallback(investmentId, amount);
+      // After approval, proceed with investment
+      await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
 
     } catch (error) {
       console.error("Error in approveAndInvest:", error);
