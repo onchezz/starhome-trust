@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Shimmer } from "@/components/ui/shimmer";
+import { ImageGallery } from "@/components/investment/ImageGallery";
 import {
   Users,
   TrendingUp,
@@ -51,11 +52,12 @@ const Investment = () => {
 
   // Initialize investment hook for each property
   const investmentHooks = useMemo(() => {
-    const hooks: { [key: string]: ReturnType<typeof useInvestment> } = {};
-    investmentProperties?.forEach((property) => {
-      hooks[property.id] = useInvestment(property.investment_token);
-    });
-    return hooks;
+    if (!investmentProperties) return {};
+    
+    return investmentProperties.reduce((acc, property) => {
+      acc[property.id] = useInvestment(property.investment_token);
+      return acc;
+    }, {} as { [key: string]: ReturnType<typeof useInvestment> });
   }, [investmentProperties]);
 
   const handleConnectWallet = async () => {
@@ -76,27 +78,31 @@ const Investment = () => {
   };
 
   // Calculate total statistics
-  const totalStats = investmentProperties?.reduce(
-    (acc, property) => {
-      return {
-        totalInvestors: acc.totalInvestors + 0, // This would come from contract
-        averageROI: acc.averageROI + Number(property.expected_roi || 0),
-        totalInvestment:
-          acc.totalInvestment + Number(property.asset_value || 0),
-      };
-    },
-    { totalInvestors: 0, averageROI: 0, totalInvestment: 0 }
-  );
+  const totalStats = useMemo(() => {
+    if (!investmentProperties?.length) {
+      return { totalInvestors: 0, averageROI: 0, totalInvestment: 0 };
+    }
 
-  const averageROI = totalStats
-    ? (totalStats.averageROI / (investmentProperties?.length || 1)).toFixed(1)
-    : "0";
+    return investmentProperties.reduce(
+      (acc, property) => ({
+        totalInvestors: acc.totalInvestors + 0,
+        averageROI: acc.averageROI + Number(property.expected_roi || 0),
+        totalInvestment: acc.totalInvestment + Number(property.asset_value || 0),
+      }),
+      { totalInvestors: 0, averageROI: 0, totalInvestment: 0 }
+    );
+  }, [investmentProperties]);
+
+  const averageROI = useMemo(() => {
+    if (!investmentProperties?.length) return "0";
+    return (totalStats.averageROI / investmentProperties.length).toFixed(1);
+  }, [totalStats.averageROI, investmentProperties]);
 
   // Simulate loading
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
-  });
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -110,14 +116,16 @@ const Investment = () => {
     return (current / total) * 100;
   };
 
+  // ... keep existing code (JSX for stats section)
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto py-24">
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {isLoading ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <Card key={index}>
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <Shimmer className="h-6 w-24" />
                   <Shimmer className="h-4 w-4" />
@@ -137,7 +145,7 @@ const Investment = () => {
                 },
                 {
                   title: "Total Investors",
-                  value: totalStats?.totalInvestors || 0,
+                  value: totalStats.totalInvestors || 0,
                   icon: Users,
                 },
                 {
@@ -147,10 +155,10 @@ const Investment = () => {
                 },
                 {
                   title: "Total Investment",
-                  value: formatCurrency(totalStats?.totalInvestment || 0),
+                  value: formatCurrency(totalStats.totalInvestment || 0),
                   icon: DollarSign,
                 },
-              ].map((stat, index) => (
+              ].map((stat, i) => (
                 <Card
                   key={stat.title}
                   className="transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
@@ -158,8 +166,8 @@ const Investment = () => {
                     opacity: inView ? 1 : 0,
                     transform: inView
                       ? "translateY(0)"
-                      : `translateY(${20 + index * 10}px)`,
-                    transition: `all 0.5s ease-out ${index * 0.1}s`,
+                      : `translateY(${20 + i * 10}px)`,
+                    transition: `all 0.5s ease-out ${i * 0.1}s`,
                   }}
                 >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -180,8 +188,8 @@ const Investment = () => {
         {/* Investment Cards */}
         <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {isLoading ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <Card key={index} className="overflow-hidden animate-pulse">
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden animate-pulse">
                 <Shimmer className="w-full h-48" />
                 <CardHeader>
                   <Shimmer className="h-6 w-3/4 mb-2" />
@@ -190,8 +198,8 @@ const Investment = () => {
                 <CardContent className="space-y-4">
                   <Shimmer className="h-4 w-full" />
                   <div className="grid grid-cols-2 gap-4">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i}>
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <div key={j}>
                         <Shimmer className="h-4 w-24 mb-2" />
                         <Shimmer className="h-6 w-16" />
                       </div>
@@ -227,13 +235,6 @@ const Investment = () => {
                 <Card
                   key={property.id}
                   className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
-                  style={{
-                    opacity: inView ? 1 : 0,
-                    transform: inView
-                      ? "translateY(0)"
-                      : `translateY(${20 + index * 10}px)`,
-                    transition: `all 0.5s ease-out ${index * 0.1}s`,
-                  }}
                 >
                   <ImageGallery imagesId={displayData.image} />
                   <CardHeader>
