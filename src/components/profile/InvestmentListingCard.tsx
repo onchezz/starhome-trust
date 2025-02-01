@@ -2,13 +2,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Button } from "../ui/button";
+import { ImageGallery } from "../investment/ImageGallery";
 
 interface InvestmentListingCardProps {
   id: string;
   name: string;
   description: string;
   asset_value: number;
-  expected_roi: string | number;  // Updated to accept both string and number
+  expected_roi: string | number;
   images: string;
 }
 
@@ -35,11 +36,7 @@ export const InvestmentListingCard = ({
       )}
     >
       <CardHeader className="p-0">
-        <img
-          src={images || "/placeholder.svg"}
-          alt={name}
-          className="w-full h-48 object-cover rounded-t-lg"
-        />
+        <ImageGallery imagesId={images} />
       </CardHeader>
       <CardContent className="p-4">
         <div className="space-y-2">
