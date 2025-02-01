@@ -16,18 +16,12 @@ export const UserInvestments = () => {
 
   const userOwnedInvestments = userInvestments?.filter((investment) => {
     if (!investment?.owner || !address) return false;
-    const normalizeAddress = (addr: string) => addr.toLowerCase().replace("0x", "");
-    const investmentOwnerNormalized = investment.owner.toString().toLowerCase();
-    const userAddressNormalized = address.toString().toLowerCase();
-    return investmentOwnerNormalized === userAddressNormalized;
+    return investment.owner.toLowerCase() === address.toLowerCase();
   });
 
   const userListedInvestments = investmentProperties?.filter((investment) => {
     if (!investment?.investor_id || !address) return false;
-    const normalizeAddress = (addr: string) => addr.toLowerCase().replace("0x", "");
-    const investorIdNormalized = normalizeAddress(investment.investor_id);
-    const userAddressNormalized = normalizeAddress(address);
-    return investorIdNormalized === userAddressNormalized;
+    return investment.investor_id.toLowerCase() === address.toLowerCase();
   });
 
   console.log("Filtered investments:", { userOwnedInvestments, userListedInvestments });
@@ -51,7 +45,8 @@ export const UserInvestments = () => {
     );
   }
 
-  const hasNoInvestments = !userOwnedInvestments?.length && !userListedInvestments?.length;
+  const hasNoInvestments = (!userOwnedInvestments || userOwnedInvestments.length === 0) && 
+                          (!userListedInvestments || userListedInvestments.length === 0);
 
   if (hasNoInvestments) {
     return (
@@ -91,7 +86,7 @@ export const UserInvestments = () => {
                   id={investment.id}
                   name={investment.name}
                   description={investment.description}
-                  asset_value={investment.asset_value}
+                  asset_value={Number(investment.asset_value)}
                   expected_roi={investment.expected_roi}
                   images={investment.images}
                 />
@@ -106,7 +101,7 @@ export const UserInvestments = () => {
                   id={investment.id}
                   name={investment.name}
                   description={investment.description}
-                  asset_value={investment.asset_value}
+                  asset_value={Number(investment.asset_value)}
                   expected_roi={investment.expected_roi}
                   images={investment.images}
                 />
