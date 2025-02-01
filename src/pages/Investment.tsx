@@ -90,6 +90,124 @@ const Investment = () => {
     return (current / total) * 100;
   };
 
+  const renderInvestmentCard = (property: InvestmentAsset) => {
+    const { investmentAmount, setInvestmentAmount, handleInvest } = useInvestment(property.investment_token);
+    
+    const displayData = {
+      ...property,
+      currentInvestment: property.available_staking_amount,
+      totalInvestment: property.asset_value,
+      minInvestment: property.min_investment_amount,
+      roi: property.expected_roi,
+      type: property.investment_type,
+      title: property.name,
+      image: property.images,
+    };
+
+    const progress = calculateProgress(
+      displayData.asset_value - displayData.available_staking_amount,
+      displayData.asset_value
+    );
+
+    return (
+      <Card
+        key={property.id}
+        className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
+      >
+        <ImageGallery imagesId={displayData.image} />
+        <CardHeader>
+          <CardTitle>{displayData.title}</CardTitle>
+          <p className="text-sm text-gray-500">
+            {`${property.location.address}, ${property.location.city}, ${property.location.country}`}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span>Investment Progress</span>
+                <span>
+                  {formatCurrency(
+                    displayData.asset_value -
+                      displayData.available_staking_amount
+                  )}{" "}
+                  of {formatCurrency(displayData.asset_value)}
+                </span>
+              </div>
+              <Progress value={progress} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-gray-500">Number of Investors</p>
+                <p className="font-semibold">0</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Minimum Investment</p>
+                <p className="font-semibold">
+                  {formatCurrency(displayData.minInvestment)}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-500">Expected ROI</p>
+                <p className="font-semibold">{displayData.roi}%</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Property Type</p>
+                <p className="font-semibold">{displayData.type}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Collapsible
+                className="flex-1"
+                open={expandedCardId === property.id}
+                onOpenChange={(open) =>
+                  setExpandedCardId(open ? property.id : null)
+                }
+              >
+                <CollapsibleTrigger asChild>
+                  <Button className="w-full">
+                    {address ? "Invest Now" : "Invest in this property"}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-4 space-y-4">
+                  <Input
+                    type="number"
+                    placeholder={`Min. ${formatCurrency(
+                      displayData.minInvestment
+                    )}`}
+                    value={investmentAmount}
+                    onChange={(e) => setInvestmentAmount(e.target.value)}
+                    min={displayData.minInvestment}
+                  />
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90"
+                    onClick={
+                      address
+                        ? () => handleInvest(property.id)
+                        : handleConnectWallet
+                    }
+                  >
+                    <Wallet className="mr-2 h-4 w-4" />
+                    {address ? "Invest" : "Connect Wallet"}
+                  </Button>
+                </CollapsibleContent>
+              </Collapsible>
+
+              <Link to={`/investment/${property.id}`}>
+                <Button variant="outline">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  More Details
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto py-24">
@@ -185,127 +303,7 @@ const Investment = () => {
               </Card>
             ))
           ) : investmentProperties?.length > 0 ? (
-            investmentProperties.map((property: InvestmentAsset) => {
-              const { investmentAmount, setInvestmentAmount, handleInvest } = useInvestment(property.investment_token);
-              
-              const displayData = {
-                ...property,
-                currentInvestment: property.available_staking_amount,
-                totalInvestment: property.asset_value,
-                minInvestment: property.min_investment_amount,
-                roi: property.expected_roi,
-                type: property.investment_type,
-                title: property.name,
-                image: property.images,
-              };
-
-              const progress = calculateProgress(
-                displayData.asset_value - displayData.available_staking_amount,
-                displayData.asset_value
-              );
-
-              return (
-                <Card
-                  key={property.id}
-                  className="overflow-hidden transform transition-all duration-300 hover:shadow-xl"
-                >
-                  <ImageGallery imagesId={displayData.image} />
-                  <CardHeader>
-                    <CardTitle>{displayData.title}</CardTitle>
-                    <p className="text-sm text-gray-500">
-                      {`${property.location.address}, ${property.location.city}, ${property.location.country}`}
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Investment Progress</span>
-                          <span>
-                            {formatCurrency(
-                              displayData.asset_value -
-                                displayData.available_staking_amount
-                            )}{" "}
-                            of {formatCurrency(displayData.asset_value)}
-                          </span>
-                        </div>
-                        <Progress value={progress} />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-500">Number of Investors</p>
-                          <p className="font-semibold">0</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Minimum Investment</p>
-                          <p className="font-semibold">
-                            {formatCurrency(displayData.minInvestment)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Expected ROI</p>
-                          <p className="font-semibold">{displayData.roi}%</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Property Type</p>
-                          <p className="font-semibold">{displayData.type}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Collapsible
-                          className="flex-1"
-                          open={expandedCardId === property.id}
-                          onOpenChange={(open) =>
-                            setExpandedCardId(open ? property.id : null)
-                          }
-                        >
-                          <CollapsibleTrigger asChild>
-                            <Button className="w-full">
-                              {address
-                                ? "Invest Now"
-                                : "invest in this property"}
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="mt-4 space-y-4">
-                            <Input
-                              type="number"
-                              placeholder={`Min. ${formatCurrency(
-                                displayData.minInvestment
-                              )}`}
-                              value={investmentAmount}
-                              onChange={(e) =>
-                                setInvestmentAmount(e.target.value)
-                              }
-                              min={displayData.minInvestment}
-                            />
-                            <Button
-                              className="w-full bg-primary hover:bg-primary/90"
-                              onClick={
-                                address
-                                  ? () => handleInvest(property.id)
-                                  : handleConnectWallet
-                              }
-                            >
-                              <Wallet className="mr-2 h-4 w-4" />
-                              {address ? "Invest" : "Connect Wallet"}
-                            </Button>
-                          </CollapsibleContent>
-                        </Collapsible>
-
-                        <Link to={`/investment/${property.id}`}>
-                          <Button variant="outline">
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            More Details
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
+            investmentProperties.map((property: InvestmentAsset) => renderInvestmentCard(property))
           ) : (
             <div className="col-span-full">
               <EmptyInvestmentState error={!!investmentPropertiesError} />
