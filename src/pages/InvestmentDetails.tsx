@@ -90,7 +90,7 @@ const InvestmentDetails = () => {
               availableStakingAmount={availableStakingAmount}
               minInvestmentAmount={minInvestmentAmount}
               investmentAmount={investmentAmount.toString()}
-              setInvestmentAmount={setInvestmentAmount}
+              setInvestmentAmount={() => setInvestmentAmount}
               handleInvest={() => handleInvest(id || "")}
             />
 

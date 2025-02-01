@@ -69,28 +69,31 @@ export const useToken = (tokenAddress) => {
     }
 
     try {
+
+    
       // Convert amount to token units based on decimals
       const tokenDecimals = decimals ? Number(decimals.toString()) : 18; // Default to 18 if not available
-      const amountInTokenUnits = Math.floor(Number(amount) * Math.pow(10, tokenDecimals));
+      const amountInToken = Number(amount )* Math.pow(10, 6);
+      //  Math.floor(Number(amount) * Math.pow(10, tokenDecimals));
       
       console.log("Amount before BigInt conversion:", {
         amount,
-        amountInTokenUnits: amountInTokenUnits.toString(),
+        amountInTokenUnits: amountInToken.toString(),
         tokenDecimals
       });
 
       // Convert to BigInt after ensuring we have an integer
-      const amountBigInt = num.toBigInt(amountInTokenUnits.toString());
+      // const amountBigInt = num.toBigInt(amountInTokenUnits.toString());
       
       console.log("Investment amount details:", {
         originalAmount: amount,
         tokenDecimals,
-        amountInTokenUnits: amountInTokenUnits.toString(),
-        amountBigInt: amountBigInt.toString()
+        amountInTokenUnits: amountInToken.toString(),
+        amountBigInt: amountInToken.toString()
       });
 
-      const currentAllowance = allowance ? BigInt(allowance.toString()) : BigInt(0);
-      const currentBalance = balance ? BigInt(balance.toString()) : BigInt(0);
+      const currentAllowance = allowance ? Number(allowance)/ Math.pow(10, 6) : Number(0);
+      const currentBalance = balance ? Number(balance)/ Math.pow(10, 6) : BigInt(0);
 
       console.log("Investment check:", {
         amount:amount,
@@ -103,24 +106,24 @@ export const useToken = (tokenAddress) => {
       }
 
       // Check if current allowance is sufficient
-      if (currentAllowance >= amountBigInt) {
+      if (currentAllowance >= amount) {
         console.log("Sufficient allowance exists:", {
           currentAllowance: currentAllowance.toString(),
-          requiredAmount: amountBigInt.toString()
+          requiredAmount: amountInToken.toString()
         });
         // If allowance is sufficient, proceed directly with investment
-        await investCallback(investmentId, amountInTokenUnits);
+        await investCallback(investmentId, amountInToken);
         return;
       }
 
       // If allowance is insufficient, increase allowance first
       console.log("Insufficient allowance, requesting increase:", {
         currentAllowance: currentAllowance.toString(),
-        requestingApprovalFor: amountBigInt.toString()
+        requestingApprovalFor: amountInToken.toString()
       });
 
       // Calculate the additional allowance needed
-      const additionalAllowance = amountBigInt - currentAllowance;
+      const additionalAllowance = amountInToken - currentAllowance;
       console.log("Increasing allowance by:", additionalAllowance.toString());
 
       // Use increase_allowance instead of approve
@@ -133,7 +136,7 @@ export const useToken = (tokenAddress) => {
       console.log("Allowance increase transaction completed:", tx);
 
       // After increasing allowance, proceed with investment
-      await investCallback(investmentId, amountInTokenUnits);
+      await investCallback(investmentId, amountInToken);
 
     } catch (error) {
       console.error("Error in approveAndInvest:", error);

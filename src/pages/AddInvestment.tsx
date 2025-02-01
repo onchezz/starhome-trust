@@ -43,7 +43,7 @@ const AddInvestment = () => {
   const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
-
+  const [legalDetails, setLegalDetails] = useState<string[]>([]);
   const generateShortUUID = () => {
     const fullUUID = crypto.randomUUID();
     return fullUUID.replace(/-/g, "").substring(0, 21);
@@ -196,7 +196,10 @@ const AddInvestment = () => {
     }
   }, [formData.images, formData.legal_detail]);
 
-  const handleUploadFiles = async (files: File[], isDocuments: boolean = false) => {
+  const handleUploadFiles = async (
+    files: File[],
+    isDocuments: boolean = false
+  ) => {
     // If we already have uploads, reuse them
     if (isDocuments && uploadedDocHash) {
       console.log("Reusing existing document uploads:", uploadedDocHash);
@@ -207,7 +210,7 @@ const AddInvestment = () => {
       return uploadedImageHash;
     }
 
-    console.log(`Starting ${isDocuments ? 'document' : 'image'} upload...`);
+    console.log(`Starting ${isDocuments ? "document" : "image"} upload...`);
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     setTotalUploadSize((prev) => prev + totalSize);
 
@@ -259,7 +262,7 @@ const AddInvestment = () => {
       "highlights",
       "market_analysis",
       "risk_factors",
-      "legal_detail",
+      // "legal_detail",
       "additional_features",
     ];
 
@@ -268,7 +271,9 @@ const AddInvestment = () => {
     );
 
     if (missingFields.length > 0) {
-      toast.error(`Please fill in the following fields: ${missingFields.join(", ")}`);
+      toast.error(
+        `Please fill in the following fields: ${missingFields.join(", ")}`
+      );
       return;
     }
 
@@ -312,7 +317,7 @@ const AddInvestment = () => {
       await handleListInvestmentProperty(processedFormData);
 
       toast.success("Investment created successfully!");
-      
+
       // Don't reset upload states after successful submission
       // This allows reuse of the uploaded files
       setSelectedFiles([]);
@@ -428,7 +433,7 @@ const AddInvestment = () => {
                   />
                 </section>
 
-                <section className="space-y-4">
+                {/* <section className="space-y-4">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Property Features & Analysis
                   </h2>
@@ -440,41 +445,51 @@ const AddInvestment = () => {
                     setRiskFactors={setRiskFactors}
                     setAdditionalFeatures={setAdditionalFeatures}
                   />
-                </section>
+                </section> */}
 
                 <section className="space-y-4">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    Additional Details
+                    Property Features & Analysis
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <CommaInputField
                       label="Tax Benefits"
                       value={formData.tax_benefits || ""}
-                      onChange={(value) => handleInputChange("tax_benefits", value)}
+                      onChange={(value) =>
+                        handleInputChange("tax_benefits", value)
+                      }
                       placeholder="Enter tax benefits, separated by commas"
                     />
                     <CommaInputField
                       label="Highlights"
                       value={formData.highlights || ""}
-                      onChange={(value) => handleInputChange("highlights", value)}
+                      onChange={(value) =>
+                        handleInputChange("highlights", value)
+                      }
                       placeholder="Enter highlights, separated by commas"
                     />
                     <CommaInputField
                       label="Market Analysis"
                       value={formData.market_analysis || ""}
-                      onChange={(value) => handleInputChange("market_analysis", value)}
+                      onChange={(value) =>
+                        handleInputChange("market_analysis", value)
+                      }
                       placeholder="Enter market analysis points, separated by commas"
                     />
                     <CommaInputField
                       label="Risk Factors"
                       value={formData.risk_factors || ""}
-                      onChange={(value) => handleInputChange("risk_factors", value)}
+                      onChange={(value) =>
+                        handleInputChange("risk_factors", value)
+                      }
                       placeholder="Enter risk factors, separated by commas"
                     />
                     <CommaInputField
                       label="Additional Features"
                       value={formData.additional_features || ""}
-                      onChange={(value) => handleInputChange("additional_features", value)}
+                      onChange={(value) =>
+                        handleInputChange("additional_features", value)
+                      }
                       placeholder="Enter additional features, separated by commas"
                     />
                   </div>

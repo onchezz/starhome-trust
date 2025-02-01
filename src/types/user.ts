@@ -64,7 +64,7 @@ export class UserConverter {
           phone: "",
           email: "",
           profile_image: "",
-          is_verified: false,
+          is_verified: true,
           is_authorized: false,
           is_agent: false,
           is_investor: false,

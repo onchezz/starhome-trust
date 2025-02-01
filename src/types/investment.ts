@@ -114,14 +114,14 @@ export class InvestmentAssetConverter {
                 investor_id: this.addressToString(starknetProperty.investor_id),
                 owner: this.addressToString(starknetProperty.owner),
                 construction_status: this.feltToString(starknetProperty.construction_status),
-                asset_value: Number(starknetProperty.asset_value?.value || starknetProperty.asset_value || 0),
-                available_staking_amount: Number(starknetProperty.available_staking_amount?.value || starknetProperty.available_staking_amount || 0),
+                asset_value: Number(starknetProperty.asset_value?.value || starknetProperty.asset_value || 0)/ Math.pow(10, 6),
+                available_staking_amount: Number(starknetProperty.available_staking_amount?.value || starknetProperty.available_staking_amount || 0)/Math.pow(10, 6),
                 investment_type: this.feltToString(starknetProperty.investment_type),
                 construction_year: Number(starknetProperty.construction_year?.value || starknetProperty.construction_year || 0),
-                property_price: Number(starknetProperty.property_price?.value || starknetProperty.property_price || 0),
+                property_price: Number(starknetProperty.property_price?.value || starknetProperty.property_price || 0)/ Math.pow(10, 6),
                 expected_roi: this.feltToString(starknetProperty.expected_roi),
-                rental_income: Number(starknetProperty.rental_income?.value || starknetProperty.rental_income || 0),
-                maintenance_costs: Number(starknetProperty.maintenance_costs?.value || starknetProperty.maintenance_costs || 0),
+                rental_income: Number(starknetProperty.rental_income?.value || starknetProperty.rental_income || 0)/ Math.pow(10, 6),
+                maintenance_costs: Number(starknetProperty.maintenance_costs?.value || starknetProperty.maintenance_costs || 0)/ Math.pow(10, 6),
                 tax_benefits: this.feltToString(starknetProperty.tax_benefits),
                 highlights: starknetProperty.highlights || '',
                 market_analysis: starknetProperty.market_analysis || '',
@@ -130,7 +130,7 @@ export class InvestmentAssetConverter {
                 additional_features: starknetProperty.additional_features || '',
                 images: starknetProperty.images || '',
                 investment_token: this.addressToString(starknetProperty.investment_token),
-                min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)
+                min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)/ Math.pow(10, 6)
             };
         } catch (error) {
             console.error("Error converting Starknet property:", error, starknetProperty);
@@ -156,14 +156,14 @@ export class InvestmentAssetConverter {
             investor_id: address || formData.investor_id,
             owner: address || formData.owner,
             construction_status: formData.construction_status,
-            asset_value: formData.available_staking_amount,
-            available_staking_amount: formData.available_staking_amount,
+            asset_value: formData.available_staking_amount * Math.pow(10, 6),
+            available_staking_amount: formData.available_staking_amount * Math.pow(10, 6),
             investment_type: formData.investment_type,
             construction_year: formData.construction_year,
             property_price: formData.property_price || formData.available_staking_amount,
             expected_roi: formData.expected_roi,
-            rental_income: formData.rental_income,
-            maintenance_costs: formData.maintenance_costs,
+            rental_income: formData.rental_income* Math.pow(10, 6),
+            maintenance_costs: formData.maintenance_costs * Math.pow(10, 6),
             tax_benefits: formData.tax_benefits || "none yet",
             highlights: formData.highlights,
             market_analysis: formData.market_analysis,
@@ -172,7 +172,7 @@ export class InvestmentAssetConverter {
             additional_features: formData.additional_features,
             images: formData.images,
             investment_token: formData.investment_token,
-            min_investment_amount: formData.min_investment_amount
+            min_investment_amount: formData.min_investment_amount* Math.pow(10, 6)
         };
     }
 

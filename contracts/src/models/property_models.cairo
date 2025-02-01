@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-use openzeppelin::token::erc20::interface::{IERC20Dispatcher};
+// use openzeppelin::token::erc20::interface::{IERC20Dispatcher};
 use core::byte_array::ByteArray;
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
@@ -33,9 +33,8 @@ pub struct Property {
     pub country: felt252,
     pub latitude: felt252,
     pub longitude: felt252,
-    pub price: u64,
-    // pub owner: ContractAddress,
-    pub asking_price: u64,
+    pub price: u256,
+    pub asking_price: u256,
     pub currency: felt252,
     pub area: u64,
     pub bedrooms: u64,
@@ -57,18 +56,6 @@ pub struct Property {
     pub asset_token: ContractAddress,
 }
 
-
-// #[derive(Copy, Drop, Serde, starknet::Store)]
-// pub struct TrustAssetProperty {
-//     pub id: u256,
-//     pub property_id: felt252,
-//     pub owner: ContractAddress,
-//     pub price: u256,
-//     pub payment_token: IERC20Dispatcher,
-//     pub total_amount: u256,
-//     pub available_staking_amount: u256,
-//     pub is_active: bool,
-// }
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 pub struct Investment {

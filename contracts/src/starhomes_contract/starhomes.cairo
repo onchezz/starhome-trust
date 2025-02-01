@@ -128,7 +128,7 @@ pub mod StarhomesContract {
             self.properties.edit_listed_investment_property(investment_id, investment)
         }
 
-        fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u64) {
+        fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u256) {
             assert(
                 self.properties._is_investment_added(investment_id) == true, 'Investment not added',
             );

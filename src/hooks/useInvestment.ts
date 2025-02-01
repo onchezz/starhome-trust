@@ -29,7 +29,7 @@ export const useInvestment = (investmentToken: string | undefined) => {
       });
 
       await approveAndInvest(
-        investmentAmount,
+        Number(investmentAmount),
         investmentId,
         handleInvestInProperty
       );

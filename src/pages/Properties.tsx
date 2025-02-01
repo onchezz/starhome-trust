@@ -153,7 +153,7 @@ const Properties = () => {
       return <EmptyState />;
     }
 
-    return <LoadingState />;
+    return !properties ? <LoadingState /> : <EmptyState />;
   };
 
   return (

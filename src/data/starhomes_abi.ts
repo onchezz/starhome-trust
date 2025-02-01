@@ -23,6 +23,20 @@ export const starhomes_abi =[
     ]
   },
   {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
     "type": "enum",
     "name": "core::bool",
     "variants": [
@@ -78,11 +92,11 @@ export const starhomes_abi =[
       },
       {
         "name": "price",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "asking_price",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "currency",
@@ -234,11 +248,11 @@ export const starhomes_abi =[
       },
       {
         "name": "asset_value",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "available_staking_amount",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "investment_type",
@@ -250,7 +264,7 @@ export const starhomes_abi =[
       },
       {
         "name": "property_price",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "expected_roi",
@@ -258,11 +272,11 @@ export const starhomes_abi =[
       },
       {
         "name": "rental_income",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "maintenance_costs",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       },
       {
         "name": "tax_benefits",
@@ -298,7 +312,7 @@ export const starhomes_abi =[
       },
       {
         "name": "min_investment_amount",
-        "type": "core::integer::u64"
+        "type": "core::integer::u256"
       }
     ]
   },
@@ -344,7 +358,7 @@ export const starhomes_abi =[
           },
           {
             "name": "amount",
-            "type": "core::integer::u64"
+            "type": "core::integer::u256"
           }
         ],
         "outputs": [],
@@ -968,20 +982,6 @@ export const starhomes_abi =[
     ]
   },
   {
-    "type": "struct",
-    "name": "core::integer::u256",
-    "members": [
-      {
-        "name": "low",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "high",
-        "type": "core::integer::u128"
-      }
-    ]
-  },
-  {
     "type": "event",
     "name": "starhomes::models::contract_events::Deposit",
     "kind": "struct",
@@ -1110,7 +1110,7 @@ export const starhomes_abi =[
       },
       {
         "name": "price",
-        "type": "core::integer::u64",
+        "type": "core::integer::u256",
         "kind": "data"
       },
       {
@@ -1142,7 +1142,7 @@ export const starhomes_abi =[
       },
       {
         "name": "asset_price",
-        "type": "core::integer::u64",
+        "type": "core::integer::u256",
         "kind": "data"
       },
       {
