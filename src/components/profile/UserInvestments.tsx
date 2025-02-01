@@ -116,8 +116,8 @@ export const UserInvestments = () => {
       <CardContent>
         <Tabs defaultValue="owned" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="owned">Investments Made</TabsTrigger>
-            <TabsTrigger value="listed">Investments Listed</TabsTrigger>
+            <TabsTrigger value="owned">Investments Listed</TabsTrigger>
+            <TabsTrigger value="listed">Investments Made</TabsTrigger>
           </TabsList>
           <TabsContent value="owned">
             <div className="space-y-4 mt-4">
