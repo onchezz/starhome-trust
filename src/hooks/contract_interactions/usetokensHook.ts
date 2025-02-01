@@ -72,13 +72,21 @@ export const useToken = (tokenAddress: string) => {
     try {
       // Convert amount to token units based on decimals
       const tokenDecimals = decimals ? Number(decimals.toString()) : 18; // Default to 18 if not available
-      const amountInTokenUnits = Number(amount) * Math.pow(10, tokenDecimals);
-      const amountBigInt = num.toBigInt(Math.floor(amountInTokenUnits).toString());
+      const amountInTokenUnits = Math.floor(Number(amount) * Math.pow(10, tokenDecimals));
+      
+      console.log("Amount before BigInt conversion:", {
+        amount,
+        amountInTokenUnits: amountInTokenUnits.toString(),
+        tokenDecimals
+      });
+
+      // Convert to BigInt after ensuring we have an integer
+      const amountBigInt = num.toBigInt(amountInTokenUnits.toString());
       
       console.log("Investment amount details:", {
         originalAmount: amount,
         tokenDecimals,
-        amountInTokenUnits,
+        amountInTokenUnits: amountInTokenUnits.toString(),
         amountBigInt: amountBigInt.toString()
       });
 
@@ -103,7 +111,7 @@ export const useToken = (tokenAddress: string) => {
           requiredAmount: amountBigInt.toString()
         });
         // If allowance is sufficient, proceed directly with investment
-        await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
+        await investCallback(investmentId, amountInTokenUnits.toString());
         return;
       }
 
@@ -117,7 +125,7 @@ export const useToken = (tokenAddress: string) => {
       console.log("Approval transaction completed:", tx);
 
       // After approval, proceed with investment
-      await investCallback(investmentId, Math.floor(amountInTokenUnits).toString());
+      await investCallback(investmentId, amountInTokenUnits.toString());
 
     } catch (error) {
       console.error("Error in approveAndInvest:", error);
