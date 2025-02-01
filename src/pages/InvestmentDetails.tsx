@@ -1,6 +1,5 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useAccount } from "@starknet-react/core";
 import { shortString } from "starknet";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useInvestment } from "@/hooks/useInvestment";
@@ -15,9 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const InvestmentDetails = () => {
   const { id } = useParams();
   const { investment, isLoading } = useInvestmentAssetReadById(id || "");
-  const { investmentAmount, setInvestmentAmount, handleInvest } = useInvestment(
-    investment?.investment_token
-  );
+  const { 
+    investmentAmount, 
+    setInvestmentAmount, 
+    handleInvest 
+  } = useInvestment(investment?.investment_token);
 
   const getBigIntValue = (value: any): string => {
     if (!value) return "";

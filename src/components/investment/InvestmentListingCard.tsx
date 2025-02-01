@@ -27,13 +27,7 @@ export const InvestmentListingCard = ({
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  // Convert ROI to number for display, fallback to 0 if invalid
-  const roiValue = typeof expected_roi === 'string' 
-    ? parseFloat(expected_roi) || 0 
-    : expected_roi;
-
   const handleEdit = () => {
-    // Combine all props into a single investment object
     const investmentData: InvestmentAsset = {
       id,
       name,
@@ -44,11 +38,9 @@ export const InvestmentListingCard = ({
       ...rest
     } as InvestmentAsset;
 
-    // Navigate to AddInvestment with state
     navigate('/add-investment', { 
       state: { 
-        mode: 'edit',
-        investmentData 
+        investmentToUpdate: investmentData 
       }
     });
   };
@@ -70,7 +62,7 @@ export const InvestmentListingCard = ({
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium">Value: ${asset_value.toLocaleString()}</p>
-              <p className="text-sm font-medium">ROI: {roiValue}%</p>
+              <p className="text-sm font-medium">ROI: {expected_roi}%</p>
             </div>
             <Button variant="outline" size="sm" onClick={handleEdit}>
               Update

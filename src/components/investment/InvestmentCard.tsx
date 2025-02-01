@@ -28,9 +28,11 @@ export const InvestmentCard = ({
   handleConnectWallet,
   address,
 }: InvestmentCardProps) => {
-  const { investmentAmount, setInvestmentAmount, handleInvest } = useInvestment(
-    property.investment_token
-  );
+  const { 
+    investmentAmount, 
+    setInvestmentAmount, 
+    handleInvest 
+  } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
