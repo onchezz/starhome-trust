@@ -115,16 +115,26 @@ export const useToken = (tokenAddress: string) => {
         return;
       }
 
-      // If allowance is insufficient, approve first
-      console.log("Insufficient allowance, requesting approval:", {
+      // If allowance is insufficient, increase allowance first
+      console.log("Insufficient allowance, requesting increase:", {
         currentAllowance: currentAllowance.toString(),
         requestingApprovalFor: amountBigInt.toString()
       });
-      const approveCall = contract.populate("approve", [formattedSpender as `0x${string}`, amountBigInt]);
-      const tx = await sendAsync([approveCall]);
-      console.log("Approval transaction completed:", tx);
 
-      // After approval, proceed with investment
+      // Calculate the additional allowance needed
+      const additionalAllowance = amountBigInt - currentAllowance;
+      console.log("Increasing allowance by:", additionalAllowance.toString());
+
+      // Use increase_allowance instead of approve
+      const increaseAllowanceCall = contract.populate("increase_allowance", [
+        formattedSpender as `0x${string}`, 
+        additionalAllowance
+      ]);
+
+      const tx = await sendAsync([increaseAllowanceCall]);
+      console.log("Allowance increase transaction completed:", tx);
+
+      // After increasing allowance, proceed with investment
       await investCallback(investmentId, amountInTokenUnits.toString());
 
     } catch (error) {
