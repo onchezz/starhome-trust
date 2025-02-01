@@ -52,8 +52,6 @@ const AddInvestment = () => {
     longitude: "",
   };
 
-  console.log("Initial investment data:", initialInvestmentData);
-
   // Initialize form data with all fields
   const [formData, setFormData] = useState<InvestmentAsset>(
     editMode && initialInvestmentData 
@@ -65,13 +63,23 @@ const AddInvestment = () => {
           additional_features: initialInvestmentData.additional_features || "",
           tax_benefits: initialInvestmentData.tax_benefits || "",
           market_analysis: initialInvestmentData.market_analysis || "",
-          rental_income: initialInvestmentData.rental_income || 0,
-          maintenance_costs: initialInvestmentData.maintenance_costs || 0,
-          min_investment_amount: initialInvestmentData.min_investment_amount || 0,
+          rental_income: Number(initialInvestmentData.rental_income) || 0,
+          maintenance_costs: Number(initialInvestmentData.maintenance_costs) || 0,
+          min_investment_amount: Number(initialInvestmentData.min_investment_amount) || 0,
           investment_token: initialInvestmentData.investment_token || "",
           construction_status: initialInvestmentData.construction_status || "",
-          size: initialInvestmentData.size || 0,
+          size: Number(initialInvestmentData.size) || 0,
           is_active: initialInvestmentData.is_active ?? true,
+          property_price: Number(initialInvestmentData.property_price) || 0,
+          asset_value: Number(initialInvestmentData.asset_value) || 0,
+          available_staking_amount: Number(initialInvestmentData.available_staking_amount) || 0,
+          construction_year: Number(initialInvestmentData.construction_year) || new Date().getFullYear(),
+          legal_detail: initialInvestmentData.legal_detail || "",
+          images: initialInvestmentData.images || "",
+          investment_type: initialInvestmentData.investment_type || "",
+          expected_roi: initialInvestmentData.expected_roi || "",
+          investor_id: initialInvestmentData.investor_id || address || "",
+          owner: initialInvestmentData.owner || address || "",
         }
       : {
           id: generateShortUUID(),
@@ -86,7 +94,7 @@ const AddInvestment = () => {
           asset_value: 0,
           available_staking_amount: 0,
           investment_type: "",
-          construction_year: 0,
+          construction_year: new Date().getFullYear(),
           property_price: 0,
           expected_roi: "",
           rental_income: 0,
@@ -102,17 +110,6 @@ const AddInvestment = () => {
           min_investment_amount: 0,
         }
   );
-
-  // Initialize state arrays from comma-separated strings if in edit mode
-  useEffect(() => {
-    if (editMode && initialInvestmentData) {
-      console.log("Setting initial values for arrays:", initialInvestmentData);
-      setHighlights(initialInvestmentData.highlights?.split(',').filter(Boolean) || []);
-      setRiskFactors(initialInvestmentData.risk_factors?.split(',').filter(Boolean) || []);
-      setAdditionalFeatures(initialInvestmentData.additional_features?.split(',').filter(Boolean) || []);
-      setLegalDetails(initialInvestmentData.legal_detail?.split(',').filter(Boolean) || []);
-    }
-  }, [editMode, initialInvestmentData]);
 
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -223,13 +220,22 @@ const AddInvestment = () => {
   };
 
   useEffect(() => {
-    if (formData.images) {
-      setUploadedImageHash(formData.images);
+    if (editMode && initialInvestmentData) {
+      console.log("Setting initial values for arrays:", initialInvestmentData);
+      setHighlights(initialInvestmentData.highlights?.split(',').filter(Boolean) || []);
+      setRiskFactors(initialInvestmentData.risk_factors?.split(',').filter(Boolean) || []);
+      setAdditionalFeatures(initialInvestmentData.additional_features?.split(',').filter(Boolean) || []);
+      setLegalDetails(initialInvestmentData.legal_detail?.split(',').filter(Boolean) || []);
+      
+      // Set uploaded hashes if they exist
+      if (initialInvestmentData.images) {
+        setUploadedImageHash(initialInvestmentData.images);
+      }
+      if (initialInvestmentData.legal_detail) {
+        setUploadedDocHash(initialInvestmentData.legal_detail);
+      }
     }
-    if (formData.legal_detail) {
-      setUploadedDocHash(formData.legal_detail);
-    }
-  }, [formData.images, formData.legal_detail]);
+  }, [editMode, initialInvestmentData]);
 
   const handleUploadFiles = async (
     files: File[],
@@ -359,6 +365,7 @@ const AddInvestment = () => {
                   <BasicInformation
                     formData={formData}
                     handleInputChange={handleInputChange}
+                    editMode={editMode}
                   />
                 </section>
 
@@ -437,6 +444,7 @@ const AddInvestment = () => {
                   <FinancialDetails
                     formData={formData}
                     handleInputChange={handleInputChange}
+                    editMode={editMode}
                   />
                 </section>
 
@@ -458,30 +466,35 @@ const AddInvestment = () => {
                       value={formData.tax_benefits || ""}
                       onChange={(value) => handleInputChange("tax_benefits", value)}
                       placeholder="Enter tax benefits, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Highlights"
                       value={formData.highlights || ""}
                       onChange={(value) => handleInputChange("highlights", value)}
                       placeholder="Enter highlights, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Market Analysis"
                       value={formData.market_analysis || ""}
                       onChange={(value) => handleInputChange("market_analysis", value)}
                       placeholder="Enter market analysis points, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Risk Factors"
                       value={formData.risk_factors || ""}
                       onChange={(value) => handleInputChange("risk_factors", value)}
                       placeholder="Enter risk factors, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Additional Features"
                       value={formData.additional_features || ""}
                       onChange={(value) => handleInputChange("additional_features", value)}
                       placeholder="Enter additional features, separated by commas"
+                      disabled={editMode}
                     />
                   </div>
                 </section>
