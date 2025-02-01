@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAccount } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PinataSDK } from "pinata-web3";
 import { Loader2, LoaderCircle } from "lucide-react";
@@ -18,6 +18,7 @@ import MapLocationPicker from "@/components/MapLocationPicker";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import CommaInputField from "@/components/investment/CommaInputField";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -25,9 +26,91 @@ const pinata = new PinataSDK({
   pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
 });
 
+// Move generateShortUUID function definition before its usage
+const generateShortUUID = () => {
+  const fullUUID = crypto.randomUUID();
+  return fullUUID.replace(/-/g, "").substring(0, 21);
+};
+
 const AddInvestment = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { address } = useAccount();
-  const { handleListInvestmentProperty, contractStatus } = usePropertyCreate();
+  const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
+  
+  const editMode = location.state?.mode === 'edit';
+  const initialInvestmentData = location.state?.investmentData;
+
+  console.log("Initial investment data:", initialInvestmentData);
+
+  const defaultLocation = {
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    latitude: "",
+    longitude: "",
+  };
+
+  // Initialize form data with all fields
+  const [formData, setFormData] = useState<InvestmentAsset>(
+    editMode && initialInvestmentData 
+      ? {
+          ...initialInvestmentData,
+          location: initialInvestmentData.location || defaultLocation,
+          highlights: initialInvestmentData.highlights || "",
+          risk_factors: initialInvestmentData.risk_factors || "",
+          additional_features: initialInvestmentData.additional_features || "",
+          tax_benefits: initialInvestmentData.tax_benefits || "",
+          market_analysis: initialInvestmentData.market_analysis || "",
+          rental_income: Number(initialInvestmentData.rental_income) || 0,
+          maintenance_costs: Number(initialInvestmentData.maintenance_costs) || 0,
+          min_investment_amount: Number(initialInvestmentData.min_investment_amount) || 0,
+          investment_token: initialInvestmentData.investment_token || "",
+          construction_status: initialInvestmentData.construction_status || "",
+          size: Number(initialInvestmentData.size) || 0,
+          is_active: initialInvestmentData.is_active ?? true,
+          property_price: Number(initialInvestmentData.property_price) || 0,
+          asset_value: Number(initialInvestmentData.asset_value) || 0,
+          available_staking_amount: Number(initialInvestmentData.available_staking_amount) || 0,
+          construction_year: Number(initialInvestmentData.construction_year) || new Date().getFullYear(),
+          legal_detail: initialInvestmentData.legal_detail || "",
+          images: initialInvestmentData.images || "",
+          investment_type: initialInvestmentData.investment_type || "",
+          expected_roi: initialInvestmentData.expected_roi || "",
+          investor_id: initialInvestmentData.investor_id || address || "",
+          owner: initialInvestmentData.owner || address || "",
+        }
+      : {
+          id: generateShortUUID(),
+          name: "",
+          description: "",
+          is_active: true,
+          location: defaultLocation,
+          size: 0,
+          investor_id: address || "",
+          owner: address || "",
+          construction_status: "",
+          asset_value: 0,
+          available_staking_amount: 0,
+          investment_type: "",
+          construction_year: new Date().getFullYear(),
+          property_price: 0,
+          expected_roi: "",
+          rental_income: 0,
+          maintenance_costs: 0,
+          tax_benefits: "",
+          highlights: "",
+          market_analysis: "",
+          risk_factors: "",
+          legal_detail: "",
+          additional_features: "",
+          images: "",
+          investment_token: "",
+          min_investment_amount: 0,
+        }
+  );
+
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<File[]>([]);
@@ -38,54 +121,15 @@ const AddInvestment = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
-
-  // State for bullet points
+  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
+  const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
   const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
   const [legalDetails, setLegalDetails] = useState<string[]>([]);
-  const generateShortUUID = () => {
-    const fullUUID = crypto.randomUUID();
-    return fullUUID.replace(/-/g, "").substring(0, 21);
-  };
-
-  const [formData, setFormData] = useState<InvestmentAsset>({
-    id: generateShortUUID(),
-    name: "",
-    description: "",
-    is_active: true,
-    location: {
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      latitude: "",
-      longitude: "",
-    },
-    size: 0,
-    investor_id: address || "",
-    owner: address || "",
-    construction_status: "",
-    asset_value: 0,
-    available_staking_amount: 0,
-    investment_type: "",
-    construction_year: 0,
-    property_price: 0,
-    expected_roi: "",
-    rental_income: 0,
-    maintenance_costs: 0,
-    tax_benefits: "",
-    highlights: "",
-    market_analysis: "",
-    risk_factors: "",
-    legal_detail: "",
-    additional_features: "",
-    images: "",
-    investment_token: "",
-    min_investment_amount: 0,
-  });
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
+    console.log(`Updating field ${field} with value:`, value);
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -97,7 +141,7 @@ const AddInvestment = () => {
     state: string;
     country: string;
   }) => {
-    // Trim the address to only include the street part
+    console.log("Location selected:", location);
     const addressParts = location.address.split(",");
     const streetAddress = addressParts[0].trim();
 
@@ -112,8 +156,6 @@ const AddInvestment = () => {
         longitude: location.longitude,
       },
     }));
-    console.log("[AddInvestment] Location selected:", location);
-    console.log("[AddInvestment] Trimmed address:", streetAddress);
   };
 
   const validateFiles = (files: File[], isDocument: boolean = false) => {
@@ -177,40 +219,35 @@ const AddInvestment = () => {
     }
   };
 
-  // Add new state for tracking upload status
-  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(
-    null
-  );
-  const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
-
-  // Add effect to check for existing uploads when form data changes
   useEffect(() => {
-    console.log("Checking for existing uploads in form data...");
-    if (formData.images) {
-      console.log("Found existing image uploads:", formData.images);
-      setUploadedImageHash(formData.images);
+    if (editMode && initialInvestmentData) {
+      console.log("Setting initial values for arrays:", initialInvestmentData);
+      setHighlights(initialInvestmentData.highlights?.split(',').filter(Boolean) || []);
+      setRiskFactors(initialInvestmentData.risk_factors?.split(',').filter(Boolean) || []);
+      setAdditionalFeatures(initialInvestmentData.additional_features?.split(',').filter(Boolean) || []);
+      setLegalDetails(initialInvestmentData.legal_detail?.split(',').filter(Boolean) || []);
+      
+      // Set uploaded hashes if they exist
+      if (initialInvestmentData.images) {
+        setUploadedImageHash(initialInvestmentData.images);
+      }
+      if (initialInvestmentData.legal_detail) {
+        setUploadedDocHash(initialInvestmentData.legal_detail);
+      }
     }
-    if (formData.legal_detail) {
-      console.log("Found existing document uploads:", formData.legal_detail);
-      setUploadedDocHash(formData.legal_detail);
-    }
-  }, [formData.images, formData.legal_detail]);
+  }, [editMode, initialInvestmentData]);
 
   const handleUploadFiles = async (
     files: File[],
     isDocuments: boolean = false
   ) => {
-    // If we already have uploads, reuse them
     if (isDocuments && uploadedDocHash) {
-      console.log("Reusing existing document uploads:", uploadedDocHash);
       return uploadedDocHash;
     }
     if (!isDocuments && uploadedImageHash) {
-      console.log("Reusing existing image uploads:", uploadedImageHash);
       return uploadedImageHash;
     }
 
-    console.log(`Starting ${isDocuments ? "document" : "image"} upload...`);
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     setTotalUploadSize((prev) => prev + totalSize);
 
@@ -220,11 +257,6 @@ const AddInvestment = () => {
         pinata,
         formData.id || "",
         isDocuments ? "documents" : "images"
-      );
-
-      console.log(
-        `Upload successful for ${isDocuments ? "documents" : "images"}:`,
-        result
       );
 
       if (isDocuments) {
@@ -240,10 +272,6 @@ const AddInvestment = () => {
       );
       return result;
     } catch (error) {
-      console.error(
-        `Error uploading ${isDocuments ? "documents" : "images"}:`,
-        error
-      );
       toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
       throw error;
     }
@@ -256,13 +284,11 @@ const AddInvestment = () => {
       return;
     }
 
-    // Validate required fields
     const requiredFields = [
       "tax_benefits",
       "highlights",
       "market_analysis",
       "risk_factors",
-      // "legal_detail",
       "additional_features",
     ];
 
@@ -279,24 +305,14 @@ const AddInvestment = () => {
 
     setIsUploading(true);
     try {
-      console.log("Starting form submission with data:", formData);
-
-      // Handle image uploads if not already uploaded
       let imagesHash = uploadedImageHash;
       if (selectedFiles.length > 0 && !uploadedImageHash) {
-        console.log("Uploading images...");
         imagesHash = await handleUploadFiles(selectedFiles, false);
-      } else if (uploadedImageHash) {
-        console.log("Reusing existing image hash:", uploadedImageHash);
       }
 
-      // Handle document uploads if not already uploaded
       let docsHash = uploadedDocHash;
       if (selectedDocs.length > 0 && !uploadedDocHash) {
-        console.log("Uploading documents...");
         docsHash = await handleUploadFiles(selectedDocs, true);
-      } else if (uploadedDocHash) {
-        console.log("Reusing existing document hash:", uploadedDocHash);
       }
 
       const processedFormData: InvestmentAsset = {
@@ -305,31 +321,23 @@ const AddInvestment = () => {
         additional_features: additionalFeatures.join(","),
         risk_factors: riskFactors.join(","),
         highlights: highlights.join(","),
-        images: imagesHash || "",
-        legal_detail: docsHash || "",
+        images: imagesHash || formData.images,
+        legal_detail: docsHash || formData.legal_detail,
       };
 
-      console.log(
-        "Submitting investment with processed data:",
-        processedFormData
-      );
+      if (editMode) {
+        await handleEditInvestmentProperty(formData.id, processedFormData);
+        toast.success("Investment updated successfully!");
+      } else {
+        await handleListInvestmentProperty(processedFormData);
+        toast.success("Investment created successfully!");
+      }
 
-      await handleListInvestmentProperty(processedFormData);
+      navigate('/profile');
 
-      toast.success("Investment created successfully!");
-
-      // Don't reset upload states after successful submission
-      // This allows reuse of the uploaded files
-      setSelectedFiles([]);
-      setSelectedDocs([]);
-      setUploadProgress(0);
-      setUploadedFiles(0);
-      setUploadedSize(0);
-      setTotalUploadSize(0);
     } catch (error) {
-      console.error("Error creating investment:", error);
       toast.error(
-        "Failed to create investment. Your uploads are saved and won't be repeated if you try again."
+        `Failed to ${editMode ? 'update' : 'create'} investment. Your uploads are saved and won't be repeated if you try again.`
       );
     } finally {
       setIsUploading(false);
@@ -340,7 +348,13 @@ const AddInvestment = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80 dark:from-slate-900 dark:to-slate-800/90 transition-colors duration-300">
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <Card className="animate-fade-in backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-none shadow-xl">
-          <InvestmentFormHeader />
+          <CardHeader className="relative border-b dark:border-gray-800">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+                {editMode ? 'Update Investment Property' : 'Create New Investment Property'}
+              </CardTitle>
+            </div>
+          </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-8">
@@ -351,6 +365,7 @@ const AddInvestment = () => {
                   <BasicInformation
                     formData={formData}
                     handleInputChange={handleInputChange}
+                    editMode={editMode}
                   />
                 </section>
 
@@ -370,7 +385,6 @@ const AddInvestment = () => {
                     }
                   />
 
-                  {/* Display selected location details */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div className="space-y-2">
                       <Label>Address</Label>
@@ -430,67 +444,57 @@ const AddInvestment = () => {
                   <FinancialDetails
                     formData={formData}
                     handleInputChange={handleInputChange}
+                    editMode={editMode}
                   />
                 </section>
-
-                {/* <section className="space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    Property Features & Analysis
-                  </h2>
-                  <BulletPointsGrid
-                    highlights={highlights}
-                    riskFactors={riskFactors}
-                    additionalFeatures={additionalFeatures}
-                    setHighlights={setHighlights}
-                    setRiskFactors={setRiskFactors}
-                    setAdditionalFeatures={setAdditionalFeatures}
-                  />
-                </section> */}
 
                 <section className="space-y-4">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Property Features & Analysis
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Investment Token</Label>
+                      <Input
+                        value={formData.investment_token}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
                     <CommaInputField
                       label="Tax Benefits"
                       value={formData.tax_benefits || ""}
-                      onChange={(value) =>
-                        handleInputChange("tax_benefits", value)
-                      }
+                      onChange={(value) => handleInputChange("tax_benefits", value)}
                       placeholder="Enter tax benefits, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Highlights"
                       value={formData.highlights || ""}
-                      onChange={(value) =>
-                        handleInputChange("highlights", value)
-                      }
+                      onChange={(value) => handleInputChange("highlights", value)}
                       placeholder="Enter highlights, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Market Analysis"
                       value={formData.market_analysis || ""}
-                      onChange={(value) =>
-                        handleInputChange("market_analysis", value)
-                      }
+                      onChange={(value) => handleInputChange("market_analysis", value)}
                       placeholder="Enter market analysis points, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Risk Factors"
                       value={formData.risk_factors || ""}
-                      onChange={(value) =>
-                        handleInputChange("risk_factors", value)
-                      }
+                      onChange={(value) => handleInputChange("risk_factors", value)}
                       placeholder="Enter risk factors, separated by commas"
+                      disabled={editMode}
                     />
                     <CommaInputField
                       label="Additional Features"
                       value={formData.additional_features || ""}
-                      onChange={(value) =>
-                        handleInputChange("additional_features", value)
-                      }
+                      onChange={(value) => handleInputChange("additional_features", value)}
                       placeholder="Enter additional features, separated by commas"
+                      disabled={editMode}
                     />
                   </div>
                 </section>
@@ -528,7 +532,7 @@ const AddInvestment = () => {
                     <span>Processing...</span>
                   </div>
                 ) : (
-                  "Create Investment"
+                  editMode ? "Update Investment" : "Create Investment"
                 )}
               </Button>
             </form>
@@ -536,7 +540,6 @@ const AddInvestment = () => {
         </Card>
       </div>
 
-      {/* Preview Modal */}
       {showPreviewModal && previewUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white dark:bg-slate-900 rounded-lg p-4 w-full max-w-4xl max-h-[90vh] flex flex-col">

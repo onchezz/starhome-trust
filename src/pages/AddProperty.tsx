@@ -1,83 +1,87 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAccount } from "@starknet-react/core";
-import { Property } from "@/types/property";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
-import { Loader2 } from "lucide-react";
+import { PinataSDK } from "pinata-web3";
+import { Loader2, LoaderCircle } from "lucide-react";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
-import BasicInformation from "@/components/property/form/BasicInformation";
-import PricingInformation from "@/components/property/form/PricingInformation";
-import PropertyFeatures from "@/components/property/form/PropertyFeatures";
-import PropertyLocation from "@/components/property/form/PropertyLocation";
-import ImageUploader from "@/components/property/form/ImageUploader";
-import { useParams } from "react-router-dom";
-import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { handleImageUpload } from "@/utils/uploadUtils";
+import { InvestmentAsset } from "@/types/investment";
+import { useNavigate } from "react-router-dom";
+import BasicInformation from "@/components/investment/BasicInformation";
+import FinancialDetails from "@/components/investment/FinancialDetails";
+import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
+import UploadGrid from "@/components/investment/UploadGrid";
+import { handleFileUpload } from "@/utils/uploadUtils";
+import MapLocationPicker from "@/components/MapLocationPicker";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import CommaInputField from "@/components/investment/CommaInputField";
+
+const pinata = new PinataSDK({
+  pinataJwt: import.meta.env.VITE_PINATA_JWT,
+  pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
+});
 
 const generateShortUUID = () => {
-  const fullUUID = uuidv4();
+  const fullUUID = crypto.randomUUID();
   return fullUUID.replace(/-/g, "").substring(0, 21);
 };
 
-const CreateProperty = () => {
-  const { id } = useParams();
-  const { address, status } = useAccount();
-  const { handleListSaleProperty, contractStatus } = usePropertyCreate();
-  const {
-    saleProperties: properties,
-    isLoading,
-    error
-  } = usePropertyRead();
+const AddProperty = () => {
+  const navigate = useNavigate();
+  const { address } = useAccount();
+  const { handleListInvestmentProperty, contractStatus } = usePropertyCreate();
 
-  const existingProperty =
-    id && properties
-      ? properties.find((p: Property) => p.id === id)
-      : undefined;
-
-  const [isUploading, setIsUploading] = useState(false);
-  const [url, setUrl] = useState("");
-  const [ownerAddress, setOwnerAddress] = useState(address);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isLocationLoading, setIsLocationLoading] = useState(false);
-
-  const [formData, setFormData] = useState<Partial<Property>>({
+  const [formData, setFormData] = useState<InvestmentAsset>({
     id: generateShortUUID(),
-    agentId: address,
-    interestedClients: 0,
-    assetToken: "",
-    hasGarden: false,
-    hasSwimmingPool: false,
-    petFriendly: false,
-    wheelchairAccessible: false,
-    dateListed: Math.floor(Date.now() / 1000),
-    status: "Available",
-    currency: "USD",
+    name: "",
+    description: "",
+    is_active: true,
+    location: {
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      latitude: "",
+      longitude: "",
+    },
+    size: 0,
+    investor_id: address || "",
+    owner: address || "",
+    construction_status: "",
+    asset_value: 0,
+    available_staking_amount: 0,
+    investment_type: "",
+    construction_year: 0,
+    property_price: 0,
+    expected_roi: "",
+    rental_income: 0,
+    maintenance_costs: 0,
+    tax_benefits: "",
+    highlights: "",
+    market_analysis: "",
+    risk_factors: "",
+    legal_detail: "",
+    additional_features: "",
+    images: "",
+    investment_token: "",
+    min_investment_amount: 0,
   });
 
-  useEffect(() => {
-    if (id && existingProperty) {
-      setFormData(existingProperty);
-      setUrl(existingProperty.imagesId || "");
-    }
-    if (status === "connected") {
-      setOwnerAddress(address);
-      setFormData((prev) => ({ ...prev, agent_id: address }));
-    }
-  }, [id, existingProperty, address, status]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedDocs, setSelectedDocs] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedFiles, setUploadedFiles] = useState(0);
+  const [uploadedSize, setUploadedSize] = useState(0);
+  const [totalUploadSize, setTotalUploadSize] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
+  const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
 
-  const handleInputChange = (field: keyof Property, value: any) => {
-    if (["price", "interested_clients", "asking_price"].includes(field)) {
-      value = BigInt(value || 0);
-    } else if (
-      ["area", "bedrooms", "bathrooms", "parking_spaces"].includes(field)
-    ) {
-      value = Number(value || 0);
-    }
-
+  const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -89,47 +93,121 @@ const CreateProperty = () => {
     state: string;
     country: string;
   }) => {
+    const addressParts = location.address.split(",");
+    const streetAddress = addressParts[0].trim();
+
     setFormData((prev) => ({
       ...prev,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      locationAddress: location.address,
-      city: location.city,
-      state: location.state,
-      country: location.country,
+      location: {
+        address: streetAddress,
+        city: location.city,
+        state: location.state,
+        country: location.country,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
     }));
   };
 
-  const validateFiles = (files: File[]) => {
-    const validFiles = files.filter((file) => {
-      if (!file.type.startsWith("image/")) {
+  const validateFiles = (files: File[], isDocument: boolean = false) => {
+    const maxSize = isDocument ? 10 * 1024 * 1024 : 10 * 1024 * 1024;
+
+    return files.filter((file) => {
+      if (isDocument) {
+        if (
+          ![
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ].includes(file.type)
+        ) {
+          toast.error(`${file.name} is not a valid document type`);
+          return false;
+        }
+      } else if (!file.type.startsWith("image/")) {
         toast.error(`${file.name} is not an image file`);
         return false;
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error(`${file.name} is too large (max 10MB)`);
+
+      if (file.size > maxSize) {
+        toast.error(
+          `${file.name} is too large (max ${maxSize / 1024 / 1024}MB)`
+        );
         return false;
       }
       return true;
     });
-    return validFiles;
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    isDocument: boolean = false
+  ) => {
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files) return;
 
-    const newFiles = validateFiles(Array.from(files));
-    setSelectedFiles((prev) => [...prev, ...newFiles]);
+    const validFiles = validateFiles(Array.from(files), isDocument);
+    if (isDocument) {
+      setSelectedDocs((prev) => [...prev, ...validFiles]);
+    } else {
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+    }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (
+    e: React.DragEvent<HTMLDivElement>,
+    isDocument: boolean = false
+  ) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
-    if (!files || files.length === 0) return;
+    if (!files) return;
 
-    const newFiles = validateFiles(Array.from(files));
-    setSelectedFiles((prev) => [...prev, ...newFiles]);
+    const validFiles = validateFiles(Array.from(files), isDocument);
+    if (isDocument) {
+      setSelectedDocs((prev) => [...prev, ...validFiles]);
+    } else {
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+    }
+  };
+
+  const handleUploadFiles = async (
+    files: File[],
+    isDocuments: boolean = false
+  ) => {
+    if (isDocuments && uploadedDocHash) {
+      return uploadedDocHash;
+    }
+    if (!isDocuments && uploadedImageHash) {
+      return uploadedImageHash;
+    }
+
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    setTotalUploadSize((prev) => prev + totalSize);
+
+    try {
+      const result = await handleFileUpload(
+        files,
+        pinata,
+        formData.id || "",
+        isDocuments ? "documents" : "images"
+      );
+
+      if (isDocuments) {
+        setUploadedDocHash(result);
+        handleInputChange("legal_detail", result);
+      } else {
+        setUploadedImageHash(result);
+        handleInputChange("images", result);
+      }
+
+      toast.success(
+        `${isDocuments ? "Documents" : "Images"} uploaded successfully!`
+      );
+      return result;
+    } catch (error) {
+      toast.error(`Failed to upload ${isDocuments ? "documents" : "images"}`);
+      throw error;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,142 +217,270 @@ const CreateProperty = () => {
       return;
     }
 
-    if (selectedFiles.length > 0 && !url) {
-      setIsUploading(true);
-      setUploadProgress(0);
+    const requiredFields = [
+      "tax_benefits",
+      "highlights",
+      "market_analysis",
+      "risk_factors",
+      "additional_features",
+    ];
 
-      try {
-        const combinedString = await handleImageUpload(
-          selectedFiles,
-          formData.id
-        );
-        setUrl(combinedString);
-        handleInputChange("imagesId", combinedString);
-        toast.success("Images uploaded successfully!");
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field as keyof InvestmentAsset]
+    );
 
-        const status = await handleListSaleProperty({
-          ...formData,
-          owner: address,
-          agentId: address,
-          imagesId: combinedString,
-        } as Property);
+    if (missingFields.length > 0) {
+      toast.error(
+        `Please fill in the following fields: ${missingFields.join(", ")}`
+      );
+      return;
+    }
 
-        if (status.status === "success") {
-          toast.success(`Property ${id ? "updated" : "created"} successfully!`);
-          setSelectedFiles([]);
-          setUploadProgress(0);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        toast.error(`Failed to ${id ? "update" : "create"} property`);
-      } finally {
-        setIsUploading(false);
+    setIsUploading(true);
+    try {
+      let imagesHash = uploadedImageHash;
+      if (selectedFiles.length > 0 && !uploadedImageHash) {
+        imagesHash = await handleUploadFiles(selectedFiles, false);
       }
-    } else {
-      try {
-        const status = await handleListSaleProperty({
-          ...formData,
-          agentId: address,
-          imagesId: url,
-        } as Property);
 
-        if (status.status === "success") {
-          toast.success(`Property ${id ? "updated" : "created"} successfully!`);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        toast.error(`Failed to ${id ? "update" : "create"} property`);
+      let docsHash = uploadedDocHash;
+      if (selectedDocs.length > 0 && !uploadedDocHash) {
+        docsHash = await handleUploadFiles(selectedDocs, true);
       }
+
+      const processedFormData: InvestmentAsset = {
+        ...formData,
+        is_active: true,
+        images: imagesHash || formData.images,
+        legal_detail: docsHash || formData.legal_detail,
+      };
+
+      await handleListInvestmentProperty(processedFormData);
+      toast.success("Property listed successfully!");
+      navigate('/profile');
+
+    } catch (error) {
+      toast.error(
+        "Failed to list property. Your uploads are saved and won't be repeated if you try again."
+      );
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  if (isLoading && id) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-purple-500 mx-auto" />
-          <p className="text-gray-500">Loading property details...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
-        <Card className="animate-fade-in shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader className="space-y-2 border-b border-gray-100 bg-white/50 backdrop-blur-sm">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-              {id ? "Edit Property" : "Create New Property"}
-            </CardTitle>
-            <p className="text-gray-500">
-              Fill in the details to {id ? "update" : "list"} a property
-            </p>
-          </CardHeader>
-          <CardContent className="pt-6 pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80 dark:from-slate-900 dark:to-slate-800/90 transition-colors duration-300">
+      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="animate-fade-in backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-none shadow-xl">
+          <InvestmentFormHeader />
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
-              <BasicInformation
-                formData={formData}
-                handleInputChange={handleInputChange}
-                address={address}
-              />
-              <PricingInformation
-                formData={formData}
-                handleInputChange={handleInputChange}
-              />
-              <PropertyFeatures
-                formData={formData}
-                handleInputChange={handleInputChange}
-              />
-              <PropertyLocation
-                formData={formData}
-                handleInputChange={handleInputChange}
-                handleLocationSelect={handleLocationSelect}
-                isLocationLoading={isLocationLoading}
-              />
-              <ImageUploader
-                selectedFiles={selectedFiles}
-                isUploading={isUploading}
-                uploadProgress={uploadProgress}
-                handleFileSelect={handleFileSelect}
-                handleDrop={handleDrop}
-                setSelectedFiles={setSelectedFiles}
-              />
+              <div className="space-y-8">
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Basic Information
+                  </h2>
+                  <BasicInformation
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Location
+                  </h2>
+                  <MapLocationPicker onLocationSelect={handleLocationSelect} />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="space-y-2">
+                      <Label>Address</Label>
+                      <Input
+                        value={formData.location.address}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>City</Label>
+                      <Input
+                        value={formData.location.city}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>State</Label>
+                      <Input
+                        value={formData.location.state}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Country</Label>
+                      <Input
+                        value={formData.location.country}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Latitude</Label>
+                      <Input
+                        value={formData.location.latitude}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Longitude</Label>
+                      <Input
+                        value={formData.location.longitude}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Financial Details
+                  </h2>
+                  <FinancialDetails
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Property Features & Analysis
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <CommaInputField
+                      label="Tax Benefits"
+                      value={formData.tax_benefits}
+                      onChange={(value) => handleInputChange("tax_benefits", value)}
+                      placeholder="Enter tax benefits, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Highlights"
+                      value={formData.highlights}
+                      onChange={(value) => handleInputChange("highlights", value)}
+                      placeholder="Enter highlights, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Market Analysis"
+                      value={formData.market_analysis}
+                      onChange={(value) =>
+                        handleInputChange("market_analysis", value)
+                      }
+                      placeholder="Enter market analysis points, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Risk Factors"
+                      value={formData.risk_factors}
+                      onChange={(value) =>
+                        handleInputChange("risk_factors", value)
+                      }
+                      placeholder="Enter risk factors, separated by commas"
+                    />
+                    <CommaInputField
+                      label="Additional Features"
+                      value={formData.additional_features}
+                      onChange={(value) =>
+                        handleInputChange("additional_features", value)
+                      }
+                      placeholder="Enter additional features, separated by commas"
+                    />
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Documents & Images
+                  </h2>
+                  <UploadGrid
+                    selectedFiles={selectedFiles}
+                    selectedDocs={selectedDocs}
+                    isUploading={isUploading}
+                    uploadProgress={uploadProgress}
+                    uploadedFiles={uploadedFiles}
+                    uploadedSize={uploadedSize}
+                    totalUploadSize={totalUploadSize}
+                    handleFileSelect={handleFileSelect}
+                    handleDrop={handleDrop}
+                    setSelectedFiles={setSelectedFiles}
+                    setSelectedDocs={setSelectedDocs}
+                    setPreviewUrl={setPreviewUrl}
+                    setShowPreviewModal={setShowPreviewModal}
+                  />
+                </section>
+              </div>
 
               <Button
                 type="submit"
-                disabled={contractStatus.isPending || isUploading}
-                className={`w-full max-w-md mx-auto bg-gradient-to-r from-purple-600 to-blue-500 text-white px-8 py-3 rounded-lg font-medium
-                  transform hover:scale-105 active:scale-95 transition-all duration-300
-                  disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                  flex items-center justify-center space-x-2
-                `}
+                disabled={isUploading || contractStatus.isPending}
+                className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 {isUploading || contractStatus.isPending ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>
-                      {isUploading
-                        ? "Uploading Images..."
-                        : `${id ? "Updating" : "Creating"} Property...`}
-                    </span>
-                  </>
+                  <div className="flex items-center justify-center gap-2">
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    <span>Processing...</span>
+                  </div>
                 ) : (
-                  <span>
-                    {selectedFiles.length > 0
-                      ? "Upload Images & Create Property"
-                      : id
-                      ? "Update Property"
-                      : "Create Property"}
-                  </span>
+                  "List Property"
                 )}
               </Button>
             </form>
           </CardContent>
         </Card>
       </div>
+
+      {showPreviewModal && previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-4 w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold dark:text-white">
+                Document Preview
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPreviewModal(false);
+                  setPreviewUrl(null);
+                }}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <iframe
+                src={previewUrl}
+                className="w-full h-full min-h-[60vh] rounded-lg border border-gray-200 dark:border-gray-700"
+                title="Document Preview"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default CreateProperty;
+export default AddProperty;

@@ -13,11 +13,13 @@ import { InvestmentAsset, investmentTypes } from "@/types/investment";
 interface InvestmentOptionsProps {
   formData: Partial<InvestmentAsset>;
   handleInputChange: (field: keyof InvestmentAsset, value: any) => void;
+  editMode?: boolean;
 }
 
 const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
   formData,
   handleInputChange,
+  editMode = false,
 }) => {
   return (
     <>

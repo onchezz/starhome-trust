@@ -3,7 +3,10 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Button } from "../ui/button";
 import { ImageGallery } from "../investment/ImageGallery";
+import { useNavigate } from "react-router-dom";
+import { InvestmentAsset } from "@/types/investment";
 
+// Create a separate interface that doesn't extend InvestmentAsset
 interface InvestmentListingCardProps {
   id: string;
   name: string;
@@ -11,6 +14,7 @@ interface InvestmentListingCardProps {
   asset_value: number;
   expected_roi: string | number;
   images: string;
+  [key: string]: any; // Allow additional properties
 }
 
 export const InvestmentListingCard = ({
@@ -20,13 +24,36 @@ export const InvestmentListingCard = ({
   asset_value,
   expected_roi,
   images,
+  ...rest
 }: InvestmentListingCardProps) => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   // Convert ROI to number for display, fallback to 0 if invalid
   const roiValue = typeof expected_roi === 'string' 
     ? parseFloat(expected_roi) || 0 
     : expected_roi;
+
+  const handleEdit = () => {
+    // Combine all props into a single investment object
+    const investmentData: InvestmentAsset = {
+      id,
+      name,
+      description,
+      asset_value,
+      expected_roi: expected_roi.toString(), // Convert to string to match InvestmentAsset type
+      images,
+      ...rest
+    } as InvestmentAsset;
+
+    // Navigate to AddInvestment with state
+    navigate('/add-investment', { 
+      state: { 
+        mode: 'edit',
+        investmentData 
+      }
+    });
+  };
 
   return (
     <Card
@@ -47,7 +74,7 @@ export const InvestmentListingCard = ({
               <p className="text-sm font-medium">Value: ${asset_value.toLocaleString()}</p>
               <p className="text-sm font-medium">ROI: {roiValue}%</p>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleEdit}>
               Update
             </Button>
           </div>
