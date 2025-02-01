@@ -120,60 +120,68 @@ const Profile = () => {
               transition={{ duration: 0.5 }}
               className="space-y-6"
             >
-              <Card
-                className={cn(
-                  "backdrop-blur-xl border transition-all duration-300",
-                  theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-                )}
-              >
-                <CardHeader className="p-4 sm:p-6">
-                  <CardTitle className="text-lg sm:text-xl md:text-2xl">
-                    Profile Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="space-y-6 sm:space-y-8">
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <ProfileHeader user={user} />
-                    </motion.div>
+              <section id="overview">
+                <Card
+                  className={cn(
+                    "backdrop-blur-xl border transition-all duration-300",
+                    theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+                  )}
+                >
+                  <CardHeader className="p-4 sm:p-6">
+                    <CardTitle className="text-lg sm:text-xl md:text-2xl">
+                      Profile Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="space-y-6 sm:space-y-8">
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <ProfileHeader user={user} />
+                      </motion.div>
 
-                    <ProfileActions user={user} isLoading={isLoadingUser} />
-                  </div>
-                </CardContent>
-              </Card>
+                      <ProfileActions user={user} isLoading={isLoadingUser} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </section>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <ProfileWallet
-                  address={address || ""}
-                  balances={balances}
-                  isLoadingBal={isLoadingBal}
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-              >
-                <UserInvestments />
-              </motion.div>
-
-              {user?.is_agent && (
+              <section id="wallet">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9 }}
+                  transition={{ delay: 0.5 }}
                 >
-                  <AgentProperties />
+                  <ProfileWallet
+                    address={address || ""}
+                    balances={balances}
+                    isLoadingBal={isLoadingBal}
+                  />
                 </motion.div>
+              </section>
+
+              <section id="investments">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <UserInvestments />
+                </motion.div>
+              </section>
+
+              {user?.is_agent && (
+                <section id="properties">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 }}
+                  >
+                    <AgentProperties />
+                  </motion.div>
+                </section>
               )}
             </motion.div>
           </div>
