@@ -36,7 +36,6 @@ export const useInvestment = (investmentToken: string | undefined) => {
         investmentId,
         async (id: string, amt: number) => {
           console.log("Investing with amount:", amt, "in property:", id);
-          // Additional logic if needed
           return Promise.resolve();
         }
       );
