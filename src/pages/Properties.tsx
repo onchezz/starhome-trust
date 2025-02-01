@@ -17,6 +17,14 @@ const Properties = () => {
     error
   } = usePropertyRead();
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({
+    priceRange: [0, 15000000],
+    bedrooms: "any",
+    bathrooms: "any",
+    propertyType: "any",
+  });
+
   useEffect(() => {
     // Set initial loading to false after properties are fetched
     if (!isLoading && properties) {
