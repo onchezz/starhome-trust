@@ -26,6 +26,7 @@ const pinata = new PinataSDK({
   pinataGateway: import.meta.env.VITE_PINATA_GATEWAY || "gateway.pinata.cloud",
 });
 
+// Move generateShortUUID function definition before its usage
 const generateShortUUID = () => {
   const fullUUID = crypto.randomUUID();
   return fullUUID.replace(/-/g, "").substring(0, 21);
@@ -43,7 +44,17 @@ const AddInvestment = () => {
 
   const [formData, setFormData] = useState<InvestmentAsset>(
     editMode && initialInvestmentData 
-      ? initialInvestmentData 
+      ? {
+          ...initialInvestmentData,
+          location: initialInvestmentData.location || {
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            latitude: "",
+            longitude: "",
+          }
+        }
       : {
           id: generateShortUUID(),
           name: "",
@@ -110,6 +121,7 @@ const AddInvestment = () => {
     state: string;
     country: string;
   }) => {
+    console.log("Location selected:", location);
     const addressParts = location.address.split(",");
     const streetAddress = addressParts[0].trim();
 
