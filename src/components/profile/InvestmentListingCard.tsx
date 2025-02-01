@@ -6,12 +6,12 @@ import { ImageGallery } from "../investment/ImageGallery";
 import { useNavigate } from "react-router-dom";
 import { InvestmentAsset } from "@/types/investment";
 
-interface InvestmentListingCardProps extends Partial<InvestmentAsset> {
+interface InvestmentListingCardProps extends Omit<Partial<InvestmentAsset>, 'expected_roi'> {
   id: string;
   name: string;
   description: string;
   asset_value: number;
-  expected_roi: string | number;
+  expected_roi: string;
   images: string;
 }
 
