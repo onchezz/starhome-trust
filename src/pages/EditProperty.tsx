@@ -35,8 +35,8 @@ const EditProperty = () => {
       setFormData(property);
       
       // If property has images, create preview URLs
-      if (property.images) {
-        const { imageUrls } = parseImagesData(property.images);
+      if (property.imagesId) {
+        const { imageUrls } = parseImagesData(property.imagesId);
         // Convert image URLs to File objects for preview
         Promise.all(
           imageUrls.map(async (url) => {
@@ -138,10 +138,10 @@ const EditProperty = () => {
 
         <Button 
           type="submit" 
-          disabled={contractStatus.loading}
+          disabled={contractStatus.isPending}
           className="w-full"
         >
-          {contractStatus.loading ? "Updating Property..." : "Update Property"}
+          {contractStatus.isPending ? "Updating Property..." : "Update Property"}
         </Button>
       </form>
     </div>
