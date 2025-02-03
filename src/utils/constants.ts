@@ -1,8 +1,7 @@
 const starhomesContract ="0x070e816ffbb40f18da33645ea9bb6d0844ee501de69bdbf7a020a3500c6feba4"as const;
 // "0x026e90d3e7cb7e4f240104e41bb0659ccb48c6f9d479069bbf91c2075572208c"as const; //new
 
-// const rpcProvideUr =  "https://starknet-sepolia.infura.io/v3/YOUR_INFURA_KEY" as const;
-const rpcProvideUr =  "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
+const rpcProvideUr = "https://starknet-sepolia.public.blastapi.io/rpc/v0_7" as const;
 
 const pinataImageUrl = "https://gateway.pinata.cloud/ipfs/" as const;
 
