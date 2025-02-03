@@ -12,6 +12,7 @@ import PropertyFeatures from "@/components/property/form/PropertyFeatures";
 import ImageUploader from "@/components/property/form/ImageUploader";
 import { parseImagesData } from "@/utils/imageUtils";
 import { useAccount } from "@starknet-react/core";
+import { tokenOptions } from "@/utils/constants";
 
 const EditProperty = () => {
   const { id } = useParams();
@@ -56,10 +57,18 @@ const EditProperty = () => {
 
     const initializeProperty = async () => {
       console.log("[EditProperty] Setting initial form data with property:", property);
-      // Ensure assetToken is included in the form data
+      
+      // Find the matching token option based on the saved asset token address
+      const matchingToken = tokenOptions.find(token => 
+        token.address.toLowerCase() === property.assetToken.toLowerCase()
+      );
+      
+      console.log("[EditProperty] Matching token found:", matchingToken);
+
+      // Set form data with the matched token
       setFormData({
         ...property,
-        assetToken: property.assetToken || "" // Explicitly set assetToken
+        assetToken: matchingToken?.address || "" // Use the matched token address or empty string as fallback
       });
       
       if (property.imagesId) {
