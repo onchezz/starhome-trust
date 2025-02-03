@@ -28,12 +28,12 @@ export const InvestmentCard = ({
   handleConnectWallet,
   address,
 }: InvestmentCardProps) => {
-  // Always call hooks at the top level, regardless of conditions
   const { 
     investmentAmount, 
     setInvestmentAmount, 
     handleInvest,
-    approveAndInvest 
+    approveAndInvest,
+    allowance 
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -118,6 +118,12 @@ export const InvestmentCard = ({
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-4 space-y-4">
+                {address && (
+                  <div className="p-3 bg-secondary rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-1">Your Current Allowance</p>
+                    <p className="font-semibold">{allowance ? `${Number(allowance).toFixed(2)} USDT` : '0 USDT'}</p>
+                  </div>
+                )}
                 <Input
                   type="number"
                   placeholder={`Min. ${formatCurrency(
