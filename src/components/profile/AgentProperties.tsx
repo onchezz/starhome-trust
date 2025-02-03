@@ -80,6 +80,7 @@ export const AgentProperties = () => {
               imagesUrl={property.imagesId}
               propertyType={property.propertyType}
               status={property.status}
+              showUpdateButton={true}
             />
           ))}
         </div>
