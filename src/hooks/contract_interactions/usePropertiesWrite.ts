@@ -3,10 +3,36 @@ import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
 import { InvestmentAsset } from '@/types/investment';
 import { InvestmentAssetConverter } from '@/types/investment';
+import { Property, PropertyConverter } from '@/types/property';
 
 export const usePropertyCreate = () => {
   const { execute, status: contractStatus } = useStarHomeWriteContract();
   const { address } = useAccount();
+   const handleListSaleProperty = async (property: Partial<Property>) => {
+    console.log("Listing property before listing from form:", property);
+    
+    try {
+      const defaultProperty=
+      
+      PropertyConverter.convertToStarknetProperty(property,address)
+
+
+      console.log("Listing property after conversion:", defaultProperty);
+
+      const tx = await execute("list_property", [defaultProperty]);
+      
+      toast.success(`Property listed successfully! ${tx.response.transaction_hash}`);
+      return {
+        status: 'success' as const
+      };
+    } catch (error) {
+      console.error("Error listing property:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to list property";
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
 
   const handleListInvestmentProperty = async (investment: InvestmentAsset) => {
     try {
@@ -41,6 +67,7 @@ export const usePropertyCreate = () => {
   };
 
   return {
+    handleListSaleProperty,
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
     contractStatus,

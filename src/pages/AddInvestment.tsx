@@ -18,7 +18,7 @@ import MapLocationPicker from "@/components/MapLocationPicker";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import CommaInputField from "@/components/investment/CommaInputField";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -30,17 +30,23 @@ interface AddInvestmentProps {
   investmentToUpdate?: InvestmentAsset;
 }
 
-const AddInvestment: React.FC<AddInvestmentProps> = ({ investmentToUpdate }) => {
+const AddInvestment: React.FC<AddInvestmentProps> = ({
+  investmentToUpdate,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { address } = useAccount();
-  const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
+  const {
+    handleListInvestmentProperty,
+    handleEditInvestmentProperty,
+    contractStatus,
+  } = usePropertyCreate();
 
   const generateShortUUID = () => {
     const fullUUID = crypto.randomUUID();
     return fullUUID.replace(/-/g, "").substring(0, 21);
   };
-  
+
   // Initialize form data with investmentToUpdate if provided, otherwise use default values
   const [formData, setFormData] = useState<InvestmentAsset>(
     investmentToUpdate || {
@@ -83,8 +89,12 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({ investmentToUpdate }) => 
   // Update form data when investmentToUpdate changes
   useEffect(() => {
     if (investmentToUpdate) {
-      setFormData(investmentToUpdate);
-      console.log("[AddInvestment] Prefilling form with investment data:", investmentToUpdate);
+      console.log(`receved asset: ${investmentToUpdate}`);
+      setFormData({ ...investmentToUpdate });
+      console.log(
+        "[AddInvestment] Prefilling form with investment data:",
+        investmentToUpdate
+      );
     }
   }, [investmentToUpdate]);
 
@@ -98,7 +108,9 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({ investmentToUpdate }) => 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
-  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(null);
+  const [uploadedImageHash, setUploadedImageHash] = useState<string | null>(
+    null
+  );
   const [uploadedDocHash, setUploadedDocHash] = useState<string | null>(null);
   const [additionalFeatures, setAdditionalFeatures] = useState<string[]>([]);
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
@@ -299,11 +311,12 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({ investmentToUpdate }) => 
         toast.success("Investment created successfully!");
       }
 
-      navigate('/profile');
-
+      navigate("/profile");
     } catch (error) {
       toast.error(
-        `Failed to ${investmentToUpdate ? 'update' : 'create'} investment. Your uploads are saved and won't be repeated if you try again.`
+        `Failed to ${
+          investmentToUpdate ? "update" : "create"
+        } investment. Your uploads are saved and won't be repeated if you try again.`
       );
     } finally {
       setIsUploading(false);

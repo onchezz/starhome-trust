@@ -12,7 +12,7 @@ export const usePropertyRead = () => {
     functionName: "get_sale_properties",
   });
 
-  const { data: propertiesData, isLoading, error } = useQuery({
+  const { data: propertiesData, isLoading:salePropertiesLoading, error } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
       console.log("[usePropertyRead] Contract hook result:", salePropertiesHook);
@@ -42,7 +42,7 @@ export const usePropertyRead = () => {
 
   return {
     saleProperties,
-    isLoading,
+    salePropertiesLoading,
     error,
   };
 };

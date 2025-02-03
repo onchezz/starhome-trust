@@ -13,8 +13,8 @@ const Properties = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const {
     saleProperties: properties,
-    isLoading,
-    error
+    salePropertiesLoading:isLoading,
+    error,
   } = usePropertyRead();
 
   const [searchTerm, setSearchTerm] = useState("");

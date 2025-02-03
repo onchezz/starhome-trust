@@ -30,9 +30,9 @@ export interface StarknetProperty {
   country: string;
   latitude: string;
   longitude: string;
-  price: number;
+  price: BigNumberish;
   // owner: string;
-  asking_price: number;
+  asking_price: BigNumberish;
   currency: string;
   area: number;
   bedrooms: number;
@@ -130,7 +130,13 @@ export class PropertyConverter {
             assetToken: this.addressToString(starknetProperty.asset_token),
         };
     }
-    static convertToStarknetProperty(property:Partial<Property>, address): StarknetProperty{
+    static convertToStarknetProperty(property:Partial<Property>, address:string): StarknetProperty{
+       const convertPrice = (price: number | undefined): bigint => {
+    if (typeof price !== 'number') {
+      return BigInt(0);
+    }
+    return BigInt(Math.floor(price * Math.pow(10, 6)));
+  };
         return {
         id: property.id || "",
         title: property.title || "",
@@ -141,8 +147,8 @@ export class PropertyConverter {
         country: property.country || "",
         latitude: property.latitude || "",
         longitude: property.longitude || "",
-        price: property.price * Math.pow(10, 6)|| 0,
-        asking_price: property.asking_price* Math.pow(10, 6) || 0,
+        price: convertPrice(property.price),
+        asking_price: convertPrice(property.asking_price)|| 0,
         currency: property.currency || "USD",
         area: property.area || 0,
         bedrooms: property.bedrooms || 0,
@@ -153,7 +159,7 @@ export class PropertyConverter {
         interested_clients: property.interestedClients || 0,
         annual_growth_rate: property.annualGrowthRate || 0,
         features_id: "00",
-        images_id: property.imagesId || "",
+        images_id: property.imagesId.toString() || "",
         video_tour: property.videoId || "none",
         agent_id: address || "",
         date_listed: Math.floor(Date.now() / 1000),
