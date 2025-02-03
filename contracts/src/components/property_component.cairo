@@ -75,7 +75,7 @@ pub mod PropertyComponent {
         ) -> felt252 {
             self._is_property_added(property.id.clone());
             let is_property_already_added = self._is_property_added(property.id.clone());
-            assert(is_property_already_added == false, 'Property cannot be edited');
+            assert(is_property_already_added != false, 'Property cannot be edited');
             self._edit_property(property_id, property.clone());
             self
                 .emit(

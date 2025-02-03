@@ -11,7 +11,7 @@ pub mod AssetStakingComponent {
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use starknet::storage::{
         Map, StorageMapReadAccess, StorageMapWriteAccess, StoragePointerReadAccess,
-        StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait,
+        StoragePointerWriteAccess,
     };
 
     #[storage]
@@ -19,10 +19,10 @@ pub mod AssetStakingComponent {
         // Tokens
         pub staking_token: Map::<felt252, IERC20Dispatcher>,
         pub reward_token: Map::<felt252, IERC20Dispatcher>,
-        pub owner: ContractAddress,
-        pub reward_rate: Map::<ContractAddress, u256>,
-        pub duration: Map::<ContractAddress, u256>,
-        pub finish_at: Map::<ContractAddress, u256>,
+        pub owner: Map::<felt252, ContractAddress>,
+        pub reward_rate: Map::<felt252, u256>,
+        pub duration: Map::<felt252, u256>,
+        pub finish_at: Map::<felt252, u256>,
         pub number_of_investors_per_investment: Map::<felt252, u256>,
         pub investors_in_investment: Map::<ContractAddress, (felt252, u256)>,
         // Reward tracking,
@@ -85,7 +85,7 @@ pub mod AssetStakingComponent {
                 .read()
                 .transfer_from(user, get_contract_address(), amount);
             self.add_number_of_investor_per_investment_made(property_id);
-            
+
             self.investors_in_investment.write(user, (property_id, amount));
             self.emit(Deposit { user, amount });
 
@@ -136,53 +136,57 @@ pub mod AssetStakingComponent {
 
         //     'TOKENS CHANGED'
         // }
-        // fn set_reward_duration(ref self: ComponentState<TContractState>, duration: u256) {
-        //     self._only_owner();
+        fn set_reward_duration(
+            ref self: ComponentState<TContractState>, property_id: felt252, duration: u256,
+        ) {
+            self._only_owner(property_id);
 
-        //     assert(duration > 0, super::Errors::NULL_DURATION);
+            assert(duration > 0, super::Errors::NULL_DURATION);
 
-        //     // can only set duration if the previous duration has already finished
-        //     assert(
-        //         self.finish_at.read() < get_block_timestamp().into(),
-        //         super::Errors::UNFINISHED_DURATION,
-        //     );
+            // can only set duration if the previous duration has already finished
+            assert(
+                self.finish_at.entry(property_id).read() < get_block_timestamp().into(),
+                super::Errors::UNFINISHED_DURATION,
+            );
 
-        //     self.duration.write(duration);
-        // }
+            self.duration.write(property_id,duration);
+        }
 
-        // fn set_reward_amount(ref self: ComponentState<TContractState>, amount: u256) {
-        //     self._only_owner();
-        //     self._update_rewards(Zero::zero());
+        fn set_reward_amount(
+            ref self: ComponentState<TContractState>, property_id: felt252, amount: u256,
+        ) {
+            self._only_owner(property_id);
+            self._update_rewards(Zero::zero());
 
-        //     assert(amount > 0, super::Errors::NULL_REWARDS);
-        //     assert(self.duration.read() > 0, super::Errors::NULL_DURATION);
+            assert(amount > 0, super::Errors::NULL_REWARDS);
+            assert(self.duration.entry(property_id).read() > 0, super::Errors::NULL_DURATION);
 
-        //     let block_timestamp: u256 = get_block_timestamp().into();
+            let block_timestamp: u256 = get_block_timestamp().into();
 
-        //     let rate = if self.finish_at.read() < block_timestamp {
-        //         amount / self.duration.read()
-        //     } else {
-        //         let remaining_rewards = self.reward_rate.read()
-        //             * (self.finish_at.read() - block_timestamp);
-        //         (remaining_rewards + amount) / self.duration.read()
-        //     };
+            let rate = if self.finish_at.entry(property_id).read() < block_timestamp {
+                amount / self.duration.entry(property_id).read()
+            } else {
+                let remaining_rewards = self.reward_rate.read()
+                    * (self.finish_at.entry(property_id).read() - block_timestamp);
+                (remaining_rewards + amount) / self.duration.entry(property_id).read()
+            };
 
-        //     assert(
-        //         self.reward_token.entry().read().balance_of(get_contract_address()) >= rate
-        //             * self.duration.read(),
-        //         super::Errors::NOT_ENOUGH_REWARDS,
-        //     );
+            assert(
+                self.reward_token.entry(property_id).read().balance_of(get_contract_address()) >= rate
+                    * self.duration.entry(property_id).read(),
+                super::Errors::NOT_ENOUGH_REWARDS,
+            );
 
-        //     self.reward_rate.write(rate);
+            self.reward_rate.entry(property_id).write(rate);
 
-        //     // even if the previous reward duration has not finished, we reset the finish_at
-        //     // variable
-        //     self.finish_at.write(block_timestamp + self.duration.read());
-        //     self.last_updated_at.write(block_timestamp);
+            // even if the previous reward duration has not finished, we reset the finish_at
+            // variable
+            self.finish_at.entry(property_id).write(block_timestamp + self.duration.read());
+            self.last_updated_at.entry(property_id).write(block_timestamp);
 
-        //     // reset total distributed rewards
-        //     self.total_distributed_rewards.write(0);
-        // }
+            // reset total distributed rewards
+            self.total_distributed_rewards.write(0);
+        }
 
         fn claim_rewards(ref self: ComponentState<TContractState>, property_id: felt252) {
             let user = get_caller_address();
@@ -249,7 +253,7 @@ pub mod AssetStakingComponent {
                 .current_reward_per_staked_token
                 .write(account, self._compute_current_reward_per_staked_token(account));
 
-            self.last_updated_at.write(account, self.last_time_applicable(account));
+            self.last_updated_at.write(account, self.last_time_applicable(property_id));
 
             if account.is_non_zero() {
                 self._distribute_user_rewards(account, property_id);
@@ -280,7 +284,7 @@ pub mod AssetStakingComponent {
             ref self: ComponentState<TContractState>, account: ContractAddress,
         ) {
             // check whether we should send a RewardsFinished event
-            if self.last_updated_at.read(account) == self.finish_at.read(account) {
+            if self.last_updated_at.entry(property_id).read(account) == self.finish_at.entry(property_id).read(account) {
                 let total_rewards = self.reward_rate.read(account) * self.duration.read(account);
 
                 if total_rewards != 0 && self.total_distributed_rewards.read() == total_rewards {
@@ -317,7 +321,7 @@ pub mod AssetStakingComponent {
 
         #[inline(always)]
         fn last_time_applicable(
-            self: @ComponentState<TContractState>, account: ContractAddress,
+            self: @ComponentState<TContractState>,proertyId:felt252,
         ) -> u256 {
             Self::min(self.finish_at.read(account), get_block_timestamp().into())
         }
@@ -331,9 +335,9 @@ pub mod AssetStakingComponent {
             }
         }
 
-        fn _only_owner(self: @ComponentState<TContractState>) {
+        fn _only_owner(self: @ComponentState<TContractState>, property_id: felt252) {
             let caller = get_caller_address();
-            assert(caller == self.owner.read(), super::Errors::NOT_OWNER);
+            assert(caller == self.owner.entry(property_id).read(), super::Errors::NOT_OWNER);
         }
     }
 }
