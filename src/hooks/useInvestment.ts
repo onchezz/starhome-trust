@@ -3,12 +3,11 @@ import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWriteContract";
 import { toast } from "sonner";
 import { useState } from "react";
-import { num } from "starknet";
 
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
-  const { approveAndInvest, allowance, balance } = useToken(tokenAddress || "");
+  const { approveAndInvest } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
 
   const handleInvest = async (investmentId: string) => {
@@ -18,43 +17,23 @@ export const useInvestment = (tokenAddress?: string) => {
         return;
       }
 
-      const amount = Number(investmentAmount);
-      
-      // Check balance and allowance before proceeding
-      const currentAllowance = allowance ? Number(allowance) / Math.pow(10, 6) : 0;
-      const currentBalance = balance ? Number(balance) / Math.pow(10, 6) : 0;
-
-      console.log("Investment checks:", {
-        requestedAmount: amount,
-        currentAllowance,
-        currentBalance
+      console.log("Starting investment process for:", {
+        investmentId,
+        amount: investmentAmount
       });
-
-      if (currentBalance < amount) {
-        toast.error("Insufficient balance");
-        return;
-      }
-
-      if (currentAllowance < amount) {
-        toast.info("Approving token spend...");
-      }
 
       // First approve the token spend
       await approveAndInvest(
-        amount, 
+        Number(investmentAmount), 
         investmentId,
         async (id: string, amount: number) => {
           console.log("Investment callback triggered with:", { id, amount });
           
           try {
-            // Convert the amount to a valid uint256 string
-            const amountInWei = num.toBigInt(amount.toString());
-            console.log("Converted amount:", amountInWei.toString());
-
-            // Call the contract's invest function with the properly formatted amount
+            // Call the contract's invest function
             const response = await execute("invest_in_property", [
-              id,
-              amountInWei.toString()
+              id, // investment_id
+              amount.toString() // amount
             ]);
 
             console.log("Contract investment response:", response);
@@ -85,8 +64,6 @@ export const useInvestment = (tokenAddress?: string) => {
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
     contractStatus,
-    approveAndInvest,
-    allowance: allowance ? Number(allowance) / Math.pow(10, 6) : 0,
-    balance: balance ? Number(balance) / Math.pow(10, 6) : 0
+    approveAndInvest
   };
 };
