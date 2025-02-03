@@ -30,30 +30,32 @@ const EditProperty = () => {
 
   useEffect(() => {
     if (property) {
-      console.log("Setting form data with property:", property);
+      console.log("[EditProperty] Setting form data with property:", property);
       setFormData(property);
       
       // If property has images, create preview URLs
       if (property.imagesId) {
-        console.log("Processing images from imagesId:", property.imagesId);
-        const { imageUrls, imageNames } = parseImagesData(property.imagesId);
-        console.log("Parsed image data:", { imageUrls, imageNames });
+        console.log("[EditProperty] Processing images from imagesId:", property.imagesId);
+        const { imageUrls } = parseImagesData(property.imagesId);
+        console.log("[EditProperty] Generated image URLs:", imageUrls);
         
         // Convert image URLs to File objects for preview
         Promise.all(
-          imageUrls.map(async (url) => {
+          imageUrls.map(async (url, index) => {
             try {
+              console.log("[EditProperty] Fetching image from URL:", url);
               const response = await fetch(url);
               const blob = await response.blob();
-              return new File([blob], `image-${Date.now()}.jpg`, { type: 'image/jpeg' });
+              const fileName = `property-image-${index + 1}.${blob.type.split('/')[1]}`;
+              return new File([blob], fileName, { type: blob.type });
             } catch (error) {
-              console.error("Error loading image:", error);
+              console.error("[EditProperty] Error loading image:", error);
               return null;
             }
           })
         ).then((files) => {
           const validFiles = files.filter((file): file is File => file !== null);
-          console.log("Created File objects for preview:", validFiles);
+          console.log("[EditProperty] Created File objects for preview:", validFiles);
           setSelectedFiles(validFiles);
         });
       }
@@ -61,7 +63,7 @@ const EditProperty = () => {
   }, [property]);
 
   const handleInputChange = (field: keyof Property, value: any) => {
-    console.log("Updating field:", field, "with value:", value);
+    console.log("[EditProperty] Updating field:", field, "with value:", value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -86,14 +88,18 @@ const EditProperty = () => {
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setSelectedFiles(Array.from(event.target.files));
+      const newFiles = Array.from(event.target.files);
+      console.log("[EditProperty] New files selected:", newFiles);
+      setSelectedFiles(newFiles);
     }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files) {
-      setSelectedFiles(Array.from(e.dataTransfer.files));
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      console.log("[EditProperty] Files dropped:", droppedFiles);
+      setSelectedFiles(droppedFiles);
     }
   };
 
@@ -105,7 +111,7 @@ const EditProperty = () => {
       await handleEditProperty(id, formData);
       toast.success("Property updated successfully!");
     } catch (error) {
-      console.error("Error updating property:", error);
+      console.error("[EditProperty] Error updating property:", error);
       toast.error("Failed to update property");
     }
   };
