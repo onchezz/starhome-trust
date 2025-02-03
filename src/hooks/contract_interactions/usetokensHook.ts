@@ -73,7 +73,7 @@ export const useToken = (tokenAddress) => {
     
       // Convert amount to token units based on decimals
       const tokenDecimals = decimals ? Number(decimals.toString()) : 18; // Default to 18 if not available
-      const amountInToken = Number(amount )* Math.pow(10, 6);
+      const amountInToken = Number(amount )* Math.pow(10, tokenDecimals||6);
       //  Math.floor(Number(amount) * Math.pow(10, tokenDecimals));
       
       console.log("Amount before BigInt conversion:", {

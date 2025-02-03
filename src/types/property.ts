@@ -20,39 +20,39 @@ export const statusOptions = [
   "Off Market",
 ] as const;
 
-export interface StarknetProperty {
-  id: string;
-  title: string;
-  description: string;
-  location_address: string;
-  city: string;
-  state: string;
-  country: string;
-  latitude: string;
-  longitude: string;
-  price: BigNumberish;
-  // owner: string;
-  asking_price: BigNumberish;
-  currency: string;
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  parking_spaces: number;
-  property_type: string;
-  status: string;
-  interested_clients: number;
-  annual_growth_rate: number;
-  features_id: string;
-  images_id: string;
-  video_tour: string;
-  agent_id: string;
-  date_listed: number;
-  has_garden: boolean;
-  has_swimming_pool: boolean;
-  pet_friendly: boolean;
-  wheelchair_accessible: boolean;
-  asset_token: string;
-}
+// export interface StarknetProperty {
+//   id: string;
+//   title: string;
+//   description: string;
+//   location_address: string;
+//   city: string;
+//   state: string;
+//   country: string;
+//   latitude: string;
+//   longitude: string;
+//   price: BigNumberish;
+//   // owner: string;
+//   asking_price: BigNumberish;
+//   currency: string;
+//   area: number;
+//   bedrooms: number;
+//   bathrooms: number;
+//   parking_spaces: number;
+//   property_type: string;
+//   status: string;
+//   interested_clients: number;
+//   annual_growth_rate: number;
+//   features_id: string;
+//   images_id: string;
+//   video_tour: string;
+//   agent_id: string;
+//   date_listed: number;
+//   has_garden: boolean;
+//   has_swimming_pool: boolean;
+//   pet_friendly: boolean;
+//   wheelchair_accessible: boolean;
+//   asset_token: string;
+// }
 
 export interface Property {
   id: string;
@@ -130,7 +130,7 @@ export class PropertyConverter {
             assetToken: this.addressToString(starknetProperty.asset_token),
         };
     }
-    static convertToStarknetProperty(property:Partial<Property>, address:string): StarknetProperty{
+    static convertToStarknetProperty(property:Partial<Property>, address:string){
        const convertPrice = (price: number | undefined): bigint => {
     if (typeof price !== 'number') {
       return BigInt(0);
@@ -147,8 +147,8 @@ export class PropertyConverter {
         country: property.country || "",
         latitude: property.latitude || "",
         longitude: property.longitude || "",
-        price: convertPrice(property.price),
-        asking_price: convertPrice(property.asking_price)|| 0,
+        price: property.price * Math.pow(10, 6)||0 ,
+        asking_price: property.asking_price * Math.pow(10, 6)|| 0,
         currency: property.currency || "USD",
         area: property.area || 0,
         bedrooms: property.bedrooms || 0,
