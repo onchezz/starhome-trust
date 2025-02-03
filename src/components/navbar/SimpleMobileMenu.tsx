@@ -1,11 +1,10 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Wallet, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/utils/utils";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
-import { Wallet } from "lucide-react";
 
 interface NavigationItem {
   label: string;
@@ -65,6 +64,20 @@ const SimpleMobileMenu = ({
                 {item.label}
               </Link>
             ))}
+            {address && (
+              <Link
+                to="/profile"
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "block px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
+                  "border-b border-gray-200 dark:border-gray-700",
+                  "flex items-center gap-2"
+                )}
+              >
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
+            )}
           </div>
           <div className="p-4 border-t space-y-4">
             <Button 

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Users } from "lucide-react";
+import { TrendingUp, Users, Edit2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { parseImagesData } from "@/utils/imageUtils";
@@ -27,6 +27,7 @@ interface PropertyCardProps {
   imagesUrl: string;
   propertyType: string;
   status: string;
+  showUpdateButton?: boolean;
 }
 
 export const PropertyCard = ({
@@ -40,6 +41,7 @@ export const PropertyCard = ({
   imagesUrl,
   propertyType,
   status,
+  showUpdateButton = false,
 }: PropertyCardProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -49,7 +51,6 @@ export const PropertyCard = ({
     }).format(price);
   };
 
-  // Parse the imagesUrl to get the first image URL
   const { imageUrls } = parseImagesData(imagesUrl);
   const displayImageUrl = imageUrls[0] || "/placeholder.svg";
 
@@ -116,8 +117,8 @@ export const PropertyCard = ({
           </div>
         </CardContent>
 
-        <CardFooter>
-          <Link to={`/properties/${id}`} className="w-full">
+        <CardFooter className="flex gap-2">
+          <Link to={`/properties/${id}`} className="flex-1">
             <Button 
               className="w-full"
               variant="default"
@@ -125,6 +126,17 @@ export const PropertyCard = ({
               View Details
             </Button>
           </Link>
+          {showUpdateButton && (
+            <Link to={`/properties/${id}/edit`} className="flex-shrink-0">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-10 w-10"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </Link>
+          )}
         </CardFooter>
       </Card>
     </motion.div>

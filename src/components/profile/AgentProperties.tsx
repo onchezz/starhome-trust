@@ -8,6 +8,11 @@ export const AgentProperties = () => {
   const { address } = useAccount();
   const { properties, isLoading, error } = useAgentProperties(address || "");
 
+  console.log("[AgentProperties] Current address:", address);
+  console.log("[AgentProperties] Properties:", properties);
+  console.log("[AgentProperties] Loading:", isLoading);
+  console.log("[AgentProperties] Error:", error);
+
   if (error) {
     return (
       <Card>
@@ -38,7 +43,7 @@ export const AgentProperties = () => {
     );
   }
 
-  if (!properties.length) {
+  if (!properties?.length) {
     return (
       <Card>
         <CardHeader>
@@ -75,6 +80,7 @@ export const AgentProperties = () => {
               imagesUrl={property.imagesId}
               propertyType={property.propertyType}
               status={property.status}
+              showUpdateButton={true}
             />
           ))}
         </div>

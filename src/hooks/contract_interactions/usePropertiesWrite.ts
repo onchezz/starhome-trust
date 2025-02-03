@@ -1,9 +1,8 @@
 import { useAccount } from '@starknet-react/core';
 import { toast } from 'sonner';
 import { useStarHomeWriteContract } from '../contract_hooks/useStarHomeWriteContract';
-import { InvestmentAsset } from '@/types/investment';
-import { InvestmentAssetConverter } from '@/types/investment';
 import { Property, PropertyConverter } from '@/types/property';
+import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 
 export const usePropertyCreate = () => {
   const { execute, status: contractStatus } = useStarHomeWriteContract();
@@ -33,6 +32,19 @@ export const usePropertyCreate = () => {
     }
   };
 
+
+  const handleEditProperty = async (propertyId: string, property: Partial<Property>) => {
+    try {
+      console.log("Editing property:", { propertyId, property });
+      const processedProperty = PropertyConverter.convertToStarknetProperty(property, address || "");
+      await execute("edit_property", [propertyId, processedProperty]);
+      toast.success("Property updated successfully!");
+    } catch (error) {
+      console.error("Error updating property:", error);
+      toast.error("Failed to update property");
+      throw error;
+    }
+  };
 
   const handleListInvestmentProperty = async (investment: InvestmentAsset) => {
     try {
@@ -70,6 +82,7 @@ export const usePropertyCreate = () => {
     handleListSaleProperty,
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
+    handleEditProperty,
     contractStatus,
   };
 };
