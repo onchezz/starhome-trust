@@ -75,6 +75,31 @@ pub mod StarhomesContract {
         InvestmentEvent: InvestmentComponent::Event,
     }
 
+    // Component Implementations
+    impl AssetStakingComponentImpl = AssetStakingComponent::StakeAssetImpl<ContractState>;
+    impl StakingPrivateFunctions = AssetStakingComponent::StakingPrivateFunctions<ContractState>;
+
+    #[abi(embed_v0)]
+    impl UsersComponentImpl = UsersComponent::UsersComponentImpl<ContractState>;
+    impl UsersPrivateFunctions = UsersComponent::UsersPrivateFunctions<ContractState>;
+
+    #[abi(embed_v0)]
+    impl BlogComponentImpl = BlogComponent::BlogsComponentImpl<ContractState>;
+
+    #[abi(embed_v0)]
+    impl PropertyInvestmentImpl = PropertyInvestmentComponent::PropertyInvestmentImpl<ContractState>;
+
+    #[abi(embed_v0)]
+    impl InvestmentComponentImpl = InvestmentComponent::InvestmentImpl<ContractState>;
+
+    // Ownable Implementation
+    #[abi(embed_v0)]
+    impl OwnableMixinImpl = OwnableComponent::OwnableMixinImpl<ContractState>;
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
+
+    // Upgradeable Implementation
+    impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
+
     #[constructor]
     fn constructor(ref self: ContractState, owner: ContractAddress) {
         self.ownable.initializer(owner);
@@ -183,7 +208,6 @@ pub mod StarhomesContract {
     #[abi(embed_v0)]
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
-            // Only owner can upgrade
             self.ownable.assert_only_owner();
             let contract_version = self.version.read();
             self.version.write(contract_version + 1);
