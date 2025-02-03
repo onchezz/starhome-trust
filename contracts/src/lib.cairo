@@ -13,6 +13,7 @@ pub mod models {
 pub mod components {
     pub mod staking_component;
     pub mod property_component;
+    pub mod investment_component;
     pub mod user_component;
     pub mod blogs_component;
 }

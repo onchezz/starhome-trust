@@ -152,41 +152,41 @@ pub mod AssetStakingComponent {
             self.duration.write(property_id,duration);
         }
 
-        fn set_reward_amount(
-            ref self: ComponentState<TContractState>, property_id: felt252, amount: u256,
-        ) {
-            self._only_owner(property_id);
-            self._update_rewards(Zero::zero());
+        // fn set_reward_amount(
+        //     ref self: ComponentState<TContractState>, property_id: felt252, amount: u256,
+        // ) {
+        //     self._only_owner(property_id);
+        //     self._update_rewards(Zero::zero());
 
-            assert(amount > 0, super::Errors::NULL_REWARDS);
-            assert(self.duration.entry(property_id).read() > 0, super::Errors::NULL_DURATION);
+        //     assert(amount > 0, super::Errors::NULL_REWARDS);
+        //     assert(self.duration.entry(property_id).read() > 0, super::Errors::NULL_DURATION);
 
-            let block_timestamp: u256 = get_block_timestamp().into();
+        //     let block_timestamp: u256 = get_block_timestamp().into();
 
-            let rate = if self.finish_at.entry(property_id).read() < block_timestamp {
-                amount / self.duration.entry(property_id).read()
-            } else {
-                let remaining_rewards = self.reward_rate.read()
-                    * (self.finish_at.entry(property_id).read() - block_timestamp);
-                (remaining_rewards + amount) / self.duration.entry(property_id).read()
-            };
+        //     let rate = if self.finish_at.entry(property_id).read() < block_timestamp {
+        //         amount / self.duration.entry(property_id).read()
+        //     } else {
+        //         let remaining_rewards = self.reward_rate.read()
+        //             * (self.finish_at.entry(property_id).read() - block_timestamp);
+        //         (remaining_rewards + amount) / self.duration.entry(property_id).read()
+        //     };
 
-            assert(
-                self.reward_token.entry(property_id).read().balance_of(get_contract_address()) >= rate
-                    * self.duration.entry(property_id).read(),
-                super::Errors::NOT_ENOUGH_REWARDS,
-            );
+        //     assert(
+        //         self.reward_token.entry(property_id).read().balance_of(get_contract_address()) >= rate
+        //             * self.duration.entry(property_id).read(),
+        //         super::Errors::NOT_ENOUGH_REWARDS,
+        //     );
 
-            self.reward_rate.entry(property_id).write(rate);
+        //     self.reward_rate.entry(property_id).write(rate);
 
-            // even if the previous reward duration has not finished, we reset the finish_at
-            // variable
-            self.finish_at.entry(property_id).write(block_timestamp + self.duration.read());
-            self.last_updated_at.entry(property_id).write(block_timestamp);
+        //     // even if the previous reward duration has not finished, we reset the finish_at
+        //     // variable
+        //     self.finish_at.entry(property_id).write(block_timestamp + self.duration.read());
+        //     self.last_updated_at.entry(property_id).write(block_timestamp);
 
-            // reset total distributed rewards
-            self.total_distributed_rewards.write(0);
-        }
+        //     // reset total distributed rewards
+        //     self.total_distributed_rewards.write(0);
+        // }
 
         fn claim_rewards(ref self: ComponentState<TContractState>, property_id: felt252) {
             let user = get_caller_address();
@@ -251,7 +251,7 @@ pub mod AssetStakingComponent {
         ) {
             self
                 .current_reward_per_staked_token
-                .write(account, self._compute_current_reward_per_staked_token(account));
+                // .write(account, self._compute_current_reward_per_staked_token(property_id));
 
             self.last_updated_at.write(account, self.last_time_applicable(property_id));
 
@@ -262,7 +262,7 @@ pub mod AssetStakingComponent {
                     .last_user_reward_per_staked_token
                     .write(account, self.current_reward_per_staked_token.read(account));
 
-                self._send_rewards_finished_event(account);
+                // self._send_rewards_finished_event(property_id);
             }
         }
         fn _distribute_user_rewards(
@@ -280,36 +280,36 @@ pub mod AssetStakingComponent {
                 .write(self.total_distributed_rewards.read() + user_rewards);
         }
 
-        fn _send_rewards_finished_event(
-            ref self: ComponentState<TContractState>, account: ContractAddress,
-        ) {
-            // check whether we should send a RewardsFinished event
-            if self.last_updated_at.entry(property_id).read(account) == self.finish_at.entry(property_id).read(account) {
-                let total_rewards = self.reward_rate.read(account) * self.duration.read(account);
+        // fn _send_rewards_finished_event(
+        //     ref self: ComponentState<TContractState>, account: ContractAddress,
+        // ) {
+        //     // check whether we should send a RewardsFinished event
+        //     if self.last_updated_at.entry(property_id).read(account) == self.finish_at.entry(property_id).read(account) {
+        //         let total_rewards = self.reward_rate.read(account) * self.duration.read(account);
 
-                if total_rewards != 0 && self.total_distributed_rewards.read() == total_rewards {
-                    // owner should set up NEW rewards into the contract
-                    self.emit(RewardsFinished { msg: 'Rewards all distributed' });
-                } else {
-                    // owner should set up rewards into the contract (or add duration by setting up
-                    // rewards)
-                    self.emit(RewardsFinished { msg: 'Rewards not active yet' });
-                }
-            }
-        }
+        //         if total_rewards != 0 && self.total_distributed_rewards.read() == total_rewards {
+        //             // owner should set up NEW rewards into the contract
+        //             self.emit(RewardsFinished { msg: 'Rewards all distributed' });
+        //         } else {
+        //             // owner should set up rewards into the contract (or add duration by setting up
+        //             // rewards)
+        //             self.emit(RewardsFinished { msg: 'Rewards not active yet' });
+        //         }
+        //     }
+        // }
 
-        fn _compute_current_reward_per_staked_token(
-            self: @ComponentState<TContractState>, account: ContractAddress,
-        ) -> u256 {
-            if self.total_supply.read() == 0 {
-                self.current_reward_per_staked_token.read(account)
-            } else {
-                self.current_reward_per_staked_token.read(account)
-                    + self.reward_rate.read(account)
-                        * (self.last_time_applicable(account) - self.last_updated_at.read(account))
-                        / self.total_supply.read()
-            }
-        }
+        // fn _compute_current_reward_per_staked_token(
+        //     self: @ComponentState<TContractState>, property_id: felt252,
+        // ) -> u256 {
+        //     if self.total_supply.read() == 0 {
+        //         self.current_reward_per_staked_token.read(property_id)
+        //     } else {
+        //         self.current_reward_per_staked_token.read(property_id)
+        //             + self.reward_rate.read(account)
+        //                 * (self.last_time_applicable(property_id) - self.last_updated_at.read(account))
+        //                 / self.total_supply.read()
+        //     }
+        // }
 
         fn _compute_new_rewards(
             self: @ComponentState<TContractState>, account: ContractAddress, property_id: felt252,
@@ -321,9 +321,9 @@ pub mod AssetStakingComponent {
 
         #[inline(always)]
         fn last_time_applicable(
-            self: @ComponentState<TContractState>,proertyId:felt252,
+            self: @ComponentState<TContractState>,property_id:felt252,
         ) -> u256 {
-            Self::min(self.finish_at.read(account), get_block_timestamp().into())
+            Self::min(self.finish_at.read(property_id), get_block_timestamp().into())
         }
 
         #[inline(always)]

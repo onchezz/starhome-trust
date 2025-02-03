@@ -1,15 +1,17 @@
 #[starknet::contract]
 pub mod StarhomesContract {
     use starhomes::components::staking_component::AssetStakingComponent;
+    // use starhomes::components::staking_component::AssetStakingComponent::StakingPrivateFunctions;
     use starhomes::components::property_component::PropertyComponent;
     use starhomes::components::user_component::UsersComponent;
     use starhomes::components::blogs_component::BlogComponent;
-    use starhomes::components::property_investment_component::PropertyInvestmentComponent;
     use starhomes::interface::starhomes_interface::*;
     use core::option::Option;
     use starhomes::models::property_models::Property;
     use starhomes::models::investment_model::InvestmentAsset;
     use starhomes::messages::errors::Errors;
+    // use starhomes::messages::success::Messages;
+    // use starknet::storage::StoragePathEntry;
     use starknet::storage::StoragePointerReadAccess;
     use starknet::storage::StoragePointerWriteAccess;
     use starhomes::interfaces::iStarhomes::IStarhomesContract;
@@ -18,9 +20,11 @@ pub mod StarhomesContract {
 
     use core::array::ArrayTrait;
     use core::traits::Into;
+    // use openzeppelin::token::erc20::interface::{IERC20Dispatcher};
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;
+    // use core::byte_array::ByteArray;
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -28,7 +32,6 @@ pub mod StarhomesContract {
     component!(path: UsersComponent, storage: users_data, event: UsersEvent);
     component!(path: PropertyComponent, storage: properties, event: PropertyComponentEvent);
     component!(path: BlogComponent, storage: blogs, event: BlogsComponentEvent);
-    component!(path: PropertyInvestmentComponent, storage: property_investments, event: PropertyInvestmentEvent);
 
     impl PropertyComponentImpl = PropertyComponent::PropertyComponentImpl<ContractState>;
     impl PropertyPrivateFunctions = PropertyComponent::PropertyFunctions<ContractState>;
@@ -36,15 +39,14 @@ pub mod StarhomesContract {
     impl AssetStakingComponentImpl = AssetStakingComponent::StakeAssetImpl<ContractState>;
     impl StakingPrivateFunctions = AssetStakingComponent::StakingPrivateFunctions<ContractState>;
 
+
     #[abi(embed_v0)]
     impl UsersComponentImpl = UsersComponent::UsersComponentImpl<ContractState>;
     impl UsersPrivateFunctions = UsersComponent::UsersPrivateFunctions<ContractState>;
 
+
     #[abi(embed_v0)]
     impl BlogComponentImpl = BlogComponent::BlogsComponentImpl<ContractState>;
-    #[abi(embed_v0)]
-    impl PropertyInvestmentImpl = PropertyInvestmentComponent::PropertyInvestmentImpl<ContractState>;
-
     // Ownable Mixin
     #[abi(embed_v0)]
     impl OwnableMixinImpl = OwnableComponent::OwnableMixinImpl<ContractState>;
@@ -68,9 +70,8 @@ pub mod StarhomesContract {
         PropertyComponentEvent: PropertyComponent::Event,
         #[flat]
         BlogsComponentEvent: BlogComponent::Event,
-        #[flat]
-        PropertyInvestmentEvent: PropertyInvestmentComponent::Event,
     }
+
 
     #[storage]
     struct Storage {
@@ -86,17 +87,17 @@ pub mod StarhomesContract {
         upgradeable: UpgradeableComponent::Storage,
         #[substorage(v0)]
         blogs: BlogComponent::Storage,
-        #[substorage(v0)]
-        property_investments: PropertyInvestmentComponent::Storage,
         contract_owner: ContractAddress,
         version: u64,
     }
 
     #[constructor]
     fn constructor(ref self: ContractState, owner: ContractAddress) {
+        // let owner = get_caller_address();
         self.ownable.initializer(owner);
         self.properties._initialize_property_count();
     }
+
 
     #[abi(embed_v0)]
     impl StarhomesContractImpl of IStarhomesContract<ContractState> {
@@ -129,38 +130,10 @@ pub mod StarhomesContract {
 
         fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u256) {
             assert(
-                self.properties._is_investment_added(investment_id) == true, 'Investment not Available',
+                self.properties._is_investment_added(investment_id) == true,
+                'Investment not added',
             );
-            self.stake_to_property.stake(investment_id, amount.into());
-            let investment = self.get_investment(investment_id);
-            assert(investment.available_staking_amount >amount, 'Stake Lower amount');
-            self
-                .properties
-                .edit_listed_investment(
-                    investment_id,
-                    InvestmentAsset {
-                        available_staking_amount: investment.available_staking_amount - amount,
-                        ..investment,
-                    },
-                );
-        }
-         fn withdraw_from_property(ref self: ContractState, investment_id: felt252, amount: u256) {
-            
-            assert(
-                self.properties._is_investment_added(investment_id) == true, 'Investment not Available',
-            );
-            self.stake_to_property.withdraw(investment_id, amount.into());
-            let investment = self.get_investment(investment_id);
-           
-            self
-                .properties
-                .edit_listed_investment(
-                    investment_id,
-                    InvestmentAsset {
-                        available_staking_amount: investment.available_staking_amount - amount,
-                        ..investment,
-                    },
-                );
+            self.stake_to_property.stake(investment_id, amount);
         }
         fn get_property(self: @ContractState, property_id: felt252) -> Property {
             self.properties.get_property_by_id(property_id)
@@ -190,6 +163,7 @@ pub mod StarhomesContract {
             self.version.read()
         }
     }
+
 
     #[abi(embed_v0)]
     impl UpgradeableImpl of IUpgradeable<ContractState> {

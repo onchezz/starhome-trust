@@ -76,3 +76,23 @@ pub struct RewardsFinished {
     pub msg: felt252,
 }
 
+#[derive(Drop, starknet::Event)]
+pub struct InvestmentDeposit {
+    pub investor: ContractAddress,
+    pub amount: u256,
+}
+
+
+#[derive(Drop, starknet::Event)]
+pub struct InvestmentWithdrawal {
+    pub investor: ContractAddress,
+    pub amount: u256,
+    pub fee_paid: u256,
+}
+
+
+#[derive(Drop, starknet::Event)]
+pub struct LockPeriodSet {
+    pub investor: ContractAddress,
+    pub lock_until: u256,
+}
