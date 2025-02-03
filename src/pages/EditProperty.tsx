@@ -56,7 +56,11 @@ const EditProperty = () => {
 
     const initializeProperty = async () => {
       console.log("[EditProperty] Setting initial form data with property:", property);
-      setFormData(property);
+      // Ensure assetToken is included in the form data
+      setFormData({
+        ...property,
+        assetToken: property.assetToken || "" // Explicitly set assetToken
+      });
       
       if (property.imagesId) {
         console.log("[EditProperty] Processing images from imagesId:", property.imagesId);
@@ -132,7 +136,11 @@ const EditProperty = () => {
   return (
     <div className="container mx-auto py-8">
       <form onSubmit={handleSubmit} className="space-y-8">
-        <BasicInformation formData={formData} handleInputChange={handleInputChange} />
+        <BasicInformation 
+          formData={formData} 
+          handleInputChange={handleInputChange}
+          address={address}
+        />
         
         <PropertyLocation
           formData={formData}
