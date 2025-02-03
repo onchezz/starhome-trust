@@ -19,6 +19,7 @@ pub mod components {
 }
 pub mod interfaces {
     pub mod user_interface;
+    pub mod investment_interface;
     pub mod iStarhomes;
     pub mod asset_staking;
     pub mod property;

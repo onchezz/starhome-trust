@@ -249,9 +249,9 @@ pub mod AssetStakingComponent {
             account: ContractAddress,
             property_id: felt252,
         ) {
-            self
-                .current_reward_per_staked_token
-                // .write(account, self._compute_current_reward_per_staked_token(property_id));
+            // self
+            //     .current_reward_per_staked_token
+            //     .write(account, self._compute_current_reward_per_staked_token(property_id));
 
             self.last_updated_at.write(account, self.last_time_applicable(property_id));
 
