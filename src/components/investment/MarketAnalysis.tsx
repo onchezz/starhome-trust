@@ -12,6 +12,16 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
   formData,
   handleInputChange,
 }) => {
+  const marketAnalysis = formData.market_analysis ? JSON.parse(formData.market_analysis) : {};
+
+  const handleMarketAnalysisChange = (field: string, value: string) => {
+    const updatedAnalysis = {
+      ...marketAnalysis,
+      [field]: value
+    };
+    handleInputChange('market_analysis', JSON.stringify(updatedAnalysis));
+  };
+
   return (
     <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg animate-fade-in">
       <h3 className="text-lg font-semibold mb-4 dark:text-white">
@@ -22,9 +32,9 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Area Growth Rate (%)</Label>
           <Input
             required
-            value={formData.area_growth || ""}
+            value={marketAnalysis.area_growth || ""}
             onChange={(e) =>
-              handleInputChange("area_growth", e.target.value)
+              handleMarketAnalysisChange("area_growth", e.target.value)
             }
             placeholder="Annual area growth rate"
             className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
@@ -35,9 +45,9 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Occupancy Rate (%)</Label>
           <Input
             required
-            value={formData.occupancy_rate || ""}
+            value={marketAnalysis.occupancy_rate || ""}
             onChange={(e) =>
-              handleInputChange("occupancy_rate", e.target.value)
+              handleMarketAnalysisChange("occupancy_rate", e.target.value)
             }
             placeholder="Current occupancy rate"
             className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
@@ -48,9 +58,9 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Comparable Properties</Label>
           <Input
             required
-            value={formData.comparable_properties || ""}
+            value={marketAnalysis.comparable_properties || ""}
             onChange={(e) =>
-              handleInputChange("comparable_properties", e.target.value)
+              handleMarketAnalysisChange("comparable_properties", e.target.value)
             }
             placeholder="Similar properties in the area"
             className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
@@ -61,9 +71,9 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Demand Trend</Label>
           <Input
             required
-            value={formData.demand_trend || ""}
+            value={marketAnalysis.demand_trend || ""}
             onChange={(e) =>
-              handleInputChange("demand_trend", e.target.value)
+              handleMarketAnalysisChange("demand_trend", e.target.value)
             }
             placeholder="Current market demand trend"
             className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
