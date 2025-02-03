@@ -7,7 +7,7 @@ import { useState } from "react";
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
-  const { approveAndInvest } = useToken(tokenAddress || "");
+  const { approveAndInvest, allowance } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
 
   const handleInvest = async (investmentId: string) => {
@@ -64,6 +64,7 @@ export const useInvestment = (tokenAddress?: string) => {
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
     contractStatus,
-    approveAndInvest
+    approveAndInvest,
+    allowance // Added allowance to the return object
   };
 };
