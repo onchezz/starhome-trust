@@ -20,7 +20,6 @@ const EditProperty = () => {
   const { handleEditProperty, contractStatus } = usePropertyCreate();
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
@@ -32,9 +31,30 @@ const EditProperty = () => {
     [properties, id]
   );
 
+  // Convert URLs to File objects for preview
+  const convertUrlsToFiles = useCallback(async (urls: string[]) => {
+    try {
+      const filePromises = urls.map(async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const fileName = url.split('/').pop() || 'image.jpg';
+        return new File([blob], fileName, { type: blob.type });
+      });
+      
+      const files = await Promise.all(filePromises);
+      console.log("[EditProperty] Converted URLs to Files:", files);
+      return files;
+    } catch (error) {
+      console.error("[EditProperty] Error converting URLs to files:", error);
+      return [];
+    }
+  }, []);
+
   // Handle initial form data setup
   useEffect(() => {
-    if (property && !formData.id) {  // Only set initial data if not already set
+    if (!property || formData.id) return;
+
+    const initializeProperty = async () => {
       console.log("[EditProperty] Setting initial form data with property:", property);
       setFormData(property);
       
@@ -42,10 +62,14 @@ const EditProperty = () => {
         console.log("[EditProperty] Processing images from imagesId:", property.imagesId);
         const { imageUrls } = parseImagesData(property.imagesId);
         console.log("[EditProperty] Generated image URLs:", imageUrls);
-        setExistingImages(imageUrls);
+        
+        const files = await convertUrlsToFiles(imageUrls);
+        setSelectedFiles(files);
       }
-    }
-  }, [property, formData.id]);  // Only run when property changes or form is reset
+    };
+
+    initializeProperty();
+  }, [property, formData.id, convertUrlsToFiles]);
 
   const handleInputChange = useCallback((field: keyof Property, value: any) => {
     console.log("[EditProperty] Updating field:", field, "with value:", value);
@@ -75,7 +99,7 @@ const EditProperty = () => {
     if (event.target.files) {
       const newFiles = Array.from(event.target.files);
       console.log("[EditProperty] New files selected:", newFiles);
-      setSelectedFiles(newFiles);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
     }
   }, []);
 
@@ -84,7 +108,7 @@ const EditProperty = () => {
     if (e.dataTransfer.files) {
       const droppedFiles = Array.from(e.dataTransfer.files);
       console.log("[EditProperty] Files dropped:", droppedFiles);
-      setSelectedFiles(droppedFiles);
+      setSelectedFiles(prev => [...prev, ...droppedFiles]);
     }
   }, []);
 
@@ -120,22 +144,6 @@ const EditProperty = () => {
         <PricingInformation formData={formData} handleInputChange={handleInputChange} />
         
         <PropertyFeatures formData={formData} handleInputChange={handleInputChange} />
-
-        {existingImages.length > 0 && (
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {existingImages.map((imageUrl, index) => (
-              <div key={index} className="relative group">
-                <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
-                  <img
-                    src={imageUrl}
-                    alt={`Property image ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
         
         <ImageUploader
           selectedFiles={selectedFiles}
