@@ -11,10 +11,12 @@ import PricingInformation from "@/components/property/form/PricingInformation";
 import PropertyFeatures from "@/components/property/form/PropertyFeatures";
 import ImageUploader from "@/components/property/form/ImageUploader";
 import { parseImagesData } from "@/utils/imageUtils";
+import { useAccount } from "@starknet-react/core";
 
 const EditProperty = () => {
   const { id } = useParams();
-  const { properties } = useAgentProperties();
+  const { address } = useAccount();
+  const { properties } = useAgentProperties(address || "");
   const { handleEditProperty, contractStatus } = usePropertyCreate();
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
