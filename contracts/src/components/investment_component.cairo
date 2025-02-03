@@ -16,20 +16,20 @@ pub mod InvestmentComponent {
         pub investment_token: Map<felt252, IERC20Dispatcher>, // Token per investment
         pub manager: Map<felt252, ContractAddress>, // Manager per investment
         pub investments: Map<(ContractAddress, felt252), u256>, // Investor balance per investment
-        pub lock_periods: Map<(ContractAddress, felt252), u256>,
-        pub min_lock_period: u256,
-        pub min_investments: Map<felt252, u256>,
-        pub early_withdrawal_fee: u16,
-        pub total_funds: Map<felt252, u256>,
-        pub investment_caps: Map<(ContractAddress, felt252), u256>,
-        pub initialized_investments: Map<felt252, bool>,
+        pub lock_periods: Map<(ContractAddress, felt252), u256>, // Lock period end time per investor per investment
+        pub min_lock_period: u256, // Minimum lock period duration
+        pub min_investments: Map<felt252, u256>, // Minimum investment amount per investment
+        pub early_withdrawal_fee: u16, // Fee percentage for early withdrawals (basis points)
+        pub total_funds: Map<felt252, u256>, // Total funds in each investment
+        pub investment_caps: Map<(ContractAddress, felt252), u256>, // Maximum investment amount per investor per investment
+        pub initialized_investments: Map<felt252, bool>, // Track if investment is initialized
         
         // Investment performance tracking
-        pub investment_start_times: Map<(ContractAddress, felt252), u256>,
-        pub annual_return_rates: Map<felt252, u256>,
-        pub earned_returns: Map<(ContractAddress, felt252), u256>,
-        pub total_invested_amount: Map<felt252, u256>,
-        pub investor_count: Map<felt252, u32>,
+        pub investment_start_times: Map<(ContractAddress, felt252), u256>, // When each investor started their investment
+        pub annual_return_rates: Map<felt252, u256>, // Annual return rate per investment (basis points)
+        pub earned_returns: Map<(ContractAddress, felt252), u256>, // Earned returns per investor per investment
+        pub total_invested_amount: Map<felt252, u256>, // Total amount ever invested in each investment
+        pub investor_count: Map<felt252, u32>, // Number of unique investors per investment
         
         // Investor tracking
         pub investors_per_asset: Map<felt252, Array<ContractAddress>>, // Array of investors per investment
@@ -299,7 +299,7 @@ pub mod InvestmentComponent {
             investment_id: felt252,
             rate: u256
         ) {
-            assert(get_caller_address() == self.manager.read(), 'Only manager');
+            assert(get_caller_address() == self.manager.read(investment_id), 'Only manager');
             self.annual_return_rates.write(investment_id, rate);
         }
 
