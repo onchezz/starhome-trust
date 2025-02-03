@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesReads";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
@@ -26,15 +26,18 @@ const EditProperty = () => {
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Property>>({});
 
-  // Find the property being edited
-  const property = properties?.find(p => p.id === id);
+  // Find the property being edited - memoized to prevent unnecessary recalculations
+  const property = React.useMemo(() => 
+    properties?.find(p => p.id === id),
+    [properties, id]
+  );
 
+  // Handle initial form data setup
   useEffect(() => {
-    if (property) {
-      console.log("[EditProperty] Setting form data with property:", property);
+    if (property && !formData.id) {  // Only set initial data if not already set
+      console.log("[EditProperty] Setting initial form data with property:", property);
       setFormData(property);
       
-      // If property has images, get their URLs for display
       if (property.imagesId) {
         console.log("[EditProperty] Processing images from imagesId:", property.imagesId);
         const { imageUrls } = parseImagesData(property.imagesId);
@@ -42,14 +45,14 @@ const EditProperty = () => {
         setExistingImages(imageUrls);
       }
     }
-  }, [property]);
+  }, [property, formData.id]);  // Only run when property changes or form is reset
 
-  const handleInputChange = (field: keyof Property, value: any) => {
+  const handleInputChange = useCallback((field: keyof Property, value: any) => {
     console.log("[EditProperty] Updating field:", field, "with value:", value);
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  }, []);
 
-  const handleLocationSelect = (location: {
+  const handleLocationSelect = useCallback((location: {
     latitude: string;
     longitude: string;
     address: string;
@@ -66,24 +69,24 @@ const EditProperty = () => {
       state: location.state,
       country: location.country,
     }));
-  };
+  }, []);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const newFiles = Array.from(event.target.files);
       console.log("[EditProperty] New files selected:", newFiles);
       setSelectedFiles(newFiles);
     }
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files) {
       const droppedFiles = Array.from(e.dataTransfer.files);
       console.log("[EditProperty] Files dropped:", droppedFiles);
       setSelectedFiles(droppedFiles);
     }
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +121,6 @@ const EditProperty = () => {
         
         <PropertyFeatures formData={formData} handleInputChange={handleInputChange} />
 
-        {/* Display existing images */}
         {existingImages.length > 0 && (
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {existingImages.map((imageUrl, index) => (
