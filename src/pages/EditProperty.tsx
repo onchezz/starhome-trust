@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesReads";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
@@ -24,10 +24,22 @@ export default function EditProperty() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
 
+  // Find the property being edited
   const property = properties?.find(p => p.id === id);
-  const [formData, setFormData] = useState<Partial<Property>>(property || {});
+  
+  // Initialize form data with property data
+  const [formData, setFormData] = useState<Partial<Property>>({});
+
+  // Update form data when property data is loaded
+  useEffect(() => {
+    if (property) {
+      console.log("Setting form data with property:", property);
+      setFormData(property);
+    }
+  }, [property]);
 
   const handleInputChange = (field: keyof Property, value: any) => {
+    console.log("Updating field:", field, "with value:", value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
