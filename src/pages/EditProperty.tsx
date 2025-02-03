@@ -20,6 +20,7 @@ const EditProperty = () => {
   const { handleEditProperty, contractStatus } = usePropertyCreate();
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
@@ -33,31 +34,12 @@ const EditProperty = () => {
       console.log("[EditProperty] Setting form data with property:", property);
       setFormData(property);
       
-      // If property has images, create preview URLs
+      // If property has images, get their URLs for display
       if (property.imagesId) {
         console.log("[EditProperty] Processing images from imagesId:", property.imagesId);
         const { imageUrls } = parseImagesData(property.imagesId);
         console.log("[EditProperty] Generated image URLs:", imageUrls);
-        
-        // Convert image URLs to File objects for preview
-        Promise.all(
-          imageUrls.map(async (url, index) => {
-            try {
-              console.log("[EditProperty] Fetching image from URL:", url);
-              const response = await fetch(url);
-              const blob = await response.blob();
-              const fileName = `property-image-${index + 1}.${blob.type.split('/')[1]}`;
-              return new File([blob], fileName, { type: blob.type });
-            } catch (error) {
-              console.error("[EditProperty] Error loading image:", error);
-              return null;
-            }
-          })
-        ).then((files) => {
-          const validFiles = files.filter((file): file is File => file !== null);
-          console.log("[EditProperty] Created File objects for preview:", validFiles);
-          setSelectedFiles(validFiles);
-        });
+        setExistingImages(imageUrls);
       }
     }
   }, [property]);
@@ -135,6 +117,23 @@ const EditProperty = () => {
         <PricingInformation formData={formData} handleInputChange={handleInputChange} />
         
         <PropertyFeatures formData={formData} handleInputChange={handleInputChange} />
+
+        {/* Display existing images */}
+        {existingImages.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {existingImages.map((imageUrl, index) => (
+              <div key={index} className="relative group">
+                <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
+                  <img
+                    src={imageUrl}
+                    alt={`Property image ${index + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         
         <ImageUploader
           selectedFiles={selectedFiles}
