@@ -4,13 +4,13 @@ import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesR
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { Property } from "@/types/property";
 import { toast } from "sonner";
-import { parseImagesData } from "@/utils/imageUtils";
+import { Button } from "@/components/ui/button";
 import BasicInformation from "@/components/property/form/BasicInformation";
 import PropertyLocation from "@/components/property/form/PropertyLocation";
 import PricingInformation from "@/components/property/form/PricingInformation";
 import PropertyFeatures from "@/components/property/form/PropertyFeatures";
 import ImageUploader from "@/components/property/form/ImageUploader";
-import { Button } from "@/components/ui/button";
+import { parseImagesData } from "@/utils/imageUtils";
 
 const EditProperty = () => {
   const { id } = useParams();
@@ -21,14 +21,11 @@ const EditProperty = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const [formData, setFormData] = useState<Partial<Property>>({});
 
   // Find the property being edited
   const property = properties?.find(p => p.id === id);
-  
-  // Initialize form data with property data
-  const [formData, setFormData] = useState<Partial<Property>>({});
 
-  // Update form data when property data is loaded
   useEffect(() => {
     if (property) {
       console.log("Setting form data with property:", property);
@@ -36,7 +33,10 @@ const EditProperty = () => {
       
       // If property has images, create preview URLs
       if (property.imagesId) {
-        const { imageUrls } = parseImagesData(property.imagesId);
+        console.log("Processing images from imagesId:", property.imagesId);
+        const { imageUrls, imageNames } = parseImagesData(property.imagesId);
+        console.log("Parsed image data:", { imageUrls, imageNames });
+        
         // Convert image URLs to File objects for preview
         Promise.all(
           imageUrls.map(async (url) => {
@@ -51,6 +51,7 @@ const EditProperty = () => {
           })
         ).then((files) => {
           const validFiles = files.filter((file): file is File => file !== null);
+          console.log("Created File objects for preview:", validFiles);
           setSelectedFiles(validFiles);
         });
       }
@@ -74,7 +75,7 @@ const EditProperty = () => {
       ...prev,
       latitude: location.latitude,
       longitude: location.longitude,
-      location_address: location.address,
+      locationAddress: location.address,
       city: location.city,
       state: location.state,
       country: location.country,
