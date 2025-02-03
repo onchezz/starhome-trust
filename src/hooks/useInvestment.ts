@@ -7,7 +7,7 @@ import { useState } from "react";
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
-  const { approveAndInvest } = useToken(tokenAddress || "");
+  const { approveAndInvest, allowance, balance } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
 
   const handleInvest = async (investmentId: string) => {
@@ -17,14 +17,30 @@ export const useInvestment = (tokenAddress?: string) => {
         return;
       }
 
-      console.log("Starting investment process for:", {
-        investmentId,
-        amount: investmentAmount
+      const amount = Number(investmentAmount);
+      
+      // Check balance and allowance before proceeding
+      const currentAllowance = allowance ? Number(allowance) / Math.pow(10, 6) : 0;
+      const currentBalance = balance ? Number(balance) / Math.pow(10, 6) : 0;
+
+      console.log("Investment checks:", {
+        requestedAmount: amount,
+        currentAllowance,
+        currentBalance
       });
+
+      if (currentBalance < amount) {
+        toast.error("Insufficient balance");
+        return;
+      }
+
+      if (currentAllowance < amount) {
+        toast.info("Approving token spend...");
+      }
 
       // First approve the token spend
       await approveAndInvest(
-        Number(investmentAmount), 
+        amount, 
         investmentId,
         async (id: string, amount: number) => {
           console.log("Investment callback triggered with:", { id, amount });
@@ -32,8 +48,8 @@ export const useInvestment = (tokenAddress?: string) => {
           try {
             // Call the contract's invest function
             const response = await execute("invest_in_property", [
-              id, // investment_id
-              amount.toString() // amount
+              id,
+              amount.toString()
             ]);
 
             console.log("Contract investment response:", response);
@@ -64,6 +80,8 @@ export const useInvestment = (tokenAddress?: string) => {
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
     contractStatus,
-    approveAndInvest
+    approveAndInvest,
+    allowance: allowance ? Number(allowance) / Math.pow(10, 6) : 0,
+    balance: balance ? Number(balance) / Math.pow(10, 6) : 0
   };
 };
