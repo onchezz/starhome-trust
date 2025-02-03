@@ -3,6 +3,7 @@ import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWriteContract";
 import { toast } from "sonner";
 import { useState } from "react";
+import { num } from "starknet";
 
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
@@ -46,10 +47,14 @@ export const useInvestment = (tokenAddress?: string) => {
           console.log("Investment callback triggered with:", { id, amount });
           
           try {
-            // Call the contract's invest function
+            // Convert the amount to a valid uint256 string
+            const amountInWei = num.toBigInt(amount.toString());
+            console.log("Converted amount:", amountInWei.toString());
+
+            // Call the contract's invest function with the properly formatted amount
             const response = await execute("invest_in_property", [
               id,
-              amount.toString()
+              amountInWei.toString()
             ]);
 
             console.log("Contract investment response:", response);
