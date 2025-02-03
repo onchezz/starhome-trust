@@ -30,6 +30,8 @@ pub mod InvestmentComponent {
         pub total_funds: Map<felt252, u256>,
         // Investment caps per user per investment
         pub investment_caps: Map<(ContractAddress, felt252), u256>,
+        // Initialized investments
+        pub initialized_investments: Map<felt252, bool>,
     }
 
     #[event]
@@ -72,6 +74,7 @@ pub mod InvestmentComponent {
             self.manager.write(manager);
             self.min_lock_period.write(min_lock);
             self.early_withdrawal_fee.write(withdrawal_fee);
+            self.initialized_investments.write(investment_id, true);
         }
 
         fn invest(ref self: ComponentState<TContractState>, investment_id: felt252, amount: u256) -> bool {
@@ -184,6 +187,19 @@ pub mod InvestmentComponent {
         ) {
             assert(get_caller_address() == self.manager.read(), 'Only manager');
             self.min_investments.write(investment_id, min_amount);
+        }
+    }
+
+    // Internal functions implementation
+    #[generate_trait]
+    impl InternalFunctions<
+        TContractState, +HasComponent<TContractState>
+    > of InternalFunctionsTrait<TContractState> {
+        fn _is_investment_initialized(
+            self: @ComponentState<TContractState>,
+            investment_id: felt252
+        ) -> bool {
+            self.initialized_investments.read(investment_id)
         }
     }
 }
