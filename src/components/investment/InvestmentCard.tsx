@@ -28,10 +28,12 @@ export const InvestmentCard = ({
   handleConnectWallet,
   address,
 }: InvestmentCardProps) => {
+  // Always call hooks at the top level, regardless of conditions
   const { 
     investmentAmount, 
     setInvestmentAmount, 
-    handleInvest 
+    handleInvest,
+    approveAndInvest 
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -50,6 +52,14 @@ export const InvestmentCard = ({
     property.asset_value - property.available_staking_amount,
     property.asset_value
   );
+
+  const handleInvestClick = async () => {
+    if (!address) {
+      handleConnectWallet();
+      return;
+    }
+    await handleInvest(property.id);
+  };
 
   return (
     <Card className="overflow-hidden transform transition-all duration-300 hover:shadow-xl">
@@ -119,11 +129,7 @@ export const InvestmentCard = ({
                 />
                 <Button
                   className="w-full bg-primary hover:bg-primary/90"
-                  onClick={
-                    address
-                      ? () => handleInvest(property.id)
-                      : handleConnectWallet
-                  }
+                  onClick={handleInvestClick}
                 >
                   <Wallet className="mr-2 h-4 w-4" />
                   {address ? "Invest" : "Connect Wallet"}
