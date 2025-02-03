@@ -116,10 +116,19 @@ const EditInvestment = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id) return;
+    if (!id) {
+      toast.error("Investment ID is required");
+      return;
+    }
 
     try {
-      await handleEditInvestmentProperty(id, formData);
+      // Ensure all required fields are present before submitting
+      const completeInvestmentData: InvestmentAsset = {
+        ...formData as InvestmentAsset,
+        id: id // Ensure id is included
+      };
+
+      await handleEditInvestmentProperty(id, completeInvestmentData);
       toast.success("Investment property updated successfully!");
     } catch (error) {
       console.error("[EditInvestment] Error updating investment:", error);
