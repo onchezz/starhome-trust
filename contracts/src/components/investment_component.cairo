@@ -206,6 +206,75 @@ pub mod InvestmentComponent {
             true
         }
 
+        fn set_lock_period(
+            ref self: ComponentState<TContractState>,
+            investment_id: felt252,
+            duration: u256
+        ) {
+            // Verify caller is investment manager
+            let caller = get_caller_address();
+            assert(caller == self.manager.read(investment_id), 'Only manager can set lock');
+            
+            // Ensure duration meets minimum requirements
+            assert(duration >= self.min_lock_period.read(), 'Lock period too short');
+            
+            // Calculate lock end time
+            let current_time: u256 = get_block_timestamp().into();
+            let lock_end = current_time + duration;
+            
+            // Set lock period
+            self.lock_periods.write((caller, investment_id), lock_end);
+            
+            self.emit(LockPeriodSet { 
+                investment_id,
+                duration,
+                end_time: lock_end 
+            });
+        }
+
+        fn get_lock_period_end(
+            self: @ComponentState<TContractState>,
+            investor: ContractAddress,
+            investment_id: felt252
+        ) -> u256 {
+            self.lock_periods.read((investor, investment_id))
+        }
+
+        fn set_investment_cap(
+            ref self: ComponentState<TContractState>,
+            investor: ContractAddress,
+            investment_id: felt252,
+            cap: u256
+        ) {
+            // Verify caller is investment manager
+            let caller = get_caller_address();
+            assert(caller == self.manager.read(investment_id), 'Only manager can set cap');
+            
+            // Set investment cap for specific investor
+            self.investment_caps.write((investor, investment_id), cap);
+        }
+
+        fn set_min_investment(
+            ref self: ComponentState<TContractState>,
+            investment_id: felt252,
+            min_amount: u256
+        ) {
+            // Verify caller is investment manager
+            let caller = get_caller_address();
+            assert(caller == self.manager.read(investment_id), 'Only manager can set min');
+            
+            // Set minimum investment amount
+            self.min_investments.write(investment_id, min_amount);
+        }
+
+        fn get_investment_balance(
+            self: @ComponentState<TContractState>,
+            investor: ContractAddress,
+            investment_id: felt252
+        ) -> u256 {
+            self.investments.read((investor, investment_id))
+        }
+
         fn get_earned_returns(
             self: @ComponentState<TContractState>,
             investor: ContractAddress,
