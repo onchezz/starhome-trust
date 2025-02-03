@@ -1,4 +1,3 @@
-use starhomes::messages::errors::Errors;
 
 #[starknet::component]
 pub mod InvestmentComponent {
@@ -84,7 +83,6 @@ pub mod InvestmentComponent {
             self.min_lock_period.write(min_lock);
             self.early_withdrawal_fee.write(withdrawal_fee);
             self.annual_return_rates.write(investment_id, annual_return_rate);
-
             // Initialize tracking variables
             self.initialized_investments.write(investment_id, true);
             self.investor_count.write(investment_id, 0);
@@ -101,7 +99,6 @@ pub mod InvestmentComponent {
 
             // Validate investment amount
             assert(amount >= min_investment, 'Below minimum investment');
-
             // Check investment cap
             let cap = self.investment_caps.read((investor, investment_id));
             if cap > 0 {
@@ -238,7 +235,6 @@ pub mod InvestmentComponent {
             // Verify caller is investment manager
             let caller = get_caller_address();
             assert(caller == self.manager.read(investment_id), 'Only manager can set cap');
-
             // Set investment cap for specific investor
             self.investment_caps.write((investor, investment_id), cap);
         }
@@ -249,7 +245,6 @@ pub mod InvestmentComponent {
             // Verify caller is investment manager
             let caller = get_caller_address();
             assert(caller == self.manager.read(investment_id), 'Only manager can set min');
-
             // Set minimum investment amount
             self.min_investments.write(investment_id, min_amount);
         }
