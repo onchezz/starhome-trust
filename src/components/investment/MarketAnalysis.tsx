@@ -5,7 +5,7 @@ import { InvestmentAsset } from "@/types/investment";
 
 interface MarketAnalysisProps {
   formData: Partial<InvestmentAsset>;
-  handleInputChange: (field: keyof InvestmentAsset['market_analysis'], value: any) => void;
+  handleInputChange: (field: keyof InvestmentAsset, value: any) => void;
 }
 
 const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
@@ -22,7 +22,7 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Area Growth Rate (%)</Label>
           <Input
             required
-            value={formData.market_analysis?.area_growth || ""}
+            value={formData.area_growth || ""}
             onChange={(e) =>
               handleInputChange("area_growth", e.target.value)
             }
@@ -35,7 +35,7 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Occupancy Rate (%)</Label>
           <Input
             required
-            value={formData.market_analysis?.occupancy_rate || ""}
+            value={formData.occupancy_rate || ""}
             onChange={(e) =>
               handleInputChange("occupancy_rate", e.target.value)
             }
@@ -48,7 +48,7 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Comparable Properties</Label>
           <Input
             required
-            value={formData.market_analysis?.comparable_properties || ""}
+            value={formData.comparable_properties || ""}
             onChange={(e) =>
               handleInputChange("comparable_properties", e.target.value)
             }
@@ -61,7 +61,7 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
           <Label className="dark:text-gray-200">Demand Trend</Label>
           <Input
             required
-            value={formData.market_analysis?.demand_trend || ""}
+            value={formData.demand_trend || ""}
             onChange={(e) =>
               handleInputChange("demand_trend", e.target.value)
             }
