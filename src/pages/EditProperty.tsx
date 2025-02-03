@@ -116,6 +116,7 @@ export default function EditProperty() {
 
           <PropertyLocation
             formData={formData}
+            handleInputChange={handleInputChange}
             handleLocationSelect={handleLocationSelect}
             isLocationLoading={isLocationLoading}
           />
