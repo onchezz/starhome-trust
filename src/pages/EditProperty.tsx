@@ -3,38 +3,58 @@ import { useParams } from "react-router-dom";
 import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesReads";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { Property } from "@/types/property";
-import { useAccount } from "@starknet-react/core";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import BasicInformation from "@/components/property/form/BasicInformation";
+import PropertyLocation from "@/components/property/form/PropertyLocation";
 import PricingInformation from "@/components/property/form/PricingInformation";
 import PropertyFeatures from "@/components/property/form/PropertyFeatures";
-import PropertyLocation from "@/components/property/form/PropertyLocation";
 import ImageUploader from "@/components/property/form/ImageUploader";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { parseImagesData } from "@/utils/imageUtils";
 
-export default function EditProperty() {
-  const { id } = useParams<{ id: string }>();
-  const { address } = useAccount();
-  const { properties, isLoading, error } = useAgentProperties(address || "");
+const EditProperty = () => {
+  const { id } = useParams();
+  const { properties } = useAgentProperties();
   const { handleEditProperty, contractStatus } = usePropertyCreate();
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const [formData, setFormData] = useState<Partial<Property>>({});
 
   // Find the property being edited
   const property = properties?.find(p => p.id === id);
-  
-  // Initialize form data with property data
-  const [formData, setFormData] = useState<Partial<Property>>({});
 
-  // Update form data when property data is loaded
   useEffect(() => {
     if (property) {
       console.log("Setting form data with property:", property);
       setFormData(property);
+      
+      // If property has images, create preview URLs
+      if (property.imagesId) {
+        console.log("Processing images from imagesId:", property.imagesId);
+        const { imageUrls, imageNames } = parseImagesData(property.imagesId);
+        console.log("Parsed image data:", { imageUrls, imageNames });
+        
+        // Convert image URLs to File objects for preview
+        Promise.all(
+          imageUrls.map(async (url) => {
+            try {
+              const response = await fetch(url);
+              const blob = await response.blob();
+              return new File([blob], `image-${Date.now()}.jpg`, { type: 'image/jpeg' });
+            } catch (error) {
+              console.error("Error loading image:", error);
+              return null;
+            }
+          })
+        ).then((files) => {
+          const validFiles = files.filter((file): file is File => file !== null);
+          console.log("Created File objects for preview:", validFiles);
+          setSelectedFiles(validFiles);
+        });
+      }
     }
   }, [property]);
 
@@ -88,74 +108,45 @@ export default function EditProperty() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (error || !property) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-red-500">Error loading property</p>
-      </div>
-    );
+  if (!property) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="container mx-auto py-8 space-y-6">
-      <Card className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Edit Property</h1>
+    <div className="container mx-auto py-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <BasicInformation formData={formData} handleInputChange={handleInputChange} />
         
-        <div className="space-y-6">
-          <BasicInformation
-            formData={formData}
-            handleInputChange={handleInputChange}
-            address={address}
-          />
+        <PropertyLocation
+          formData={formData}
+          handleLocationSelect={handleLocationSelect}
+          isLocationLoading={isLocationLoading}
+          handleInputChange={handleInputChange}
+        />
+        
+        <PricingInformation formData={formData} handleInputChange={handleInputChange} />
+        
+        <PropertyFeatures formData={formData} handleInputChange={handleInputChange} />
+        
+        <ImageUploader
+          selectedFiles={selectedFiles}
+          isUploading={isUploading}
+          uploadProgress={uploadProgress}
+          handleFileSelect={handleFileSelect}
+          handleDrop={handleDrop}
+          setSelectedFiles={setSelectedFiles}
+        />
 
-          <PricingInformation
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-
-          <PropertyFeatures
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-
-          <PropertyLocation
-            formData={formData}
-            handleInputChange={handleInputChange}
-            handleLocationSelect={handleLocationSelect}
-            isLocationLoading={isLocationLoading}
-          />
-
-          <ImageUploader
-            selectedFiles={selectedFiles}
-            isUploading={isUploading}
-            uploadProgress={uploadProgress}
-            handleFileSelect={handleFileSelect}
-            handleDrop={handleDrop}
-            setSelectedFiles={setSelectedFiles}
-          />
-
-          <div className="flex justify-end">
-            <Button 
-              type="submit" 
-              disabled={contractStatus.isPending}
-              className="w-full md:w-auto"
-            >
-              {contractStatus.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Update Property
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </form>
+        <Button 
+          type="submit" 
+          disabled={contractStatus.isPending}
+          className="w-full"
+        >
+          {contractStatus.isPending ? "Updating Property..." : "Update Property"}
+        </Button>
+      </form>
+    </div>
   );
-}
+};
+
+export default EditProperty;
