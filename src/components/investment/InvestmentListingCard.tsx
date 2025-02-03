@@ -38,9 +38,9 @@ export const InvestmentListingCard = ({
       ...rest
     } as InvestmentAsset;
 
-    navigate('/add-investment', { 
+    navigate(`/edit-investment/${id}`, { 
       state: { 
-        investmentToUpdate: investmentData 
+        investmentData
       }
     });
   };
