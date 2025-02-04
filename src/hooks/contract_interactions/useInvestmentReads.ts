@@ -9,8 +9,12 @@ export const useInvestorsForInvestment = (investmentId: string) => {
 
   console.log("Investors for investment:", { investmentId, data, error });
 
-  // Convert the data to an array if it exists
-  const investors = data ? Object.values(data).filter((value): value is string => typeof value === 'string') : [];
+  // Convert the data to an array if it exists, ensuring proper type handling
+  const investors = data ? 
+    Array.isArray(data) ? 
+      data.filter((value): value is string => typeof value === 'string') :
+      Object.values(data).filter((value): value is string => typeof value === 'string') : 
+    [];
 
   return {
     investors,
