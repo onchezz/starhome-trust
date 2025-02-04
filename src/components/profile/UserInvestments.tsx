@@ -7,7 +7,7 @@ import { useAccount } from "@starknet-react/core";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvestmentListingCard } from "./InvestmentListingCard";
 import { useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
-import { useInvestmentWithdraw } from "@/hooks/contract_interactions/useInvestmentWithdraw";
+import { useInvestmentWithdraw } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";

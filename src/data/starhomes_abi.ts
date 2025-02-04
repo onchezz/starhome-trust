@@ -366,6 +366,90 @@ export const starhomes_abi =[
       },
       {
         "type": "function",
+        "name": "withdraw_from_property",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_investors_for_investment",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_investor_balance_in_investment",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "investor_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_investment_manager",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "set_annual_investment_rate",
+        "inputs": [
+          {
+            "name": "investment_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "rate",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
         "name": "edit_property",
         "inputs": [
           {
@@ -1294,6 +1378,84 @@ export const starhomes_abi =[
   },
   {
     "type": "event",
+    "name": "starhomes::models::contract_events::InvestmentDeposit",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "investor",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "amount",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "starhomes::models::contract_events::InvestmentWithdrawal",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "investor",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "amount",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "fee_paid",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "starhomes::models::contract_events::LockPeriodSet",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "investor",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "lock_until",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "starhomes::components::investment_component::InvestmentComponent::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "InvestmentDeposit",
+        "type": "starhomes::models::contract_events::InvestmentDeposit",
+        "kind": "nested"
+      },
+      {
+        "name": "InvestmentWithdrawal",
+        "type": "starhomes::models::contract_events::InvestmentWithdrawal",
+        "kind": "nested"
+      },
+      {
+        "name": "LockPeriodSet",
+        "type": "starhomes::models::contract_events::LockPeriodSet",
+        "kind": "nested"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "starhomes::starhomes_contract::starhomes::StarhomesContract::Event",
     "kind": "enum",
     "variants": [
@@ -1325,6 +1487,11 @@ export const starhomes_abi =[
       {
         "name": "BlogsComponentEvent",
         "type": "starhomes::components::blogs_component::BlogComponent::Event",
+        "kind": "flat"
+      },
+      {
+        "name": "InvestmentEvent",
+        "type": "starhomes::components::investment_component::InvestmentComponent::Event",
         "kind": "flat"
       }
     ]

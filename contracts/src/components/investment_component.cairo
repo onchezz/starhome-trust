@@ -71,7 +71,7 @@ pub mod InvestmentComponent {
 
 
     #[embeddable_as(InvestmentImpl)]
-   pub impl Investment<
+    pub impl Investment<
         TContractState, +HasComponent<TContractState>,
     > of IInvestmentTrait<ComponentState<TContractState>> {
         fn initialize_investment(
@@ -163,7 +163,7 @@ pub mod InvestmentComponent {
             let investor = get_caller_address();
             let investment = self.investments.read((investor, investment_id));
 
-            assert(amount <= investment, 'Insufficient balance');
+            assert(amount <= investment, 'less balance in investment');
 
             let current_time: u256 = get_block_timestamp().into();
             let lock_end = self.lock_periods.read((investor, investment_id));

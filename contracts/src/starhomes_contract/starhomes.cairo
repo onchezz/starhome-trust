@@ -205,10 +205,13 @@ pub mod StarhomesContract {
                 ._edit_listed_investment(
                     investment_id,
                     investment: InvestmentAsset {
-                        available_staking_amount: investment.available_staking_amount - amount,
+                        available_staking_amount: investment.available_staking_amount + amount,
                         ..investment,
                     },
                 );
+        }
+        fn get_investment_manager(self: @ContractState, investment_id: felt252) -> ContractAddress {
+            self.investments.get_manager(investment_id)
         }
 
         fn set_annual_investment_rate(ref self: ContractState, investment_id: felt252, rate: u256) {

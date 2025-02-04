@@ -10,7 +10,7 @@ export const useInvestmentWithdraw = () => {
       
       const response = await execute("withdraw_from_property", [
         investmentId,
-        amount
+        amount*Math.pow(10,6)
       ]);
 
       if (response?.status?.isSuccess) {

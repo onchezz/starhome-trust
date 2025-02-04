@@ -12,9 +12,14 @@ pub trait IStarhomesContract<TContractState> {
     fn list_investment_property(ref self: TContractState, investment_asset: InvestmentAsset);
     fn invest_in_property(ref self: TContractState, investment_id: felt252, amount: u256);
     fn withdraw_from_property(ref self: TContractState, investment_id: felt252, amount: u256);
-    fn get_investors_for_investment(self: @TContractState, investment_id: felt252)-> Array<ContractAddress>;
-    fn get_investor_balance_in_investment(self: @TContractState, investment_id: felt252, investor_address:ContractAddress)-> u256;
-    fn set_annual_investment_rate(ref self: TContractState, investment_id: felt252, rate: u256,);
+    fn get_investors_for_investment(
+        self: @TContractState, investment_id: felt252,
+    ) -> Array<ContractAddress>;
+    fn get_investor_balance_in_investment(
+        self: @TContractState, investment_id: felt252, investor_address: ContractAddress,
+    ) -> u256;
+    fn get_investment_manager(self: @TContractState, investment_id: felt252) -> ContractAddress;
+    fn set_annual_investment_rate(ref self: TContractState, investment_id: felt252, rate: u256);
     fn edit_property(ref self: TContractState, property_id: felt252, property: Property) -> felt252;
     fn edit_listed_investment_property(
         ref self: TContractState, investment_id: felt252, investment: InvestmentAsset,
