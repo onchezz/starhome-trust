@@ -273,6 +273,3 @@ export const universalErc20Abi = [
     ],
   },
 ] as const;
-
-// Add the export that's being used
-export const universalTokenAbi = universalErc20Abi;
