@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useBalance, useAccount } from "@starknet-react/core";
+import { useQuery } from "@tanstack/react-query";
 import {
   universalEthAddress,
   universalStrkAddress,
   usdcTokenAddress,
   usdTTokenAddress,
 } from "@/utils/constants";
+import { CACHE_KEYS, getLocalCache, setLocalCache } from "@/utils/cacheUtils";
 
 export const tokenAddresses = {
   USDT: usdTTokenAddress,
@@ -14,154 +16,66 @@ export const tokenAddresses = {
   ETH: universalEthAddress,
 } as const;
 
-const CACHE_DURATION = 30000; // 30 seconds
-const CACHE_KEY = 'token_balances';
-
-interface SerializedBalance {
+interface TokenBalance {
   decimals: number;
   formatted: string;
   symbol: string;
-  value: string; // BigInt as string
+  value: string;
 }
 
 interface CachedBalances {
-  USDT: SerializedBalance | null;
-  USDC: SerializedBalance | null;
-  STRK: SerializedBalance | null;
-  ETH: SerializedBalance | null;
+  USDT: TokenBalance | null;
+  USDC: TokenBalance | null;
+  STRK: TokenBalance | null;
+  ETH: TokenBalance | null;
 }
 
 export function useTokenBalances() {
   const { address } = useAccount();
-  const [lastFetchTime, setLastFetchTime] = useState(0);
-  const [cachedBalances, setCachedBalances] = useState<CachedBalances>({
-    USDT: null,
-    USDC:null,
-    STRK: null,
-    ETH: null,
-  });
 
-  const shouldRefetch = useCallback(() => {
-    return Date.now() - lastFetchTime > CACHE_DURATION;
-  }, [lastFetchTime]);
+  const fetchBalances = useCallback(async () => {
+    if (!address) return null;
+    
+    const cachedData = getLocalCache(`balances_${address}`);
+    if (cachedData) {
+      console.log('Using cached balance data for:', address);
+      return cachedData;
+    }
 
-  const { 
-    data: usdtBalance, 
-    isLoading: isLoadingUsdt,
-    refetch: refetchUsdt
-  } = useBalance({
-    address,
-    token: tokenAddresses.USDT,
-    watch: false,
-    enabled: !!address && shouldRefetch(),
-  });
-   const { 
-    data: usdcBalance, 
-    isLoading: isLoadingUsdc,
-    refetch: refetchUsdc
-  } = useBalance({
-    address,
-    token: tokenAddresses.USDT,
-    watch: false,
-    enabled: !!address && shouldRefetch(),
-  });
+    // Fetch fresh data if no cache
+    const balances = await Promise.all([
+      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.USDT}`),
+      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.USDC}`),
+      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.STRK}`),
+      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.ETH}`),
+    ]);
 
-  const { 
-    data: strkBalance, 
-    isLoading: isLoadingStrk,
-    refetch: refetchStrk
-  } = useBalance({
-
-    address,
-    token: tokenAddresses.STRK,
-    watch: false,
-    enabled: !!address && shouldRefetch(),
-  });
-
-  const { 
-    data: ethBalance, 
-    isLoading: isLoadingEth,
-    refetch: refetchEth
-  } = useBalance({
-    address,
-    token: tokenAddresses.ETH,
-    watch: false,
-    enabled: !!address && shouldRefetch(),
-  });
-
-  const serializeBalance = (balance: any): SerializedBalance | null => {
-    if (!balance) return null;
-    return {
-      decimals: balance.decimals,
-      formatted: balance.formatted,
-      symbol: balance.symbol,
-      value: balance.value.toString(), // Convert BigInt to string
+    const data = {
+      USDT: await balances[0].json(),
+      USDC: await balances[1].json(),
+      STRK: await balances[2].json(),
+      ETH: await balances[3].json(),
     };
-  };
 
-  const loadFromCache = useCallback(() => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { balances, timestamp } = JSON.parse(cached);
-        setCachedBalances(balances);
-        setLastFetchTime(timestamp);
-      }
-    } catch (error) {
-      console.error('Error loading from cache:', error);
-    }
-  }, []);
+    setLocalCache(`balances_${address}`, data);
+    return data;
+  }, [address]);
 
-  const saveToCache = useCallback((balances: CachedBalances) => {
-    try {
-      const cacheData = {
-        balances,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    } catch (error) {
-      console.error('Error saving to cache:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (address) {
-      loadFromCache();
-    }
-  }, [address, loadFromCache]);
-
-  useEffect(() => {
-    if (usdtBalance || strkBalance || ethBalance) {
-      const newBalances = {
-        USDT: serializeBalance(usdtBalance),
-        USDC: serializeBalance(usdcBalance),
-        STRK: serializeBalance(strkBalance),
-        ETH: serializeBalance(ethBalance),
-      };
-      setCachedBalances(newBalances);
-      setLastFetchTime(Date.now());
-      saveToCache(newBalances);
-    }
-  }, [usdtBalance,usdcBalance, strkBalance, ethBalance, saveToCache]);
-
-  const forceRefresh = async () => {
-    if (address) {
-      await Promise.all([
-        refetchUsdt(),
-        refetchStrk(),
-        refetchEth()
-      ]);
-    }
-  };
+  const { data: balances, isLoading, refetch } = useQuery({
+    queryKey: [...CACHE_KEYS.USER_BALANCE(address || ''), 'balances'],
+    queryFn: fetchBalances,
+    enabled: !!address,
+    staleTime: 30000, // Consider data fresh for 30 seconds
+  });
 
   return {
-    balances: {
-      USDT:cachedBalances.USDT|| usdtBalance ,
-      USDC:  cachedBalances.USDC||usdtBalance ,
-      STRK: cachedBalances.STRK||strkBalance ,
-      ETH: cachedBalances.ETH||ethBalance ,
+    balances: balances || {
+      USDT: null,
+      USDC: null,
+      STRK: null,
+      ETH: null,
     },
-    isLoading: isLoadingUsdt ||  isLoadingUsdc ||isLoadingStrk || isLoadingEth,
-    refresh: forceRefresh
+    isLoading,
+    refresh: refetch,
   };
 }
