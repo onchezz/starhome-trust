@@ -5,14 +5,13 @@ import { Skeleton } from "../ui/skeleton";
 import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useAccount } from "@starknet-react/core";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { InvestmentListingCard } from "../investment/InvestmentListingCard";
+import { InvestmentListingCard } from "./InvestmentListingCard";
 import { useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
 import { useInvestmentWithdraw } from "@/hooks/contract_interactions/useInvestmentWithdraw";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
-import { Wallet, ListChecks } from "lucide-react";
-import { toast } from "sonner";
+import { Wallet } from "lucide-react";
 
 export const UserInvestments = () => {
   const { theme } = useTheme();
@@ -29,27 +28,18 @@ export const UserInvestments = () => {
 
   const userOwnedInvestments = userInvestments?.filter((investment) => {
     if (!investment?.owner || !address) return false;
-    return investment.owner.toLowerCase() === address.toLowerCase();
+    return investment.owner.trimEnd.toString === address.trimEnd.toString;
   });
 
   const userListedInvestments = investmentProperties?.filter((investment) => {
     if (!investment?.investor_id || !address) return false;
-    return investment.investor_id.toLowerCase() === address.toLowerCase();
+    return investment.owner.trimEnd.toString === address.trimEnd.toString;
   });
 
   const handleWithdrawClick = async (investmentId: string) => {
-    try {
-      if (!withdrawalAmount) {
-        toast.error("Please enter a withdrawal amount");
-        return;
-      }
-      await handleWithdraw(investmentId, Number(withdrawalAmount));
-      toast.success("Withdrawal successful");
-      setWithdrawalAmount("");
-    } catch (error) {
-      console.error("Withdrawal error:", error);
-      toast.error("Failed to process withdrawal");
-    }
+    if (!withdrawalAmount) return;
+    await handleWithdraw(investmentId, Number(withdrawalAmount));
+    setWithdrawalAmount("");
   };
 
   const InvestmentCard = ({ investment }: { investment: any }) => {
@@ -58,10 +48,7 @@ export const UserInvestments = () => {
     return (
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <ListChecks className="h-5 w-5" />
-            {investment.name}
-          </CardTitle>
+          <CardTitle className="text-lg">{investment.name}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -71,7 +58,7 @@ export const UserInvestments = () => {
                 {balanceLoading ? (
                   <Skeleton className="h-4 w-20" />
                 ) : (
-                  `$${balance?.toLocaleString() || 0}`
+                  `${balance} USDT`
                 )}
               </span>
             </div>
@@ -171,16 +158,7 @@ export const UserInvestments = () => {
           <TabsContent value="listed">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {userListedInvestments?.map((investment) => (
-                <InvestmentListingCard
-                  key={investment.id}
-                  id={investment.id}
-                  name={investment.name}
-                  description={investment.description}
-                  asset_value={investment.asset_value}
-                  expected_roi={investment.expected_roi}
-                  images={investment.images}
-                  {...investment}
-                />
+                <InvestmentCard key={investment.id} investment={investment} />
               ))}
             </div>
           </TabsContent>
