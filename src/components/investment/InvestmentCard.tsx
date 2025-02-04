@@ -28,6 +28,11 @@ export const InvestmentCard = ({
   handleConnectWallet,
   address,
 }: InvestmentCardProps) => {
+  if (!property) {
+    console.error("Property is undefined in InvestmentCard");
+    return null;
+  }
+
   const { 
     investmentAmount, 
     setInvestmentAmount, 
@@ -114,7 +119,7 @@ export const InvestmentCard = ({
             >
               <CollapsibleTrigger asChild>
                 <Button className="w-full">
-                  {address ? "Invest Now" : "Invest in this property"}
+                  {address ? "Invest Now" : "Connect Wallet"}
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-4 space-y-4">

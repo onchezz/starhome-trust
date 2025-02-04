@@ -22,14 +22,14 @@ export const usePropertyRead = () => {
     functionName: "get_sale_properties",
   });
 
-  const { data: propertiesData, isLoading: salePropertiesLoading, error } = useQuery({
+  const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
       console.log("[usePropertyRead] Starting property fetch");
       
       // Try to get cached properties first
       const cachedProperties = await getCachedProperties();
-      if (cachedProperties.length > 0) {
+      if (cachedProperties && cachedProperties.length > 0) {
         console.log("[usePropertyRead] Using cached properties:", cachedProperties);
         return cachedProperties;
       }
@@ -42,7 +42,7 @@ export const usePropertyRead = () => {
       const properties = salePropertiesHook.data || [];
       
       // Convert and cache the properties
-      const convertedProperties = properties.map((prop: any) => {
+      const convertedProperties = (Array.isArray(properties) ? properties : []).map((prop: any) => {
         try {
           return PropertyConverter.fromStarknetProperty(prop);
         } catch (error) {
@@ -56,32 +56,31 @@ export const usePropertyRead = () => {
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
-    refetchInterval: CACHE_TIME,
     enabled: !salePropertiesHook.isLoading,
   });
 
   return {
     saleProperties: propertiesData || [],
-    isLoading: salePropertiesLoading,
+    isLoading,
     error,
   };
 };
 
 export const usePropertyReadById = (id: string) => {
-  const { data: properties, isLoading, error } = usePropertyRead();
+  const { saleProperties, isLoading, error } = usePropertyRead();
   
   return {
-    property: properties?.saleProperties?.find((p: Property) => p.id === id),
+    property: saleProperties?.find((p: Property) => p.id === id),
     isLoading,
     error
   };
 };
 
 export const useAgentProperties = (address: string) => {
-  const { data: properties, isLoading, error } = usePropertyRead();
+  const { saleProperties, isLoading, error } = usePropertyRead();
   
   return {
-    properties: properties?.saleProperties?.filter((p: Property) => p.agentId === address) || [],
+    properties: saleProperties?.filter((p: Property) => p.agentId === address) || [],
     isLoading,
     error
   };
@@ -105,7 +104,7 @@ export const useInvestmentAssetsRead = () => {
     queryFn: async () => {
       // Try to get cached investments first
       const cachedInvestments = await getCachedInvestments();
-      if (cachedInvestments.length > 0) {
+      if (cachedInvestments && cachedInvestments.length > 0) {
         console.log("[useInvestmentAssetsRead] Using cached investments:", cachedInvestments);
         return cachedInvestments;
       }
@@ -116,7 +115,7 @@ export const useInvestmentAssetsRead = () => {
       }
 
       const investments = investmentPropertiesHook.data || [];
-      const convertedInvestments = investments
+      const convertedInvestments = (Array.isArray(investments) ? investments : [])
         .map((inv: any) => InvestmentAssetConverter.fromStarknetProperty(inv))
         .filter((inv: any) => inv !== null);
 
@@ -130,7 +129,7 @@ export const useInvestmentAssetsRead = () => {
 
   return {
     investmentProperties: investmentPropertiesData || [],
-    userInvestments: userInvestmentsHook.data || [],
+    userInvestments: Array.isArray(userInvestmentsHook.data) ? userInvestmentsHook.data : [],
     isLoading: allInvestmentsLoading || userInvestmentsHook.isLoading,
     error: investmentPropertiesError || userInvestmentsHook.error,
   };
