@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
+import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { Property } from "@/types/property";
-import { BasicInformation } from "@/components/property/form/BasicInformation";
-import { PropertyLocation } from "@/components/property/form/PropertyLocation";
-import { PricingInformation } from "@/components/property/form/PricingInformation";
-import { PropertyFeatures } from "@/components/property/form/PropertyFeatures";
-import { ImageUploader } from "@/components/property/form/ImageUploader";
+import BasicInformation from "@/components/property/form/BasicInformation";
+import PropertyLocation from "@/components/property/form/PropertyLocation";
+import PricingInformation from "@/components/property/form/PricingInformation";
+import PropertyFeatures from "@/components/property/form/PropertyFeatures";
+import ImageUploader from "@/components/property/form/ImageUploader";
 import { Button } from "@/components/ui/button";
 import { PageLoader } from "@/components/ui/page-loader";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const AddProperty = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { isLoading } = usePropertyRead();
-  const { listProperty, isLoading: isListing } = usePropertyWrite();
+  const { handleListSaleProperty, contractStatus } = usePropertyCreate();
   const [currentStep, setCurrentStep] = useState(1);
   const [propertyData, setPropertyData] = useState<Partial<Property>>({});
 
@@ -30,18 +29,12 @@ const AddProperty = () => {
 
   const handleSubmit = async () => {
     try {
-      await listProperty(propertyData as Property);
-      toast({
-        title: "Property Listed",
-        description: "Your property has been successfully listed.",
-      });
+      await handleListSaleProperty(propertyData);
+      toast.success("Property has been successfully listed");
       navigate("/properties");
     } catch (error) {
       console.error("Error listing property:", error);
-      toast({
-        title: "Error",
-        description: "There was an error listing your property.",
-      });
+      toast.error("Failed to list property");
     }
   };
 
@@ -56,26 +49,46 @@ const AddProperty = () => {
         
         {currentStep === 1 && (
           <BasicInformation
-            propertyData={propertyData}
-            setPropertyData={setPropertyData}
+            formData={propertyData}
+            handleInputChange={(field, value) => 
+              setPropertyData(prev => ({ ...prev, [field]: value }))
+            }
           />
         )}
         {currentStep === 2 && (
           <PropertyLocation
-            propertyData={propertyData}
-            setPropertyData={setPropertyData}
+            formData={propertyData}
+            handleInputChange={(field, value) => 
+              setPropertyData(prev => ({ ...prev, [field]: value }))
+            }
+            isLocationLoading={false}
+            handleLocationSelect={(location) => {
+              setPropertyData(prev => ({
+                ...prev,
+                locationAddress: location.address,
+                city: location.city,
+                state: location.state,
+                country: location.country,
+                latitude: location.latitude,
+                longitude: location.longitude
+              }));
+            }}
           />
         )}
         {currentStep === 3 && (
           <PricingInformation
-            propertyData={propertyData}
-            setPropertyData={setPropertyData}
+            formData={propertyData}
+            handleInputChange={(field, value) => 
+              setPropertyData(prev => ({ ...prev, [field]: value }))
+            }
           />
         )}
         {currentStep === 4 && (
           <PropertyFeatures
-            propertyData={propertyData}
-            setPropertyData={setPropertyData}
+            formData={propertyData}
+            handleInputChange={(field, value) => 
+              setPropertyData(prev => ({ ...prev, [field]: value }))
+            }
           />
         )}
 
@@ -86,8 +99,11 @@ const AddProperty = () => {
           {currentStep < 4 ? (
             <Button onClick={handleNextStep}>Next</Button>
           ) : (
-            <Button onClick={handleSubmit} isLoading={isListing}>
-              Submit
+            <Button 
+              onClick={handleSubmit} 
+              disabled={contractStatus.isPending}
+            >
+              {contractStatus.isPending ? "Submitting..." : "Submit"}
             </Button>
           )}
         </div>
