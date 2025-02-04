@@ -16,6 +16,7 @@ import CreateUser from "@/pages/CreateUser";
 import RegisterAgent from "@/pages/RegisterAgent";
 import Blogs from "@/pages/Blogs";
 import BlogDetails from "@/pages/BlogDetails";
+import EditInvestment from "./pages/EditInvestment";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/investment" element={<Investment />} />
               <Route path="/investment/:id" element={<InvestmentDetails />} />
               <Route path="/investment/add" element={<AddInvestment />} />
+              <Route path="/investment/:id/edit" element={<EditInvestment />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/create-user" element={<CreateUser />} />
               <Route path="/register-agent" element={<RegisterAgent />} />

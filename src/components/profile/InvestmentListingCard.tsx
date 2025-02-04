@@ -6,7 +6,8 @@ import { ImageGallery } from "../investment/ImageGallery";
 import { useNavigate } from "react-router-dom";
 import { InvestmentAsset } from "@/types/investment";
 
-interface InvestmentListingCardProps extends Omit<Partial<InvestmentAsset>, 'expected_roi'> {
+interface InvestmentListingCardProps
+  extends Omit<Partial<InvestmentAsset>, "expected_roi"> {
   id: string;
   name: string;
   description: string;
@@ -28,9 +29,10 @@ export const InvestmentListingCard = ({
   const navigate = useNavigate();
 
   // Convert ROI to number for display, fallback to 0 if invalid
-  const roiValue = typeof expected_roi === 'string' 
-    ? parseFloat(expected_roi) || 0 
-    : expected_roi;
+  const roiValue =
+    typeof expected_roi === "string"
+      ? parseFloat(expected_roi) || 0
+      : expected_roi;
 
   const handleEdit = () => {
     // Combine all props into a single investment object
@@ -41,15 +43,15 @@ export const InvestmentListingCard = ({
       asset_value,
       expected_roi,
       images,
-      ...rest
+      ...rest,
     } as InvestmentAsset;
 
     // Navigate to AddInvestment with state
-    navigate('/add-investment', { 
-      state: { 
-        mode: 'edit',
-        investmentData 
-      }
+    navigate(`/investment/:${id}/edit`, {
+      state: {
+        mode: "edit",
+        investmentData,
+      },
     });
   };
 
@@ -66,10 +68,14 @@ export const InvestmentListingCard = ({
       <CardContent className="p-4">
         <div className="space-y-2">
           <h3 className="font-semibold text-lg">{name}</h3>
-          <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {description}
+          </p>
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium">Value: ${asset_value.toLocaleString()}</p>
+              <p className="text-sm font-medium">
+                Value: ${asset_value.toLocaleString()}
+              </p>
               <p className="text-sm font-medium">ROI: {roiValue}%</p>
             </div>
             <Button variant="outline" size="sm" onClick={handleEdit}>

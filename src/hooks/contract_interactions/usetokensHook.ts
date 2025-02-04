@@ -67,7 +67,7 @@ const name=  contract.name();
    const  balance = contract.balance_of(formattedOwner);
    const  allowance = contract.allowance(formattedOwner, formattedSpender)
     // allowanceError,
-  const { sendAsync: sendTransaction } = useSendTransaction({});
+  const { sendAsync: sendTransaction,status,isError,isIdle,isPending,isSuccess } = useSendTransaction({});
 
   const approveAndInvest = async (amount: number, investmentId: string, investCallback: (id: string, amount: number) => Promise<any>) => {
     if (!contract || !owner) {
@@ -148,9 +148,19 @@ const name=  contract.name();
 
       const tx = await sendTransaction([increaseAllowanceCall,approveCall]);
       console.log("Allowance increase transaction completed:", tx);
+      console.log("Investment approve tx status", {
+        isSuccess: isSuccess,
+        status: status,
+        isError:isError,
+        isIdle:isIdle,
+        isPending:isPending,
+      });
+      if (status === "success"){
+              await investCallback(investmentId, amountInToken);
+      }
 
       // After increasing allowance, proceed with investment
-      await investCallback(investmentId, amountInToken);
+
 
     } catch (error) {
       console.error("Error in approveAndInvest:", error);
