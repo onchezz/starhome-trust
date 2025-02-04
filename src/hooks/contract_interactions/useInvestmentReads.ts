@@ -1,6 +1,8 @@
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { useAccount } from "@starknet-react/core";
 
+type ContractResponse = string | { [key: string]: any };
+
 export const useInvestorsForInvestment = (investmentId: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investors_for_investment",
@@ -12,8 +14,8 @@ export const useInvestorsForInvestment = (investmentId: string) => {
   // Convert the data to an array if it exists, ensuring proper type handling
   const investors = data ? 
     Array.isArray(data) ? 
-      data.filter((value): value is string => typeof value === 'string') :
-      Object.values(data).filter((value): value is string => typeof value === 'string') : 
+      data.filter((value: ContractResponse): value is string => typeof value === 'string') :
+      Object.values(data as Record<string, ContractResponse>).filter((value): value is string => typeof value === 'string') : 
     [];
 
   return {
