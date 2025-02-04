@@ -1,0 +1,13 @@
+{
+  "alpha-sepolia": {
+    "braavos": {
+      "address": "0x7b80d0f8512b5c4c052999e7d333020c91dbc40dff64933c8a5914c8c4c2e8c",
+      "class_hash": "0x2c8c7e6fbcfb3e8e15a46648e8914c6aa1fc506fc1e7fb3d1e19630716174bc",
+      "deployed": true,
+      "legacy": false,
+      "private_key": "0x2fe3935f1ecfba96530b8c8e8525feaa772aa844e31e1be75d41d162c0d40f",
+      "public_key": "0x1580df963e6b83a2c2749258b5f7fbf251a0e3ba685858f9b31e2640f905de2",
+      "type": "braavos"
+    }
+  }
+}

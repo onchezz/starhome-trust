@@ -39,3 +39,12 @@ url = "http://127.0.0.1:5050"
 account = "starhomes_dev_argrent"
 accounts-file = "/Users/onchez/.starknet_accounts/starknet_open_zeppelin_accounts.json"
 url = "http://127.0.0.1:5050"
+[sncast.braavos]
+account = "braavos_account"
+accounts-file = "../account-file"
+url = ""
+
+[sncast.braavos1]
+account = "braavos"
+accounts-file = "../account-file"
+url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_7"

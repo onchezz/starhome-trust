@@ -122,8 +122,8 @@ pub mod PropertyComponent {
             investment: InvestmentAsset,
         ) -> felt252 {
             let is_investment_already_added = self._is_investment_added(investment.id.clone());
-            assert(is_investment_already_added == false, 'Investment cannot be edited');
-            self.edit_listed_investment(investment_id, investment.clone());
+            assert(is_investment_already_added == true, 'Investment cannot be edited');
+            self._edit_listed_investment(investment_id, investment.clone());
             self
                 .emit(
                     Event::InvestmentListedEdited(
@@ -226,7 +226,7 @@ pub mod PropertyComponent {
         fn _add_investment_asset(ref self: ComponentState<TContractState>, asset: InvestmentAsset) {
             self.investments_properties.write(asset.id.clone(), asset.clone());
         }
-        fn edit_listed_investment(
+        fn _edit_listed_investment(
             ref self: ComponentState<TContractState>,
             investment_id: felt252,
             investment: InvestmentAsset,

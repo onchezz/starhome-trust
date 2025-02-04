@@ -33,7 +33,7 @@ export const useInvestment = (tokenAddress?: string) => {
             // Call the contract's invest function
             const response = await execute("invest_in_property", [
               id, // investment_id
-              amount.toString() // amount
+              (amount) // amount
             ]);
 
             console.log("Contract investment response:", response);
