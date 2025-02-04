@@ -29,6 +29,80 @@ interface InvestmentAssetResponse {
   error?: Error;
 }
 
+interface InvestmentAssetsReadResponse {
+  investmentProperties: InvestmentAsset[];
+  userInvestments: InvestmentAsset[];
+  isLoading: boolean;
+  error: Error | null;
+  investmentPropertiesError?: Error;
+}
+
+export const useInvestmentAssetsRead = (): InvestmentAssetsReadResponse => {
+  const { address } = useAccount();
+
+  const fetchInvestmentProperties = async () => {
+    const cachedData = getLocalCache('investment_properties');
+    if (cachedData) {
+      console.log('Using cached investment properties data');
+      return cachedData;
+    }
+
+    const { data } = await useStarHomeReadContract({
+      functionName: "get_investment_properties",
+    });
+
+    const properties = Array.isArray(data) 
+      ? data.map((prop: any) => InvestmentAssetConverter.fromStarknetProperty(prop)).filter(Boolean)
+      : [];
+    
+    setLocalCache('investment_properties', properties);
+    return properties;
+  };
+
+  const fetchUserInvestments = async () => {
+    if (!address) return [];
+
+    const cachedData = getLocalCache(`user_investments_${address}`);
+    if (cachedData) {
+      console.log('Using cached user investments data');
+      return cachedData;
+    }
+
+    const { data } = await useStarHomeReadContract({
+      functionName: "get_investment_properties_by_lister",
+      args: [address],
+    });
+
+    const investments = Array.isArray(data) 
+      ? data.map((inv: any) => InvestmentAssetConverter.fromStarknetProperty(inv)).filter(Boolean)
+      : [];
+    
+    setLocalCache(`user_investments_${address}`, investments);
+    return investments;
+  };
+
+  const { data: investmentProperties, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
+    queryKey: [CACHE_KEYS.INVESTMENT_PROPERTIES],
+    queryFn: fetchInvestmentProperties,
+    gcTime: 1000 * 60 * 10,
+  });
+
+  const { data: userInvestments, isLoading: userInvestmentsLoading, error: userInvestmentsError } = useQuery({
+    queryKey: [CACHE_KEYS.USER_INVESTMENTS, address],
+    queryFn: fetchUserInvestments,
+    enabled: !!address,
+    gcTime: 1000 * 60 * 10,
+  });
+
+  return {
+    investmentProperties: investmentProperties || [],
+    userInvestments: userInvestments || [],
+    isLoading: investmentPropertiesLoading || userInvestmentsLoading,
+    error: userInvestmentsError,
+    investmentPropertiesError,
+  };
+};
+
 export const usePropertyRead = (): PropertyReadResponse => {
   const { data, isLoading: salePropertiesLoading, error } = useQuery({
     queryKey: [CACHE_KEYS.PROPERTIES],
