@@ -1,5 +1,5 @@
-import { useCallback, useEffect } from "react";
-import { useBalance, useAccount } from "@starknet-react/core";
+import { useCallback } from "react";
+import { useAccount } from "@starknet-react/core";
 import { useQuery } from "@tanstack/react-query";
 import {
   universalEthAddress,
@@ -30,6 +30,8 @@ interface CachedBalances {
   ETH: TokenBalance | null;
 }
 
+const RPC_PROVIDER_URL = "https://starknet-mainnet.public.blastapi.io"; // You should move this to constants
+
 export function useTokenBalances() {
   const { address } = useAccount();
 
@@ -44,10 +46,10 @@ export function useTokenBalances() {
 
     // Fetch fresh data if no cache
     const balances = await Promise.all([
-      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.USDT}`),
-      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.USDC}`),
-      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.STRK}`),
-      fetch(`${rpcProvideUr}/balance/${address}/${tokenAddresses.ETH}`),
+      fetch(`${RPC_PROVIDER_URL}/balance/${address}/${tokenAddresses.USDT}`),
+      fetch(`${RPC_PROVIDER_URL}/balance/${address}/${tokenAddresses.USDC}`),
+      fetch(`${RPC_PROVIDER_URL}/balance/${address}/${tokenAddresses.STRK}`),
+      fetch(`${RPC_PROVIDER_URL}/balance/${address}/${tokenAddresses.ETH}`),
     ]);
 
     const data = {
@@ -66,6 +68,7 @@ export function useTokenBalances() {
     queryFn: fetchBalances,
     enabled: !!address,
     staleTime: 30000, // Consider data fresh for 30 seconds
+    gcTime: 60000, // Keep unused data for 1 minute
   });
 
   return {

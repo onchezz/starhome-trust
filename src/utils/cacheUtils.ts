@@ -1,13 +1,13 @@
 import { QueryClient } from '@tanstack/react-query';
 
-const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
+const GC_TIME = 10 * 60 * 1000; // 10 minutes
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: STALE_TIME,
-      cacheTime: CACHE_TIME,
+      gcTime: GC_TIME,
       refetchOnWindowFocus: false,
     },
   },
@@ -45,7 +45,7 @@ export const getLocalCache = (key: string) => {
     if (!cached) return null;
 
     const { data, timestamp } = JSON.parse(cached);
-    if (Date.now() - timestamp > CACHE_TIME) {
+    if (Date.now() - timestamp > GC_TIME) {
       localStorage.removeItem(getLocalStorageKey(key));
       return null;
     }
