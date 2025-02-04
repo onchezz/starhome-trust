@@ -12,13 +12,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useAccount } from "@starknet-react/core";
 
 interface InvestmentCardProps {
   property: InvestmentAsset;
   expandedCardId: string | null;
   setExpandedCardId: (id: string | null) => void;
   handleConnectWallet: () => void;
-  address?: string;
 }
 
 export const InvestmentCard = ({
@@ -26,8 +26,9 @@ export const InvestmentCard = ({
   expandedCardId,
   setExpandedCardId,
   handleConnectWallet,
-  address,
 }: InvestmentCardProps) => {
+  const { address } = useAccount();
+  
   if (!property) {
     console.error("Property is undefined in InvestmentCard");
     return null;
