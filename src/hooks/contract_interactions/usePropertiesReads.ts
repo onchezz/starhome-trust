@@ -39,7 +39,7 @@ interface InvestmentAssetsReadResponse {
 
 export const useInvestmentAssetsRead = (): InvestmentAssetsReadResponse => {
   const { address } = useAccount();
-  const { contract } = useStarHomeReadContract({ functionName: "get_investment_properties" });
+  const starHomeContract = useStarHomeReadContract({ functionName: "get_investment_properties" });
 
   const { data: investmentProperties, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: [CACHE_KEYS.INVESTMENT_PROPERTIES],
@@ -50,14 +50,19 @@ export const useInvestmentAssetsRead = (): InvestmentAssetsReadResponse => {
         return cachedData;
       }
 
-      const result = await contract.call("get_investment_properties");
+      console.log('[useInvestmentAssetsRead] Fetching investment properties');
+      const result = await starHomeContract.data?.get_investment_properties();
+      console.log('[useInvestmentAssetsRead] Raw result:', result);
+
       const properties = Array.isArray(result) 
         ? result.map((prop: any) => InvestmentAssetConverter.fromStarknetProperty(prop)).filter(Boolean)
         : [];
       
+      console.log('[useInvestmentAssetsRead] Converted properties:', properties);
       setLocalCache('investment_properties', properties);
       return properties;
     },
+    enabled: !!starHomeContract.data,
     gcTime: 1000 * 60 * 10,
   });
 
@@ -72,15 +77,19 @@ export const useInvestmentAssetsRead = (): InvestmentAssetsReadResponse => {
         return cachedData;
       }
 
-      const result = await contract.call("get_investment_properties_by_lister", [address]);
+      console.log('[useInvestmentAssetsRead] Fetching user investments for address:', address);
+      const result = await starHomeContract.data?.get_investment_properties_by_lister([address]);
+      console.log('[useInvestmentAssetsRead] Raw user investments:', result);
+
       const investments = Array.isArray(result) 
         ? result.map((inv: any) => InvestmentAssetConverter.fromStarknetProperty(inv)).filter(Boolean)
         : [];
       
+      console.log('[useInvestmentAssetsRead] Converted user investments:', investments);
       setLocalCache(`user_investments_${address}`, investments);
       return investments;
     },
-    enabled: !!address && !!contract,
+    enabled: !!address && !!starHomeContract.data,
     gcTime: 1000 * 60 * 10,
   });
 
