@@ -15,7 +15,7 @@ const Investment = () => {
   const {
     investmentProperties,
     isLoading: investmentPropertiesLoading,
-    error
+    investmentPropertiesError,
   } = useInvestmentAssetsRead();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -176,7 +176,7 @@ const Investment = () => {
             ))
           ) : (
             <div className="col-span-full">
-              <EmptyInvestmentState error={!!error} />
+              <EmptyInvestmentState error={!!investmentPropertiesError} />
             </div>
           )}
         </div>

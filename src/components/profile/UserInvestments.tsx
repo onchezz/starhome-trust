@@ -12,34 +12,34 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
 import { Wallet } from "lucide-react";
-import { toast } from "sonner";
 
 export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
-  const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
+  const { userInvestments, investmentProperties, isLoading } = useInvestmentAssetsRead();
   const { handleWithdraw } = useInvestmentWithdraw();
   const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
 
   console.log("Investment data:", {
-    investmentProperties,
     userInvestments,
+    investmentProperties,
     isLoading,
   });
 
+  const userOwnedInvestments = userInvestments?.filter((investment) => {
+    if (!investment?.owner || !address) return false;
+    return investment.owner.trimEnd.toString === address.trimEnd.toString;
+  });
+
+  const userListedInvestments = investmentProperties?.filter((investment) => {
+    if (!investment?.investor_id || !address) return false;
+    return investment.owner.trimEnd.toString === address.trimEnd.toString;
+  });
+
   const handleWithdrawClick = async (investmentId: string) => {
-    try {
-      if (!withdrawalAmount) {
-        toast.error("Please enter a withdrawal amount");
-        return;
-      }
-      await handleWithdraw(investmentId, Number(withdrawalAmount));
-      setWithdrawalAmount("");
-      toast.success("Withdrawal successful");
-    } catch (error) {
-      console.error("Withdrawal error:", error);
-      toast.error("Failed to process withdrawal");
-    }
+    if (!withdrawalAmount) return;
+    await handleWithdraw(investmentId, Number(withdrawalAmount));
+    setWithdrawalAmount("");
   };
 
   const InvestmentCard = ({ investment }: { investment: any }) => {
@@ -110,8 +110,9 @@ export const UserInvestments = () => {
     );
   }
 
-  const hasNoInvestments = (!userInvestments || userInvestments.length === 0) && 
-                          (!investmentProperties || investmentProperties.length === 0);
+  const hasNoInvestments =
+    (!userOwnedInvestments || userOwnedInvestments.length === 0) &&
+    (!userListedInvestments || userListedInvestments.length === 0);
 
   if (hasNoInvestments) {
     return (
@@ -149,15 +150,15 @@ export const UserInvestments = () => {
           </TabsList>
           <TabsContent value="owned">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              {userInvestments?.map((investment) => (
+              {userOwnedInvestments?.map((investment) => (
                 <InvestmentCard key={investment.id} investment={investment} />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="listed">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              {investmentProperties?.map((investment) => (
-                <InvestmentListingCard key={investment.id} {...investment} />
+              {userListedInvestments?.map((investment) => (
+                <InvestmentCard key={investment.id} investment={investment} />
               ))}
             </div>
           </TabsContent>
