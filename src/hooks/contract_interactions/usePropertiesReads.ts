@@ -10,7 +10,10 @@ export const usePropertyRead = () => {
     const cachedData = getLocalCache('sale_properties');
     if (cachedData) {
       console.log('Using cached sale properties data');
-      return cachedData;
+      return { 
+        saleProperties: cachedData,
+        salePropertiesLoading: false 
+      };
     }
 
     const { data } = await useStarHomeReadContract({
@@ -22,10 +25,16 @@ export const usePropertyRead = () => {
         ? data.map((prop: any) => PropertyConverter.fromStarknetProperty(prop)).filter(Boolean)
         : [];
       setLocalCache('sale_properties', properties);
-      return properties;
+      return { 
+        saleProperties: properties,
+        salePropertiesLoading: false 
+      };
     }
 
-    return [];
+    return { 
+      saleProperties: [],
+      salePropertiesLoading: false 
+    };
   };
 
   return useQuery({
@@ -41,7 +50,7 @@ export const usePropertyReadById = (propertyId: string) => {
     const cachedData = getLocalCache(cacheKey);
     if (cachedData) {
       console.log('Using cached property data for:', propertyId);
-      return cachedData;
+      return { property: cachedData };
     }
 
     const { data } = await useStarHomeReadContract({
@@ -52,29 +61,29 @@ export const usePropertyReadById = (propertyId: string) => {
     if (data) {
       const property = PropertyConverter.fromStarknetProperty(data);
       setLocalCache(cacheKey, property);
-      return property;
+      return { property };
     }
 
-    return null;
+    return { property: null };
   };
 
   return useQuery({
     queryKey: [CACHE_KEYS.PROPERTY(propertyId)],
     queryFn: fetchProperty,
     enabled: !!propertyId,
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10,
   });
 };
 
 export const useAgentProperties = (agentAddress: string) => {
   const fetchAgentProperties = async () => {
-    if (!agentAddress) return [];
+    if (!agentAddress) return { properties: [] };
     
     const cacheKey = `agent_properties_${agentAddress}`;
     const cachedData = getLocalCache(cacheKey);
     if (cachedData) {
       console.log('Using cached agent properties data for:', agentAddress);
-      return cachedData;
+      return { properties: cachedData };
     }
 
     const { data } = await useStarHomeReadContract({
@@ -87,17 +96,17 @@ export const useAgentProperties = (agentAddress: string) => {
         ? data.map((prop: any) => PropertyConverter.fromStarknetProperty(prop)).filter(Boolean)
         : [];
       setLocalCache(cacheKey, properties);
-      return properties;
+      return { properties };
     }
 
-    return [];
+    return { properties: [] };
   };
 
   return useQuery({
     queryKey: [CACHE_KEYS.AGENT_PROPERTIES, agentAddress],
     queryFn: fetchAgentProperties,
     enabled: !!agentAddress,
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10,
   });
 };
 
@@ -155,14 +164,14 @@ export const useInvestmentAssetsRead = () => {
   const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
     queryFn: fetchInvestmentProperties,
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10,
   });
 
   const { data: userInvestmentsData, isLoading: userInvestmentsLoading, error: userInvestmentsError } = useQuery({
     queryKey: ['user_investments', address],
     queryFn: fetchUserInvestments,
     enabled: !!address,
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10,
   });
 
   return {
@@ -170,39 +179,39 @@ export const useInvestmentAssetsRead = () => {
     userInvestments: userInvestmentsData || [],
     isLoading: investmentPropertiesLoading || userInvestmentsLoading,
     error: investmentPropertiesError || userInvestmentsError,
-    investmentPropertiesError // Add this to fix the type error in Investment.tsx
+    investmentPropertiesError
   };
 };
 
 export const useInvestmentAssetReadById = (id?: string) => {
   const fetchInvestmentAsset = async () => {
-    if (!id) return null;
+    if (!id) return { investment: null };
     
     const cacheKey = `investment_asset_${id}`;
     const cachedData = getLocalCache(cacheKey);
     if (cachedData) {
       console.log('Using cached investment asset data for:', id);
-      return cachedData;
+      return { investment: cachedData };
     }
 
     const { data } = await useStarHomeReadContract({
-      functionName: "get_investment_property",
+      functionName: "get_investment",
       args: [id],
     });
 
     if (data) {
       const asset = InvestmentAssetConverter.fromStarknetProperty(data);
       setLocalCache(cacheKey, asset);
-      return asset;
+      return { investment: asset };
     }
 
-    return null;
+    return { investment: null };
   };
 
   return useQuery({
     queryKey: [CACHE_KEYS.INVESTMENT_ASSET(id || '')],
     queryFn: fetchInvestmentAsset,
     enabled: !!id,
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10,
   });
 };
