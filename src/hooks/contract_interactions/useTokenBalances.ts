@@ -6,6 +6,7 @@ import {
   usdcTokenAddress,
   usdTTokenAddress,
 } from "@/utils/constants";
+import { cacheBalance, getCachedBalance } from "@/utils/indexedDb";
 
 export const tokenAddresses = {
   USDT: usdTTokenAddress,
@@ -14,21 +15,11 @@ export const tokenAddresses = {
   ETH: universalEthAddress,
 } as const;
 
-const CACHE_DURATION = 30000; // 30 seconds
-const CACHE_KEY = 'token_balances';
-
-interface SerializedBalance {
-  decimals: number;
-  formatted: string;
-  symbol: string;
-  value: string; // BigInt as string
-}
-
 interface CachedBalances {
-  USDT: SerializedBalance | null;
-  USDC: SerializedBalance | null;
-  STRK: SerializedBalance | null;
-  ETH: SerializedBalance | null;
+  USDT: any | null;
+  USDC: any | null;
+  STRK: any | null;
+  ETH: any | null;
 }
 
 export function useTokenBalances() {
@@ -36,13 +27,13 @@ export function useTokenBalances() {
   const [lastFetchTime, setLastFetchTime] = useState(0);
   const [cachedBalances, setCachedBalances] = useState<CachedBalances>({
     USDT: null,
-    USDC:null,
+    USDC: null,
     STRK: null,
     ETH: null,
   });
 
   const shouldRefetch = useCallback(() => {
-    return Date.now() - lastFetchTime > CACHE_DURATION;
+    return Date.now() - lastFetchTime > 30000; // 30 seconds
   }, [lastFetchTime]);
 
   const { 
@@ -55,13 +46,14 @@ export function useTokenBalances() {
     watch: false,
     enabled: !!address && shouldRefetch(),
   });
-   const { 
+
+  const { 
     data: usdcBalance, 
     isLoading: isLoadingUsdc,
     refetch: refetchUsdc
   } = useBalance({
     address,
-    token: tokenAddresses.USDT,
+    token: tokenAddresses.USDC,
     watch: false,
     enabled: !!address && shouldRefetch(),
   });
@@ -71,7 +63,6 @@ export function useTokenBalances() {
     isLoading: isLoadingStrk,
     refetch: refetchStrk
   } = useBalance({
-
     address,
     token: tokenAddresses.STRK,
     watch: false,
@@ -100,28 +91,20 @@ export function useTokenBalances() {
   };
 
   const loadFromCache = useCallback(() => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { balances, timestamp } = JSON.parse(cached);
-        setCachedBalances(balances);
-        setLastFetchTime(timestamp);
-      }
-    } catch (error) {
-      console.error('Error loading from cache:', error);
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { balances, timestamp } = JSON.parse(cached);
+      setCachedBalances(balances);
+      setLastFetchTime(timestamp);
     }
   }, []);
 
   const saveToCache = useCallback((balances: CachedBalances) => {
-    try {
-      const cacheData = {
-        balances,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    } catch (error) {
-      console.error('Error saving to cache:', error);
-    }
+    const cacheData = {
+      balances,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
   }, []);
 
   useEffect(() => {
@@ -131,7 +114,7 @@ export function useTokenBalances() {
   }, [address, loadFromCache]);
 
   useEffect(() => {
-    if (usdtBalance || strkBalance || ethBalance) {
+    if (usdtBalance || usdcBalance || strkBalance || ethBalance) {
       const newBalances = {
         USDT: serializeBalance(usdtBalance),
         USDC: serializeBalance(usdcBalance),
@@ -142,7 +125,7 @@ export function useTokenBalances() {
       setLastFetchTime(Date.now());
       saveToCache(newBalances);
     }
-  }, [usdtBalance,usdcBalance, strkBalance, ethBalance, saveToCache]);
+  }, [usdtBalance, usdcBalance, strkBalance, ethBalance, saveToCache]);
 
   const forceRefresh = async () => {
     if (address) {
@@ -156,12 +139,12 @@ export function useTokenBalances() {
 
   return {
     balances: {
-      USDT:cachedBalances.USDT|| usdtBalance ,
-      USDC:  cachedBalances.USDC||usdtBalance ,
-      STRK: cachedBalances.STRK||strkBalance ,
-      ETH: cachedBalances.ETH||ethBalance ,
+      USDT: cachedBalances.USDT || usdtBalance,
+      USDC: cachedBalances.USDC || usdcBalance,
+      STRK: cachedBalances.STRK || strkBalance,
+      ETH: cachedBalances.ETH || ethBalance,
     },
-    isLoading: isLoadingUsdt ||  isLoadingUsdc ||isLoadingStrk || isLoadingEth,
+    isLoading: isLoadingUsdt || isLoadingUsdc || isLoadingStrk || isLoadingEth,
     refresh: forceRefresh
   };
 }
