@@ -6,7 +6,6 @@ import {
   usdcTokenAddress,
   usdTTokenAddress,
 } from "@/utils/constants";
-import { cacheBalance, getCachedBalance } from "@/utils/indexedDb";
 
 export const tokenAddresses = {
   USDT: usdTTokenAddress,
@@ -15,12 +14,21 @@ export const tokenAddresses = {
   ETH: universalEthAddress,
 } as const;
 
-interface CachedBalances {
-  USDT: any | null;
-  USDC: any | null;
-  STRK: any | null;
-  ETH: any | null;
+interface TokenBalance {
+  decimals: number;
+  formatted: string;
+  symbol: string;
+  value: string;
 }
+
+interface CachedBalances {
+  USDT: TokenBalance | null;
+  USDC: TokenBalance | null;
+  STRK: TokenBalance | null;
+  ETH: TokenBalance | null;
+}
+
+const BALANCE_CACHE_KEY = 'token_balances_cache';
 
 export function useTokenBalances() {
   const { address } = useAccount();
@@ -80,18 +88,18 @@ export function useTokenBalances() {
     enabled: !!address && shouldRefetch(),
   });
 
-  const serializeBalance = (balance: any): SerializedBalance | null => {
+  const serializeBalance = (balance: any): TokenBalance | null => {
     if (!balance) return null;
     return {
       decimals: balance.decimals,
       formatted: balance.formatted,
       symbol: balance.symbol,
-      value: balance.value.toString(), // Convert BigInt to string
+      value: balance.value.toString(),
     };
   };
 
   const loadFromCache = useCallback(() => {
-    const cached = localStorage.getItem(CACHE_KEY);
+    const cached = localStorage.getItem(BALANCE_CACHE_KEY);
     if (cached) {
       const { balances, timestamp } = JSON.parse(cached);
       setCachedBalances(balances);
@@ -104,7 +112,7 @@ export function useTokenBalances() {
       balances,
       timestamp: Date.now()
     };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    localStorage.setItem(BALANCE_CACHE_KEY, JSON.stringify(cacheData));
   }, []);
 
   useEffect(() => {
@@ -131,6 +139,7 @@ export function useTokenBalances() {
     if (address) {
       await Promise.all([
         refetchUsdt(),
+        refetchUsdc(),
         refetchStrk(),
         refetchEth()
       ]);

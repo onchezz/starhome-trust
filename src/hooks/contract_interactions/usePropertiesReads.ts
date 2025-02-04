@@ -49,7 +49,7 @@ export const usePropertyRead = () => {
           console.error("[usePropertyRead] Error converting property:", error, prop);
           return null;
         }
-      }).filter(Boolean);
+      }).filter((prop: any) => prop !== null);
 
       await cacheProperties(convertedProperties);
       return convertedProperties;
@@ -62,8 +62,28 @@ export const usePropertyRead = () => {
 
   return {
     saleProperties: propertiesData || [],
-    salePropertiesLoading,
+    isLoading: salePropertiesLoading,
     error,
+  };
+};
+
+export const usePropertyReadById = (id: string) => {
+  const { data: properties, isLoading, error } = usePropertyRead();
+  
+  return {
+    property: properties?.saleProperties?.find((p: Property) => p.id === id),
+    isLoading,
+    error
+  };
+};
+
+export const useAgentProperties = (address: string) => {
+  const { data: properties, isLoading, error } = usePropertyRead();
+  
+  return {
+    properties: properties?.saleProperties?.filter((p: Property) => p.agentId === address) || [],
+    isLoading,
+    error
   };
 };
 
@@ -97,8 +117,8 @@ export const useInvestmentAssetsRead = () => {
 
       const investments = investmentPropertiesHook.data || [];
       const convertedInvestments = investments
-        .map(InvestmentAssetConverter.fromStarknetProperty)
-        .filter(Boolean);
+        .map((inv: any) => InvestmentAssetConverter.fromStarknetProperty(inv))
+        .filter((inv: any) => inv !== null);
 
       await cacheInvestments(convertedInvestments);
       return convertedInvestments;
@@ -113,5 +133,15 @@ export const useInvestmentAssetsRead = () => {
     userInvestments: userInvestmentsHook.data || [],
     isLoading: allInvestmentsLoading || userInvestmentsHook.isLoading,
     error: investmentPropertiesError || userInvestmentsHook.error,
+  };
+};
+
+export const useInvestmentAssetReadById = (id: string) => {
+  const { investmentProperties, isLoading, error } = useInvestmentAssetsRead();
+  
+  return {
+    investment: investmentProperties?.find((inv: InvestmentAsset) => inv.id === id),
+    isLoading,
+    error
   };
 };
