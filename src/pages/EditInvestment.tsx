@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { InvestmentAsset } from "@/types/investment";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { toast } from "sonner";
@@ -12,15 +12,17 @@ import UploadGrid from "@/components/investment/UploadGrid";
 import { parseImagesData } from "@/utils/imageUtils";
 import { useAccount } from "@starknet-react/core";
 import { tokenOptions } from "@/utils/constants";
+import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 
 const EditInvestment = () => {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const { address } = useAccount();
   const { handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
 
-  // Get the investment data passed from the profile
-  const investmentData = location.state?.investmentData;
+  // Fetch investment data
+  const { investment, isLoading: investmentLoading } = useInvestmentAssetReadById(id || "");
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<File[]>([]);
@@ -29,8 +31,6 @@ const EditInvestment = () => {
   const [uploadedFiles, setUploadedFiles] = useState(0);
   const [uploadedSize, setUploadedSize] = useState(0);
   const [totalUploadSize, setTotalUploadSize] = useState(0);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [formData, setFormData] = useState<Partial<InvestmentAsset>>({});
 
   // Convert URLs to File objects for preview
@@ -54,26 +54,29 @@ const EditInvestment = () => {
 
   // Initialize form data with investment data
   useEffect(() => {
-    if (!investmentData || formData.id) return;
+    if (!investment || formData.id) return;
 
     const initializeInvestment = async () => {
-      console.log("[EditInvestment] Setting initial form data:", investmentData);
+      console.log("[EditInvestment] Setting initial form data:", investment);
       
       // Find the matching token option based on the saved investment token address
       const matchingToken = tokenOptions.find(token => 
-        token.address.toLowerCase() === investmentData.investment_token.toLowerCase()
+        token.address.toLowerCase() === investment.investment_token.toLowerCase()
       );
       
       console.log("[EditInvestment] Matching token found:", matchingToken);
 
+      // Set initial form data
       setFormData({
-        ...investmentData,
-        investment_token: matchingToken?.address || ""
+        ...investment,
+        investment_token: matchingToken?.address || "",
+        investor_id: address || investment.investor_id,
+        owner: address || investment.owner,
       });
       
-      if (investmentData.images) {
-        console.log("[EditInvestment] Processing images:", investmentData.images);
-        const { imageUrls } = parseImagesData(investmentData.images);
+      if (investment.images) {
+        console.log("[EditInvestment] Processing images:", investment.images);
+        const { imageUrls } = parseImagesData(investment.images);
         console.log("[EditInvestment] Generated image URLs:", imageUrls);
         
         const files = await convertUrlsToFiles(imageUrls);
@@ -82,7 +85,7 @@ const EditInvestment = () => {
     };
 
     initializeInvestment();
-  }, [investmentData, formData.id, convertUrlsToFiles]);
+  }, [investment, formData.id, convertUrlsToFiles, address]);
 
   const handleInputChange = useCallback((field: keyof InvestmentAsset, value: any) => {
     console.log("[EditInvestment] Updating field:", field, "with value:", value);
@@ -125,19 +128,24 @@ const EditInvestment = () => {
       // Ensure all required fields are present before submitting
       const completeInvestmentData: InvestmentAsset = {
         ...formData as InvestmentAsset,
-        id: id // Ensure id is included
+        id: id
       };
 
       await handleEditInvestmentProperty(id, completeInvestmentData);
       toast.success("Investment property updated successfully!");
+      navigate("/profile"); // Redirect to profile after successful update
     } catch (error) {
       console.error("[EditInvestment] Error updating investment:", error);
       toast.error("Failed to update investment property");
     }
   };
 
-  if (!investmentData) {
-    return <div>Loading...</div>;
+  if (investmentLoading) {
+    return <div className="container mx-auto py-8">Loading investment details...</div>;
+  }
+
+  if (!investment) {
+    return <div className="container mx-auto py-8">Investment not found</div>;
   }
 
   return (
@@ -177,8 +185,6 @@ const EditInvestment = () => {
             handleDrop={handleDrop}
             setSelectedFiles={setSelectedFiles}
             setSelectedDocs={setSelectedDocs}
-            setPreviewUrl={setPreviewUrl}
-            setShowPreviewModal={setShowPreviewModal}
           />
         </Card>
 
