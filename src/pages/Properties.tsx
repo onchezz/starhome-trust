@@ -3,27 +3,30 @@ import PropertyCard from "@/components/property/PropertyCard";
 import { PageLoader } from "@/components/ui/page-loader";
 import PropertySearch from "@/components/property/PropertySearch";
 import { useState } from "react";
+import { Property } from "@/types/property";
 
 const Properties = () => {
-  const { saleProperties, isLoading, error } = usePropertyRead();
   const [searchTerm, setSearchTerm] = useState("");
+  const { saleProperties, isLoading, error } = usePropertyRead();
 
-  if (isLoading) return <PageLoader />;
-  if (error) return <div>Error loading properties</div>;
+  if (isLoading) {
+    return <PageLoader />;
+  }
+
+  const filteredProperties = saleProperties?.filter((property: Property) =>
+    property.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Properties</h1>
-      
+    <div className="container mx-auto px-4 py-8">
       <PropertySearch 
         searchTerm={searchTerm}
-        onSearchChange={(value) => setSearchTerm(value)}
+        onSearchChange={setSearchTerm}
       />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {saleProperties?.map((property) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProperties?.map((property: Property) => (
           <PropertyCard 
-            key={property.id} 
+            key={property.id}
             propertyData={property}
           />
         ))}

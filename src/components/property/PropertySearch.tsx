@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
-interface PropertySearchProps {
+export interface PropertySearchProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
 }
@@ -20,3 +20,5 @@ export const PropertySearch = ({ searchTerm, onSearchChange }: PropertySearchPro
     </div>
   );
 };
+
+export default PropertySearch;
