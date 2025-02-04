@@ -28,18 +28,11 @@ export const usePropertyRead = () => {
     return [];
   };
 
-  const { data, isLoading, error } = useQuery({
+  return useQuery({
     queryKey: [CACHE_KEYS.PROPERTIES],
     queryFn: fetchProperties,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
-
-  return {
-    saleProperties: data || [],
-    salePropertiesLoading: isLoading,
-    error,
-  };
 };
 
 export const usePropertyReadById = (propertyId: string) => {
@@ -65,19 +58,12 @@ export const usePropertyReadById = (propertyId: string) => {
     return null;
   };
 
-  const { data, isLoading, error } = useQuery({
+  return useQuery({
     queryKey: [CACHE_KEYS.PROPERTY(propertyId)],
     queryFn: fetchProperty,
     enabled: !!propertyId,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
-
-  return {
-    property: data,
-    isLoading,
-    error,
-  };
 };
 
 export const useAgentProperties = (agentAddress: string) => {
@@ -107,19 +93,12 @@ export const useAgentProperties = (agentAddress: string) => {
     return [];
   };
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: [CACHE_KEYS.PROPERTIES, agentAddress],
+  return useQuery({
+    queryKey: [CACHE_KEYS.AGENT_PROPERTIES, agentAddress],
     queryFn: fetchAgentProperties,
     enabled: !!agentAddress,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
-
-  return {
-    properties: data || [],
-    isLoading,
-    error,
-  };
 };
 
 export const useInvestmentAssetsRead = () => {
@@ -173,25 +152,57 @@ export const useInvestmentAssetsRead = () => {
     return [];
   };
 
-  const { data: investmentPropertiesData, isLoading: allInvestmentsLoading, error: investmentPropertiesError } = useQuery({
+  const { data: investmentPropertiesData, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: ['investment_properties'],
     queryFn: fetchInvestmentProperties,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
   const { data: userInvestmentsData, isLoading: userInvestmentsLoading, error: userInvestmentsError } = useQuery({
     queryKey: ['user_investments', address],
     queryFn: fetchUserInvestments,
     enabled: !!address,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
   return {
     investmentProperties: investmentPropertiesData || [],
     userInvestments: userInvestmentsData || [],
-    isLoading: allInvestmentsLoading || userInvestmentsLoading,
+    isLoading: investmentPropertiesLoading || userInvestmentsLoading,
     error: investmentPropertiesError || userInvestmentsError,
+    investmentPropertiesError // Add this to fix the type error in Investment.tsx
   };
+};
+
+export const useInvestmentAssetReadById = (id?: string) => {
+  const fetchInvestmentAsset = async () => {
+    if (!id) return null;
+    
+    const cacheKey = `investment_asset_${id}`;
+    const cachedData = getLocalCache(cacheKey);
+    if (cachedData) {
+      console.log('Using cached investment asset data for:', id);
+      return cachedData;
+    }
+
+    const { data } = await useStarHomeReadContract({
+      functionName: "get_investment_property",
+      args: [id],
+    });
+
+    if (data) {
+      const asset = InvestmentAssetConverter.fromStarknetProperty(data);
+      setLocalCache(cacheKey, asset);
+      return asset;
+    }
+
+    return null;
+  };
+
+  return useQuery({
+    queryKey: [CACHE_KEYS.INVESTMENT_ASSET(id || '')],
+    queryFn: fetchInvestmentAsset,
+    enabled: !!id,
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  });
 };
