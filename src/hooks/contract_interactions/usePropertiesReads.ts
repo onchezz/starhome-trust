@@ -39,58 +39,48 @@ interface InvestmentAssetsReadResponse {
 
 export const useInvestmentAssetsRead = (): InvestmentAssetsReadResponse => {
   const { address } = useAccount();
-
-  const fetchInvestmentProperties = async () => {
-    const cachedData = getLocalCache('investment_properties');
-    if (cachedData) {
-      console.log('Using cached investment properties data');
-      return cachedData;
-    }
-
-    const { data } = await useStarHomeReadContract({
-      functionName: "get_investment_properties",
-    });
-
-    const properties = Array.isArray(data) 
-      ? data.map((prop: any) => InvestmentAssetConverter.fromStarknetProperty(prop)).filter(Boolean)
-      : [];
-    
-    setLocalCache('investment_properties', properties);
-    return properties;
-  };
-
-  const fetchUserInvestments = async () => {
-    if (!address) return [];
-
-    const cachedData = getLocalCache(`user_investments_${address}`);
-    if (cachedData) {
-      console.log('Using cached user investments data');
-      return cachedData;
-    }
-
-    const { data } = await useStarHomeReadContract({
-      functionName: "get_investment_properties_by_lister",
-      args: [address],
-    });
-
-    const investments = Array.isArray(data) 
-      ? data.map((inv: any) => InvestmentAssetConverter.fromStarknetProperty(inv)).filter(Boolean)
-      : [];
-    
-    setLocalCache(`user_investments_${address}`, investments);
-    return investments;
-  };
+  const { contract } = useStarHomeReadContract({ functionName: "get_investment_properties" });
 
   const { data: investmentProperties, isLoading: investmentPropertiesLoading, error: investmentPropertiesError } = useQuery({
     queryKey: [CACHE_KEYS.INVESTMENT_PROPERTIES],
-    queryFn: fetchInvestmentProperties,
+    queryFn: async () => {
+      const cachedData = getLocalCache('investment_properties');
+      if (cachedData) {
+        console.log('Using cached investment properties data');
+        return cachedData;
+      }
+
+      const result = await contract.call("get_investment_properties");
+      const properties = Array.isArray(result) 
+        ? result.map((prop: any) => InvestmentAssetConverter.fromStarknetProperty(prop)).filter(Boolean)
+        : [];
+      
+      setLocalCache('investment_properties', properties);
+      return properties;
+    },
     gcTime: 1000 * 60 * 10,
   });
 
   const { data: userInvestments, isLoading: userInvestmentsLoading, error: userInvestmentsError } = useQuery({
     queryKey: [CACHE_KEYS.USER_INVESTMENTS, address],
-    queryFn: fetchUserInvestments,
-    enabled: !!address,
+    queryFn: async () => {
+      if (!address) return [];
+
+      const cachedData = getLocalCache(`user_investments_${address}`);
+      if (cachedData) {
+        console.log('Using cached user investments data');
+        return cachedData;
+      }
+
+      const result = await contract.call("get_investment_properties_by_lister", [address]);
+      const investments = Array.isArray(result) 
+        ? result.map((inv: any) => InvestmentAssetConverter.fromStarknetProperty(inv)).filter(Boolean)
+        : [];
+      
+      setLocalCache(`user_investments_${address}`, investments);
+      return investments;
+    },
+    enabled: !!address && !!contract,
     gcTime: 1000 * 60 * 10,
   });
 
@@ -101,7 +91,7 @@ export const useInvestmentAssetsRead = (): InvestmentAssetsReadResponse => {
     error: userInvestmentsError,
     investmentPropertiesError,
   };
-};
+}
 
 export const usePropertyRead = (): PropertyReadResponse => {
   const { data, isLoading: salePropertiesLoading, error } = useQuery({
