@@ -1,3 +1,4 @@
+
 import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 import { useState, useEffect } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
@@ -8,9 +9,11 @@ export const useInvestorsForInvestment = (investmentId: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investors_for_investment",
     args: [investmentId],
+    options: {
+      staleTime: 30000, // Data considered fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Cache data for 5 minutes
+    }
   });
-
-  console.log("Investors for investment:", { investmentId, data, error });
 
   return {
     investors: data,
@@ -25,9 +28,11 @@ export const useInvestorBalance = (investmentId: string, investorAddress?: strin
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investor_balance_in_investment",
     args: [investmentId, address],
+    options: {
+      staleTime: 30000, // Data considered fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Cache data for 5 minutes
+    }
   });
-
-  console.log("Investor balance:", { investmentId, investorAddress, data, error });
 
   return {
     balance: data ? Number(data)/Math.pow(10,6) : 0,
@@ -40,11 +45,22 @@ export const useInvestmentAssetsRead = () => {
   const { address } = useAccount();
   const { data: rawInvestmentProperties, isLoading: isLoadingProperties } = useStarHomeReadContract({
     functionName: "get_investment_properties",
+    options: {
+      staleTime: 30000, // Data considered fresh for 30 seconds
+      cacheTime: 5 * 60 * 1000, // Cache data for 5 minutes
+      refetchOnWindowFocus: false, // Prevent refetch on window focus
+    }
   });
 
   const { data: rawUserInvestments, isLoading: isLoadingInvestments } = useStarHomeReadContract({
     functionName: "get_investment_properties_by_lister",
     args: [address || ""],
+    options: {
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      enabled: !!address, // Only fetch when address is available
+    }
   });
 
   const [formattedProperties, setFormattedProperties] = useState<InvestmentAsset[]>([]);
@@ -58,11 +74,9 @@ export const useInvestmentAssetsRead = () => {
           : Object.values(rawInvestmentProperties);
         const formatted = investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv));
         
-        // Save to IndexedDB
         await saveInvestments(formatted);
         setFormattedProperties(formatted);
       } else {
-        // Try to get from IndexedDB if no network data
         try {
           const cachedInvestments = await getInvestments();
           if (cachedInvestments.length > 0) {
@@ -98,6 +112,11 @@ export const useInvestmentAssetReadById = (id: string) => {
   const { data: rawInvestment, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investment",
     args: [id],
+    options: {
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    }
   });
 
   const [investment, setInvestment] = useState<InvestmentAsset | null>(null);
@@ -108,7 +127,6 @@ export const useInvestmentAssetReadById = (id: string) => {
         const formatted = InvestmentAssetConverter.fromStarknetProperty(rawInvestment);
         setInvestment(formatted);
       } else {
-        // Try to get from IndexedDB if no network data
         try {
           const cachedInvestments = await getInvestments();
           const cachedInvestment = cachedInvestments.find(inv => inv.id === id);
