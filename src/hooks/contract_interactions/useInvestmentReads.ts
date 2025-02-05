@@ -8,6 +8,7 @@ import { openDB } from "@/utils/indexedDb";
 const INVESTMENTS_CACHE_KEY = 'investments';
 
 const saveInvestmentsToDB = async (investments: InvestmentAsset[]) => {
+  console.log("[IndexedDB] Saving investments to DB:", investments);
   const db = await openDB();
   const tx = db.transaction(INVESTMENTS_CACHE_KEY, 'readwrite');
   const store = tx.objectStore(INVESTMENTS_CACHE_KEY);
@@ -16,10 +17,13 @@ const saveInvestmentsToDB = async (investments: InvestmentAsset[]) => {
 };
 
 const getInvestmentsFromDB = async () => {
+  console.log("[IndexedDB] Fetching investments from DB");
   const db = await openDB();
   const tx = db.transaction(INVESTMENTS_CACHE_KEY, 'readonly');
   const store = tx.objectStore(INVESTMENTS_CACHE_KEY);
-  return store.getAll();
+  const investments = await store.getAll();
+  console.log("[IndexedDB] Retrieved investments:", investments);
+  return investments;
 };
 
 export const useInvestorsForInvestment = (investmentId: string) => {
@@ -89,12 +93,14 @@ export const useInvestmentAssetsRead = () => {
   useEffect(() => {
     const loadCachedData = async () => {
       try {
+        console.log("[Cache] Loading investments from IndexedDB");
         const cachedInvestments = await getInvestmentsFromDB();
         if (cachedInvestments?.length > 0) {
+          console.log("[Cache] Found cached investments:", cachedInvestments.length);
           setFormattedProperties(cachedInvestments);
         }
       } catch (error) {
-        console.error("Error loading from IndexedDB:", error);
+        console.error("[Cache] Error loading from IndexedDB:", error);
       }
     };
     loadCachedData();
@@ -104,11 +110,13 @@ export const useInvestmentAssetsRead = () => {
   useEffect(() => {
     const updateInvestments = async () => {
       if (rawInvestmentProperties) {
+        console.log("[Contract] Received raw investment properties:", rawInvestmentProperties);
         const investmentsArray = Array.isArray(rawInvestmentProperties) 
           ? rawInvestmentProperties 
           : Object.values(rawInvestmentProperties);
         const formatted = investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv));
         
+        console.log("[Contract] Formatted investments:", formatted);
         await saveInvestmentsToDB(formatted);
         setFormattedProperties(formatted);
       }
@@ -118,10 +126,13 @@ export const useInvestmentAssetsRead = () => {
 
   useEffect(() => {
     if (rawUserInvestments) {
+      console.log("[Contract] Received raw user investments:", rawUserInvestments);
       const investmentsArray = Array.isArray(rawUserInvestments) 
         ? rawUserInvestments 
         : Object.values(rawUserInvestments);
-      setFormattedInvestments(investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv)));
+      const formatted = investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv));
+      console.log("[Contract] Formatted user investments:", formatted);
+      setFormattedInvestments(formatted);
     }
   }, [rawUserInvestments]);
 
@@ -149,17 +160,20 @@ export const useInvestmentAssetReadById = (id: string) => {
   useEffect(() => {
     const fetchInvestment = async () => {
       if (rawInvestment) {
+        console.log("[Contract] Fetching single investment from contract:", id);
         const formatted = InvestmentAssetConverter.fromStarknetProperty(rawInvestment);
         setInvestment(formatted);
       } else {
         try {
+          console.log("[Cache] Attempting to load single investment from cache:", id);
           const cachedInvestments = await getInvestmentsFromDB();
           const cachedInvestment = cachedInvestments.find(inv => inv.id === id);
           if (cachedInvestment) {
+            console.log("[Cache] Found cached investment:", cachedInvestment);
             setInvestment(cachedInvestment);
           }
         } catch (error) {
-          console.error("Error fetching from IndexedDB:", error);
+          console.error("[Cache] Error fetching from IndexedDB:", error);
         }
       }
     };
@@ -173,3 +187,4 @@ export const useInvestmentAssetReadById = (id: string) => {
     error
   };
 };
+
