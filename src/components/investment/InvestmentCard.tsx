@@ -45,7 +45,8 @@ const InvestmentCardComponent = ({
     allowance,
     refreshTokenData,
     transactionStatus,
-    isWaitingApproval 
+    isWaitingApproval,
+    hasInvested
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -89,7 +90,7 @@ const InvestmentCardComponent = ({
     if (transactionStatus?.isLoading) {
       return "Processing transaction...";
     }
-    if (transactionStatus?.isSuccess) {
+    if (transactionStatus?.isSuccess || hasInvested) {
       return "Transaction successful!";
     }
     if (transactionStatus?.isError) {
@@ -175,17 +176,20 @@ const InvestmentCardComponent = ({
                   value={investmentAmount}
                   onChange={(e) => setInvestmentAmount(e.target.value)}
                   min={property.min_investment_amount}
+                  disabled={hasInvested}
                 />
                 <Button
                   className="w-full bg-primary hover:bg-primary/90"
                   onClick={handleInvestClick}
-                  disabled={transactionStatus?.isLoading || isWaitingApproval}
+                  disabled={transactionStatus?.isLoading || isWaitingApproval || hasInvested}
                 >
                   {transactionStatus?.isLoading || isWaitingApproval ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       {isWaitingApproval ? "Waiting for Approval..." : "Processing..."}
                     </>
+                  ) : hasInvested ? (
+                    "Investment Complete"
                   ) : (
                     <>
                       <Wallet className="mr-2 h-4 w-4" />
@@ -195,7 +199,7 @@ const InvestmentCardComponent = ({
                 </Button>
                 {statusMessage && (
                   <p className={`text-sm text-center ${
-                    transactionStatus?.isSuccess ? 'text-green-500' : 
+                    transactionStatus?.isSuccess || hasInvested ? 'text-green-500' : 
                     transactionStatus?.isError ? 'text-red-500' : 
                     'text-blue-500'
                   }`}>

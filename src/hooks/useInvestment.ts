@@ -8,6 +8,7 @@ import { useTransactionStatus } from "./useTransactionStatus";
 
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
+  const [hasInvested, setHasInvested] = useState(false);
   const { handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
   const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
@@ -42,6 +43,7 @@ export const useInvestment = (tokenAddress?: string) => {
             console.log("Contract investment response:", response);
 
             if (response?.status?.isSuccess) {
+              setHasInvested(true);
               toast.success("Investment successful!");
             } else if (response?.status?.isError) {
               toast.error("Investment failed");
@@ -71,6 +73,7 @@ export const useInvestment = (tokenAddress?: string) => {
     allowance,
     refreshTokenData,
     transactionStatus,
-    isWaitingApproval
+    isWaitingApproval,
+    hasInvested
   };
 };
