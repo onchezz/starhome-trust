@@ -33,7 +33,7 @@ const AddProperty = () => {
   const handleSubmit = async () => {
     try {
       const result = await handleListSaleProperty(formData);
-      if (result.status === 'success') {
+      if (result?.status?.isSuccess) {
         toast.success("Property listed successfully!");
         navigate("/properties");
       }

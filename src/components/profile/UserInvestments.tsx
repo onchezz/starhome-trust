@@ -17,6 +17,7 @@ export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
   const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
+  const { handleWithdraw } = useInvestmentWrite();
 
   console.log("User investments data:", {
     address,
