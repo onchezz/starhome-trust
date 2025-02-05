@@ -44,7 +44,8 @@ const InvestmentCardComponent = ({
     approveAndInvest,
     allowance,
     refreshTokenData,
-    transactionStatus 
+    transactionStatus,
+    isWaitingApproval 
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -82,6 +83,9 @@ const InvestmentCardComponent = ({
   }, [address, handleConnectWallet, handleInvest, property.id]);
 
   const getTransactionStatusMessage = () => {
+    if (isWaitingApproval) {
+      return "Waiting for approval transaction...";
+    }
     if (transactionStatus?.isLoading) {
       return "Processing transaction...";
     }
@@ -175,12 +179,12 @@ const InvestmentCardComponent = ({
                 <Button
                   className="w-full bg-primary hover:bg-primary/90"
                   onClick={handleInvestClick}
-                  disabled={transactionStatus?.isLoading}
+                  disabled={transactionStatus?.isLoading || isWaitingApproval}
                 >
-                  {transactionStatus?.isLoading ? (
+                  {transactionStatus?.isLoading || isWaitingApproval ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      {isWaitingApproval ? "Waiting for Approval..." : "Processing..."}
                     </>
                   ) : (
                     <>

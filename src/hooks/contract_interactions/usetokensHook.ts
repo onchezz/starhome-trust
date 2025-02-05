@@ -20,6 +20,7 @@ export const useToken = (tokenAddress: string) => {
   const formattedSpender = spender;
   const fetchInProgress = useRef(false);
   const { checkTransaction } = useTransactionStatus();
+  const [isWaitingApproval, setIsWaitingApproval] = useState(false);
 
   const { contract } = useContract({
     abi: universalErc20Abi,
@@ -140,12 +141,16 @@ export const useToken = (tokenAddress: string) => {
           amountInToken
         ]);
 
+        setIsWaitingApproval(true);
+        console.log('Sending approval transaction...');
+        
         const tx = await sendTransaction([increaseAllowanceCall, approveCall]);
         console.log('Approval transaction sent:', tx);
 
         // Wait for transaction confirmation
         const txStatus = await checkTransaction(tx.transaction_hash);
         console.log('Transaction status:', txStatus);
+        setIsWaitingApproval(false);
 
         if (txStatus.isSuccess) {
           // Refresh token data after successful approval
@@ -158,6 +163,7 @@ export const useToken = (tokenAddress: string) => {
           throw new Error('Transaction failed');
         }
       } catch (error) {
+        setIsWaitingApproval(false);
         console.error('Error in approveAndInvest:', error);
         throw error;
       }
@@ -169,6 +175,7 @@ export const useToken = (tokenAddress: string) => {
     ...tokenData,
     approveAndInvest,
     allowance: tokenData.allowance,
-    refreshTokenData: fetchAndCacheTokenData
+    refreshTokenData: fetchAndCacheTokenData,
+    isWaitingApproval
   };
 };

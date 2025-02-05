@@ -9,7 +9,7 @@ import { useTransactionStatus } from "./useTransactionStatus";
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
-  const { approveAndInvest, allowance, refreshTokenData } = useToken(tokenAddress || "");
+  const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
   const { status: transactionStatus, checkTransaction } = useTransactionStatus();
 
@@ -70,6 +70,7 @@ export const useInvestment = (tokenAddress?: string) => {
     approveAndInvest,
     allowance,
     refreshTokenData,
-    transactionStatus
+    transactionStatus,
+    isWaitingApproval
   };
 };
