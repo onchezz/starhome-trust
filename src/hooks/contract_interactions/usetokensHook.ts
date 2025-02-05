@@ -105,27 +105,27 @@ export const useToken = (tokenAddress: string) => {
         await fetchAndCacheTokenData();
         
         const tokenDecimals = tokenData.decimals || 18;
-        const amountInToken = amount * Math.pow(10, tokenDecimals);
+        const amountInToken = BigInt(amount * Math.pow(10, tokenDecimals));
         const currentAllowance = tokenData.allowance ? BigInt(tokenData.allowance) : BigInt(0);
         const currentBalance = tokenData.balance ? BigInt(tokenData.balance) : BigInt(0);
 
-        if (currentBalance < BigInt(amountInToken)) {
+        if (currentBalance < amountInToken) {
           throw new Error('Insufficient balance');
         }
 
-        if (currentAllowance >= BigInt(amountInToken)) {
-          await investCallback(investmentId, amountInToken);
+        if (currentAllowance >= amountInToken) {
+          await investCallback(investmentId, Number(amountInToken));
           return;
         }
 
-        const additionalAllowance = BigInt(amountInToken) - currentAllowance;
+        const additionalAllowance = amountInToken - currentAllowance;
         const increaseAllowanceCall = await contract.populate('increase_allowance', [
           formattedSpender,
-          additionalAllowance.toString(),
+          additionalAllowance
         ]);
         const approveCall = await contract.populate('approve', [
           formattedSpender, 
-          amountInToken.toString()
+          amountInToken
         ]);
 
         const tx = await sendTransaction([increaseAllowanceCall, approveCall]);
@@ -134,7 +134,7 @@ export const useToken = (tokenAddress: string) => {
         // Refresh token data after approval
         await fetchAndCacheTokenData();
         
-        await investCallback(investmentId, amountInToken);
+        await investCallback(investmentId, Number(amountInToken));
       } catch (error) {
         console.error('Error in approveAndInvest:', error);
         throw error;

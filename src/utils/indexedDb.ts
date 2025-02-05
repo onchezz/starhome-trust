@@ -17,12 +17,6 @@ interface TokenData {
 export const initDB = async () => {
   const db = await openDB(DB_NAME, DB_VERSION, {
     upgrade(db) {
-      if (!db.objectStoreNames.contains('properties')) {
-        db.createObjectStore('properties', { keyPath: 'id' });
-      }
-      if (!db.objectStoreNames.contains('investments')) {
-        db.createObjectStore('investments', { keyPath: 'id' });
-      }
       if (!db.objectStoreNames.contains('tokenData')) {
         db.createObjectStore('tokenData', { keyPath: 'id' });
       }
@@ -32,9 +26,15 @@ export const initDB = async () => {
 };
 
 export const saveTokenData = async (
-  tokenAddress: string, 
-  ownerAddress: string, 
-  data: Omit<TokenData, 'id' | 'timestamp'>
+  tokenAddress: string,
+  ownerAddress: string,
+  data: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    balance: string;
+    allowance: string;
+  }
 ) => {
   console.log('Saving token data:', { tokenAddress, ownerAddress, data });
   const db = await initDB();
