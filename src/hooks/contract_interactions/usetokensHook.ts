@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   useContract,
   useAccount,
@@ -16,6 +16,7 @@ export const useToken = (tokenAddress: string) => {
   const formattedTokenAddress = tokenAddress as `0x${string}`;
   const formattedOwner = owner;
   const formattedSpender = spender;
+  const fetchInProgress = useRef(false);
 
   const { contract } = useContract({
     abi: universalErc20Abi,
@@ -38,9 +39,15 @@ export const useToken = (tokenAddress: string) => {
   });
 
   const fetchAndCacheTokenData = useCallback(async () => {
-    if (!contract || !formattedOwner) return;
+    if (!contract || !formattedOwner || fetchInProgress.current) return;
 
     try {
+      fetchInProgress.current = true;
+      console.log('Fetching token data for:', {
+        tokenAddress: formattedTokenAddress,
+        ownerAddress: formattedOwner
+      });
+
       // First check cache
       const cachedData = await getTokenData(formattedTokenAddress, formattedOwner);
       
@@ -80,12 +87,16 @@ export const useToken = (tokenAddress: string) => {
       console.log('Fetched and cached new token data:', newData);
     } catch (error) {
       console.error('Error fetching token data:', error);
+    } finally {
+      fetchInProgress.current = false;
     }
   }, [contract, formattedOwner, formattedSpender, formattedTokenAddress]);
 
   useEffect(() => {
-    fetchAndCacheTokenData();
-  }, [fetchAndCacheTokenData]);
+    if (tokenAddress && owner) {
+      fetchAndCacheTokenData();
+    }
+  }, [fetchAndCacheTokenData, tokenAddress, owner]);
 
   const { sendAsync: sendTransaction, status, isError, isIdle, isPending, isSuccess } =
     useSendTransaction({});
