@@ -1,9 +1,6 @@
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { PropertyConverter } from "@/types/property";
 import { openDB } from "@/utils/indexedDb";
-import { useAccount } from "@starknet-react/core";
-import { useState, useEffect, useMemo } from "react";
-import { InvestmentAssetConverter } from "@/types/investment";
 
 const PROPERTIES_CACHE_KEY = 'properties';
 
@@ -38,13 +35,13 @@ export const usePropertyRead = () => {
   });
 
   const saleProperties = useMemo(() => {
-    if (!rawProperties || !Array.isArray(rawProperties)) {
+    if (!data || !Array.isArray(data)) {
       console.log("[Contract] No property data available or invalid format");
       return [];
     }
     
-    console.log("[Contract] Received raw properties:", rawProperties);
-    const properties = rawProperties.map((property: any) => 
+    console.log("[Contract] Received raw properties:", data);
+    const properties = data.map((property: any) => 
       PropertyConverter.fromStarknetProperty(property)
     );
     
@@ -52,7 +49,7 @@ export const usePropertyRead = () => {
     savePropertiesToDB(properties).catch(console.error);
     
     return properties;
-  }, [rawProperties]);
+  }, [data]);
 
   // Load from IndexedDB if contract data is not available
   useMemo(async () => {
@@ -68,7 +65,7 @@ export const usePropertyRead = () => {
         console.error("[Cache] Error loading from IndexedDB:", error);
       }
     }
-  }, [rawProperties, isLoading, saleProperties.length]);
+  }, [rawProperties]);
 
   return {
     saleProperties,
