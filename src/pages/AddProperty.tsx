@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { Property } from "@/types/property";
 import BasicInformation from "@/components/property/form/BasicInformation";
@@ -33,9 +32,11 @@ const AddProperty = () => {
 
   const handleSubmit = async () => {
     try {
-      await handleListSaleProperty(formData);
-      toast.success("Property listed successfully!");
-      navigate("/properties");
+      const result = await handleListSaleProperty(formData);
+      if (result.status === 'success') {
+        toast.success("Property listed successfully!");
+        navigate("/properties");
+      }
     } catch (error) {
       console.error("Error listing property:", error);
       toast.error("Failed to list property");
@@ -88,9 +89,9 @@ const AddProperty = () => {
         <div className="flex justify-end">
           <Button 
             onClick={handleSubmit}
-            disabled={contractStatus === "loading"}
+            disabled={contractStatus.isPending}
           >
-            {contractStatus === "loading" ? "Listing Property..." : "List Property"}
+            {contractStatus.isPending ? "Listing Property..." : "List Property"}
           </Button>
         </div>
       </div>
