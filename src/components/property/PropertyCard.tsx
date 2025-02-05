@@ -1,5 +1,5 @@
 import { Property } from "@/types/property";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
 export interface PropertyCardProps {
@@ -34,14 +34,34 @@ export const PropertyCard = ({
   showUpdateButton 
 }: PropertyCardProps) => {
   return (
-    <Card className="p-4">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <Link to={`/properties/${id}`}>
-        <h2 className="text-lg font-bold">{title}</h2>
-        <p className="text-sm text-gray-500">{`${location.city}, ${location.state}, ${location.country}`}</p>
-        <p className="text-md font-semibold">${price}</p>
-        <p className="text-sm text-gray-600">Asking Price: ${askingPrice}</p>
-        <p className="text-sm text-gray-600">Type: {propertyType}</p>
-        <p className="text-sm text-gray-600">Status: {status}</p>
+        <div className="relative h-48 overflow-hidden">
+          <img 
+            src={imagesUrl[0] || '/placeholder.svg'} 
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
+            {status}
+          </div>
+        </div>
+        <CardContent className="p-4">
+          <h2 className="text-xl font-semibold mb-2 line-clamp-1">{title}</h2>
+          <p className="text-gray-600 text-sm mb-2">
+            {`${location.city}, ${location.state}, ${location.country}`}
+          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-lg font-bold text-primary">${price.toLocaleString()}</p>
+              <p className="text-sm text-gray-500">Asking: ${askingPrice.toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-medium">{propertyType}</p>
+              <p className="text-xs text-gray-500">{interestedClients} interested</p>
+            </div>
+          </div>
+        </CardContent>
       </Link>
     </Card>
   );
