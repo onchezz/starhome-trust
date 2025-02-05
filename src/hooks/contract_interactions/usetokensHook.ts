@@ -52,7 +52,7 @@ export const useToken = (tokenAddress: string) => {
       const cachedData = await getTokenData(formattedTokenAddress, formattedOwner);
       
       if (cachedData && Date.now() - cachedData.timestamp < 5 * 60 * 1000) { // 5 minutes cache
-        console.log('Using cached token data:', cachedData);
+        console.log(`Using cached token data:, ${cachedData}`);
         setTokenData({
           name: cachedData.name,
           symbol: cachedData.symbol,
@@ -108,9 +108,9 @@ export const useToken = (tokenAddress: string) => {
         const tokenDecimals = tokenData.decimals || 18;
         const amountInToken = Number(amount * Math.pow(10, tokenDecimals));
         const currentAllowance = tokenData.allowance ? Number(tokenData.allowance) : Number(0);
-        const currentBalance = tokenData.balance ? BigInt(tokenData.balance) : BigInt(0);
+        const currentBalance = tokenData.balance ? Number(tokenData.balance) : Number(0);
 
-        console.log(`allowances : ${{
+        console.log(`allowances and balnce  : ${{
           tokenDecimals:tokenDecimals,
           amountInToken:amountInToken,
           currentAllowance: currentAllowance,
@@ -122,6 +122,7 @@ export const useToken = (tokenAddress: string) => {
         }
 
         if (currentAllowance >= amountInToken) {
+
           await investCallback(investmentId, Number(amountInToken));
           return;
         }
