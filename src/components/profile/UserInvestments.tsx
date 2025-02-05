@@ -6,7 +6,7 @@ import { useAccount } from "@starknet-react/core";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvestmentListingCard } from "./InvestmentListingCard";
 import { useInvestmentAssetsRead, useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
-import {  useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
+import { useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
@@ -18,7 +18,9 @@ export const UserInvestments = () => {
   const { address } = useAccount();
   const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
   const { handleWithdraw } = useInvestmentWrite();
-  const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
+  
+  // Create a map to store withdrawal amounts for each investment
+  const [withdrawalAmounts, setWithdrawalAmounts] = useState<{ [key: string]: string }>({});
 
   console.log("Investment data:", {
     investmentProperties,
@@ -28,17 +30,31 @@ export const UserInvestments = () => {
 
   const handleWithdrawClick = async (investmentId: string) => {
     try {
-      if (!withdrawalAmount) {
+      const amount = withdrawalAmounts[investmentId];
+      if (!amount) {
         toast.error("Please enter a withdrawal amount");
         return;
       }
-      await handleWithdraw(investmentId, Number(withdrawalAmount));
-      setWithdrawalAmount("");
+      await handleWithdraw(investmentId, Number(amount));
+      
+      // Clear only this investment's withdrawal amount after successful withdrawal
+      setWithdrawalAmounts(prev => ({
+        ...prev,
+        [investmentId]: ""
+      }));
+      
       toast.success("Withdrawal successful");
     } catch (error) {
       console.error("Withdrawal error:", error);
       toast.error("Failed to process withdrawal");
     }
+  };
+
+  const handleInputChange = (investmentId: string, value: string) => {
+    setWithdrawalAmounts(prev => ({
+      ...prev,
+      [investmentId]: value
+    }));
   };
 
   const InvestmentCard = ({ investment }: { investment: any }) => {
@@ -67,15 +83,15 @@ export const UserInvestments = () => {
                 <Input
                   type="number"
                   placeholder="Amount to withdraw"
-                  value={withdrawalAmount}
-                  onChange={(e) => setWithdrawalAmount(e.target.value)}
+                  value={withdrawalAmounts[investment.id] || ""}
+                  onChange={(e) => handleInputChange(investment.id, e.target.value)}
                   min={0}
                   max={balance}
                 />
                 <Button 
                   className="w-full" 
                   onClick={() => handleWithdrawClick(investment.id)}
-                  disabled={!withdrawalAmount || Number(withdrawalAmount) > balance}
+                  disabled={!withdrawalAmounts[investment.id] || Number(withdrawalAmounts[investment.id]) > balance}
                 >
                   <Wallet className="mr-2 h-4 w-4" />
                   Withdraw Funds
@@ -165,4 +181,3 @@ export const UserInvestments = () => {
     </Card>
   );
 };
-
