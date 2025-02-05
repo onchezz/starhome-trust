@@ -153,7 +153,7 @@ export const useInvestmentAssetReadById = (id: string) => {
         setInvestment(formatted);
       } else {
         try {
-          const cachedInvestments = await getInvestments();
+          const cachedInvestments = await getInvestmentsFromDB();
           const cachedInvestment = cachedInvestments.find(inv => inv.id === id);
           if (cachedInvestment) {
             setInvestment(cachedInvestment);
