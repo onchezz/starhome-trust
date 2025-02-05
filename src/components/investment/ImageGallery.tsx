@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Shimmer } from "@/components/ui/shimmer";
 import { parseImagesData } from "@/utils/imageUtils";
 import { Loader2 } from "lucide-react";
@@ -7,12 +7,10 @@ interface ImageGalleryProps {
   imagesId: string;
 }
 
-export const ImageGallery: React.FC<ImageGalleryProps> = ({ imagesId }) => {
+export const ImageGallery = memo(({ imagesId }: ImageGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const { imageUrls } = parseImagesData(imagesId);
-
-  console.log("[ImageGallery] Rendering with images:", imageUrls);
 
   if (!imageUrls.length) {
     return (
@@ -54,4 +52,6 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ imagesId }) => {
       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </div>
   );
-};
+});
+
+ImageGallery.displayName = 'ImageGallery';

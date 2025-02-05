@@ -13,6 +13,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useAccount } from "@starknet-react/core";
+import { memo } from "react";
 
 interface InvestmentCardProps {
   property: InvestmentAsset;
@@ -21,7 +22,7 @@ interface InvestmentCardProps {
   handleConnectWallet: () => void;
 }
 
-export const InvestmentCard = ({
+export const InvestmentCard = memo(({
   property,
   expandedCardId,
   setExpandedCardId,
@@ -160,4 +161,6 @@ export const InvestmentCard = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+InvestmentCard.displayName = 'InvestmentCard';
