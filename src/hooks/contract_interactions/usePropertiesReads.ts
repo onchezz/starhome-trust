@@ -4,7 +4,7 @@ import { InvestmentAsset, InvestmentAssetConverter } from '@/types/investment';
 import { useAccount } from '@starknet-react/core';
 import { useStarHomeReadContract } from '../contract_hooks/useStarHomeReadContract';
 import { 
-  initDB, 
+  initDB,
   getCachedProperties, 
   cacheProperties,
   getCachedInvestments,
@@ -27,32 +27,37 @@ export const usePropertyRead = () => {
     queryFn: async () => {
       console.log("[usePropertyRead] Starting property fetch");
       
-      // Try to get cached properties first
-      const cachedProperties = await getCachedProperties();
-      if (cachedProperties && cachedProperties.length > 0) {
-        console.log("[usePropertyRead] Using cached properties:", cachedProperties);
-        return cachedProperties;
-      }
-
-      if (salePropertiesHook.error) {
-        console.error("[usePropertyRead] Error fetching properties:", salePropertiesHook.error);
-        throw salePropertiesHook.error;
-      }
-      
-      const properties = salePropertiesHook.data || [];
-      
-      // Convert and cache the properties
-      const convertedProperties = (Array.isArray(properties) ? properties : []).map((prop: any) => {
-        try {
-          return PropertyConverter.fromStarknetProperty(prop);
-        } catch (error) {
-          console.error("[usePropertyRead] Error converting property:", error, prop);
-          return null;
+      try {
+        // Try to get cached properties first
+        const cachedProperties = await getCachedProperties();
+        if (cachedProperties && cachedProperties.length > 0) {
+          console.log("[usePropertyRead] Using cached properties:", cachedProperties);
+          return cachedProperties;
         }
-      }).filter((prop: any) => prop !== null);
 
-      await cacheProperties(convertedProperties);
-      return convertedProperties;
+        if (salePropertiesHook.error) {
+          console.error("[usePropertyRead] Error fetching properties:", salePropertiesHook.error);
+          throw salePropertiesHook.error;
+        }
+        
+        const properties = salePropertiesHook.data || [];
+        
+        // Convert and cache the properties
+        const convertedProperties = (Array.isArray(properties) ? properties : []).map((prop: any) => {
+          try {
+            return PropertyConverter.fromStarknetProperty(prop);
+          } catch (error) {
+            console.error("[usePropertyRead] Error converting property:", error, prop);
+            return null;
+          }
+        }).filter((prop: any) => prop !== null);
+
+        await cacheProperties(convertedProperties);
+        return convertedProperties;
+      } catch (error) {
+        console.error("[usePropertyRead] Error in property fetch:", error);
+        throw error;
+      }
     },
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
