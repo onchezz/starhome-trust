@@ -3,11 +3,10 @@ import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWriteContract";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useInvestmentWrite } from "./contract_interactions/useInvestmentWrite";
 
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
-  const { handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
+  const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
   const { approveAndInvest, allowance, refreshTokenData } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
 
@@ -34,7 +33,7 @@ export const useInvestment = (tokenAddress?: string) => {
             // Call the contract's invest function
             const response = await execute("invest_in_property", [
               id, // investment_id
-              amount // amount
+              (amount) // amount
             ]);
 
             console.log("Contract investment response:", response);

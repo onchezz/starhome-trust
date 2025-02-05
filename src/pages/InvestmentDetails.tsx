@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { shortString } from "starknet";
-
+import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useInvestment } from "@/hooks/useInvestment";
 import { InvestmentGallery } from "@/components/investment/details/InvestmentGallery";
 import { InvestmentLocation } from "@/components/investment/details/InvestmentLocation";
@@ -10,7 +10,6 @@ import { DocumentList } from "@/components/investment/details/DocumentList";
 import { PropertyOverview } from "@/components/investment/details/PropertyOverview";
 import { FinancialOverview } from "@/components/investment/details/FinancialOverview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/useInvestmentReads";
 
 const InvestmentDetails = () => {
   const { id } = useParams();

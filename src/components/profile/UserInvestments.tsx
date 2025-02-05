@@ -2,11 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Skeleton } from "../ui/skeleton";
+import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useAccount } from "@starknet-react/core";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvestmentListingCard } from "./InvestmentListingCard";
-import { useInvestmentAssetsRead, useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
-import {  useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
+import { useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
+import { useInvestmentWithdraw } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
@@ -17,7 +18,7 @@ export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
   const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
-  const { handleWithdraw } = useInvestmentWrite();
+  const { handleWithdraw } = useInvestmentWithdraw();
   const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
 
   console.log("Investment data:", {
@@ -165,4 +166,3 @@ export const UserInvestments = () => {
     </Card>
   );
 };
-
