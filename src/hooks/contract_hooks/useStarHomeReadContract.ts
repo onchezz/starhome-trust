@@ -1,14 +1,24 @@
+
 import { Abi, useContract, useReadContract } from "@starknet-react/core";
 import { starhomes_abi } from "@/data/starhomes_abi";
 import { starhomesContract } from "@/utils/constants";
 
+interface UseStarHomeReadContractProps {
+  functionName: string;
+  args?: any[];
+  options?: {
+    staleTime?: number;
+    cacheTime?: number;
+    refetchOnWindowFocus?: boolean;
+    enabled?: boolean;
+  };
+}
+
 export const useStarHomeReadContract = ({ 
   functionName, 
-  args = [] 
-}: { 
-  functionName: string;
-  args?: any[] 
-}) => {
+  args = [],
+  options = {} 
+}: UseStarHomeReadContractProps) => {
   const { contract } = useContract({
     abi: starhomes_abi as Abi,
     address: starhomesContract,
@@ -19,6 +29,7 @@ export const useStarHomeReadContract = ({
     args, 
     address: starhomesContract,
     abi: starhomes_abi as Abi,
+    ...options
   });
 
   console.log(`[useStarHomeReadContract] ${functionName}:`, {
