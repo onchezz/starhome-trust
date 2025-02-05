@@ -77,7 +77,7 @@ export const AgentProperties = () => {
               askingPrice={property.asking_price}
               interestedClients={property.interestedClients}
               annualGrowthRate={property.annualGrowthRate}
-              imagesUrl={property.imagesId}
+              imagesUrl={Array.isArray(property.imagesId) ? property.imagesId : [property.imagesId]}
               propertyType={property.propertyType}
               status={property.status}
               showUpdateButton={true}

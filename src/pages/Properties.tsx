@@ -1,5 +1,5 @@
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
-import PropertyCard from "@/components/property/PropertyCard";
+import { PropertyCard } from "@/components/property/PropertyCard";
 import { PageLoader } from "@/components/ui/page-loader";
 import PropertySearch from "@/components/property/PropertySearch";
 import { useState } from "react";
@@ -27,7 +27,20 @@ const Properties = () => {
         {filteredProperties?.map((property: Property) => (
           <PropertyCard 
             key={property.id}
-            propertyData={property}
+            id={property.id}
+            title={property.title}
+            location={{
+              city: property.city,
+              state: property.state,
+              country: property.country
+            }}
+            price={property.price}
+            askingPrice={property.asking_price}
+            interestedClients={property.interestedClients}
+            annualGrowthRate={property.annualGrowthRate}
+            imagesUrl={Array.isArray(property.imagesId) ? property.imagesId : [property.imagesId]}
+            propertyType={property.propertyType}
+            status={property.status}
           />
         ))}
       </div>

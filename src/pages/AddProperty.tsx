@@ -70,16 +70,27 @@ const AddProperty = () => {
         />
         
         <ImageUploader 
-          onImageUpload={(urls) => handleInputChange('imagesUrl', urls)}
-          maxImages={5}
+          selectedFiles={[]}
+          isUploading={false}
+          uploadProgress={0}
+          handleFileSelect={(e) => {
+            const files = Array.from(e.target.files || []);
+            handleInputChange('imagesId', files.map(f => URL.createObjectURL(f)));
+          }}
+          handleDrop={(e) => {
+            e.preventDefault();
+            const files = Array.from(e.dataTransfer.files);
+            handleInputChange('imagesId', files.map(f => URL.createObjectURL(f)));
+          }}
+          setSelectedFiles={() => {}}
         />
         
         <div className="flex justify-end">
           <Button 
             onClick={handleSubmit}
-            disabled={contractStatus === 'loading'}
+            disabled={contractStatus === "loading"}
           >
-            {contractStatus === 'loading' ? "Listing Property..." : "List Property"}
+            {contractStatus === "loading" ? "Listing Property..." : "List Property"}
           </Button>
         </div>
       </div>
