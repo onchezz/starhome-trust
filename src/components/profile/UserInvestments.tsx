@@ -9,7 +9,7 @@ import { useInvestmentAssetsRead, useInvestorBalance } from "@/hooks/contract_in
 import { useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Wallet } from "lucide-react";
 import { toast } from "sonner";
 
@@ -51,14 +51,18 @@ export const UserInvestments = () => {
   };
 
   const handleInputChange = (investmentId: string, value: string) => {
-    setWithdrawalAmounts(prev => ({
-      ...prev,
-      [investmentId]: value
-    }));
+    // Only update if the value is a valid number or empty string
+    if (value === "" || !isNaN(Number(value))) {
+      setWithdrawalAmounts(prev => ({
+        ...prev,
+        [investmentId]: value
+      }));
+    }
   };
 
   const InvestmentCard = ({ investment }: { investment: any }) => {
     const { balance, isLoading: balanceLoading } = useInvestorBalance(investment.id);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     return (
       <Card className="overflow-hidden">
@@ -87,6 +91,7 @@ export const UserInvestments = () => {
                   onChange={(e) => handleInputChange(investment.id, e.target.value)}
                   min={0}
                   max={balance}
+                  ref={inputRef}
                 />
                 <Button 
                   className="w-full" 
