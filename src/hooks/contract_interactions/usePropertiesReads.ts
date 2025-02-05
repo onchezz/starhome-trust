@@ -1,42 +1,73 @@
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { InvestmentAsset } from "@/types/investment";
-import { Property } from "@/types/property";
+import { Property, PropertyConverter } from "@/types/property";
 import { useAccount } from "@starknet-react/core";
 import { useEffect, useState } from "react";
 
 export const usePropertyRead = () => {
-  const { data: saleProperties, isLoading, error } = useStarHomeReadContract({
+  const { data: rawProperties, isLoading, error } = useStarHomeReadContract({
     functionName: "get_sale_properties",
   });
 
+  const [saleProperties, setSaleProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    if (rawProperties) {
+      const converted = (rawProperties as any[]).map(prop => 
+        PropertyConverter.fromStarknetProperty(prop)
+      );
+      setSaleProperties(converted);
+    }
+  }, [rawProperties]);
+
   return {
-    saleProperties: saleProperties as Property[],
+    saleProperties,
     isLoading,
     error
   };
 };
 
 export const usePropertyReadById = (id: string) => {
-  const { data: property, isLoading, error } = useStarHomeReadContract({
+  const { data: rawProperty, isLoading, error } = useStarHomeReadContract({
     functionName: "get_property",
     args: [id],
   });
 
+  const [property, setProperty] = useState<Property | null>(null);
+
+  useEffect(() => {
+    if (rawProperty) {
+      const converted = PropertyConverter.fromStarknetProperty(rawProperty);
+      setProperty(converted);
+    }
+  }, [rawProperty]);
+
   return {
-    property: property as Property,
+    property,
     isLoading,
     error
   };
 };
 
 export const useAgentProperties = (address: string) => {
-  const { data: properties, isLoading, error } = useStarHomeReadContract({
+  const { data: rawProperties, isLoading, error } = useStarHomeReadContract({
     functionName: "get_sale_properties_by_agent",
     args: [address],
   });
 
+  const [properties, setProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    if (rawProperties) {
+      const converted = (rawProperties as any[]).map(prop => 
+        PropertyConverter.fromStarknetProperty(prop)
+      );
+      setProperties(converted);
+    }
+  }, [rawProperties]);
+
   return {
-    properties: properties as Property[],
+    properties,
     isLoading,
     error
   };
@@ -44,11 +75,11 @@ export const useAgentProperties = (address: string) => {
 
 export const useInvestmentAssetsRead = () => {
   const { address } = useAccount();
-  const { data: investmentProperties, isLoading: isLoadingProperties } = useStarHomeReadContract({
+  const { data: rawInvestmentProperties, isLoading: isLoadingProperties } = useStarHomeReadContract({
     functionName: "get_investment_properties",
   });
 
-  const { data: userInvestments, isLoading: isLoadingInvestments } = useStarHomeReadContract({
+  const { data: rawUserInvestments, isLoading: isLoadingInvestments } = useStarHomeReadContract({
     functionName: "get_investment_properties_by_lister",
     args: [address || ""],
   });
@@ -57,16 +88,16 @@ export const useInvestmentAssetsRead = () => {
   const [formattedInvestments, setFormattedInvestments] = useState<InvestmentAsset[]>([]);
 
   useEffect(() => {
-    if (investmentProperties) {
-      setFormattedProperties(investmentProperties as InvestmentAsset[]);
+    if (rawInvestmentProperties) {
+      setFormattedProperties(rawInvestmentProperties as InvestmentAsset[]);
     }
-  }, [investmentProperties]);
+  }, [rawInvestmentProperties]);
 
   useEffect(() => {
-    if (userInvestments) {
-      setFormattedInvestments(userInvestments as InvestmentAsset[]);
+    if (rawUserInvestments) {
+      setFormattedInvestments(rawUserInvestments as InvestmentAsset[]);
     }
-  }, [userInvestments]);
+  }, [rawUserInvestments]);
 
   return {
     investmentProperties: formattedProperties,
@@ -77,13 +108,21 @@ export const useInvestmentAssetsRead = () => {
 };
 
 export const useInvestmentAssetReadById = (id: string) => {
-  const { data: investment, isLoading, error } = useStarHomeReadContract({
+  const { data: rawInvestment, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investment",
     args: [id],
   });
 
+  const [investment, setInvestment] = useState<InvestmentAsset | null>(null);
+
+  useEffect(() => {
+    if (rawInvestment) {
+      setInvestment(rawInvestment as InvestmentAsset);
+    }
+  }, [rawInvestment]);
+
   return {
-    investment: investment as InvestmentAsset,
+    investment,
     isLoading,
     error
   };
