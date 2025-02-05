@@ -105,7 +105,7 @@ export const useAgentProperties = (address: string) => {
         // Try to get from IndexedDB if no network data
         try {
           const cachedProperties = await getProperties();
-          const agentProperties = cachedProperties.filter(prop => prop.agent?.address === address);
+          const agentProperties = cachedProperties.filter(prop => prop.agentId === address);
           if (agentProperties.length > 0) {
             setProperties(agentProperties);
           }
