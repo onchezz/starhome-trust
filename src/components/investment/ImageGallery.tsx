@@ -7,42 +7,43 @@ interface ImageGalleryProps {
   imagesId: string;
 }
 
-export const ImageGallery = memo(({ imagesId }: ImageGalleryProps) => {
+const ImageGalleryComponent = ({ imagesId }: ImageGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const { imageUrls } = parseImagesData(imagesId);
 
   if (!imageUrls.length) {
     return (
-      <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-        <p className="text-gray-500">No images available</p>
+      <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-t-lg flex items-center justify-center">
+        <Shimmer className="w-full h-full" />
       </div>
     );
   }
 
   return (
-    <div className="relative overflow-hidden group h-48">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
-      )}
+    <div className="relative group aspect-video">
       <img
         src={imageUrls[currentImageIndex]}
-        alt={`Property ${currentImageIndex + 1}`}
-        className={`w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110 ${
-          isLoading ? 'opacity-0' : 'opacity-100'
-        }`}
+        alt={`Property image ${currentImageIndex + 1}`}
+        className="w-full h-full object-cover rounded-t-lg"
         onLoad={() => setIsLoading(false)}
-        onError={() => setIsLoading(false)}
       />
+
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
+        </div>
+      )}
+
       {imageUrls.length > 1 && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {imageUrls.map((_, index) => (
             <button
               key={index}
-              className={`w-2 h-2 rounded-full transition-all ${
-                currentImageIndex === index ? 'bg-white' : 'bg-white/50'
+              className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                index === currentImageIndex
+                  ? "bg-white"
+                  : "bg-white/50 hover:bg-white/75"
               }`}
               onClick={() => setCurrentImageIndex(index)}
             />
@@ -52,6 +53,7 @@ export const ImageGallery = memo(({ imagesId }: ImageGalleryProps) => {
       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </div>
   );
-});
+};
 
+export const ImageGallery = memo(ImageGalleryComponent);
 ImageGallery.displayName = 'ImageGallery';

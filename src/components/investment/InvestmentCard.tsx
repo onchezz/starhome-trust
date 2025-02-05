@@ -22,7 +22,7 @@ interface InvestmentCardProps {
   handleConnectWallet: () => void;
 }
 
-export const InvestmentCard = memo(({
+const InvestmentCardComponent = ({
   property,
   expandedCardId,
   setExpandedCardId,
@@ -161,6 +161,7 @@ export const InvestmentCard = memo(({
       </CardContent>
     </Card>
   );
-});
+};
 
+export const InvestmentCard = memo(InvestmentCardComponent);
 InvestmentCard.displayName = 'InvestmentCard';
