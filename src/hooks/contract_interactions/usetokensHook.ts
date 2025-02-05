@@ -6,7 +6,7 @@ import {
 } from "@starknet-react/core";
 import { rpcProvideUr, starhomesContract } from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
-import { RpcProvider } from 'starknet';
+import { RpcProvider, shortString } from 'starknet';
 import { saveTokenData, getTokenData } from "@/utils/indexedDb";
 
 export const useToken = (tokenAddress: string) => {
@@ -73,11 +73,11 @@ export const useToken = (tokenAddress: string) => {
       ]);
 
       const newData = {
-        name: name.toString(),
-        symbol: symbol.toString(),
+        name:shortString.decodeShortString(name.toString()) ,
+        symbol:shortString.decodeShortString(symbol.toString()),
         decimals: Number(decimals),
-        balance: balance.toString(),
-        allowance: allowance.toString(),
+        balance: (Number(balance)/ Math.pow(10, Number(decimals))).toString() ,
+        allowance:(Number(allowance)/ Math.pow(10, Number(decimals))).toString(),
       };
 
       // Save to cache
@@ -106,9 +106,16 @@ export const useToken = (tokenAddress: string) => {
 
       try {
         const tokenDecimals = tokenData.decimals || 18;
-        const amountInToken = BigInt(amount * Math.pow(10, tokenDecimals));
-        const currentAllowance = tokenData.allowance ? BigInt(tokenData.allowance) : BigInt(0);
+        const amountInToken = Number(amount * Math.pow(10, tokenDecimals));
+        const currentAllowance = tokenData.allowance ? Number(tokenData.allowance) : Number(0);
         const currentBalance = tokenData.balance ? BigInt(tokenData.balance) : BigInt(0);
+
+        console.log(`allowances : ${{
+          tokenDecimals:tokenDecimals,
+          amountInToken:amountInToken,
+          currentAllowance: currentAllowance,
+          currentBalance:currentBalance
+        }} `)
 
         if (currentBalance < amountInToken) {
           throw new Error('Insufficient balance');
