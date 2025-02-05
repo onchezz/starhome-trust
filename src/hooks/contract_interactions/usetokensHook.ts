@@ -8,6 +8,8 @@ import { rpcProvideUr, starhomesContract } from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
 import { RpcProvider, shortString } from 'starknet';
 import { saveTokenData, getTokenData } from "@/utils/indexedDb";
+import { useTransactionStatus } from "../useTransactionStatus";
+import { toast } from "sonner";
 
 export const useToken = (tokenAddress: string) => {
   const provider = new RpcProvider({ nodeUrl: `${rpcProvideUr}` });
@@ -17,6 +19,7 @@ export const useToken = (tokenAddress: string) => {
   const formattedOwner = owner;
   const formattedSpender = spender;
   const fetchInProgress = useRef(false);
+  const { checkTransaction } = useTransactionStatus();
 
   const { contract } = useContract({
     abi: universalErc20Abi,
@@ -110,21 +113,19 @@ export const useToken = (tokenAddress: string) => {
         const currentAllowance = tokenData.allowance ? Number(tokenData.allowance) : Number(0);
         const currentBalance = tokenData.balance ? Number(tokenData.balance) : Number(0);
 
-        console.log(`allowances and balnce  : ${{
-          tokenDecimals:tokenDecimals,
-          amountInToken:amountInToken,
-          currentAllowance: currentAllowance,
-          currentBalance:currentBalance
-        }} `)
+        console.log("Allowances and balance:", {
+          tokenDecimals,
+          amountInToken,
+          currentAllowance,
+          currentBalance
+        });
 
         if (currentBalance < amount) {
-
-        console.log(`balance${currentBalance} and token amount${amountInToken} `)
+          console.log(`Balance ${currentBalance} is less than token amount ${amountInToken}`);
           throw new Error('Insufficient balance');
         }
 
         if (currentAllowance >= amountInToken) {
-
           await investCallback(investmentId, Number(amountInToken));
           return;
         }
@@ -140,18 +141,28 @@ export const useToken = (tokenAddress: string) => {
         ]);
 
         const tx = await sendTransaction([increaseAllowanceCall, approveCall]);
-        console.log('Transaction completed:', tx);
-        
-        // Refresh token data after approval
-        await fetchAndCacheTokenData();
-        
-        await investCallback(investmentId, Number(amountInToken));
+        console.log('Approval transaction sent:', tx);
+
+        // Wait for transaction confirmation
+        const txStatus = await checkTransaction(tx.transaction_hash);
+        console.log('Transaction status:', txStatus);
+
+        if (txStatus.isSuccess) {
+          // Refresh token data after successful approval
+          await fetchAndCacheTokenData();
+          console.log('Token data refreshed, proceeding with investment');
+          // Only proceed with investment if approval was successful
+          await investCallback(investmentId, Number(amountInToken));
+        } else {
+          toast.error("Transaction failed");
+          throw new Error('Transaction failed');
+        }
       } catch (error) {
         console.error('Error in approveAndInvest:', error);
         throw error;
       }
     },
-    [contract, formattedOwner, formattedSpender, sendTransaction, tokenData, fetchAndCacheTokenData]
+    [contract, formattedOwner, formattedSpender, sendTransaction, tokenData, checkTransaction]
   );
 
   return {
