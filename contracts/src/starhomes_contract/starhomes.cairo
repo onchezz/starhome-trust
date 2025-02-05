@@ -238,9 +238,6 @@ pub mod StarhomesContract {
         fn get_sale_properties(self: @ContractState) -> Array<Property> {
             self.properties.get_sale_properties()
         }
-        fn get_listed_properties_len(self: @ContractState) -> u32 {
-            self.properties.get_sale_properties().len()
-        }
 
         fn get_sale_properties_by_agent(
             self: @ContractState, agent_id: ContractAddress,
@@ -257,11 +254,6 @@ pub mod StarhomesContract {
         fn get_investment_properties(self: @ContractState) -> Array<InvestmentAsset> {
             self.properties.get_investment_properties()
         }
-
-        fn get_investment_properties_len(self: @ContractState) -> u32 {
-            self.properties.get_investment_properties().len()
-        }
-
 
         fn get_investment(self: @ContractState, investment_id: felt252) -> InvestmentAsset {
             self.properties.get_investment_by_id(investment_id)

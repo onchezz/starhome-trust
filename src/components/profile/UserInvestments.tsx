@@ -1,14 +1,12 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Skeleton } from "../ui/skeleton";
-import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useAccount } from "@starknet-react/core";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvestmentListingCard } from "./InvestmentListingCard";
-import { useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
-import { useInvestmentWithdraw } from "@/hooks/contract_interactions/useInvestmentWrite";
+import { useInvestmentAssetsRead, useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
+import {  useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
@@ -19,33 +17,32 @@ export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
   const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
-  const { handleWithdraw } = useInvestmentWithdraw();
-  
-  console.log("Rendering UserInvestments with:", {
+  const { handleWithdraw } = useInvestmentWrite();
+  const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
+
+  console.log("Investment data:", {
     investmentProperties,
     userInvestments,
     isLoading,
   });
 
-  const InvestmentCard = ({ investment }: { investment: any }) => {
-    // Move withdrawal amount state inside the card component
-    const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
-    const { balance, isLoading: balanceLoading } = useInvestorBalance(investment.id);
-
-    const handleWithdrawClick = async () => {
-      try {
-        if (!withdrawalAmount) {
-          toast.error("Please enter a withdrawal amount");
-          return;
-        }
-        await handleWithdraw(investment.id, Number(withdrawalAmount));
-        setWithdrawalAmount(""); // Reset only this card's input
-        toast.success("Withdrawal successful");
-      } catch (error) {
-        console.error("Withdrawal error:", error);
-        toast.error("Failed to process withdrawal");
+  const handleWithdrawClick = async (investmentId: string) => {
+    try {
+      if (!withdrawalAmount) {
+        toast.error("Please enter a withdrawal amount");
+        return;
       }
-    };
+      await handleWithdraw(investmentId, Number(withdrawalAmount));
+      setWithdrawalAmount("");
+      toast.success("Withdrawal successful");
+    } catch (error) {
+      console.error("Withdrawal error:", error);
+      toast.error("Failed to process withdrawal");
+    }
+  };
+
+  const InvestmentCard = ({ investment }: { investment: any }) => {
+    const { balance, isLoading: balanceLoading } = useInvestorBalance(investment.id);
 
     return (
       <Card className="overflow-hidden">
@@ -77,7 +74,7 @@ export const UserInvestments = () => {
                 />
                 <Button 
                   className="w-full" 
-                  onClick={handleWithdrawClick}
+                  onClick={() => handleWithdrawClick(investment.id)}
                   disabled={!withdrawalAmount || Number(withdrawalAmount) > balance}
                 >
                   <Wallet className="mr-2 h-4 w-4" />
@@ -168,3 +165,4 @@ export const UserInvestments = () => {
     </Card>
   );
 };
+

@@ -1,5 +1,3 @@
-
-
 import { BigNumberish, num, shortString } from "starknet";
 export const propertyTypes = [
   "House",
@@ -89,7 +87,7 @@ export interface Property {
 
 export class PropertyConverter {
     static feltToString(felt: string): string {
-        return shortString.decodeShortString(felt);
+        return felt ? shortString.decodeShortString(felt) : '';
     }
 
     static addressToString(address: BigNumberish): string {
@@ -97,8 +95,8 @@ export class PropertyConverter {
     }
 
     static fromStarknetProperty(starknetProperty: any): Property {
-        return  {
-            id: shortString.decodeShortString(starknetProperty.id),
+        return {
+            id: this.feltToString(starknetProperty.id),
             title: this.feltToString(starknetProperty.title),
             description: starknetProperty.description,
             locationAddress: this.feltToString(starknetProperty.location_address),
@@ -130,50 +128,46 @@ export class PropertyConverter {
             assetToken: this.addressToString(starknetProperty.asset_token),
         };
     }
-    static convertToStarknetProperty(property:Partial<Property>, address:string){
-       const convertPrice = (price: number | undefined): bigint => {
-    if (typeof price !== 'number') {
-      return BigInt(0);
-    }
-    return BigInt(Math.floor(price * Math.pow(10, 6)));
-  };
-        return {
-        id: property.id || "",
-        title: property.title || "",
-        description: property.description || "",
-        location_address: property.locationAddress?.split(",")[0] || "",
-        city: property.city || "",
-        state: property.state || "",
-        country: property.country || "",
-        latitude: property.latitude || "",
-        longitude: property.longitude || "",
-        price: property.price * Math.pow(10, 6)||0 ,
-        asking_price: property.asking_price * Math.pow(10, 6)|| 0,
-        currency: property.currency || "USD",
-        area: property.area || 0,
-        bedrooms: property.bedrooms || 0,
-        bathrooms: property.bathrooms || 0,
-        parking_spaces: property.parkingSpaces || 0,
-        property_type: property.propertyType || "",
-        status: property.status || "",
-        interested_clients: property.interestedClients || 0,
-        annual_growth_rate: property.annualGrowthRate || 0,
-        features_id: "00",
-        images_id: property.imagesId.toString() || "",
-        video_tour: property.videoId || "none",
-        agent_id: address || "",
-        date_listed: Math.floor(Date.now() / 1000),
-        has_garden: property.hasGarden || false,
-        has_swimming_pool: property.hasSwimmingPool || false,
-        pet_friendly: property.petFriendly || false,
-        wheelchair_accessible: property.wheelchairAccessible || false,
-        asset_token: property.assetToken || ""
-      };
-    }
 
-    // Example usage:
-    static async getProperty(contract: any, propertyId: BigNumberish): Promise<Property> {
-        const starknetProperty = await contract.get_property(propertyId);
-        return this.fromStarknetProperty(starknetProperty);
+    static convertToStarknetProperty(property: Partial<Property>, address?: string) {
+        const convertPrice = (price: number | undefined): bigint => {
+            if (typeof price !== 'number') {
+                return BigInt(0);
+            }
+            return BigInt(Math.floor(price * Math.pow(10, 6)));
+        };
+
+        return {
+            id: property.id || "",
+            title: property.title || "",
+            description: property.description || "",
+            location_address: property.locationAddress?.split(",")[0] || "",
+            city: property.city || "",
+            state: property.state || "",
+            country: property.country || "",
+            latitude: property.latitude || "",
+            longitude: property.longitude || "",
+            price: convertPrice(property.price),
+            asking_price: convertPrice(property.asking_price),
+            currency: property.currency || "USD",
+            area: property.area || 0,
+            bedrooms: property.bedrooms || 0,
+            bathrooms: property.bathrooms || 0,
+            parking_spaces: property.parkingSpaces || 0,
+            property_type: property.propertyType || "",
+            status: property.status || "",
+            interested_clients: property.interestedClients || 0,
+            annual_growth_rate: property.annualGrowthRate || 0,
+            features_id: "00",
+            images_id: property.imagesId?.toString() || "",
+            video_tour: property.videoId || "none",
+            agent_id: address || "",
+            date_listed: Math.floor(Date.now() / 1000),
+            has_garden: property.hasGarden || false,
+            has_swimming_pool: property.hasSwimmingPool || false,
+            pet_friendly: property.petFriendly || false,
+            wheelchair_accessible: property.wheelchairAccessible || false,
+            asset_token: property.assetToken || ""
+        };
     }
 }

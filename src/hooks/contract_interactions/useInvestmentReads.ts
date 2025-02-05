@@ -1,5 +1,9 @@
+
+import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
+import { useState, useEffect } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { useAccount } from "@starknet-react/core";
+import { openDB } from "@/utils/indexedDb";
 
 const INVESTMENTS_CACHE_KEY = 'investments';
 
@@ -26,9 +30,12 @@ export const useInvestorsForInvestment = (investmentId: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investors_for_investment",
     args: [investmentId],
+    options: {
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    }
   });
-
-  console.log("Investors for investment:", { investmentId, data, error });
 
   return {
     investors: data,
@@ -40,13 +47,15 @@ export const useInvestorsForInvestment = (investmentId: string) => {
 export const useInvestorBalance = (investmentId: string, investorAddress?: string) => {
   const { address } = useAccount();
   
-  
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investor_balance_in_investment",
     args: [investmentId, address],
+    options: {
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    }
   });
-
-  console.log("Investor balance:", { investmentId, investorAddress, data, error });
 
   return {
     balance: data ? Number(data)/Math.pow(10,6) : 0,

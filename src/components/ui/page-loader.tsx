@@ -4,7 +4,6 @@ import { Shimmer } from "./shimmer";
 
 export const PageLoader = () => {
   return (
-  
     Array.from({ length: 4 }).map((_, i) => (
         <Card key={i} className="overflow-hidden animate-pulse">
           <Shimmer className="w-full h-48" />
@@ -38,11 +37,3 @@ export const PageLoader = () => {
     // </div>
   );
 };
-    // <div className="min-h-screen flex items-center justify-center bg-gray-50/50">
-    //   <div className="flex flex-col items-center gap-4">
-    //     <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    //     <p className="text-lg text-gray-600 animate-pulse">Loading...</p>
-    //   </div>
-    // </div>
-//   );
-// };
