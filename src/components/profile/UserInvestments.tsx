@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -19,31 +20,32 @@ export const UserInvestments = () => {
   const { address } = useAccount();
   const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
   const { handleWithdraw } = useInvestmentWithdraw();
-  const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
-
-  console.log("Investment data:", {
+  
+  console.log("Rendering UserInvestments with:", {
     investmentProperties,
     userInvestments,
     isLoading,
   });
 
-  const handleWithdrawClick = async (investmentId: string) => {
-    try {
-      if (!withdrawalAmount) {
-        toast.error("Please enter a withdrawal amount");
-        return;
-      }
-      await handleWithdraw(investmentId, Number(withdrawalAmount));
-      setWithdrawalAmount("");
-      toast.success("Withdrawal successful");
-    } catch (error) {
-      console.error("Withdrawal error:", error);
-      toast.error("Failed to process withdrawal");
-    }
-  };
-
   const InvestmentCard = ({ investment }: { investment: any }) => {
+    // Move withdrawal amount state inside the card component
+    const [withdrawalAmount, setWithdrawalAmount] = useState<string>("");
     const { balance, isLoading: balanceLoading } = useInvestorBalance(investment.id);
+
+    const handleWithdrawClick = async () => {
+      try {
+        if (!withdrawalAmount) {
+          toast.error("Please enter a withdrawal amount");
+          return;
+        }
+        await handleWithdraw(investment.id, Number(withdrawalAmount));
+        setWithdrawalAmount(""); // Reset only this card's input
+        toast.success("Withdrawal successful");
+      } catch (error) {
+        console.error("Withdrawal error:", error);
+        toast.error("Failed to process withdrawal");
+      }
+    };
 
     return (
       <Card className="overflow-hidden">
@@ -75,7 +77,7 @@ export const UserInvestments = () => {
                 />
                 <Button 
                   className="w-full" 
-                  onClick={() => handleWithdrawClick(investment.id)}
+                  onClick={handleWithdrawClick}
                   disabled={!withdrawalAmount || Number(withdrawalAmount) > balance}
                 >
                   <Wallet className="mr-2 h-4 w-4" />
