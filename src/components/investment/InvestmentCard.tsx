@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, Wallet } from "lucide-react";
+import { ExternalLink, Wallet, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InvestmentAsset } from "@/types/investment";
 import { ImageGallery } from "./ImageGallery";
@@ -43,7 +43,8 @@ const InvestmentCardComponent = ({
     handleInvest,
     approveAndInvest,
     allowance,
-    refreshTokenData 
+    refreshTokenData,
+    transactionStatus 
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -79,6 +80,21 @@ const InvestmentCardComponent = ({
     }
     await handleInvest(property.id);
   }, [address, handleConnectWallet, handleInvest, property.id]);
+
+  const getTransactionStatusMessage = () => {
+    if (transactionStatus?.isLoading) {
+      return "Processing transaction...";
+    }
+    if (transactionStatus?.isSuccess) {
+      return "Transaction successful!";
+    }
+    if (transactionStatus?.isError) {
+      return "Transaction failed";
+    }
+    return null;
+  };
+
+  const statusMessage = getTransactionStatusMessage();
 
   return (
     <Card className="overflow-hidden transform transition-all duration-300 hover:shadow-xl">
@@ -159,10 +175,29 @@ const InvestmentCardComponent = ({
                 <Button
                   className="w-full bg-primary hover:bg-primary/90"
                   onClick={handleInvestClick}
+                  disabled={transactionStatus?.isLoading}
                 >
-                  <Wallet className="mr-2 h-4 w-4" />
-                  {address ? "Invest" : "Connect Wallet"}
+                  {transactionStatus?.isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="mr-2 h-4 w-4" />
+                      {address ? "Invest" : "Connect Wallet"}
+                    </>
+                  )}
                 </Button>
+                {statusMessage && (
+                  <p className={`text-sm text-center ${
+                    transactionStatus?.isSuccess ? 'text-green-500' : 
+                    transactionStatus?.isError ? 'text-red-500' : 
+                    'text-blue-500'
+                  }`}>
+                    {statusMessage}
+                  </p>
+                )}
               </CollapsibleContent>
             </Collapsible>
 
