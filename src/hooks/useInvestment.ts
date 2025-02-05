@@ -4,12 +4,14 @@ import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWrit
 import { toast } from "sonner";
 import { useState } from "react";
 import { useInvestmentWrite } from "./contract_interactions/useInvestmentWrite";
+import { useTransactionStatus } from "./useTransactionStatus";
 
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
   const { approveAndInvest, allowance, refreshTokenData } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
+  const { status: transactionStatus, checkTransaction } = useTransactionStatus();
 
   const handleInvest = async (investmentId: string) => {
     try {
@@ -67,6 +69,7 @@ export const useInvestment = (tokenAddress?: string) => {
     contractStatus,
     approveAndInvest,
     allowance,
-    refreshTokenData
+    refreshTokenData,
+    transactionStatus
   };
 };
