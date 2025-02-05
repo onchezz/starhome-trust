@@ -1,5 +1,4 @@
-import { Property } from "@/types/property";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
 export interface PropertyCardProps {
@@ -33,14 +32,20 @@ export const PropertyCard = ({
   status,
   showUpdateButton 
 }: PropertyCardProps) => {
+  console.log("PropertyCard imagesUrl:", imagesUrl);
+  
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <Link to={`/properties/${id}`}>
         <div className="relative h-48 overflow-hidden">
           <img 
-            src={imagesUrl[0] || '/placeholder.svg'} 
+            src={imagesUrl?.[0] || '/placeholder.svg'} 
             alt={title}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/placeholder.svg';
+            }}
           />
           <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
             {status}

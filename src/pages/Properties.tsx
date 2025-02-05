@@ -4,6 +4,7 @@ import { PageLoader } from "@/components/ui/page-loader";
 import PropertySearch from "@/components/property/PropertySearch";
 import { useState } from "react";
 import { Property } from "@/types/property";
+import { parseImagesData } from "@/utils/imageUtils";
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,25 +25,30 @@ const Properties = () => {
         onSearchChange={setSearchTerm}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProperties?.map((property: Property) => (
-          <PropertyCard 
-            key={property.id}
-            id={property.id}
-            title={property.title}
-            location={{
-              city: property.city,
-              state: property.state,
-              country: property.country
-            }}
-            price={property.price}
-            askingPrice={property.asking_price}
-            interestedClients={property.interestedClients}
-            annualGrowthRate={property.annualGrowthRate}
-            imagesUrl={Array.isArray(property.imagesId) ? property.imagesId : [property.imagesId]}
-            propertyType={property.propertyType}
-            status={property.status}
-          />
-        ))}
+        {filteredProperties?.map((property: Property) => {
+          const { imageUrls } = parseImagesData(property.imagesId);
+          console.log("Property images:", imageUrls);
+          
+          return (
+            <PropertyCard 
+              key={property.id}
+              id={property.id}
+              title={property.title}
+              location={{
+                city: property.city,
+                state: property.state,
+                country: property.country
+              }}
+              price={property.price}
+              askingPrice={property.asking_price}
+              interestedClients={property.interestedClients}
+              annualGrowthRate={property.annualGrowthRate}
+              imagesUrl={imageUrls}
+              propertyType={property.propertyType}
+              status={property.status}
+            />
+          );
+        })}
       </div>
     </div>
   );
