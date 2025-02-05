@@ -27,7 +27,6 @@ export const useToken = (tokenAddress: string) => {
     provider: provider,
   });
 
-  // Fetch token metadata and cached allowance
   useEffect(() => {
     if (!contract || !formattedOwner) return;
 
@@ -40,7 +39,6 @@ export const useToken = (tokenAddress: string) => {
           contract.balance_of(formattedOwner),
         ]);
 
-        // Try to get cached allowance first
         const cachedAllowance = await getTokenAllowance(formattedTokenAddress, formattedOwner);
         console.log('Cached allowance:', cachedAllowance);
 
@@ -66,7 +64,6 @@ export const useToken = (tokenAddress: string) => {
       const allowance = await contract.allowance(formattedOwner, formattedSpender);
       console.log('Fetched new allowance:', allowance);
       
-      // Save the new allowance locally
       await saveTokenAllowance(formattedTokenAddress, formattedOwner, allowance.toString());
       
       setTokenData(prev => ({
@@ -94,7 +91,6 @@ export const useToken = (tokenAddress: string) => {
       try {
         console.log('Starting approveAndInvest process:', { amount, investmentId });
         
-        // Force update allowance before proceeding
         const currentAllowance = await updateAllowance();
         const tokenDecimals = Number(await contract.decimals());
         const amountInToken = amount * Math.pow(10, tokenDecimals);
@@ -112,18 +108,11 @@ export const useToken = (tokenAddress: string) => {
         }
 
         console.log('Insufficient allowance, requesting approval');
-        const approveCall = await contract.populate('approve', [
-          formattedSpender,
-          amountInToken.toString()
-        ]);
+        await contract.approve(formattedSpender, amountInToken.toString());
+        console.log('Approval transaction completed');
 
-        const tx = await contract.approve(formattedSpender, amountInToken.toString());
-        console.log('Approval transaction:', tx);
-
-        // Update cached allowance after approval
         await updateAllowance();
         
-        // Proceed with investment
         await investCallback(investmentId, amountInToken);
       } catch (error) {
         console.error('Error in approveAndInvest:', error);
