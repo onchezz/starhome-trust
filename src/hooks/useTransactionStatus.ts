@@ -7,6 +7,7 @@ interface TransactionStatus {
   isSuccess: boolean;
   isRejected: boolean;
   isReverted: boolean;
+  isLoading: boolean;
   receipt: any;
 }
 
@@ -27,6 +28,7 @@ export const useTransactionStatus = () => {
         isSuccess: transaction.isSuccess(),
         isRejected: transaction.isRejected(),
         isReverted: transaction.isReverted(),
+        isLoading: false,
         receipt: transaction.statusReceipt
       };
 
@@ -40,6 +42,7 @@ export const useTransactionStatus = () => {
         isSuccess: false,
         isRejected: false,
         isReverted: false,
+        isLoading: false,
         receipt: null
       };
       setStatus(errorStatus);
