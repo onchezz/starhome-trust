@@ -1,7 +1,7 @@
-import { openDB } from 'idb';
+import { openDB, deleteDB } from 'idb';
 
 const DB_NAME = 'starhomes_db';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Incrementing version to force upgrade
 const STORE_NAME = 'tokenData';
 
 interface TokenData {
@@ -15,18 +15,45 @@ interface TokenData {
   timestamp: number;
 }
 
+export const deleteDatabase = async () => {
+  console.log('Deleting database...');
+  try {
+    await deleteDB(DB_NAME);
+    console.log('Database deleted successfully');
+  } catch (error) {
+    console.error('Error deleting database:', error);
+    throw error;
+  }
+};
+
 export const initDB = async () => {
   console.log('Initializing IndexedDB...');
   try {
+    // Delete existing database if there are issues
+    try {
+      const tempDB = await openDB(DB_NAME, DB_VERSION);
+      if (!tempDB.objectStoreNames.contains(STORE_NAME)) {
+        tempDB.close();
+        await deleteDatabase();
+      } else {
+        tempDB.close();
+      }
+    } catch (error) {
+      console.log('Initial DB check failed, attempting to create new database');
+    }
+
     const db = await openDB(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion, newVersion, transaction) {
         console.log('Upgrading database from version', oldVersion, 'to', newVersion);
         
-        // Check if store exists before creating it
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          console.log('Creating tokenData store...');
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        // Delete old store if it exists
+        if (db.objectStoreNames.contains(STORE_NAME)) {
+          db.deleteObjectStore(STORE_NAME);
         }
+        
+        // Create new store
+        console.log('Creating tokenData store...');
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       },
       blocked() {
         console.log('Database upgrade was blocked');
@@ -38,6 +65,12 @@ export const initDB = async () => {
         console.log('Database connection was terminated');
       },
     });
+    
+    // Verify store exists
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      throw new Error('Store was not created successfully');
+    }
+    
     console.log('Database initialized successfully');
     return db;
   } catch (error) {
