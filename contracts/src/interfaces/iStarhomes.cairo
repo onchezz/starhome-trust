@@ -33,6 +33,8 @@ pub trait IStarhomesContract<TContractState> {
     fn get_sale_properties_by_agent(
         self: @TContractState, agent_id: ContractAddress,
     ) -> Array<Property>;
+    fn get_investment_properties_len(self: @TContractState) -> u32;
+    fn get_listed_properties_len(self: @TContractState) -> u32;
     fn get_investment_properties(self: @TContractState) -> Array<InvestmentAsset>;
     fn get_investment(self: @TContractState, investment_id: felt252) -> InvestmentAsset;
     fn version(self: @TContractState) -> u64;
