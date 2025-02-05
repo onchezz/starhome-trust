@@ -1,50 +1,79 @@
-import { useMemo } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
-import { PropertyConverter } from "@/types/property";
+import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
+import { Property, PropertyConverter } from "@/types/property";
+import { useAccount } from "@starknet-react/core";
+import { useEffect, useState } from "react";
 
 export const usePropertyRead = () => {
-  const { data, isLoading, error } = useStarHomeReadContract({
+  const { data: rawProperties, isLoading, error } = useStarHomeReadContract({
     functionName: "get_sale_properties",
-    args: [],
   });
 
-  const saleProperties = useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
-    return data.map((property: any) => 
-      PropertyConverter.fromStarknetProperty(property)
-    );
-  }, [data]);
+  const [saleProperties, setSaleProperties] = useState<Property[]>([]);
 
-  return { saleProperties, isLoading, error };
+  useEffect(() => {
+    if (rawProperties) {
+      // Convert the raw data to an array if it isn't already
+      const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
+      const converted = propertiesArray.map(prop => 
+        PropertyConverter.fromStarknetProperty(prop)
+      );
+      setSaleProperties(converted);
+    }
+  }, [rawProperties]);
+
+  return {
+    saleProperties,
+    isLoading,
+    error
+  };
 };
 
-export const usePropertyReadById = (propertyId: string) => {
-  const { data, isLoading, error } = useStarHomeReadContract({
-    functionName: "get_property_by_id",
-    args: propertyId ? [propertyId] : [],
+export const usePropertyReadById = (id: string) => {
+  const { data: rawProperty, isLoading, error } = useStarHomeReadContract({
+    functionName: "get_property",
+    args: [id],
   });
 
-  const property = useMemo(() => {
-    if (!data) return null;
-    return PropertyConverter.fromStarknetProperty(data);
-  }, [data]);
+  const [property, setProperty] = useState<Property | null>(null);
 
-  return { property, isLoading, error };
+  useEffect(() => {
+    if (rawProperty) {
+      const converted = PropertyConverter.fromStarknetProperty(rawProperty);
+      setProperty(converted);
+    }
+  }, [rawProperty]);
+
+  return {
+    property,
+    isLoading,
+    error
+  };
 };
 
-export const useAgentProperties = (agentId?: string) => {
-  const { data, isLoading, error } = useStarHomeReadContract({
+export const useAgentProperties = (address: string) => {
+  const { data: rawProperties, isLoading, error } = useStarHomeReadContract({
     functionName: "get_sale_properties_by_agent",
-    args: agentId ? [agentId] : [],
+    args: [address],
   });
 
-  const properties = useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
-    return data.map((property: any) => ({
-      ...PropertyConverter.fromStarknetProperty(property),
-      agentId: property.agentId,
-    }));
-  }, [data]);
+  const [properties, setProperties] = useState<Property[]>([]);
 
-  return { properties, isLoading, error };
+  useEffect(() => {
+    if (rawProperties) {
+      // Convert the raw data to an array if it isn't already
+      const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
+      const converted = propertiesArray.map(prop => 
+        PropertyConverter.fromStarknetProperty(prop)
+      );
+      setProperties(converted);
+    }
+  }, [rawProperties]);
+
+  return {
+    properties,
+    isLoading,
+    error
+  };
 };
+

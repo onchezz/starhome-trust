@@ -5,7 +5,6 @@ import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { useState } from "react";
 import { Property } from "@/types/property";
 import { parseImagesData } from "@/utils/imageUtils";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,23 +18,7 @@ const Properties = () => {
   const { saleProperties, isLoading, error } = usePropertyRead();
 
   if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <Skeleton className="h-[400px] w-full" />
-          </div>
-          <div className="lg:col-span-3">
-            <Skeleton className="h-12 w-full mb-6" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-[300px] w-full" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (error) {
@@ -43,20 +26,25 @@ const Properties = () => {
   }
 
   const filteredProperties = saleProperties?.filter((property: Property) => {
+    // Search term filter
     const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.country.toLowerCase().includes(searchTerm.toLowerCase());
 
+    // Price range filter
     const matchesPrice = property.price >= filters.priceRange[0] && 
                         property.price <= filters.priceRange[1];
 
+    // Property type filter
     const matchesType = filters.propertyType === "any" || 
                        property.propertyType === filters.propertyType;
 
+    // Bedrooms filter
     const matchesBedrooms = filters.bedrooms === "any" || 
                            property.bedrooms === Number(filters.bedrooms);
 
+    // Bathrooms filter
     const matchesBathrooms = filters.bathrooms === "any" || 
                             property.bathrooms === Number(filters.bathrooms);
 
