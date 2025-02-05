@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { InvestmentAsset } from "@/types/investment";
 import { ImageGallery } from "./ImageGallery";
 import { useInvestment } from "@/hooks/useInvestment";
+import { Shimmer } from "@/components/ui/shimmer";
 import {
   Collapsible,
   CollapsibleContent,
@@ -136,8 +137,14 @@ const InvestmentCardComponent = ({
               <CollapsibleContent className="mt-4 space-y-4">
                 {address && (
                   <div className="p-3 bg-secondary rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Your Current Allowance</p>
-                    <p className="font-semibold">{allowance ? `${Number(allowance).toFixed(2)} USDT` : '0 USDT'}</p>
+                    {allowance !== undefined ? (
+                      <>
+                        <p className="text-sm text-muted-foreground mb-1">Your Current Allowance</p>
+                        <p className="font-semibold">{allowance ? `${Number(allowance).toFixed(2)} USDT` : '0 USDT'}</p>
+                      </>
+                    ) : (
+                      <Shimmer className="h-16 w-full rounded-lg" />
+                    )}
                   </div>
                 )}
                 <Input
