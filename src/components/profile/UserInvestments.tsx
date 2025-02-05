@@ -28,14 +28,20 @@ export const UserInvestments = () => {
     isLoading,
   });
 
-  const handleWithdrawClick = async (investmentId: string) => {
+  const handleWithdrawClick = async (investmentId: string, inputValue: string) => {
     try {
-      const amount = withdrawalAmounts[investmentId];
-      if (!amount) {
+      if (!inputValue) {
         toast.error("Please enter a withdrawal amount");
         return;
       }
-      await handleWithdraw(investmentId, Number(amount));
+
+      const amount = Number(inputValue);
+      if (isNaN(amount)) {
+        toast.error("Please enter a valid number");
+        return;
+      }
+
+      await handleWithdraw(investmentId, amount);
       
       // Clear only this investment's withdrawal amount after successful withdrawal
       setWithdrawalAmounts(prev => ({
@@ -50,19 +56,10 @@ export const UserInvestments = () => {
     }
   };
 
-  const handleInputChange = (investmentId: string, value: string) => {
-    // Only update if the value is a valid number or empty string
-    if (value === "" || !isNaN(Number(value))) {
-      setWithdrawalAmounts(prev => ({
-        ...prev,
-        [investmentId]: value
-      }));
-    }
-  };
-
   const InvestmentCard = ({ investment }: { investment: any }) => {
     const { balance, isLoading: balanceLoading } = useInvestorBalance(investment.id);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [inputValue, setInputValue] = useState("");
 
     return (
       <Card className="overflow-hidden">
@@ -87,16 +84,16 @@ export const UserInvestments = () => {
                 <Input
                   type="number"
                   placeholder="Amount to withdraw"
-                  value={withdrawalAmounts[investment.id] || ""}
-                  onChange={(e) => handleInputChange(investment.id, e.target.value)}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                   min={0}
                   max={balance}
                   ref={inputRef}
                 />
                 <Button 
                   className="w-full" 
-                  onClick={() => handleWithdrawClick(investment.id)}
-                  disabled={!withdrawalAmounts[investment.id] || Number(withdrawalAmounts[investment.id]) > balance}
+                  onClick={() => handleWithdrawClick(investment.id, inputValue)}
+                  disabled={!inputValue || Number(inputValue) > balance}
                 >
                   <Wallet className="mr-2 h-4 w-4" />
                   Withdraw Funds
