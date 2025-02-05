@@ -13,7 +13,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useAccount } from "@starknet-react/core";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 interface InvestmentCardProps {
   property: InvestmentAsset;
@@ -42,7 +42,7 @@ const InvestmentCardComponent = ({
     handleInvest,
     approveAndInvest,
     allowance 
-  } = useInvestment(property.investment_token, isExpanded);
+  } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -61,13 +61,13 @@ const InvestmentCardComponent = ({
     property.asset_value
   );
 
-  const handleInvestClick = async () => {
+  const handleInvestClick = useCallback(async () => {
     if (!address) {
       handleConnectWallet();
       return;
     }
     await handleInvest(property.id);
-  };
+  }, [address, handleConnectWallet, handleInvest, property.id]);
 
   return (
     <Card className="overflow-hidden transform transition-all duration-300 hover:shadow-xl">

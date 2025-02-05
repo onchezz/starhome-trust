@@ -4,10 +4,10 @@ import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWrit
 import { toast } from "sonner";
 import { useState } from "react";
 
-export const useInvestment = (tokenAddress?: string, shouldFetchToken: boolean = false) => {
+export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, contractStatus } = usePropertyCreate();
-  const { approveAndInvest, allowance } = useToken(tokenAddress || "", shouldFetchToken);
+  const { approveAndInvest, allowance, refreshTokenData } = useToken(tokenAddress || "");
   const { execute } = useStarHomeWriteContract();
 
   const handleInvest = async (investmentId: string) => {
@@ -21,6 +21,9 @@ export const useInvestment = (tokenAddress?: string, shouldFetchToken: boolean =
         investmentId,
         amount: investmentAmount
       });
+
+      // Refresh token data before investment
+      await refreshTokenData();
 
       // First approve the token spend
       await approveAndInvest(

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   useContract,
   useAccount,
@@ -9,7 +9,7 @@ import { universalErc20Abi } from "@/data/universalTokenabi";
 import { RpcProvider } from 'starknet';
 import { saveTokenData, getTokenData } from "@/utils/indexedDb";
 
-export const useToken = (tokenAddress: string, shouldFetch: boolean = false) => {
+export const useToken = (tokenAddress: string) => {
   const provider = new RpcProvider({ nodeUrl: `${rpcProvideUr}` });
   const { address: owner } = useAccount();
   const spender = starhomesContract;
@@ -92,14 +92,7 @@ export const useToken = (tokenAddress: string, shouldFetch: boolean = false) => 
     }
   }, [contract, formattedOwner, formattedSpender, formattedTokenAddress]);
 
-  useEffect(() => {
-    if (shouldFetch && tokenAddress && owner && !fetchInProgress.current) {
-      fetchAndCacheTokenData();
-    }
-  }, [fetchAndCacheTokenData, tokenAddress, owner, shouldFetch]);
-
-  const { sendAsync: sendTransaction, status, isError, isIdle, isPending, isSuccess } =
-    useSendTransaction({});
+  const { sendAsync: sendTransaction } = useSendTransaction({});
 
   const approveAndInvest = useCallback(
     async (
