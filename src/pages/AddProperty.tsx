@@ -13,8 +13,9 @@ import { toast } from "sonner";
 
 const AddProperty = () => {
   const navigate = useNavigate();
-  const { handleListProperty, isLoading } = usePropertyCreate();
+  const { handleListSaleProperty, contractStatus } = usePropertyCreate();
   const [formData, setFormData] = useState<Partial<Property>>({});
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
 
   const handleInputChange = (field: keyof Property, value: any) => {
     setFormData((prev) => ({
@@ -23,9 +24,16 @@ const AddProperty = () => {
     }));
   };
 
+  const handleLocationSelect = (location: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      ...location,
+    }));
+  };
+
   const handleSubmit = async () => {
     try {
-      await handleListProperty(formData as Property);
+      await handleListSaleProperty(formData);
       toast.success("Property listed successfully!");
       navigate("/properties");
     } catch (error) {
@@ -46,7 +54,9 @@ const AddProperty = () => {
         
         <PropertyLocation 
           formData={formData} 
-          handleInputChange={handleInputChange} 
+          handleInputChange={handleInputChange}
+          handleLocationSelect={handleLocationSelect}
+          isLocationLoading={isLocationLoading}
         />
         
         <PricingInformation 
@@ -60,16 +70,16 @@ const AddProperty = () => {
         />
         
         <ImageUploader 
-          formData={formData} 
-          handleInputChange={handleInputChange} 
+          onImageUpload={(urls) => handleInputChange('imagesUrl', urls)}
+          maxImages={5}
         />
         
         <div className="flex justify-end">
           <Button 
             onClick={handleSubmit}
-            disabled={isLoading}
+            disabled={contractStatus === 'loading'}
           >
-            {isLoading ? "Listing Property..." : "List Property"}
+            {contractStatus === 'loading' ? "Listing Property..." : "List Property"}
           </Button>
         </div>
       </div>
