@@ -29,6 +29,7 @@ const InvestmentCardComponent = ({
   handleConnectWallet,
 }: InvestmentCardProps) => {
   const { address } = useAccount();
+  const isExpanded = expandedCardId === property.id;
   
   if (!property) {
     console.error("Property is undefined in InvestmentCard");
@@ -41,7 +42,7 @@ const InvestmentCardComponent = ({
     handleInvest,
     approveAndInvest,
     allowance 
-  } = useInvestment(property.investment_token);
+  } = useInvestment(property.investment_token, isExpanded);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {

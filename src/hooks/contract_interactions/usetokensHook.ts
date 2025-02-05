@@ -9,7 +9,7 @@ import { universalErc20Abi } from "@/data/universalTokenabi";
 import { RpcProvider } from 'starknet';
 import { saveTokenData, getTokenData } from "@/utils/indexedDb";
 
-export const useToken = (tokenAddress: string) => {
+export const useToken = (tokenAddress: string, shouldFetch: boolean = false) => {
   const provider = new RpcProvider({ nodeUrl: `${rpcProvideUr}` });
   const { address: owner } = useAccount();
   const spender = starhomesContract;
@@ -93,10 +93,10 @@ export const useToken = (tokenAddress: string) => {
   }, [contract, formattedOwner, formattedSpender, formattedTokenAddress]);
 
   useEffect(() => {
-    if (tokenAddress && owner) {
+    if (shouldFetch && tokenAddress && owner && !fetchInProgress.current) {
       fetchAndCacheTokenData();
     }
-  }, [fetchAndCacheTokenData, tokenAddress, owner]);
+  }, [fetchAndCacheTokenData, tokenAddress, owner, shouldFetch]);
 
   const { sendAsync: sendTransaction, status, isError, isIdle, isPending, isSuccess } =
     useSendTransaction({});
@@ -157,7 +157,7 @@ export const useToken = (tokenAddress: string) => {
   return {
     ...tokenData,
     approveAndInvest,
-    transactionStatus: { status, isError, isIdle, isPending, isSuccess },
+    allowance: tokenData.allowance,
     refreshTokenData: fetchAndCacheTokenData
   };
 };
