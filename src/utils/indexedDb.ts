@@ -1,184 +1,57 @@
-import { Property } from "@/types/property";
-import { InvestmentAsset } from "@/types/investment";
+import { openDB } from 'idb';
 
 const DB_NAME = 'starhomes_db';
 const DB_VERSION = 1;
 
-interface CachedBalance {
+interface TokenData {
+  id: string;
   address: string;
-  token: string;
+  name: string;
+  symbol: string;
+  decimals: number;
   balance: string;
+  allowance: string;
   timestamp: number;
 }
 
-export const initDB = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    console.log('[IndexedDB] Initializing database...');
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-    request.onerror = () => {
-      console.error('[IndexedDB] Database error:', request.error);
-      reject(request.error);
-    };
-    
-    request.onsuccess = () => {
-      console.log('[IndexedDB] Database initialized successfully');
-      resolve();
-    };
-
-    request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      
+export const initDB = async () => {
+  const db = await openDB(DB_NAME, DB_VERSION, {
+    upgrade(db) {
       if (!db.objectStoreNames.contains('properties')) {
         db.createObjectStore('properties', { keyPath: 'id' });
       }
-      
       if (!db.objectStoreNames.contains('investments')) {
         db.createObjectStore('investments', { keyPath: 'id' });
       }
-      
-      if (!db.objectStoreNames.contains('balances')) {
-        db.createObjectStore('balances', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('tokenData')) {
+        db.createObjectStore('tokenData', { keyPath: 'id' });
       }
+    },
+  });
+  return db;
+};
 
-      if (!db.objectStoreNames.contains('userInfo')) {
-        db.createObjectStore('userInfo', { keyPath: 'id' });
-      }
-
-      if (!db.objectStoreNames.contains('userInvestments')) {
-        db.createObjectStore('userInvestments', { keyPath: 'id' });
-      }
-    };
+export const saveTokenData = async (
+  tokenAddress: string, 
+  ownerAddress: string, 
+  data: Omit<TokenData, 'id' | 'timestamp'>
+) => {
+  console.log('Saving token data:', { tokenAddress, ownerAddress, data });
+  const db = await initDB();
+  const id = `${tokenAddress}-${ownerAddress}`;
+  await db.put('tokenData', {
+    id,
+    address: tokenAddress,
+    ...data,
+    timestamp: Date.now()
   });
 };
 
-const getDB = async (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-  });
-};
-
-export const cacheProperties = async (properties: Property[]): Promise<void> => {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('properties', 'readwrite');
-    const store = tx.objectStore('properties');
-
-    properties.forEach(property => {
-      store.put({
-        ...property,
-        timestamp: Date.now()
-      });
-    });
-
-    console.log('[IndexedDB] Properties cached successfully');
-  } catch (error) {
-    console.error('[IndexedDB] Error caching properties:', error);
-  }
-};
-
-export const getCachedProperties = async (): Promise<Property[]> => {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('properties', 'readonly');
-    const store = tx.objectStore('properties');
-    const request = store.getAll();
-
-    return new Promise((resolve, reject) => {
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        console.log('[IndexedDB] Retrieved cached properties:', request.result);
-        resolve(request.result);
-      };
-    });
-  } catch (error) {
-    console.error('[IndexedDB] Error getting cached properties:', error);
-    return [];
-  }
-};
-
-export const cacheInvestments = async (investments: InvestmentAsset[]): Promise<void> => {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('investments', 'readwrite');
-    const store = tx.objectStore('investments');
-
-    investments.forEach(investment => {
-      store.put({
-        ...investment,
-        timestamp: Date.now()
-      });
-    });
-
-    console.log('[IndexedDB] Investments cached successfully');
-  } catch (error) {
-    console.error('[IndexedDB] Error caching investments:', error);
-  }
-};
-
-export const getCachedInvestments = async (): Promise<InvestmentAsset[]> => {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('investments', 'readonly');
-    const store = tx.objectStore('investments');
-    const request = store.getAll();
-
-    return new Promise((resolve, reject) => {
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        console.log('[IndexedDB] Retrieved cached investments:', request.result);
-        resolve(request.result);
-      };
-    });
-  } catch (error) {
-    console.error('[IndexedDB] Error getting cached investments:', error);
-    return [];
-  }
-};
-
-export const cacheBalance = async (address: string, token: string, balance: string): Promise<void> => {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('balances', 'readwrite');
-    const store = tx.objectStore('balances');
-
-    await store.put({
-      id: `${address}-${token}`,
-      address,
-      token,
-      balance,
-      timestamp: Date.now()
-    });
-
-    console.log('[IndexedDB] Balance cached successfully');
-  } catch (error) {
-    console.error('[IndexedDB] Error caching balance:', error);
-  }
-};
-
-export const getCachedBalance = async (address: string, token: string): Promise<CachedBalance | null> => {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('balances', 'readonly');
-    const store = tx.objectStore('balances');
-    const request = store.get(`${address}-${token}`);
-
-    return new Promise((resolve, reject) => {
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        const result = request.result as CachedBalance;
-        if (result && Date.now() - result.timestamp < 5 * 60 * 1000) { // 5 minutes cache
-          console.log('[IndexedDB] Retrieved cached balance:', result);
-          resolve(result);
-        } else {
-          resolve(null);
-        }
-      };
-    });
-  } catch (error) {
-    console.error('[IndexedDB] Error getting cached balance:', error);
-    return null;
-  }
+export const getTokenData = async (tokenAddress: string, ownerAddress: string): Promise<TokenData | null> => {
+  console.log('Getting token data for:', { tokenAddress, ownerAddress });
+  const db = await initDB();
+  const id = `${tokenAddress}-${ownerAddress}`;
+  const data = await db.get('tokenData', id);
+  console.log('Retrieved token data:', data);
+  return data;
 };
