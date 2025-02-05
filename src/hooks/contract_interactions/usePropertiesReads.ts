@@ -1,5 +1,5 @@
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
-import { InvestmentAsset } from "@/types/investment";
+import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 import { Property, PropertyConverter } from "@/types/property";
 import { useAccount } from "@starknet-react/core";
 import { useEffect, useState } from "react";
@@ -13,7 +13,9 @@ export const usePropertyRead = () => {
 
   useEffect(() => {
     if (rawProperties) {
-      const converted = (rawProperties as any[]).map(prop => 
+      // Convert the raw data to an array if it isn't already
+      const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
+      const converted = propertiesArray.map(prop => 
         PropertyConverter.fromStarknetProperty(prop)
       );
       setSaleProperties(converted);
@@ -59,7 +61,9 @@ export const useAgentProperties = (address: string) => {
 
   useEffect(() => {
     if (rawProperties) {
-      const converted = (rawProperties as any[]).map(prop => 
+      // Convert the raw data to an array if it isn't already
+      const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
+      const converted = propertiesArray.map(prop => 
         PropertyConverter.fromStarknetProperty(prop)
       );
       setProperties(converted);
@@ -89,13 +93,21 @@ export const useInvestmentAssetsRead = () => {
 
   useEffect(() => {
     if (rawInvestmentProperties) {
-      setFormattedProperties(rawInvestmentProperties as InvestmentAsset[]);
+      // Convert the raw data to an array if it isn't already
+      const investmentsArray = Array.isArray(rawInvestmentProperties) 
+        ? rawInvestmentProperties 
+        : Object.values(rawInvestmentProperties);
+      setFormattedProperties(investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv)));
     }
   }, [rawInvestmentProperties]);
 
   useEffect(() => {
     if (rawUserInvestments) {
-      setFormattedInvestments(rawUserInvestments as InvestmentAsset[]);
+      // Convert the raw data to an array if it isn't already
+      const investmentsArray = Array.isArray(rawUserInvestments) 
+        ? rawUserInvestments 
+        : Object.values(rawUserInvestments);
+      setFormattedInvestments(investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv)));
     }
   }, [rawUserInvestments]);
 
@@ -117,7 +129,7 @@ export const useInvestmentAssetReadById = (id: string) => {
 
   useEffect(() => {
     if (rawInvestment) {
-      setInvestment(rawInvestment as InvestmentAsset);
+      setInvestment(InvestmentAssetConverter.fromStarknetProperty(rawInvestment));
     }
   }, [rawInvestment]);
 
