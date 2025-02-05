@@ -77,7 +77,7 @@ export const useInvestmentAssetsRead = () => {
 
   const { data: rawUserInvestments, isLoading: isLoadingInvestments } = useStarHomeReadContract({
     functionName: "get_investment_properties_by_lister",
-    args: [address || ""],
+    args: [address],
     options: {
       staleTime: 30000,
       cacheTime: 5 * 60 * 1000,

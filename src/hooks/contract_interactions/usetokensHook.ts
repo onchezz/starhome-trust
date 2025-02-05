@@ -117,7 +117,9 @@ export const useToken = (tokenAddress: string) => {
           currentBalance:currentBalance
         }} `)
 
-        if (currentBalance < amountInToken) {
+        if (currentBalance < amount) {
+
+        console.log(`balance${currentBalance} and token amount${amountInToken} `)
           throw new Error('Insufficient balance');
         }
 
