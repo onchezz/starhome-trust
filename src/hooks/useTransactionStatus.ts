@@ -23,10 +23,10 @@ export const useTransactionStatus = () => {
       const transaction = await provider.waitForTransaction(txHash);
       
       const transactionStatus = {
-        isError: transaction.isError,
-        isSuccess: transaction.isSuccess,
-        isRejected: transaction.isRejected,
-        isReverted: transaction.isReverted,
+        isError: transaction.isError(),
+        isSuccess: transaction.isSuccess(),
+        isRejected: transaction.isRejected(),
+        isReverted: transaction.isReverted(),
         receipt: transaction.statusReceipt
       };
 
