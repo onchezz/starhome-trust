@@ -41,7 +41,8 @@ const InvestmentCardComponent = ({
     setInvestmentAmount, 
     handleInvest,
     approveAndInvest,
-    allowance 
+    allowance,
+    refreshTokenData 
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -60,6 +61,15 @@ const InvestmentCardComponent = ({
     property.asset_value - property.available_staking_amount,
     property.asset_value
   );
+
+  const handleExpandClick = useCallback(async (open: boolean) => {
+    if (open) {
+      setExpandedCardId(property.id);
+      await refreshTokenData();
+    } else {
+      setExpandedCardId(null);
+    }
+  }, [property.id, setExpandedCardId, refreshTokenData]);
 
   const handleInvestClick = useCallback(async () => {
     if (!address) {
@@ -115,10 +125,8 @@ const InvestmentCardComponent = ({
           <div className="flex gap-2">
             <Collapsible
               className="flex-1"
-              open={expandedCardId === property.id}
-              onOpenChange={(open) =>
-                setExpandedCardId(open ? property.id : null)
-              }
+              open={isExpanded}
+              onOpenChange={handleExpandClick}
             >
               <CollapsibleTrigger asChild>
                 <Button className="w-full">

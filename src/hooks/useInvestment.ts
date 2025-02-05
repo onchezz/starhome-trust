@@ -22,9 +22,6 @@ export const useInvestment = (tokenAddress?: string) => {
         amount: investmentAmount
       });
 
-      // Refresh token data before investment
-      await refreshTokenData();
-
       // First approve the token spend
       await approveAndInvest(
         Number(investmentAmount), 
@@ -68,6 +65,7 @@ export const useInvestment = (tokenAddress?: string) => {
     handleEditInvestmentProperty,
     contractStatus,
     approveAndInvest,
-    allowance
+    allowance,
+    refreshTokenData
   };
 };

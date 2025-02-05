@@ -105,9 +105,6 @@ export const useToken = (tokenAddress: string) => {
       }
 
       try {
-        // Force refresh token data before investment
-        await fetchAndCacheTokenData();
-        
         const tokenDecimals = tokenData.decimals || 18;
         const amountInToken = BigInt(amount * Math.pow(10, tokenDecimals));
         const currentAllowance = tokenData.allowance ? BigInt(tokenData.allowance) : BigInt(0);
