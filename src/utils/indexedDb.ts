@@ -1,15 +1,6 @@
+
 import { openDB as idbOpenDB } from 'idb';
 import { InvestmentAsset } from '@/types/investment';
-import { Property } from '@/types/property';
-
-export interface TokenData {
-  name: string;
-  symbol: string;
-  decimals: number;
-  balance: string;
-  allowance: string;
-  timestamp: number;
-}
 
 // Generic functions
 export const openDB = async () => {
@@ -28,23 +19,14 @@ export const openDB = async () => {
   });
 };
 
-// Investment specific functions
-export const saveInvestments = async (investments: InvestmentAsset[]) => {
-  const db = await openDB();
-  const tx = db.transaction('investments', 'readwrite');
-  const store = tx.objectStore('investments');
-  
-  for (const investment of investments) {
-    await store.put(investment);
-  }
-};
-
-export const getInvestments = async (): Promise<InvestmentAsset[]> => {
-  const db = await openDB();
-  const tx = db.transaction('investments', 'readonly');
-  const store = tx.objectStore('investments');
-  return store.getAll();
-};
+export interface TokenData {
+  name: string;
+  symbol: string;
+  decimals: number;
+  balance: string;
+  allowance: string;
+  timestamp: number;
+}
 
 // Token specific functions
 export const saveTokenData = async (

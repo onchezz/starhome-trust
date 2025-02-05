@@ -3,15 +3,33 @@ import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 import { useState, useEffect } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { useAccount } from "@starknet-react/core";
-import { saveInvestments, getInvestments } from "@/utils/indexedDb";
+import { openDB } from "@/utils/indexedDb";
+
+const INVESTMENTS_CACHE_KEY = 'investments';
+
+const saveInvestmentsToDB = async (investments: InvestmentAsset[]) => {
+  const db = await openDB();
+  const tx = db.transaction(INVESTMENTS_CACHE_KEY, 'readwrite');
+  const store = tx.objectStore(INVESTMENTS_CACHE_KEY);
+  await store.clear(); // Clear old data
+  await Promise.all(investments.map(investment => store.put(investment)));
+};
+
+const getInvestmentsFromDB = async () => {
+  const db = await openDB();
+  const tx = db.transaction(INVESTMENTS_CACHE_KEY, 'readonly');
+  const store = tx.objectStore(INVESTMENTS_CACHE_KEY);
+  return store.getAll();
+};
 
 export const useInvestorsForInvestment = (investmentId: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investors_for_investment",
     args: [investmentId],
     options: {
-      staleTime: 30000, // Data considered fresh for 30 seconds
-      cacheTime: 5 * 60 * 1000, // Cache data for 5 minutes
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
     }
   });
 
@@ -29,8 +47,9 @@ export const useInvestorBalance = (investmentId: string, investorAddress?: strin
     functionName: "get_investor_balance_in_investment",
     args: [investmentId, address],
     options: {
-      staleTime: 30000, // Data considered fresh for 30 seconds
-      cacheTime: 5 * 60 * 1000, // Cache data for 5 minutes
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
     }
   });
 
@@ -46,9 +65,9 @@ export const useInvestmentAssetsRead = () => {
   const { data: rawInvestmentProperties, isLoading: isLoadingProperties } = useStarHomeReadContract({
     functionName: "get_investment_properties",
     options: {
-      staleTime: 30000, // Data considered fresh for 30 seconds
-      cacheTime: 5 * 60 * 1000, // Cache data for 5 minutes
-      refetchOnWindowFocus: false, // Prevent refetch on window focus
+      staleTime: 30000,
+      cacheTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
     }
   });
 
@@ -59,36 +78,42 @@ export const useInvestmentAssetsRead = () => {
       staleTime: 30000,
       cacheTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
-      enabled: !!address, // Only fetch when address is available
+      enabled: !!address,
     }
   });
 
   const [formattedProperties, setFormattedProperties] = useState<InvestmentAsset[]>([]);
   const [formattedInvestments, setFormattedInvestments] = useState<InvestmentAsset[]>([]);
 
+  // Load cached data first
   useEffect(() => {
-    const fetchAndSaveInvestments = async () => {
+    const loadCachedData = async () => {
+      try {
+        const cachedInvestments = await getInvestmentsFromDB();
+        if (cachedInvestments?.length > 0) {
+          setFormattedProperties(cachedInvestments);
+        }
+      } catch (error) {
+        console.error("Error loading from IndexedDB:", error);
+      }
+    };
+    loadCachedData();
+  }, []);
+
+  // Update with fresh data from contract
+  useEffect(() => {
+    const updateInvestments = async () => {
       if (rawInvestmentProperties) {
         const investmentsArray = Array.isArray(rawInvestmentProperties) 
           ? rawInvestmentProperties 
           : Object.values(rawInvestmentProperties);
         const formatted = investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv));
         
-        await saveInvestments(formatted);
+        await saveInvestmentsToDB(formatted);
         setFormattedProperties(formatted);
-      } else {
-        try {
-          const cachedInvestments = await getInvestments();
-          if (cachedInvestments.length > 0) {
-            setFormattedProperties(cachedInvestments);
-          }
-        } catch (error) {
-          console.error("Error fetching from IndexedDB:", error);
-        }
       }
     };
-
-    fetchAndSaveInvestments();
+    updateInvestments();
   }, [rawInvestmentProperties]);
 
   useEffect(() => {
