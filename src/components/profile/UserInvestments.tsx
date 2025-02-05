@@ -9,7 +9,7 @@ import { useInvestmentAssetsRead, useInvestorBalance } from "@/hooks/contract_in
 import { useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Wallet } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,15 +17,11 @@ export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
   const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
-  const { handleWithdraw } = useInvestmentWrite();
-  
-  // Create a map to store withdrawal amounts for each investment
-  const [withdrawalAmounts, setWithdrawalAmounts] = useState<{ [key: string]: string }>({});
 
-  console.log("Investment data:", {
-    investmentProperties,
+  console.log("User investments data:", {
+    address,
     userInvestments,
-    isLoading,
+    isLoading
   });
 
   const handleWithdrawClick = async (investmentId: string, inputValue: string) => {
@@ -42,13 +38,6 @@ export const UserInvestments = () => {
       }
 
       await handleWithdraw(investmentId, amount);
-      
-      // Clear only this investment's withdrawal amount after successful withdrawal
-      setWithdrawalAmounts(prev => ({
-        ...prev,
-        [investmentId]: ""
-      }));
-      
       toast.success("Withdrawal successful");
     } catch (error) {
       console.error("Withdrawal error:", error);
@@ -129,6 +118,24 @@ export const UserInvestments = () => {
 
   const hasNoInvestments = (!userInvestments || userInvestments.length === 0) && 
                           (!investmentProperties || investmentProperties.length === 0);
+
+  if (!address) {
+    return (
+      <Card
+        className={cn(
+          "backdrop-blur-xl border transition-all duration-300",
+          theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+        )}
+      >
+        <CardHeader>
+          <CardTitle>Your Investments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">Please connect your wallet to view your investments.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (hasNoInvestments) {
     return (
