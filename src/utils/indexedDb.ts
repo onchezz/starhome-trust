@@ -11,9 +11,86 @@ interface CachedBalance {
   timestamp: number;
 }
 
-export const initDB = (): Promise<void> => {
+export const cacheUserInfo = async (userInfo: any): Promise<void> => {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('userInfo', 'readwrite');
+    const store = tx.objectStore('userInfo');
+
+    await store.put({
+      ...userInfo,
+      timestamp: Date.now()
+    });
+
+    console.log('[IndexedDB] User info cached successfully');
+  } catch (error) {
+    console.error('[IndexedDB] Error caching user info:', error);
+  }
+};
+
+export const getCachedUserInfo = async (): Promise<any | null> => {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('userInfo', 'readonly');
+    const store = tx.objectStore('userInfo');
+    const request = store.getAll();
+
+    return new Promise((resolve, reject) => {
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        console.log('[IndexedDB] Retrieved cached user info:', request.result[0]);
+        resolve(request.result[0] || null);
+      };
+    });
+  } catch (error) {
+    console.error('[IndexedDB] Error getting cached user info:', error);
+    return null;
+  }
+};
+
+export const cacheUserInvestments = async (investments: any[]): Promise<void> => {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('userInvestments', 'readwrite');
+    const store = tx.objectStore('userInvestments');
+
+    investments.forEach(investment => {
+      store.put({
+        ...investment,
+        timestamp: Date.now()
+      });
+    });
+
+    console.log('[IndexedDB] User investments cached successfully');
+  } catch (error) {
+    console.error('[IndexedDB] Error caching user investments:', error);
+  }
+};
+
+export const getCachedUserInvestments = async (): Promise<any[]> => {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('userInvestments', 'readonly');
+    const store = tx.objectStore('userInvestments');
+    const request = store.getAll();
+
+    return new Promise((resolve, reject) => {
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        console.log('[IndexedDB] Retrieved cached user investments:', request.result);
+        resolve(request.result);
+      };
+    });
+  } catch (error) {
+    console.error('[IndexedDB] Error getting cached user investments:', error);
+    return [];
+  }
+};
+
+// Update the initDB function to include new stores
+const initDB = (): Promise<void> => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = indexedDB.open(DB_NAME, DB_VERSION + 1);
 
     request.onerror = () => reject(request.error);
     
@@ -35,6 +112,14 @@ export const initDB = (): Promise<void> => {
       
       if (!db.objectStoreNames.contains('balances')) {
         db.createObjectStore('balances', { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains('userInfo')) {
+        db.createObjectStore('userInfo', { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains('userInvestments')) {
+        db.createObjectStore('userInvestments', { keyPath: 'id' });
       }
     };
   });
