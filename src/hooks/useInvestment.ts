@@ -1,4 +1,4 @@
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
+
 import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWriteContract";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import { useTransactionStatus } from "./useTransactionStatus";
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const { handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
-  const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval } = useToken(tokenAddress || "");
+  const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval,isWaitingTransactionExecution } = useToken(tokenAddress);
   const { execute } = useStarHomeWriteContract();
   const { status: transactionStatus, checkTransaction } = useTransactionStatus();
 
@@ -39,7 +39,7 @@ export const useInvestment = (tokenAddress?: string) => {
               amount // amount
             ]);
 
-            console.log("Contract investment response:", response);
+            console.log("Contract investment response:", response.status);
 
             if (response?.status?.isSuccess) {
               toast.success("Investment successful!");
@@ -71,6 +71,8 @@ export const useInvestment = (tokenAddress?: string) => {
     allowance,
     refreshTokenData,
     transactionStatus,
-    isWaitingApproval
+    isWaitingApproval,
+    isWaitingTransactionExecution
+
   };
 };

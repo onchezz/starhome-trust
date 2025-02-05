@@ -31,21 +31,22 @@ const InvestmentCardComponent = ({
 }: InvestmentCardProps) => {
   const { address } = useAccount();
   const isExpanded = expandedCardId === property.id;
-  
+
   if (!property) {
     console.error("Property is undefined in InvestmentCard");
     return null;
   }
 
-  const { 
-    investmentAmount, 
-    setInvestmentAmount, 
+  const {
+    investmentAmount,
+    setInvestmentAmount,
     handleInvest,
     approveAndInvest,
     allowance,
     refreshTokenData,
     transactionStatus,
-    isWaitingApproval 
+    isWaitingApproval,
+    isWaitingTransactionExecution,
   } = useInvestment(property.investment_token);
 
   const formatCurrency = (amount: number) => {
@@ -65,14 +66,17 @@ const InvestmentCardComponent = ({
     property.asset_value
   );
 
-  const handleExpandClick = useCallback(async (open: boolean) => {
-    if (open) {
-      setExpandedCardId(property.id);
-      await refreshTokenData();
-    } else {
-      setExpandedCardId(null);
-    }
-  }, [property.id, setExpandedCardId, refreshTokenData]);
+  const handleExpandClick = useCallback(
+    async (open: boolean) => {
+      if (open) {
+        setExpandedCardId(property.id);
+        await refreshTokenData();
+      } else {
+        setExpandedCardId(null);
+      }
+    },
+    [property.id, setExpandedCardId, refreshTokenData]
+  );
 
   const handleInvestClick = useCallback(async () => {
     if (!address) {
@@ -85,6 +89,9 @@ const InvestmentCardComponent = ({
   const getTransactionStatusMessage = () => {
     if (isWaitingApproval) {
       return "Waiting for approval transaction...";
+    }
+    if (isWaitingTransactionExecution) {
+      return "Waiting for investment transaction...";
     }
     if (transactionStatus?.isLoading) {
       return "Processing transaction...";
@@ -115,7 +122,9 @@ const InvestmentCardComponent = ({
             <div className="flex justify-between text-sm mb-2">
               <span>Investment Progress</span>
               <span>
-                {formatCurrency(property.asset_value - property.available_staking_amount)}{" "}
+                {formatCurrency(
+                  property.asset_value - property.available_staking_amount
+                )}{" "}
                 of {formatCurrency(property.asset_value)}
               </span>
             </div>
@@ -159,8 +168,14 @@ const InvestmentCardComponent = ({
                   <div className="p-3 bg-secondary rounded-lg">
                     {allowance !== undefined ? (
                       <>
-                        <p className="text-sm text-muted-foreground mb-1">Your Current Allowance</p>
-                        <p className="font-semibold">{allowance ? `${Number(allowance).toFixed(2)} USDT` : '0 USDT'}</p>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Your Current Allowance
+                        </p>
+                        <p className="font-semibold">
+                          {allowance
+                            ? `${Number(allowance).toFixed(2)} USDT`
+                            : "0 USDT"}
+                        </p>
                       </>
                     ) : (
                       <Shimmer className="h-16 w-full rounded-lg" />
@@ -179,12 +194,24 @@ const InvestmentCardComponent = ({
                 <Button
                   className="w-full bg-primary hover:bg-primary/90"
                   onClick={handleInvestClick}
-                  disabled={transactionStatus?.isLoading || isWaitingApproval}
+                  disabled={
+                    transactionStatus?.isLoading ||
+                    isWaitingApproval ||
+                    isWaitingTransactionExecution
+                  }
                 >
-                  {transactionStatus?.isLoading || isWaitingApproval ? (
+                  {transactionStatus?.isLoading ||
+                  isWaitingApproval ||
+                  isWaitingTransactionExecution ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {isWaitingApproval ? "Waiting for Approval..." : "Processing..."}
+                      {isWaitingApproval
+                        ? "Waiting for Approval..."
+                        : "Processing..."}
+
+                      {isWaitingTransactionExecution
+                        ? "Waiting for transaction..."
+                        : "Processing..."}
                     </>
                   ) : (
                     <>
@@ -194,11 +221,15 @@ const InvestmentCardComponent = ({
                   )}
                 </Button>
                 {statusMessage && (
-                  <p className={`text-sm text-center ${
-                    transactionStatus?.isSuccess ? 'text-green-500' : 
-                    transactionStatus?.isError ? 'text-red-500' : 
-                    'text-blue-500'
-                  }`}>
+                  <p
+                    className={`text-sm text-center ${
+                      transactionStatus?.isSuccess
+                        ? "text-green-500"
+                        : transactionStatus?.isError
+                        ? "text-red-500"
+                        : "text-blue-500"
+                    }`}
+                  >
                     {statusMessage}
                   </p>
                 )}
@@ -219,4 +250,4 @@ const InvestmentCardComponent = ({
 };
 
 export const InvestmentCard = memo(InvestmentCardComponent);
-InvestmentCard.displayName = 'InvestmentCard';
+InvestmentCard.displayName = "InvestmentCard";
