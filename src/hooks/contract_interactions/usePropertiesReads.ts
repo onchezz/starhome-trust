@@ -1,8 +1,8 @@
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
-import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 import { Property, PropertyConverter } from "@/types/property";
 import { useAccount } from "@starknet-react/core";
 import { useEffect, useState } from "react";
+import { saveProperties, getProperties } from "@/utils/indexedDb";
 
 export const usePropertyRead = () => {
   const { data: rawProperties, isLoading, error } = useStarHomeReadContract({
@@ -12,14 +12,30 @@ export const usePropertyRead = () => {
   const [saleProperties, setSaleProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    if (rawProperties) {
-      // Convert the raw data to an array if it isn't already
-      const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
-      const converted = propertiesArray.map(prop => 
-        PropertyConverter.fromStarknetProperty(prop)
-      );
-      setSaleProperties(converted);
-    }
+    const fetchAndSaveProperties = async () => {
+      if (rawProperties) {
+        const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
+        const converted = propertiesArray.map(prop => 
+          PropertyConverter.fromStarknetProperty(prop)
+        );
+        
+        // Save to IndexedDB
+        await saveProperties(converted);
+        setSaleProperties(converted);
+      } else {
+        // Try to get from IndexedDB if no network data
+        try {
+          const cachedProperties = await getProperties();
+          if (cachedProperties.length > 0) {
+            setSaleProperties(cachedProperties);
+          }
+        } catch (error) {
+          console.error("Error fetching from IndexedDB:", error);
+        }
+      }
+    };
+
+    fetchAndSaveProperties();
   }, [rawProperties]);
 
   return {
@@ -38,11 +54,26 @@ export const usePropertyReadById = (id: string) => {
   const [property, setProperty] = useState<Property | null>(null);
 
   useEffect(() => {
-    if (rawProperty) {
-      const converted = PropertyConverter.fromStarknetProperty(rawProperty);
-      setProperty(converted);
-    }
-  }, [rawProperty]);
+    const fetchProperty = async () => {
+      if (rawProperty) {
+        const converted = PropertyConverter.fromStarknetProperty(rawProperty);
+        setProperty(converted);
+      } else {
+        // Try to get from IndexedDB if no network data
+        try {
+          const cachedProperties = await getProperties();
+          const cachedProperty = cachedProperties.find(prop => prop.id === id);
+          if (cachedProperty) {
+            setProperty(cachedProperty);
+          }
+        } catch (error) {
+          console.error("Error fetching from IndexedDB:", error);
+        }
+      }
+    };
+
+    fetchProperty();
+  }, [rawProperty, id]);
 
   return {
     property,
@@ -60,15 +91,32 @@ export const useAgentProperties = (address: string) => {
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    if (rawProperties) {
-      // Convert the raw data to an array if it isn't already
-      const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
-      const converted = propertiesArray.map(prop => 
-        PropertyConverter.fromStarknetProperty(prop)
-      );
-      setProperties(converted);
-    }
-  }, [rawProperties]);
+    const fetchAndSaveProperties = async () => {
+      if (rawProperties) {
+        const propertiesArray = Array.isArray(rawProperties) ? rawProperties : Object.values(rawProperties);
+        const converted = propertiesArray.map(prop => 
+          PropertyConverter.fromStarknetProperty(prop)
+        );
+        
+        // Save to IndexedDB
+        await saveProperties(converted);
+        setProperties(converted);
+      } else {
+        // Try to get from IndexedDB if no network data
+        try {
+          const cachedProperties = await getProperties();
+          const agentProperties = cachedProperties.filter(prop => prop.agent?.address === address);
+          if (agentProperties.length > 0) {
+            setProperties(agentProperties);
+          }
+        } catch (error) {
+          console.error("Error fetching from IndexedDB:", error);
+        }
+      }
+    };
+
+    fetchAndSaveProperties();
+  }, [rawProperties, address]);
 
   return {
     properties,
@@ -76,4 +124,3 @@ export const useAgentProperties = (address: string) => {
     error
   };
 };
-

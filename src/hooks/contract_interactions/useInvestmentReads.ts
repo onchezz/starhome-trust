@@ -2,7 +2,7 @@ import { InvestmentAsset, InvestmentAssetConverter } from "@/types/investment";
 import { useState, useEffect } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { useAccount } from "@starknet-react/core";
-
+import { saveInvestments, getInvestments } from "@/utils/indexedDb";
 
 export const useInvestorsForInvestment = (investmentId: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
@@ -22,7 +22,6 @@ export const useInvestorsForInvestment = (investmentId: string) => {
 export const useInvestorBalance = (investmentId: string, investorAddress?: string) => {
   const { address } = useAccount();
   
-  
   const { data, isLoading, error } = useStarHomeReadContract({
     functionName: "get_investor_balance_in_investment",
     args: [investmentId, address],
@@ -36,7 +35,6 @@ export const useInvestorBalance = (investmentId: string, investorAddress?: strin
     error,
   };
 };
-
 
 export const useInvestmentAssetsRead = () => {
   const { address } = useAccount();
@@ -53,18 +51,34 @@ export const useInvestmentAssetsRead = () => {
   const [formattedInvestments, setFormattedInvestments] = useState<InvestmentAsset[]>([]);
 
   useEffect(() => {
-    if (rawInvestmentProperties) {
-      // Convert the raw data to an array if it isn't already
-      const investmentsArray = Array.isArray(rawInvestmentProperties) 
-        ? rawInvestmentProperties 
-        : Object.values(rawInvestmentProperties);
-      setFormattedProperties(investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv)));
-    }
+    const fetchAndSaveInvestments = async () => {
+      if (rawInvestmentProperties) {
+        const investmentsArray = Array.isArray(rawInvestmentProperties) 
+          ? rawInvestmentProperties 
+          : Object.values(rawInvestmentProperties);
+        const formatted = investmentsArray.map(inv => InvestmentAssetConverter.fromStarknetProperty(inv));
+        
+        // Save to IndexedDB
+        await saveInvestments(formatted);
+        setFormattedProperties(formatted);
+      } else {
+        // Try to get from IndexedDB if no network data
+        try {
+          const cachedInvestments = await getInvestments();
+          if (cachedInvestments.length > 0) {
+            setFormattedProperties(cachedInvestments);
+          }
+        } catch (error) {
+          console.error("Error fetching from IndexedDB:", error);
+        }
+      }
+    };
+
+    fetchAndSaveInvestments();
   }, [rawInvestmentProperties]);
 
   useEffect(() => {
     if (rawUserInvestments) {
-      // Convert the raw data to an array if it isn't already
       const investmentsArray = Array.isArray(rawUserInvestments) 
         ? rawUserInvestments 
         : Object.values(rawUserInvestments);
@@ -89,10 +103,26 @@ export const useInvestmentAssetReadById = (id: string) => {
   const [investment, setInvestment] = useState<InvestmentAsset | null>(null);
 
   useEffect(() => {
-    if (rawInvestment) {
-      setInvestment(InvestmentAssetConverter.fromStarknetProperty(rawInvestment));
-    }
-  }, [rawInvestment]);
+    const fetchInvestment = async () => {
+      if (rawInvestment) {
+        const formatted = InvestmentAssetConverter.fromStarknetProperty(rawInvestment);
+        setInvestment(formatted);
+      } else {
+        // Try to get from IndexedDB if no network data
+        try {
+          const cachedInvestments = await getInvestments();
+          const cachedInvestment = cachedInvestments.find(inv => inv.id === id);
+          if (cachedInvestment) {
+            setInvestment(cachedInvestment);
+          }
+        } catch (error) {
+          console.error("Error fetching from IndexedDB:", error);
+        }
+      }
+    };
+
+    fetchInvestment();
+  }, [rawInvestment, id]);
 
   return {
     investment,
