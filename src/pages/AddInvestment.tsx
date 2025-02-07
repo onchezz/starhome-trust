@@ -19,6 +19,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import CommaInputField from "@/components/investment/CommaInputField";
 import { useLocation, useNavigate } from "react-router-dom";
+import { tokenOptions } from "@/utils/constants";
+import { useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
 
 // Initialize Pinata SDK
 const pinata = new PinataSDK({
@@ -39,8 +41,8 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({
   const {
     handleListInvestmentProperty,
     handleEditInvestmentProperty,
-    contractStatus,
-  } = usePropertyCreate();
+    status: contractStatus,
+  } = useInvestmentWrite();
 
   const generateShortUUID = () => {
     const fullUUID = crypto.randomUUID();
@@ -81,7 +83,7 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({
       legal_detail: "",
       additional_features: "",
       images: "",
-      investment_token: "",
+      investment_token: tokenOptions[1].address,
       min_investment_amount: 0,
     }
   );
@@ -118,7 +120,10 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({
   const [legalDetails, setLegalDetails] = useState<string[]>([]);
 
   const handleInputChange = (field: keyof InvestmentAsset, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleLocationSelect = (location: {
@@ -133,6 +138,7 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({
     const streetAddress = addressParts[0].trim();
 
     setFormData((prev) => ({
+      investment_token: tokenOptions[0].address,
       ...prev,
       location: {
         address: streetAddress,

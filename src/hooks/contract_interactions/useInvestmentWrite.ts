@@ -36,10 +36,12 @@ export const useInvestmentWrite = () => {
       console.log("Listing investment property:", investment);
       const processedInvestment = InvestmentAssetConverter.toStarknetProperty(
         investment,
-        address || ""
+        address 
       );
-      await execute("list_investment_property", [processedInvestment]);
+     const tx =  await execute("list_investment_property", [processedInvestment]);
       toast.success("Investment property listed successfully!");
+      
+      return tx;
     } catch (error) {
       console.error("Error listing investment property:", error);
       toast.error("Failed to list investment property");
@@ -52,10 +54,11 @@ export const useInvestmentWrite = () => {
       console.log("Editing investment property:", { investmentId, investment });
       const processedInvestment = InvestmentAssetConverter.toStarknetProperty(
         investment,
-        address || ""
+        address
       );
-      await execute("edit_listed_investment_property", [investmentId, processedInvestment]);
+     const tx =   await execute("edit_listed_investment_property", [investmentId, processedInvestment]);
       toast.success("Investment property updated successfully!");
+      return tx;
     } catch (error) {
       console.error("Error updating investment property:", error);
       toast.error("Failed to update investment property");

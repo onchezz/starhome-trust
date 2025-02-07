@@ -11,14 +11,20 @@ import { PropertyOverview } from "@/components/investment/details/PropertyOvervi
 import { FinancialOverview } from "@/components/investment/details/FinancialOverview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useInvestmentAssetReadById } from "@/hooks/contract_interactions/useInvestmentReads";
+import { InvestmentAsset } from "@/types/investment";
 
-const InvestmentDetails = () => {
+interface InvestmentDetailsProps {
+  investment: InvestmentAsset;
+}
+
+const InvestmentDetails = ({ investment }: InvestmentDetailsProps) => {
   const { id } = useParams();
-  const { investment, isLoading } = useInvestmentAssetReadById(id || "");
-  const { 
-    investmentAmount, 
-    setInvestmentAmount, 
-    handleInvest 
+  // const { investment, isLoading } = useInvestmentAssetReadById(id || "");
+  const {
+    investmentAmount,
+    setInvestmentAmount,
+    handleInvest,
+    refreshTokenData,
   } = useInvestment(investment?.investment_token);
 
   const getBigIntValue = (value: any): string => {
@@ -40,16 +46,22 @@ const InvestmentDetails = () => {
       .filter(Boolean);
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (!investment) {
     return <div>Investment not found</div>;
   }
+  const handleInvestment = async () => {
+    await refreshTokenData();
+    await handleInvest(id);
+  };
 
   const assetValue = Number(investment.asset_value || 0);
-  const availableStakingAmount = Number(investment.available_staking_amount || 0);
+  const availableStakingAmount = Number(
+    investment.available_staking_amount || 0
+  );
   const minInvestmentAmount = Number(investment.min_investment_amount || 0);
   const propertyPrice = Number(investment.property_price || 0);
   const rentalIncome = Number(investment.rental_income || 0);
@@ -67,15 +79,21 @@ const InvestmentDetails = () => {
   };
 
   const highlights = convertToList(getBigIntValue(investment.highlights));
-  const marketAnalysis = convertToList(getBigIntValue(investment.market_analysis));
+  const marketAnalysis = convertToList(
+    getBigIntValue(investment.market_analysis)
+  );
   const riskFactors = convertToList(getBigIntValue(investment.risk_factors));
-  const additionalFeatures = convertToList(getBigIntValue(investment.additional_features));
+  const additionalFeatures = convertToList(
+    getBigIntValue(investment.additional_features)
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-24">
         <div className="max-w-6xl mx-auto space-y-8">
-          <h1 className="text-3xl font-bold">{getBigIntValue(investment.name)}</h1>
+          <h1 className="text-3xl font-bold">
+            {getBigIntValue(investment.name)}
+          </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InvestmentProgress
@@ -84,14 +102,16 @@ const InvestmentDetails = () => {
               minInvestmentAmount={minInvestmentAmount}
               investmentAmount={investmentAmount}
               setInvestmentAmount={setInvestmentAmount}
-              handleInvest={() => handleInvest(id || "")}
+              handleInvest={handleInvestment}
             />
 
             <PropertyOverview
               investmentType={getBigIntValue(investment.investment_type)}
               size={size}
               constructionYear={constructionYear}
-              constructionStatus={getBigIntValue(investment.construction_status)}
+              constructionStatus={getBigIntValue(
+                investment.construction_status
+              )}
             />
           </div>
 

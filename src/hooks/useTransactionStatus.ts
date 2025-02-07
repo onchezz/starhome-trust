@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react";
-import { RpcProvider } from "starknet";
-import { rpcProvideUr } from "@/utils/constants";
+import { useCallback, useEffect, useState } from "react";
+// import { RpcProvider } from "starknet";
+// import { rpcProvideUr } from "@/utils/constants";
+import { useProvider, useTransactionReceipt } from "@starknet-react/core";
 
 interface TransactionStatus {
   isError: boolean;
@@ -10,19 +11,35 @@ interface TransactionStatus {
   isLoading: boolean;
   receipt: any;
 }
+interface TransactionStatus$1{
+  finality_status:any,
+  execution_status:any,
+}
 
 export const useTransactionStatus = () => {
   const [status, setStatus] = useState<TransactionStatus | null>(null);
+  const [finalityStatus, setFinalityStatus] = useState<TransactionStatus$1 | null>(null);
   const [isChecking, setIsChecking] = useState(false);
+
+
+ 
+  const { provider } = useProvider();
+
+
 
   const checkTransaction = useCallback(async (txHash: string): Promise<TransactionStatus> => {
     console.log("Checking transaction status for hash:", txHash);
     setIsChecking(true);
     
     try {
-      const provider = new RpcProvider({ nodeUrl: rpcProvideUr });
+      // const provider = new RpcProvider({ nodeUrl: rpcProvideUr });
       const transaction = await provider.waitForTransaction(txHash);
-      
+
+  
+
+
+
+  
       const transactionStatus = {
         isError: transaction.isError(),
         isSuccess: transaction.isSuccess(),
@@ -32,9 +49,10 @@ export const useTransactionStatus = () => {
         receipt: transaction.statusReceipt
       };
 
+
       console.log("Transaction status:", transactionStatus);
-      setStatus(transactionStatus);
-      return transactionStatus;
+    
+      return { ...transactionStatus, };
     } catch (error) {
       console.error("Error checking transaction status:", error);
       const errorStatus = {

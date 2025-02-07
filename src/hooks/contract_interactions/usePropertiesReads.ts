@@ -73,7 +73,7 @@ export const usePropertyRead = () => {
 
 export const usePropertyReadById = (propertyId: string) => {
   const { data, isLoading, error } = useStarHomeReadContract({
-    functionName: "get_property_by_id",
+    functionName: "get_property",
     args: propertyId ? [propertyId] : [],
   });
 

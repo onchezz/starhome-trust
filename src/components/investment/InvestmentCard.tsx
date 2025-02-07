@@ -30,24 +30,43 @@ const InvestmentCardComponent = ({
   handleConnectWallet,
 }: InvestmentCardProps) => {
   const { address } = useAccount();
-  const isExpanded = expandedCardId === property.id;
-
-  if (!property) {
-    console.error("Property is undefined in InvestmentCard");
-    return null;
-  }
-
   const {
     investmentAmount,
     setInvestmentAmount,
     handleInvest,
-    approveAndInvest,
     allowance,
     refreshTokenData,
     transactionStatus,
     isWaitingApproval,
     isWaitingTransactionExecution,
   } = useInvestment(property.investment_token);
+
+  const handleInvestClick = useCallback(async () => {
+    if (!address) {
+      handleConnectWallet();
+      return;
+    }
+    await handleInvest(property.id);
+  }, [address, handleConnectWallet, handleInvest, property.id]);
+
+  const handleExpandClick = useCallback(
+    async (open: boolean) => {
+      if (open) {
+        setExpandedCardId(property.id);
+        await refreshTokenData();
+      } else {
+        setExpandedCardId(null);
+      }
+    },
+    [property.id, setExpandedCardId, refreshTokenData]
+  );
+
+  const isExpanded = expandedCardId === property.id;
+
+  if (!property) {
+    console.error("Property is undefined in InvestmentCard");
+    return null;
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -65,26 +84,6 @@ const InvestmentCardComponent = ({
     property.asset_value - property.available_staking_amount,
     property.asset_value
   );
-
-  const handleExpandClick = useCallback(
-    async (open: boolean) => {
-      if (open) {
-        setExpandedCardId(property.id);
-        await refreshTokenData();
-      } else {
-        setExpandedCardId(null);
-      }
-    },
-    [property.id, setExpandedCardId, refreshTokenData]
-  );
-
-  const handleInvestClick = useCallback(async () => {
-    if (!address) {
-      handleConnectWallet();
-      return;
-    }
-    await handleInvest(property.id);
-  }, [address, handleConnectWallet, handleInvest, property.id]);
 
   const getTransactionStatusMessage = () => {
     if (isWaitingApproval) {
@@ -172,9 +171,7 @@ const InvestmentCardComponent = ({
                           Your Current Allowance
                         </p>
                         <p className="font-semibold">
-                          {allowance
-                            ? `${Number(allowance).toFixed(2)} USDT`
-                            : "0 USDT"}
+                          {allowance ? `${Number(allowance).toFixed(2)}` : "0"}
                         </p>
                       </>
                     ) : (
@@ -235,13 +232,22 @@ const InvestmentCardComponent = ({
                 )}
               </CollapsibleContent>
             </Collapsible>
-
-            <Link to={`/investment/${property.id}`}>
+            <Link
+              to={`/investment/${property.id}`}
+              state={{ investment: property }} // Pass the property data through state
+            >
               <Button variant="outline">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 More Details
               </Button>
             </Link>
+
+            {/* <Link to={`/investment/${property.id}`}>
+              <Button variant="outline">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                More Details
+              </Button>
+            </Link> */}
           </div>
         </div>
       </CardContent>
@@ -251,3 +257,20 @@ const InvestmentCardComponent = ({
 
 export const InvestmentCard = memo(InvestmentCardComponent);
 InvestmentCard.displayName = "InvestmentCard";
+
+import { useLocation, Navigate } from "react-router-dom";
+import InvestmentDetails from "@/pages/InvestmentDetails";
+// import { InvestmentDetails } from "./InvestmentDetails";
+
+const InvestmentDetailsPage = () => {
+  const location = useLocation();
+  const investment = location.state?.investment;
+
+  if (!investment) {
+    return <Navigate to="/" replace />; // Redirect if no investment data
+  }
+
+  return <InvestmentDetails investment={investment} />;
+};
+
+export default InvestmentDetailsPage;

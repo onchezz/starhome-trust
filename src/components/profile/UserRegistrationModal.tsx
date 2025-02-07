@@ -18,12 +18,21 @@ import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead"
 import { User as UserType } from "@/types/user";
 import pinata from "@/hooks/services_hooks/pinata";
 import { Switch } from "@/components/ui/switch";
+import { useTransactionStatus } from "@/hooks/useTransactionStatus";
+import TransactionWidget from "../txmodal";
 
 export function UserRegistrationModal() {
   const { address } = useAccount();
   const { handleRegisterUser, handleEditUser, contractStatus } = useUserWrite();
-  const { user: currentUser, isLoading: isLoadingUser } = useUserReadByAddress(address || "");
-  
+  const { user: currentUser, isLoading: isLoadingUser } = useUserReadByAddress(
+    address || ""
+  );
+  const {
+    isChecking,
+    checkTransaction,
+    status: txStatus,
+  } = useTransactionStatus();
+
   const [formData, setFormData] = useState<Partial<UserType>>({
     name: "",
     email: "",
@@ -49,16 +58,18 @@ export function UserRegistrationModal() {
 
   useEffect(() => {
     const isUnregistered = (userData: any) => {
-      return !userData || 
-             userData.name === "0" || 
-             userData.name === 0 || 
-             userData.name === "" ||
-             userData.phone === "0" ||
-             userData.phone === 0 ||
-             userData.phone === "" ||
-             userData.email === "0" ||
-             userData.email === 0 ||
-             userData.email === "";
+      return (
+        !userData ||
+        userData.name === "0" ||
+        userData.name === 0 ||
+        userData.name === "" ||
+        userData.phone === "0" ||
+        userData.phone === 0 ||
+        userData.phone === "" ||
+        userData.email === "0" ||
+        userData.email === 0 ||
+        userData.email === ""
+      );
     };
 
     if (currentUser && !isLoadingUser) {
@@ -87,7 +98,10 @@ export function UserRegistrationModal() {
       toast.error("Name is required");
       return false;
     }
-    if (!formData.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (
+      !formData.email?.trim() ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    ) {
       toast.error("Valid email is required");
       return false;
     }
@@ -109,7 +123,9 @@ export function UserRegistrationModal() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     if (ipfsHash) {
-      toast.error("Image Already Uploaded. Please submit the form or reset to upload a new image");
+      toast.error(
+        "Image Already Uploaded. Please submit the form or reset to upload a new image"
+      );
       return;
     }
 
@@ -152,19 +168,27 @@ export function UserRegistrationModal() {
         timestamp: Math.floor(Date.now() / 1000),
       };
 
-      const response = isUserRegistered 
+      const response = isUserRegistered
         ? await handleEditUser(userData)
         : await handleRegisterUser(userData);
-      
-      if (response.status === "success") {
-        toast.success(isUserRegistered ? "Profile updated successfully!" : "Registration successful!");
+
+      const tx = await checkTransaction(response.transaction_hash);
+
+      if (tx.receipt === "success") {
+        toast.success(
+          isUserRegistered
+            ? "Profile updated successfully!"
+            : "Registration successful!"
+        );
         setIsOpen(false);
         // Force reload the page and show shimmer while data is being fetched
         window.location.reload();
       }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(isUserRegistered ? "Failed to update profile" : "Failed to register");
+      toast.error(
+        isUserRegistered ? "Failed to update profile" : "Failed to register"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -183,11 +207,11 @@ export function UserRegistrationModal() {
     setIpfsHash("");
   };
 
-  const handleSwitchChange = (type: 'agent' | 'investor', checked: boolean) => {
-    setFormData(prev => ({
+  const handleSwitchChange = (type: "agent" | "investor", checked: boolean) => {
+    setFormData((prev) => ({
       ...prev,
-      is_agent: type === 'agent' ? checked : prev.is_agent,
-      is_investor: type === 'investor' ? checked : prev.is_investor,
+      is_agent: type === "agent" ? checked : prev.is_agent,
+      is_investor: type === "investor" ? checked : prev.is_investor,
     }));
     console.log(`${type} switch changed to:`, checked);
   };
@@ -195,7 +219,10 @@ export function UserRegistrationModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="w-full text-xs sm:text-sm h-8 sm:h-10 flex items-center gap-2"
+        >
           <User className="w-4 h-4" />
           {isUserRegistered ? "Update Profile" : "Create Account"}
         </Button>
@@ -206,7 +233,7 @@ export function UserRegistrationModal() {
             {isUserRegistered ? "Update Profile" : "Create New Account"}
           </DialogTitle>
           <DialogDescription>
-            {isUserRegistered 
+            {isUserRegistered
               ? "Update your profile information below."
               : "Fill in your details to create a new account."}
           </DialogDescription>
@@ -217,7 +244,7 @@ export function UserRegistrationModal() {
             <Input
               id="name"
               name="name"
-              value={formData.name || ''}
+              value={formData.name || ""}
               onChange={handleInputChange}
               placeholder="Enter your name"
               required
@@ -230,7 +257,7 @@ export function UserRegistrationModal() {
               id="email"
               name="email"
               type="email"
-              value={formData.email || ''}
+              value={formData.email || ""}
               onChange={handleInputChange}
               placeholder="Enter your email"
               required
@@ -242,7 +269,7 @@ export function UserRegistrationModal() {
             <Input
               id="phone"
               name="phone"
-              value={formData.phone || ''}
+              value={formData.phone || ""}
               onChange={handleInputChange}
               placeholder="Enter your phone number"
               required
@@ -255,17 +282,21 @@ export function UserRegistrationModal() {
               <Switch
                 id="agent-switch"
                 checked={formData.is_agent}
-                onCheckedChange={(checked) => handleSwitchChange('agent', checked)}
+                onCheckedChange={(checked) =>
+                  handleSwitchChange("agent", checked)
+                }
                 disabled={!address || isSubmitting}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <Label htmlFor="investor-switch">Register as Investor</Label>
               <Switch
                 id="investor-switch"
                 checked={formData.is_investor}
-                onCheckedChange={(checked) => handleSwitchChange('investor', checked)}
+                onCheckedChange={(checked) =>
+                  handleSwitchChange("investor", checked)
+                }
                 disabled={!address || isSubmitting}
               />
             </div>
@@ -289,24 +320,24 @@ export function UserRegistrationModal() {
               />
             )}
           </div>
+          {isChecking ? <TransactionWidget hash={txStatus.receipt} /> : <></>}
+
           <div className="flex gap-4">
             <Button
               type="submit"
               className="flex-1"
-              disabled={!address || isSubmitting || uploadLoading}
+              disabled={!address || isSubmitting || uploadLoading || isChecking}
             >
               {(isSubmitting || uploadLoading) && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {uploadLoading ? (
-                "Uploading Image"
-              ) : !address ? (
-                "Connect Wallet"
-              ) : isUserRegistered ? (
-                "Update Profile"
-              ) : (
-                "Create Account"
-              )}
+              {uploadLoading
+                ? "Uploading Image"
+                : !address
+                ? "Connect Wallet"
+                : isUserRegistered
+                ? "Update Profile"
+                : "Create Account"}
             </Button>
             <Button
               type="button"

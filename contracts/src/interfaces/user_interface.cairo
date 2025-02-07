@@ -12,6 +12,4 @@ pub trait IUsersComponentTrait<TContractState> {
     fn register_as_agent(ref self: TContractState, user_id: ContractAddress) -> felt252;
     fn register_as_investor(ref self: TContractState, user_id: ContractAddress) -> felt252;
     fn authorize_as_investment_lister(ref self: TContractState, investor_address: ContractAddress);
-    // fn edit_agent(ref self: TContractState, agent: Agent) -> felt252;
-//  fn edit_investor(ref self: TContractState, investor: Investor) -> felt252;
 }

@@ -8,10 +8,14 @@ export const usePropertyCreate = () => {
 
   const handleListSaleProperty = async (property: Partial<Property>) => {
     try {
-      const response = await execute("list_property", [
-        PropertyConverter.fromStarknetProperty(property)
-      ]);
-      return { status: response.status };
+      if (!property.agentId){
+            throw Error("no address available") 
+        }
+
+     const  listProperty  = PropertyConverter.convertToStarknetProperty(property);
+     console.log(`listing property: ${listProperty}`)
+      const response = await execute("list_property", [listProperty]);
+      return { status: response, };
     } catch (error) {
       console.error("Error listing property:", error);
       throw error;
@@ -20,45 +24,23 @@ export const usePropertyCreate = () => {
 
   const handleEditProperty = async (propertyId: string, property: Partial<Property>) => {
     try {
+       const  editProperty  = PropertyConverter.convertToStarknetProperty(property);
       const response = await execute("edit_property", [
         propertyId,
-        PropertyConverter.fromStarknetProperty(property)
+        editProperty
       ]);
-      return { status: response.status };
+      return { status: response };
     } catch (error) {
       console.error("Error editing property:", error);
       throw error;
     }
   };
 
-  const handleListInvestmentProperty = async (investment: Partial<InvestmentAsset>) => {
-    try {
-      const response = await execute("list_investment_property", [investment]);
-      return { status: response.status };
-    } catch (error) {
-      console.error("Error listing investment property:", error);
-      throw error;
-    }
-  };
-
-  const handleEditInvestmentProperty = async (investmentId: string, investment: Partial<InvestmentAsset>) => {
-    try {
-      const response = await execute("edit_listed_investment_property", [
-        investmentId,
-        investment
-      ]);
-      return { status: response.status };
-    } catch (error) {
-      console.error("Error editing investment property:", error);
-      throw error;
-    }
-  };
 
   return {
     handleListSaleProperty,
     handleEditProperty,
-    handleListInvestmentProperty,
-    handleEditInvestmentProperty,
+  
     contractStatus
   };
 };

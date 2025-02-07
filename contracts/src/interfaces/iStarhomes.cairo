@@ -1,5 +1,6 @@
 use starhomes::models::property_models::{Property};
 use starhomes::models::investment_model::InvestmentAsset;
+use starhomes::models::user_models::UserVisitRequest;
 use starknet::ContractAddress;
 // use starknet::class_hash::ClassHash;
 // use starknet::storage::{
@@ -10,6 +11,11 @@ use starknet::ContractAddress;
 pub trait IStarhomesContract<TContractState> {
     fn list_property(ref self: TContractState, property: Property) -> felt252;
     fn list_investment_property(ref self: TContractState, investment_asset: InvestmentAsset);
+    fn send_visit_request(ref self: TContractState, visit_request: UserVisitRequest);
+    fn read_visit_requests(
+        ref self: TContractState, property_id: felt252,
+    ) -> Array<UserVisitRequest>;
+    
     fn invest_in_property(ref self: TContractState, investment_id: felt252, amount: u256);
     fn withdraw_from_property(ref self: TContractState, investment_id: felt252, amount: u256);
     fn get_investors_for_investment(
@@ -35,6 +41,8 @@ pub trait IStarhomesContract<TContractState> {
     ) -> Array<Property>;
     fn get_investment_properties(self: @TContractState) -> Array<InvestmentAsset>;
     fn get_investment(self: @TContractState, investment_id: felt252) -> InvestmentAsset;
+    fn read_investor_returns(self: @TContractState, investment_id: felt252,investor: ContractAddress,) -> u256;
+    fn read_update(self: @TContractState) -> u256;
     fn version(self: @TContractState) -> u64;
 }
 

@@ -9,7 +9,7 @@ import PropertyDetails from "@/pages/PropertyDetails";
 import AddProperty from "@/pages/AddProperty";
 import EditProperty from "@/pages/EditProperty";
 import Investment from "@/pages/Investment";
-import InvestmentDetails from "@/pages/InvestmentDetails";
+// import InvestmentDetails from "@/pages/InvestmentDetails";
 import AddInvestment from "@/pages/AddInvestment";
 import Profile from "@/pages/Profile";
 import CreateUser from "@/pages/CreateUser";
@@ -17,6 +17,7 @@ import RegisterAgent from "@/pages/RegisterAgent";
 import Blogs from "@/pages/Blogs";
 import BlogDetails from "@/pages/BlogDetails";
 import EditInvestment from "./pages/EditInvestment";
+import InvestmentDetailsPage from "./components/investment/InvestmentCard";
 
 function App() {
   return (
@@ -29,11 +30,11 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/properties" element={<Properties />} />
               <Route path="/properties/:id" element={<PropertyDetails />} />
-              <Route path="/properties/add" element={<AddProperty />} />
+              <Route path="/property/create" element={<AddProperty />} />
               <Route path="/properties/:id/edit" element={<EditProperty />} />
               <Route path="/investment" element={<Investment />} />
-              <Route path="/investment/:id" element={<InvestmentDetails />} />
-              <Route path="/investment/add" element={<AddInvestment />} />
+              <Route path="/investment/:id"element={<InvestmentDetailsPage />}/>
+              <Route path="/investment/create" element={<AddInvestment />} />
               <Route path="/investment/:id/edit" element={<EditInvestment />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/create-user" element={<CreateUser />} />

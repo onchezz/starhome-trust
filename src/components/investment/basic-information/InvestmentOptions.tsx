@@ -40,11 +40,13 @@ const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
         </Select>
       </div>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <Label>Investment Token</Label>
         <Select
           value={formData.investment_token}
-          onValueChange={(value) => handleInputChange("investment_token", value)}
+          onValueChange={(value) =>
+            handleInputChange("investment_token", value)
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Select token" />
@@ -57,7 +59,7 @@ const InvestmentOptions: React.FC<InvestmentOptionsProps> = ({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
     </>
   );
 };

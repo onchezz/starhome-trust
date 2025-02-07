@@ -11,17 +11,7 @@ pub mod InvestmentComponent {
         StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait,
     };
     use starhomes::interfaces::investment_interface::IInvestmentTrait;
-    // use starhomes::components::user_component::UsersComponent;
-    // UsersComponent::UsersComponentImpl<ContractState>
-    // use starhomes::interfaces::user_interface::IUsersComponentTrait;
-    //    trait userComponent<TContractState> =
-    //    UsersComponent<TContractState> + IUsersComponentTrait<TContractState>;
 
-    // #[external(v0)]
-    // fn my_function(self: @ComponentState<TContractState>) {
-    //     // Call a function from OtherComponent
-    //     let other_value = self.other_component_function();
-    // }
     #[storage]
     pub struct Storage {
         // Core investment tracking
@@ -58,7 +48,6 @@ pub mod InvestmentComponent {
             felt252, Vec<ContractAddress>,
         >, // Array of investors per investment
         pub active_investors: Map<felt252, u32> // Count of active investors per investment
-        // pub users: ComponentState<UsersComponent::Storage>,
     }
 
     #[event]
@@ -133,13 +122,8 @@ pub mod InvestmentComponent {
                     .write((investor, investment_id), get_block_timestamp().into());
 
                 // Add to investors array
-                // let mut investors = self.investors_per_asset.entry(investment_id).read();
-                // // let mut investors = self.investors_per_asset.entry(investment_id).read();
-                // investors.append(investor);
-                // self.investors_per_asset.write(investment_id, investors);
                 let mut investors = self.investors_per_asset.entry(investment_id);
                 investors.append().write(investor);
-                // self.investors_per_asset.write(investment_id, investors);
                 // Update active investors count
                 let active = self.active_investors.read(investment_id);
                 self.active_investors.write(investment_id, active + 1);
@@ -209,6 +193,7 @@ pub mod InvestmentComponent {
                 );
             true
         }
+
 
         fn set_lock_period(
             ref self: ComponentState<TContractState>, investment_id: felt252, duration: u256,
@@ -324,6 +309,13 @@ pub mod InvestmentComponent {
     pub impl InvestmentInternalFunctions<
         TContractState, +HasComponent<TContractState>,
     > of InvestmentInternalFunctionsTrait<TContractState> {
+        fn read_investor_returns(
+            self: @ComponentState<TContractState>,
+            investment_id: felt252,
+            investor: ContractAddress,
+        ) -> u256 {
+            self._calculate_returns(investor, investment_id)
+        }
         fn _is_investment_initialized(
             self: @ComponentState<TContractState>, investment_id: felt252,
         ) -> bool {

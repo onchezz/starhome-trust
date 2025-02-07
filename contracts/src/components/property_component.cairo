@@ -116,6 +116,7 @@ pub mod PropertyComponent {
 
             investment.id.clone()
         }
+
         fn edit_listed_investment_property(
             ref self: ComponentState<TContractState>,
             investment_id: felt252,
@@ -196,11 +197,7 @@ pub mod PropertyComponent {
         }
     }
 
-    #[inline]
-    pub fn panic_with_felt252(err_code: felt252) {
-        panic(array![err_code])
-    }
-
+   
     #[generate_trait]
     pub impl PropertyFunctions<
         TContractState, +HasComponent<TContractState>,

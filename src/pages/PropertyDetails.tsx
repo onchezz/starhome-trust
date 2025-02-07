@@ -122,7 +122,9 @@ const PropertyDetails = () => {
 
             {agent && (
               <div className="bg-card rounded-lg p-6 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4">Agent Information</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  Agent Information
+                </h3>
                 <div className="flex items-start gap-4">
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={agent.profile_image} alt={agent.name} />
@@ -141,8 +143,12 @@ const PropertyDetails = () => {
                       <span className="font-medium">Phone:</span> {agent.phone}
                     </p>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Agent Address:</span>
-                      <span className="text-sm font-mono truncate">{agent.id}</span>
+                      <span className="text-sm font-medium">
+                        Agent Address:
+                      </span>
+                      <span className="text-sm font-mono truncate">
+                        {agent.id}
+                      </span>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -179,9 +185,9 @@ const PropertyDetails = () => {
           </div>
         </div>
 
-        <div className="mt-12">
+        {/* <div className="mt-12">
           <SimilarProperties currentPropertyId={property.id.toString()} />
-        </div>
+        </div> */}
       </div>
 
       {selectedImage && (

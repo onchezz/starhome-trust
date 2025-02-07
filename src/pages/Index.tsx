@@ -55,7 +55,6 @@ const Index = () => {
           inView ? "opacity-100" : "opacity-0"
         }`}
       >
-        {/* <Navbar /> */}
         <Hero />
         <div className="relative">
           <div className="relative" id="stats">
@@ -70,7 +69,7 @@ const Index = () => {
           <ContactForm />
         </div>
         <div ref={aboutRef} id="about">
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </div>
     </div>

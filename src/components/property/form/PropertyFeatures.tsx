@@ -3,13 +3,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Property } from "@/types/property";
+import CommaInputField from "@/components/investment/CommaInputField";
 
 interface PropertyFeaturesProps {
   formData: Partial<Property>;
   handleInputChange: (field: keyof Property, value: any) => void;
 }
 
-const PropertyFeatures = ({ formData, handleInputChange }: PropertyFeaturesProps) => {
+const PropertyFeatures = ({
+  formData,
+  handleInputChange,
+}: PropertyFeaturesProps) => {
   return (
     <div className="rounded-lg bg-white/40 backdrop-blur-sm p-6 space-y-6 animate-fade-in delay-200">
       <h3 className="text-lg font-semibold text-gray-900">Property Features</h3>
@@ -53,6 +57,12 @@ const PropertyFeatures = ({ formData, handleInputChange }: PropertyFeaturesProps
             onChange={(e) => handleInputChange("parkingSpaces", e.target.value)}
           />
         </div>
+        <CommaInputField
+          label="Property Features"
+          value={formData.featuresId || ""}
+          onChange={(value) => handleInputChange("featuresId", value)}
+          placeholder="Enter highlights, separated by commas"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">

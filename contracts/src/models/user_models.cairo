@@ -37,3 +37,16 @@ pub struct Investor {
 }
 
 
+#[derive(Clone, Drop, Serde, starknet::Store)]
+pub struct UserVisitRequest {
+    pub user_id: ContractAddress,
+    pub property_id: felt252,
+    pub name: felt252,
+    pub phone: felt252,
+    pub email: felt252,
+    pub agent_id: ContractAddress,
+    pub message: ByteArray, // IPFS CID for the profile image
+    pub visit_date: felt252,
+    pub timestamp: u64,
+}
+

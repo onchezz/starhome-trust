@@ -79,10 +79,12 @@ export const useInvestmentAssetsRead = () => {
     functionName: "get_investment_properties_by_lister",
     args: [address],
     options: {
+      
       staleTime: 30000,
       cacheTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
       enabled: !!address,
+
     }
   });
 
@@ -155,32 +157,32 @@ export const useInvestmentAssetReadById = (id: string) => {
     }
   });
 
-  const [investment, setInvestment] = useState<InvestmentAsset | null>(null);
+  // const [investment, setInvestment] = useState<InvestmentAsset | null>(null);
 
-  useEffect(() => {
-    const fetchInvestment = async () => {
-      if (rawInvestment) {
-        console.log("[Contract] Fetching single investment from contract:", id);
-        const formatted = InvestmentAssetConverter.fromStarknetProperty(rawInvestment);
-        setInvestment(formatted);
-      } else {
-        try {
-          console.log("[Cache] Attempting to load single investment from cache:", id);
-          const cachedInvestments = await getInvestmentsFromDB();
-          const cachedInvestment = cachedInvestments.find(inv => inv.id === id);
-          if (cachedInvestment) {
-            console.log("[Cache] Found cached investment:", cachedInvestment);
-            setInvestment(cachedInvestment);
-          }
-        } catch (error) {
-          console.error("[Cache] Error fetching from IndexedDB:", error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchInvestment = async () => {
+  //     if (rawInvestment) {
+  //       console.log("[Contract] Fetching single investment from contract:", id);
+  //       const formatted = InvestmentAssetConverter.fromStarknetProperty(rawInvestment);
+  //       setInvestment(formatted);
+  //     } else {
+  //       try {
+  //         console.log("[Cache] Attempting to load single investment from cache:", id);
+  //         const cachedInvestments = await getInvestmentsFromDB();
+  //         const cachedInvestment = cachedInvestments.find(inv => inv.id === id);
+  //         if (cachedInvestment) {
+  //           console.log("[Cache] Found cached investment:", cachedInvestment);
+  //           setInvestment(cachedInvestment);
+  //         }
+  //       } catch (error) {
+  //         console.error("[Cache] Error fetching from IndexedDB:", error);
+  //       }
+  //     }
+  //   };
 
-    fetchInvestment();
-  }, [rawInvestment, id]);
-
+  //   fetchInvestment();
+  // }, [rawInvestment, id]);
+const investment = InvestmentAssetConverter.fromStarknetProperty(rawInvestment);
   return {
     investment,
     isLoading,

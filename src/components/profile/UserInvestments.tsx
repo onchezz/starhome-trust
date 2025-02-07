@@ -5,27 +5,39 @@ import { Skeleton } from "../ui/skeleton";
 import { useAccount } from "@starknet-react/core";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvestmentListingCard } from "./InvestmentListingCard";
-import { useInvestmentAssetsRead, useInvestorBalance } from "@/hooks/contract_interactions/useInvestmentReads";
+import {
+  useInvestmentAssetsRead,
+  useInvestorBalance,
+} from "@/hooks/contract_interactions/useInvestmentReads";
 import { useInvestmentWrite } from "@/hooks/contract_interactions/useInvestmentWrite";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState, useRef, useEffect } from "react";
 import { Wallet } from "lucide-react";
 import { toast } from "sonner";
+import { InvestmentAsset } from "@/types/investment";
+import { findMatchingToken } from "@/utils/tokenMatching";
+import { ImageGallery } from "../investment/ImageGallery";
+import { useInvestment } from "@/hooks/useInvestment";
 
 export const UserInvestments = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
-  const { investmentProperties, userInvestments, isLoading } = useInvestmentAssetsRead();
+  const { investmentProperties, userInvestments, isLoading } =
+    useInvestmentAssetsRead();
   const { handleWithdraw } = useInvestmentWrite();
+  const [isLoadingTransaction, setIsLoadingTransaction] = useState(false);
 
   console.log("User investments data:", {
     address,
     userInvestments,
-    isLoading
+    isLoading,
   });
 
-  const handleWithdrawClick = async (investmentId: string, inputValue: string) => {
+  const handleWithdrawClick = async (
+    investmentId: string,
+    inputValue: string
+  ) => {
     try {
       if (!inputValue) {
         toast.error("Please enter a withdrawal amount");
@@ -37,38 +49,127 @@ export const UserInvestments = () => {
         toast.error("Please enter a valid number");
         return;
       }
+      setIsLoadingTransaction(true);
+      const txStatus = await handleWithdraw(investmentId, amount);
+      setIsLoadingTransaction(false);
 
-      await handleWithdraw(investmentId, amount);
-      toast.success("Withdrawal successful");
+      if (txStatus.status.isSuccess) {
+        setIsLoadingTransaction(false);
+        toast.success("Withdrawal successful");
+      }
     } catch (error) {
+      setIsLoadingTransaction(false);
       console.error("Withdrawal error:", error);
       toast.error("Failed to process withdrawal");
     }
   };
 
-  const InvestmentCard = ({ investment }: { investment: any }) => {
-    const { balance, isLoading: balanceLoading } = useInvestorBalance(investment.id);
+  if (!address) {
+    return <div>Wallet not connected</div>;
+  }
+  const InvestmentCard = ({ investment }: { investment: InvestmentAsset }) => {
+    const { balance, isLoading: balanceLoading } = useInvestorBalance(
+      investment.id
+    );
+    const matchingToken = findMatchingToken(investment.investment_token);
+    const {
+      investmentAmount,
+      setInvestmentAmount,
+      handleInvest,
+      approveAndInvest,
+      allowance,
+      refreshTokenData,
+      transactionStatus,
+      isWaitingApproval,
+      isWaitingTransactionExecution,
+    } = useInvestment(matchingToken.address);
+
     const inputRef = useRef<HTMLInputElement>(null);
     const [inputValue, setInputValue] = useState("");
 
+    const handleInvestClick = async (investmentId: string) => {
+      if (!address) {
+        handleConnectWallet();
+        return;
+      }
+      await refreshTokenData();
+
+      await handleInvest(investmentId);
+    };
+
     return (
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+        <ImageGallery imagesId={investment.images} />
         <CardHeader>
           <CardTitle className="text-lg">{investment.name}</CardTitle>
+          <div>
+            <p className="text-sm text-gray-500">
+              {`${investment.location.address}, ${investment.location.city}, ${investment.location.country}`}
+            </p>
+          </div>
+          {/* <span className="text-sm  ">
+            Investment Token {matchingToken.symbol}
+          </span> */}
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Your Investment</span>
-              <span className="font-medium">
-                {balanceLoading ? (
-                  <Skeleton className="h-4 w-20" />
-                ) : (
-                  `${balance} USDT`
-                )}
-              </span>
+              {balance <= 0 ? (
+                <>
+                  <span className="text-sm text-muted-foreground">
+                    current Investment
+                  </span>
+                  <span className="font-medium text-sm">
+                    {balanceLoading ? (
+                      <Skeleton className="h-4 w-20" />
+                    ) : (
+                      <span className="font-medium text-xs">
+                        {`${balance} ${matchingToken.symbol}`}
+                      </span>
+                    )}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm text-muted-foreground">
+                    current Investment
+                  </span>
+                  <span className="font-medium text-sm">
+                    {balanceLoading ? (
+                      <Skeleton className="h-4 w-20" />
+                    ) : (
+                      <span className="font-medium text-xs">
+                        {`${balance} ${matchingToken.symbol}`}
+                      </span>
+                    )}
+                  </span>
+                </>
+              )}
             </div>
-            
+            {balance <= 0 ? (
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  placeholder="Amount to invest"
+                  value={investmentAmount}
+                  onChange={(e) => setInvestmentAmount(e.target.value)}
+                  min={investment.min_investment_amount}
+                  // max={balance}
+                  ref={inputRef}
+                />
+                <Button
+                  className="w-full"
+                  onClick={() => handleInvestClick(investment.id)}
+                  disabled={!investmentAmount || isLoading}
+                >
+                  <Wallet className="mr-2 h-4 w-4" />
+                  {isLoadingTransaction ? "Loading tx ...." : "invest more "}
+                </Button>
+              </div>
+            ) : (
+              <></>
+            )}
+
             {balance > 0 && (
               <div className="space-y-2">
                 <Input
@@ -80,13 +181,15 @@ export const UserInvestments = () => {
                   max={balance}
                   ref={inputRef}
                 />
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   onClick={() => handleWithdrawClick(investment.id, inputValue)}
-                  disabled={!inputValue || Number(inputValue) > balance}
+                  disabled={
+                    !inputValue || Number(inputValue) > balance || isLoading
+                  }
                 >
                   <Wallet className="mr-2 h-4 w-4" />
-                  Withdraw Funds
+                  {isLoadingTransaction ? "Loading tx ...." : "Withdraw Funds"}
                 </Button>
               </div>
             )}
@@ -117,8 +220,9 @@ export const UserInvestments = () => {
     );
   }
 
-  const hasNoInvestments = (!userInvestments || userInvestments.length === 0) && 
-                          (!investmentProperties || investmentProperties.length === 0);
+  const hasNoInvestments =
+    (!userInvestments || userInvestments.length === 0) &&
+    (!investmentProperties || investmentProperties.length === 0);
 
   if (!address) {
     return (
@@ -132,7 +236,9 @@ export const UserInvestments = () => {
           <CardTitle>Your Investments</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Please connect your wallet to view your investments.</p>
+          <p className="text-muted-foreground">
+            Please connect your wallet to view your investments.
+          </p>
         </CardContent>
       </Card>
     );
@@ -191,3 +297,10 @@ export const UserInvestments = () => {
     </Card>
   );
 };
+function useCallback(arg0: () => Promise<void>, arg1: any[]) {
+  throw new Error("Function not implemented.");
+}
+
+function handleConnectWallet() {
+  throw new Error("Function not implemented.");
+}

@@ -10,15 +10,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    priceRange: [0, 15000000],
+    priceRange: [0, 1500000000],
     bedrooms: "any",
     bathrooms: "any",
-    propertyType: "any"
+    propertyType: "any",
   });
 
   const { saleProperties, isLoading, error } = usePropertyRead();
 
   if (isLoading) {
+    console.log(`sale properties `, saleProperties);
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -43,54 +44,65 @@ const Properties = () => {
   }
 
   const filteredProperties = saleProperties?.filter((property: Property) => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.country.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesPrice = property.price >= filters.priceRange[0] && 
-                        property.price <= filters.priceRange[1];
+    const matchesPrice =
+      property.price >= filters.priceRange[0] &&
+      property.price <= filters.priceRange[1];
 
-    const matchesType = filters.propertyType === "any" || 
-                       property.propertyType === filters.propertyType;
+    const matchesType =
+      filters.propertyType === "any" ||
+      property.propertyType === filters.propertyType;
 
-    const matchesBedrooms = filters.bedrooms === "any" || 
-                           property.bedrooms === Number(filters.bedrooms);
+    const matchesBedrooms =
+      filters.bedrooms === "any" ||
+      property.bedrooms === Number(filters.bedrooms);
 
-    const matchesBathrooms = filters.bathrooms === "any" || 
-                            property.bathrooms === Number(filters.bathrooms);
+    const matchesBathrooms =
+      filters.bathrooms === "any" ||
+      property.bathrooms === Number(filters.bathrooms);
 
-    return matchesSearch && matchesPrice && matchesType && 
-           matchesBedrooms && matchesBathrooms;
+    return (
+      matchesSearch &&
+      matchesPrice &&
+      matchesType &&
+      matchesBedrooms &&
+      matchesBathrooms
+    );
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-10">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <PropertyFilters 
-            onFilterChange={setFilters}
-          />
+          <PropertyFilters onFilterChange={setFilters} />
         </div>
         <div className="lg:col-span-3">
-          <PropertySearch 
+          <PropertySearch
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {filteredProperties?.map((property: Property) => {
+              if (filteredProperties.length <= 0) {
+                return <div>Error loading properties</div>;
+              }
               const { imageUrls } = parseImagesData(property.imagesId);
               console.log("Property images:", imageUrls);
-              
+
               return (
-                <PropertyCard 
+                <PropertyCard
                   key={property.id}
                   id={property.id}
                   title={property.title}
                   location={{
                     city: property.city,
                     state: property.state,
-                    country: property.country
+                    country: property.country,
                   }}
                   price={property.price}
                   askingPrice={property.asking_price}

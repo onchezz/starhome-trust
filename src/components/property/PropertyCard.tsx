@@ -20,7 +20,7 @@ export interface PropertyCardProps {
   showUpdateButton?: boolean;
 }
 
-export const PropertyCard = ({ 
+export const PropertyCard = ({
   id,
   title,
   location,
@@ -31,20 +31,20 @@ export const PropertyCard = ({
   imagesUrl,
   propertyType,
   status,
-  showUpdateButton 
+  showUpdateButton,
 }: PropertyCardProps) => {
   console.log("PropertyCard imagesUrl:", imagesUrl);
-  
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={imagesUrl?.[0] || '/placeholder.svg'} 
+        <img
+          src={imagesUrl?.[0] || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = '/placeholder.svg';
+            target.src = "/placeholder.svg";
           }}
         />
         <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
@@ -56,16 +56,34 @@ export const PropertyCard = ({
         <p className="text-gray-600 text-sm mb-2">
           {`${location.city}, ${location.state}, ${location.country}`}
         </p>
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 ">
           <div>
-            <p className="text-lg font-bold text-primary">${price.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Asking: ${askingPrice.toLocaleString()}</p>
+            <p className="text-lg font-bold text-primary grid-cols-1">
+              <p className="text-sm text-gray-500">Asking:</p>$
+              {price.toLocaleString()}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              Annual growth : {annualGrowthRate}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-sm font-medium">{propertyType}</p>
-            <p className="text-xs text-gray-500">{interestedClients} interested</p>
+            <p className="text-xs text-gray-500">
+              {interestedClients} interested
+            </p>
           </div>
         </div>
+        {showUpdateButton ? (
+          <Link to={`/properties/${id}/edit`}>
+            <Button className="w-full" variant="outline">
+              update
+            </Button>
+          </Link>
+        ) : (
+          <div></div>
+        )}
+
         <Link to={`/properties/${id}`}>
           <Button className="w-full" variant="outline">
             View More

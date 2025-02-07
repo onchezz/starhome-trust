@@ -15,6 +15,7 @@ pub trait IInvestmentTrait<TContractState> {
     // Core investment functions
     fn invest(ref self: TContractState, investment_id: felt252, amount: u256) -> bool;
     fn withdraw(ref self: TContractState, investment_id: felt252, amount: u256) -> bool;
+   
 
     // Investment management functions
     fn set_lock_period(ref self: TContractState, investment_id: felt252, duration: u256);

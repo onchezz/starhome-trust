@@ -1,3 +1,4 @@
+import { error } from "console";
 import { BigNumberish, num, shortString } from "starknet";
 export const propertyTypes = [
   "House",
@@ -129,13 +130,8 @@ export class PropertyConverter {
         };
     }
 
-    static convertToStarknetProperty(property: Partial<Property>, address?: string) {
-        const convertPrice = (price: number | undefined): bigint => {
-            if (typeof price !== 'number') {
-                return BigInt(0);
-            }
-            return BigInt(Math.floor(price * Math.pow(10, 6)));
-        };
+    static convertToStarknetProperty(property: Partial<Property>,) {
+        
 
         return {
             id: property.id || "",
@@ -147,8 +143,8 @@ export class PropertyConverter {
             country: property.country || "",
             latitude: property.latitude || "",
             longitude: property.longitude || "",
-            price: convertPrice(property.price),
-            asking_price: convertPrice(property.asking_price),
+            price: Number(property.price) *Math.pow(10, 6),
+            asking_price: Number(property.asking_price)*Math.pow(10, 6),
             currency: property.currency || "USD",
             area: property.area || 0,
             bedrooms: property.bedrooms || 0,
@@ -157,11 +153,11 @@ export class PropertyConverter {
             property_type: property.propertyType || "",
             status: property.status || "",
             interested_clients: property.interestedClients || 0,
-            annual_growth_rate: property.annualGrowthRate || 0,
-            features_id: "00",
+            annual_growth_rate: property.annualGrowthRate.toString() || 0,
+            features_id: property.featuresId,
             images_id: property.imagesId?.toString() || "",
             video_tour: property.videoId || "none",
-            agent_id: address || "",
+            agent_id: property.agentId || "",
             date_listed: Math.floor(Date.now() / 1000),
             has_garden: property.hasGarden || false,
             has_swimming_pool: property.hasSwimmingPool || false,

@@ -47,7 +47,7 @@ export const InvestmentListingCard = ({
     } as InvestmentAsset;
 
     // Navigate to AddInvestment with state
-    navigate(`/investment/:${id}/edit`, {
+    navigate(`/investment/${id}/edit`, {
       state: {
         mode: "edit",
         investmentData,

@@ -12,14 +12,17 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
   formData,
   handleInputChange,
 }) => {
-  const marketAnalysis = formData.market_analysis ? JSON.parse(formData.market_analysis) : {};
+  console.log(`received market analyses: ${formData.market_analysis}`);
+  const marketAnalysis = formData.market_analysis
+    ? JSON.parse(formData.market_analysis)
+    : {};
 
   const handleMarketAnalysisChange = (field: string, value: string) => {
     const updatedAnalysis = {
       ...marketAnalysis,
-      [field]: value
+      [field]: value,
     };
-    handleInputChange('market_analysis', JSON.stringify(updatedAnalysis));
+    handleInputChange("market_analysis", JSON.stringify(updatedAnalysis));
   };
 
   return (
@@ -60,7 +63,10 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({
             required
             value={marketAnalysis.comparable_properties || ""}
             onChange={(e) =>
-              handleMarketAnalysisChange("comparable_properties", e.target.value)
+              handleMarketAnalysisChange(
+                "comparable_properties",
+                e.target.value
+              )
             }
             placeholder="Similar properties in the area"
             className="dark:bg-gray-700 dark:text-white dark:border-gray-600"

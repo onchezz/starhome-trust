@@ -13,6 +13,19 @@ export interface User {
   timestamp: number,
 
 }
+ export const emptyUser:User = {
+    id: "0x0",
+    name: "0",
+    phone: "0",
+    email: "0",
+    profile_image: "",
+    is_verified: false,
+    is_authorized: false,
+    is_agent: false,
+    is_investor: false,
+    timestamp: 0,
+  };
+
 
 export interface RegisterAgentResponse {
   transaction_hash: string;

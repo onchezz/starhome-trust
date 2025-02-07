@@ -40,6 +40,7 @@ export const useInvestment = (tokenAddress?: string) => {
             ]);
 
             console.log("Contract investment response:", response.status);
+            console.log("Contract investment response:", response.status.isSuccess);
 
             if (response?.status?.isSuccess) {
               toast.success("Investment successful!");

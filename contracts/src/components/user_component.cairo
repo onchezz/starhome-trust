@@ -1,6 +1,6 @@
 #[starknet::component]
 pub mod UsersComponent {
-    use starhomes::models::user_models::{Investor, Agent, User};
+    use starhomes::models::user_models::{Investor, Agent, User, UserVisitRequest};
     use starhomes::messages::success::*;
     use starhomes::interfaces::user_interface::IUsersComponentTrait;
     // User_interface::IUsersComponentTrait;
@@ -9,8 +9,8 @@ pub mod UsersComponent {
     // use core::num::traits::Zero;
     use starknet::{ContractAddress, get_caller_address};
     use starknet::storage::{
-        Map, StorageMapWriteAccess, StoragePointerReadAccess, StoragePointerWriteAccess, Vec,
-        VecTrait, MutableVecTrait,
+        Map, StorageMapWriteAccess, StoragePointerReadAccess,
+        StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait,
     };
     use starhomes::messages::errors::*;
 
@@ -22,6 +22,7 @@ pub mod UsersComponent {
         investor_ids: Vec<ContractAddress>,
         agents_ids: Vec<ContractAddress>,
         agents: Map::<ContractAddress, Agent>,
+        visit_request: Map<felt252, Vec<UserVisitRequest>>,
     }
 
 
@@ -29,8 +30,6 @@ pub mod UsersComponent {
     #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
     pub enum Event {
         Registered: UserRegistered,
-        // Withdrawal: Withdrawal,
-    // RewardsFinished: RewardsFinished,
     }
 
     #[embeddable_as(UsersComponentImpl)]
@@ -148,6 +147,30 @@ pub mod UsersComponent {
     pub impl UsersPrivateFunctions<
         TContractState, +HasComponent<TContractState>,
     > of UsersPrivateFunctionsTrait<TContractState> {
+        fn _send_visit_request(
+            ref self: ComponentState<TContractState>, visit_request: UserVisitRequest,
+        ) {
+            let mut requests = self.visit_request.entry(visit_request.property_id);
+            requests.append().write(visit_request)
+        }
+
+        fn _read_visit_requests(
+            self: @ComponentState<TContractState>, property_id: felt252,
+        ) -> Array<UserVisitRequest> {
+            let mut result = ArrayTrait::new();
+            let vec = self.visit_request.entry(property_id);
+            let len = vec.len();
+            let mut i = 0;
+            loop {
+                if i == len {
+                    break;
+                }
+                result.append(vec.at(i).read());
+                i += 1;
+            };
+            result
+        }
+
         fn is_authorized_investment_lister(
             self: @ComponentState<TContractState>, address: ContractAddress,
         ) -> bool {

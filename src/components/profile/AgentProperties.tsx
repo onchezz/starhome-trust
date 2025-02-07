@@ -3,6 +3,7 @@ import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesR
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { parseImagesData } from "@/utils/imageUtils";
 
 export const AgentProperties = () => {
   const { address } = useAccount();
@@ -63,26 +64,29 @@ export const AgentProperties = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              id={property.id}
-              title={property.title}
-              location={{
-                city: property.city,
-                state: property.state,
-                country: property.country,
-              }}
-              price={property.price}
-              askingPrice={property.asking_price}
-              interestedClients={property.interestedClients}
-              annualGrowthRate={property.annualGrowthRate}
-              imagesUrl={Array.isArray(property.imagesId) ? property.imagesId : [property.imagesId]}
-              propertyType={property.propertyType}
-              status={property.status}
-              showUpdateButton={true}
-            />
-          ))}
+          {properties.map((property) => {
+            const { imageUrls } = parseImagesData(property.imagesId);
+            return (
+              <PropertyCard
+                key={property.id}
+                id={property.id}
+                title={property.title}
+                location={{
+                  city: property.city,
+                  state: property.state,
+                  country: property.country,
+                }}
+                price={property.price}
+                askingPrice={property.asking_price}
+                interestedClients={property.interestedClients}
+                annualGrowthRate={property.annualGrowthRate}
+                imagesUrl={imageUrls}
+                propertyType={property.propertyType}
+                status={property.status}
+                showUpdateButton={true}
+              />
+            );
+          })}
         </div>
       </CardContent>
     </Card>

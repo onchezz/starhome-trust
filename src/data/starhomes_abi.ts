@@ -549,6 +549,28 @@ export const starhomes_abi =[
       },
       {
         "type": "function",
+        "name": "get_investment_properties_len",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_listed_properties_len",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
         "name": "get_investment_properties",
         "inputs": [],
         "outputs": [

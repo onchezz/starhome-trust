@@ -13,6 +13,7 @@ import ImageUploader from "@/components/property/form/ImageUploader";
 import { parseImagesData } from "@/utils/imageUtils";
 import { useAccount } from "@starknet-react/core";
 import { tokenOptions } from "@/utils/constants";
+import { findMatchingToken } from "@/utils/tokenMatching";
 
 const EditProperty = () => {
   const { id } = useParams();
@@ -27,8 +28,8 @@ const EditProperty = () => {
   const [formData, setFormData] = useState<Partial<Property>>({});
 
   // Find the property being edited - memoized to prevent unnecessary recalculations
-  const property = React.useMemo(() => 
-    properties?.find(p => p.id === id),
+  const property = React.useMemo(
+    () => properties?.find((p) => p.id === id),
     [properties, id]
   );
 
@@ -38,10 +39,10 @@ const EditProperty = () => {
       const filePromises = urls.map(async (url) => {
         const response = await fetch(url);
         const blob = await response.blob();
-        const fileName = url.split('/').pop() || 'image.jpg';
+        const fileName = url.split("/").pop() || "image.jpg";
         return new File([blob], fileName, { type: blob.type });
       });
-      
+
       const files = await Promise.all(filePromises);
       console.log("[EditProperty] Converted URLs to Files:", files);
       return files;
@@ -56,72 +57,87 @@ const EditProperty = () => {
     if (!property || formData.id) return;
 
     const initializeProperty = async () => {
-      console.log("[EditProperty] Setting initial form data with property:", property);
-      
-      // Find the matching token option based on the saved asset token address
-      const matchingToken = tokenOptions.find(token => 
-        token.address.toLowerCase() === property.assetToken.toLowerCase()
+      console.log(
+        "[EditProperty] Setting initial form data with property:",
+        property
       );
-      
+
+      // Find the matching token option based on the saved asset token address
+      const matchingToken = findMatchingToken(property.assetToken);
+      //  tokenOptions.find(
+      //   (token) => token.address.trimEnd === property.assetToken.trimEnd
+      // );
+
       console.log("[EditProperty] Matching token found:", matchingToken);
 
       // Set form data with the matched token
       setFormData({
         ...property,
-        assetToken: matchingToken?.address || "" // Use the matched token address or empty string as fallback
+        agentId: address,
+        assetToken: matchingToken?.address || "", // Use the matched token address or empty string as fallback
       });
-      
+
       if (property.imagesId) {
-        console.log("[EditProperty] Processing images from imagesId:", property.imagesId);
+        console.log(
+          "[EditProperty] Processing images from imagesId:",
+          property.imagesId
+        );
         const { imageUrls } = parseImagesData(property.imagesId);
         console.log("[EditProperty] Generated image URLs:", imageUrls);
-        
+
         const files = await convertUrlsToFiles(imageUrls);
         setSelectedFiles(files);
       }
     };
 
     initializeProperty();
-  }, [property, formData.id, convertUrlsToFiles]);
+  }, [property, formData.id, convertUrlsToFiles, address]);
 
   const handleInputChange = useCallback((field: keyof Property, value: any) => {
     console.log("[EditProperty] Updating field:", field, "with value:", value);
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
-  const handleLocationSelect = useCallback((location: {
-    latitude: string;
-    longitude: string;
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-  }) => {
-    setFormData(prev => ({
-      ...prev,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      locationAddress: location.address,
-      city: location.city,
-      state: location.state,
-      country: location.country,
-    }));
-  }, []);
+  const handleLocationSelect = useCallback(
+    (location: {
+      latitude: string;
+      longitude: string;
+      address: string;
+      city: string;
+      state: string;
+      country: string;
+    }) => {
+      setFormData((prev) => ({
+        ...prev,
+       
+        latitude: location.latitude,
+        longitude: location.longitude,
+        locationAddress: location.address,
+        city: location.city,
+        state: location.state,
+        country: location.country,
+      }));
+    },
+    []
+  );
 
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const newFiles = Array.from(event.target.files);
-      console.log("[EditProperty] New files selected:", newFiles);
-      setSelectedFiles(prev => [...prev, ...newFiles]);
-    }
-  }, []);
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files) {
+        const newFiles = Array.from(event.target.files);
+        console.log("[EditProperty] New files selected:", newFiles);
+        setSelectedFiles((prev) => [...prev, ...newFiles]);
+      }
+    },
+    []
+  );
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files) {
       const droppedFiles = Array.from(e.dataTransfer.files);
       console.log("[EditProperty] Files dropped:", droppedFiles);
-      setSelectedFiles(prev => [...prev, ...droppedFiles]);
+      setSelectedFiles((prev) => [...prev, ...droppedFiles]);
     }
   }, []);
 
@@ -145,23 +161,29 @@ const EditProperty = () => {
   return (
     <div className="container mx-auto py-8">
       <form onSubmit={handleSubmit} className="space-y-8">
-        <BasicInformation 
-          formData={formData} 
+        <BasicInformation
+          formData={formData}
           handleInputChange={handleInputChange}
           address={address}
         />
-        
+
         <PropertyLocation
           formData={formData}
           handleLocationSelect={handleLocationSelect}
           isLocationLoading={isLocationLoading}
           handleInputChange={handleInputChange}
         />
-        
-        <PricingInformation formData={formData} handleInputChange={handleInputChange} />
-        
-        <PropertyFeatures formData={formData} handleInputChange={handleInputChange} />
-        
+
+        <PricingInformation
+          formData={formData}
+          handleInputChange={handleInputChange}
+        />
+
+        <PropertyFeatures
+          formData={formData}
+          handleInputChange={handleInputChange}
+        />
+
         <ImageUploader
           selectedFiles={selectedFiles}
           isUploading={isUploading}
@@ -171,12 +193,14 @@ const EditProperty = () => {
           setSelectedFiles={setSelectedFiles}
         />
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={contractStatus.isPending}
           className="w-full"
         >
-          {contractStatus.isPending ? "Updating Property..." : "Update Property"}
+          {contractStatus.isPending
+            ? "Updating Property..."
+            : "Update Property"}
         </Button>
       </form>
     </div>

@@ -12,28 +12,76 @@ import { UserInvestments } from "@/components/profile/UserInvestments";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { ProfileShimmer } from "@/components/profile/ProfileShimmer";
 import { AgentProperties } from "@/components/profile/AgentProperties";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { emptyUser } from "@/types/user";
+import { UserRegistrationModal } from "@/components/profile/UserRegistrationModal";
+import { UserX } from "lucide-react";
 
 const Profile = () => {
   const { theme } = useTheme();
   const { address } = useAccount();
   const { balances, isLoading: isLoadingBal } = useTokenBalances();
-  const { user, isLoading: isLoadingUser } = useUserReadByAddress(address || "");
+  const { user, isLoading: isLoadingUser } = useUserReadByAddress(
+    address || ""
+  );
   const [activeTab, setActiveTab] = useState("profile");
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  console.log(`current user ${JSON.stringify(user)}`);
   if (isLoadingUser || isRefreshing) {
     return <ProfileShimmer />;
   }
 
+   if (JSON.stringify(user) === JSON.stringify(emptyUser)) {
+     return (
+       <div className="min-h-screen flex items-center justify-center p-4">
+         <Card
+           className={cn(
+             "max-w-md w-full backdrop-blur-xl border transition-all duration-300",
+             theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+           )}
+         >
+           <CardHeader className="text-center">
+             <UserX className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+             <CardTitle className="text-xl">Not Registered</CardTitle>
+           </CardHeader>
+           <CardContent className="text-center space-y-4">
+             <p className="text-gray-500">
+               You haven't registered your profile yet. Create an account to
+               access all features.
+             </p>
+             <UserRegistrationModal />
+           </CardContent>
+         </Card>
+       </div>
+     );
+   }
+
+
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
+        // if (JSON.stringify(user) === JSON.stringify(emptyUser)) {
+        //   return (
+        //     <Card
+        //       className={cn(
+        //         "backdrop-blur-xl border transition-all duration-300 w-full",
+        //         theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+        //       )}
+        //     >
+        //       <CardContent className="p-6 space-y-6">
+        //         {/* <ProfileHeader user={user} /> */}
+        //         <ProfileActions user={user} isLoading={isLoadingUser} />
+        //       </CardContent>
+        //     </Card>
+        //   );
+        // }
         return (
-          <Card className={cn(
-            "backdrop-blur-xl border transition-all duration-300 w-full",
-            theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
-          )}>
+          <Card
+            className={cn(
+              "backdrop-blur-xl border transition-all duration-300 w-full",
+              theme === "dark" ? "bg-black/40 border-white/10" : "bg-white"
+            )}
+          >
             <CardContent className="p-6 space-y-6">
               <ProfileHeader user={user} />
               <ProfileActions user={user} isLoading={isLoadingUser} />
@@ -78,9 +126,9 @@ const Profile = () => {
     >
       <div className="container mx-auto py-6">
         <div className="flex gap-6">
-          <ProfileSidebar 
-            activeTab={activeTab} 
-            onTabChange={setActiveTab} 
+          <ProfileSidebar
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
             isAgent={user?.is_agent}
           />
           <motion.div

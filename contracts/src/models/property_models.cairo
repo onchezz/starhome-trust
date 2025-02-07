@@ -44,9 +44,9 @@ pub struct Property {
     pub status: felt252,
     pub interested_clients: u64,
     pub annual_growth_rate: felt252,
-    pub features_id: felt252, // Array of features
+    pub features_id: ByteArray,
     pub images_id: ByteArray, // Array of IPFS CIDs for images
-    pub video_tour: felt252,
+    pub video_tour: ByteArray,
     pub agent_id: ContractAddress,
     pub date_listed: u64, // Date as a string (e.g., "2024-02-15")
     pub has_garden: bool,
@@ -54,14 +54,5 @@ pub struct Property {
     pub pet_friendly: bool,
     pub wheelchair_accessible: bool,
     pub asset_token: ContractAddress,
-}
-
-
-#[derive(Copy, Drop, Serde, starknet::Store)]
-pub struct Investment {
-    pub property_id: felt252,
-    pub investor: ContractAddress,
-    pub shares: u256,
-    pub timestamp: u64,
 }
 

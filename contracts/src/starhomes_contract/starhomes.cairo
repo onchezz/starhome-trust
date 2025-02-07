@@ -1,10 +1,9 @@
 #[starknet::contract]
 pub mod StarhomesContract {
-    use starhomes::components::staking_component::AssetStakingComponent;
     use starhomes::components::property_component::PropertyComponent;
     use starhomes::components::user_component::UsersComponent;
     use starhomes::components::blogs_component::BlogComponent;
-    // use starhomes::components::property_investment_component::PropertyInvestmentComponent;
+    use starhomes::models::user_models::UserVisitRequest;
     use starhomes::components::investment_component::InvestmentComponent;
     use starhomes::interface::starhomes_interface::*;
     use core::option::Option;
@@ -14,9 +13,8 @@ pub mod StarhomesContract {
     use starknet::storage::StoragePointerReadAccess;
     use starknet::storage::StoragePointerWriteAccess;
     use starhomes::interfaces::iStarhomes::IStarhomesContract;
-    use starknet::ContractAddress;
+    use starknet::{ContractAddress, get_caller_address};
     use starknet::class_hash::ClassHash;
-
     use core::array::ArrayTrait;
     use core::traits::Into;
     use openzeppelin::access::ownable::OwnableComponent;
@@ -25,7 +23,6 @@ pub mod StarhomesContract {
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
-    component!(path: AssetStakingComponent, storage: stake_to_property, event: AssetStakingEvent);
     component!(path: UsersComponent, storage: users_data, event: UsersEvent);
     component!(path: PropertyComponent, storage: properties, event: PropertyComponentEvent);
     component!(path: BlogComponent, storage: blogs, event: BlogsComponentEvent);
@@ -36,8 +33,6 @@ pub mod StarhomesContract {
         #[substorage(v0)]
         properties: PropertyComponent::Storage,
         #[substorage(v0)]
-        stake_to_property: AssetStakingComponent::Storage,
-        #[substorage(v0)]
         users_data: UsersComponent::Storage,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
@@ -45,11 +40,10 @@ pub mod StarhomesContract {
         upgradeable: UpgradeableComponent::Storage,
         #[substorage(v0)]
         blogs: BlogComponent::Storage,
-        // #[substorage(v0)]
-        // property_investments: PropertyInvestmentComponent::Storage,
         #[substorage(v0)]
         investments: InvestmentComponent::Storage,
         contract_owner: ContractAddress,
+        update: u256,
         version: u64,
     }
 
@@ -61,22 +55,14 @@ pub mod StarhomesContract {
         #[flat]
         UpgradeableEvent: UpgradeableComponent::Event,
         #[flat]
-        AssetStakingEvent: AssetStakingComponent::Event,
-        #[flat]
         UsersEvent: UsersComponent::Event,
         #[flat]
         PropertyComponentEvent: PropertyComponent::Event,
         #[flat]
         BlogsComponentEvent: BlogComponent::Event,
         #[flat]
-        // PropertyInvestmentEvent: PropertyInvestmentComponent::Event,
-        #[flat]
         InvestmentEvent: InvestmentComponent::Event,
     }
-
-    // Component Implementations
-    impl AssetStakingComponentImpl = AssetStakingComponent::StakeAssetImpl<ContractState>;
-    impl StakingPrivateFunctions = AssetStakingComponent::StakingPrivateFunctions<ContractState>;
 
     impl PropertyComponentImpl = PropertyComponent::PropertyComponentImpl<ContractState>;
     impl PropertyPrivateFunctions = PropertyComponent::PropertyFunctions<ContractState>;
@@ -114,14 +100,10 @@ pub mod StarhomesContract {
             let isRegistered = self.users_data.is_agent_registered(agent_id);
             assert(isRegistered, Errors::AGENT_NOT_REGISTERED);
             self.properties.list_property(property)
+            
         }
 
         fn list_investment_property(ref self: ContractState, investment_asset: InvestmentAsset) {
-            self
-                .stake_to_property
-                .initialize_asset_staking_token(
-                    investment_asset.investment_token, investment_asset.id,
-                );
             self
                 .investments
                 .initialize_investment(
@@ -134,6 +116,20 @@ pub mod StarhomesContract {
                 );
 
             self.properties.list_investment_property(investment_asset);
+        }
+        fn send_visit_request(ref self: ContractState, visit_request: UserVisitRequest) {
+            assert(
+                self.users_data.is_user_registered(visit_request.user_id.clone()),
+                Errors::USER_NOT_REGISTERED,
+            );
+            self.users_data._send_visit_request(visit_request);
+        }
+        fn read_visit_requests(
+            ref self: ContractState, property_id: felt252,
+        ) -> Array<UserVisitRequest> {
+            let caller = get_caller_address();
+            assert(self.users_data.is_user_registered(caller), Errors::USER_NOT_REGISTERED);
+            self.users_data._read_visit_requests(property_id)
         }
 
         fn edit_property(
@@ -257,6 +253,15 @@ pub mod StarhomesContract {
 
         fn get_investment(self: @ContractState, investment_id: felt252) -> InvestmentAsset {
             self.properties.get_investment_by_id(investment_id)
+        }
+
+        fn read_investor_returns(
+            self: @ContractState, investment_id: felt252, investor: ContractAddress,
+        ) -> u256 {
+            self.investments.read_investor_returns(investment_id, investor)
+        }
+        fn read_update(self: @ContractState) -> u256 {
+            self.update.read()
         }
 
         fn version(self: @ContractState) -> u64 {
