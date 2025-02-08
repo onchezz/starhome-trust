@@ -80,6 +80,7 @@ export interface InvestmentAsset {
   images: string;
   investment_token: string;
   min_investment_amount: number;
+  investors:number,
 }
 
 export const InvestmentAssetConverter = {
@@ -125,6 +126,7 @@ export const InvestmentAssetConverter = {
         images: formData.images,
         investment_token: formData.investment_token,
         min_investment_amount: formData.min_investment_amount,
+        investors:formData.investors,
       };
     },
     fromStarknetProperty: (starknetProperty: any): InvestmentAsset => {
@@ -155,7 +157,7 @@ export const InvestmentAssetConverter = {
                 expected_roi: InvestmentAssetConverter.feltToString(starknetProperty.expected_roi),
                 rental_income: Number(starknetProperty.rental_income?.value || starknetProperty.rental_income || 0)/ Math.pow(10, 6),
                 maintenance_costs: Number(starknetProperty.maintenance_costs?.value || starknetProperty.maintenance_costs || 0)/ Math.pow(10, 6),
-                tax_benefits: InvestmentAssetConverter.feltToString(starknetProperty.tax_benefits),
+                tax_benefits: starknetProperty.tax_benefits,
                 highlights: starknetProperty.highlights || '',
                 market_analysis: starknetProperty.market_analysis || '',
                 risk_factors: starknetProperty.risk_factors || '',
@@ -163,7 +165,10 @@ export const InvestmentAssetConverter = {
                 additional_features: starknetProperty.additional_features || '',
                 images: starknetProperty.images || '',
                 investment_token: InvestmentAssetConverter.addressToString(starknetProperty.investment_token) , 
-                min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)/ Math.pow(10, 6)
+                min_investment_amount: Number(starknetProperty.min_investment_amount?.value || starknetProperty.min_investment_amount || 0)/ Math.pow(10, 6),
+                investors:Number(starknetProperty.investors?.value||starknetProperty.investors)
+
+
             };
         } catch (error) {
             console.error("Error converting Starknet property:", error, starknetProperty);
@@ -197,15 +202,16 @@ export const InvestmentAssetConverter = {
             expected_roi: formData.expected_roi.toString(),
             rental_income: formData.rental_income * Math.pow(10, 6),
             maintenance_costs: formData.maintenance_costs * Math.pow(10, 6),
-            tax_benefits: formData.tax_benefits || "none yet",
+            tax_benefits: formData.tax_benefits,
             highlights: formData.highlights,
             market_analysis: formData.market_analysis,
-            risk_factors: formData.risk_factors || "no risk factors",
+            risk_factors: formData.risk_factors,
             legal_detail: formData.legal_detail,
             additional_features: formData.additional_features,
             images: formData.images,
             investment_token: formData.investment_token,
-            min_investment_amount: formData.min_investment_amount * Math.pow(10, 6)
+            min_investment_amount: formData.min_investment_amount * Math.pow(10, 6),
+            investors:formData.investors||0,
         };
     },
 
@@ -214,3 +220,43 @@ export const InvestmentAssetConverter = {
         return InvestmentAssetConverter.fromStarknetProperty(starknetProperty);
     }
 };
+
+
+// const completeInvestmentData: InvestmentAsset = {
+//   id: id,
+//   name: formData.name,
+//   description: formData.description,
+//   is_active: formData.is_active,
+//   location: {
+//     address: formData.location.address,
+//     city: formData.location.city,
+//     state: formData.location.state,
+//     country: formData.location.country,
+//     latitude: formData.location.latitude,
+//     longitude: formData.location.longitude,
+//   },
+//   size: formData.size,
+//   investor_id: formData.investor_id,
+//   owner: formData.owner,
+//   construction_status: formData.construction_status,
+//   asset_value: formData.asset_value,
+//   available_staking_amount: formData.available_staking_amount,
+//   investment_type: formData.investment_type,
+//   construction_year: formData.construction_year,
+//   property_price: formData.asset_value,
+//   expected_roi: formData.expected_roi,
+//   rental_income: formData.rental_income,
+//   maintenance_costs: formData.maintenance_costs,
+//   tax_benefits: formData.tax_benefits,
+//   highlights: formData.highlights,
+//   market_analysis: formData.market_analysis,
+//   risk_factors: formData.risk_factors,
+//   legal_detail: formData.legal_detail,
+//   additional_features: formData.additional_features,
+//   images: formData.images,
+//   investment_token: formData.investment_token,
+//   min_investment_amount: formData.min_investment_amount,
+
+//   // ...(formData as InvestmentAsset),
+//   // id: id, // Ensure id is included
+// };

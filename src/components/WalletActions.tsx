@@ -27,10 +27,25 @@ const WalletActions = () => {
   const [swapAmount, setSwapAmount] = useState("");
   const [swapToken, setSwapToken] = useState("ETH");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const formatBalance = (balance: any) => {
+  //   if (!balance) return "0.0000";
+  //   return Number(balance.formatted).toFixed(4);
+  // };
   const formatBalance = (balance: any) => {
     if (!balance) return "0.0000";
-    return Number(balance.formatted).toFixed(4);
+
+    // Convert to number and fix to 4 decimal places
+    const numberValue = Number(balance.formatted);
+    const withDecimals = numberValue.toFixed(4);
+
+    // Split number into integer and decimal parts
+    const [integerPart, decimalPart] = withDecimals.split(".");
+
+    // Add thousand separators to integer part
+    const formattedInteger = parseInt(integerPart).toLocaleString("en-US");
+
+    // Combine back with decimal part
+    return `${formattedInteger}.${decimalPart}`;
   };
 
   const handleSend = () => {
@@ -74,14 +89,22 @@ const WalletActions = () => {
     <div className="flex justify-around gap-1 sm:gap-2">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 sm:h-10 sm:w-10"
+          >
             <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">Wallet Balances</DialogTitle>
-            <DialogDescription className="text-sm sm:text-base">Your current token balances</DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">
+              Wallet Balances
+            </DialogTitle>
+            <DialogDescription className="text-sm sm:text-base">
+              Your current token balances
+            </DialogDescription>
           </DialogHeader>
           <Card className="p-3 sm:p-4">
             <div className="space-y-2">
@@ -100,6 +123,11 @@ const WalletActions = () => {
                 value={formatBalance(balances.STRK)}
                 isLoading={isLoading}
               />
+              <BalanceItem
+                label="USDC"
+                value={formatBalance(balances.USDC)}
+                isLoading={isLoading}
+              />
             </div>
           </Card>
         </DialogContent>
@@ -107,13 +135,19 @@ const WalletActions = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 sm:h-10 sm:w-10"
+          >
             <Send className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">Send Tokens</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
+              Send Tokens
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -135,7 +169,10 @@ const WalletActions = () => {
                 className="text-sm sm:text-base"
               />
             </div>
-            <Button onClick={handleSend} className="w-full text-sm sm:text-base">
+            <Button
+              onClick={handleSend}
+              className="w-full text-sm sm:text-base"
+            >
               Send
             </Button>
           </div>
@@ -144,13 +181,19 @@ const WalletActions = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 sm:h-10 sm:w-10"
+          >
             <QrCode className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">Wallet Address QR Code</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
+              Wallet Address QR Code
+            </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center p-3 sm:p-4">
             <QRCodeSVG value={address} size={200} />
@@ -163,13 +206,19 @@ const WalletActions = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 sm:h-10 sm:w-10"
+          >
             <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">Swap Tokens</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
+              Swap Tokens
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -194,7 +243,10 @@ const WalletActions = () => {
                 <option value="USDC">USDC</option>
               </select>
             </div>
-            <Button onClick={handleSwap} className="w-full text-sm sm:text-base">
+            <Button
+              onClick={handleSwap}
+              className="w-full text-sm sm:text-base"
+            >
               Swap
             </Button>
           </div>

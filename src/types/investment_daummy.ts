@@ -82,19 +82,21 @@ import { InvestmentAsset } from "./investment";
       //   min_investment_amount: investment.min_investment_amount || 0,
       // };
 
-export const dummyInvestment:InvestmentAsset = {
+const dummyInvestment:InvestmentAsset = {
   id: "4354bf6d4175404495df",
-  name: "Skyline Luxury Residences",
-  description: "Premium residential complex featuring modern amenities and sustainable design",
+  name: 
+  "Skyline Luxury Residences",
+  description:
+   "Premium residential complex featuring modern amenities and sustainable design",
   is_active: true,
-  location:  {
-    address:'address',
-    city:"city",
+  location: {
+    address: 'address',
+    city: "city",
     state: 'state',
     country: 'country',
-     latitude: 'latitude',
-     longitude: 'longitude'
-              },
+    latitude: 'latitude',
+    longitude: 'longitude'
+  },
   size: 120000,
   investor_id: '0x07b80d0f8512b5c4c052999e7d333020c91dbc40dff64933c8a5914c8c4c2e8c',
   owner: '0x07b80d0f8512b5c4c052999e7d333020c91dbc40dff64933c8a5914c8c4c2e8c',
@@ -108,15 +110,20 @@ export const dummyInvestment:InvestmentAsset = {
   rental_income: 800000,
   maintenance_costs: 120000,
   tax_benefits: "20.0",
-  highlights: "LEED Platinum certified building, Rooftop garden with panoramic views, Smart home integration throughout, 24/7 concierge and security, Private wellness center",
-  market_analysis: "8.5% annual market growth rate in the area, 95.5% average occupancy rate in luxury segment, Growing young professional demographic, Limited luxury inventory in immediate vicinity, Planned tech hub development nearby",
-  risk_factors: "Market volatility, Interest rate fluctuations, Local real estate policy changes",
-  legal_detail: "Zoned for mixed-use commercial C-2, All construction permits obtained, Compliant with local building codes, Single-entity LLC ownership structure, Standard residential usage restrictions",
-  additional_features: "EV charging stations, Fitness center, Co-working space, Wine cellar",
+  highlights: 
+  "LEED Platinum certified building, Rooftop garden with panoramic views, Smart home integration throughout, 24/7 concierge and security, Private wellness center",
+  market_analysis:
+   "8.5% annual market growth rate in the area, 95.5% average occupancy rate in luxury segment, Growing young professional demographic, Limited luxury inventory in immediate vicinity, Planned tech hub development nearby",
+  risk_factors: 
+  "Market volatility, Interest rate fluctuations, Local real estate policy changes",
+  legal_detail: 
+  "Zoned for mixed-use commercial C-2, All construction permits obtained, Compliant with local building codes, Single-entity LLC ownership structure, Standard residential usage restrictions",
+  additional_features: 
+  "EV charging stations, Fitness center, Co-working space, Wine cellar",
   images: "https://gateway.pinata.cloud/ipfs/bafybeiczuk7ze63d3r3vc5mcatxnx5lj53i6rupnw55ohdf5pmksj5ygdm",
   investment_token: "0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080",
   min_investment_amount: 1000,
- 
+  investors: 0
 };
 
 // Create an array of multiple investments for testing

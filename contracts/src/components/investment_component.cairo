@@ -321,6 +321,7 @@ pub mod InvestmentComponent {
         ) -> bool {
             self.initialized_investments.read(investment_id)
         }
+       
 
         fn _calculate_returns(
             self: @ComponentState<TContractState>,

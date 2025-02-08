@@ -3,89 +3,6 @@
 // import { Button } from "@/components/ui/button";
 // import { Card, CardContent } from "@/components/ui/card";
 // import { CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
-
-// const TransactionWidget = ({ hash, onReset }) => {
-//   const { data, error, status, isError, isPending, isSuccess, isFetching } =
-//     useTransactionReceipt({
-//       hash,
-//       watch: true,
-//       enabled: true,
-//     });
-
-//   if (!hash) {
-//     return (
-//       <Card className="w-full">
-//         <CardContent className="py-3">
-//           <div className="flex items-center justify-center">
-//             <span className="text-sm text-gray-500">
-//               Waiting for transaction...
-//             </span>
-//           </div>
-//         </CardContent>
-//       </Card>
-//     );
-//   }
-
-//   const getStatusIcon = () => {
-//     if (isError) return <XCircle className="w-5 h-5 text-red-500" />;
-//     if (isSuccess) return <CheckCircle className="w-5 h-5 text-green-500" />;
-//     if (isPending || isFetching)
-//       return <Clock className="w-5 h-5 text-blue-500 animate-spin" />;
-//     return <AlertCircle className="w-5 h-5 text-gray-500" />;
-//   };
-
-//   const getStatusColor = () => {
-//     if (isError) return "text-red-500";
-//     if (isSuccess) return "text-green-500";
-//     if (isPending || isFetching) return "text-blue-500";
-//     return "text-gray-500";
-//   };
-
-//   const handleReset = () => {
-//     // reset();
-//     console.log("received data from tx", data.statusReceipt);
-//     // if (onReset) onReset();
-//   };
-
-//   return (
-//     <Card className="w-full">
-//       <CardContent className="py-3">
-//         <div className="flex items-center justify-between">
-//           <div className="flex items-center space-x-3">
-//             {getStatusIcon()}
-//             <div className="flex flex-col">
-//               <div className="flex items-center space-x-2">
-//                 <span className="text-sm font-medium">Transaction</span>
-//                 <span className={`text-sm font-medium ${getStatusColor()}`}>
-//                   {status}
-//                 </span>
-//               </div>
-//               <span className="text-xs font-mono text-gray-500 truncate max-w-[200px]">
-//                 {hash}
-//               </span>
-//             </div>
-//           </div>
-//           <Button
-//             variant="ghost"
-//             size="sm"
-//             onClick={handleReset}
-//             className="h-8 w-8 p-0"
-//           >
-//             <AlertCircle className="h-4 w-4" />
-//           </Button>
-//         </div>
-//         {error && (
-//           <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-600">
-//             {error.message}
-//           </div>
-//         )}
-//       </CardContent>
-//     </Card>
-//   );
-// };
-
-// export default TransactionWidget;
-
 import React, { useState } from "react";
 import { useTransactionReceipt } from "@starknet-react/core";
 import { Button } from "@/components/ui/button";
@@ -106,7 +23,87 @@ interface TransactionWidgetProps {
   onReset?: () => void;
 }
 
-const TransactionWidget: React.FC<TransactionWidgetProps> = ({
+export const SimpleTransactionWidget = ({ hash }) => {
+  const { data, error, status, isError, isPending, isSuccess, isFetching } =
+    useTransactionReceipt({
+      hash,
+      watch: true,
+      enabled: true,
+    });
+
+  if (!hash) {
+    return (
+      <Card className="w-full">
+        <CardContent className="py-3">
+          <div className="flex items-center justify-center">
+            <span className="text-sm text-gray-500">
+              Waiting for transaction...
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const getStatusIcon = () => {
+    if (isError) return <XCircle className="w-5 h-5 text-red-500" />;
+    if (isSuccess) return <CheckCircle className="w-5 h-5 text-green-500" />;
+    if (isPending || isFetching)
+      return <Clock className="w-5 h-5 text-blue-500 animate-spin" />;
+    return <AlertCircle className="w-5 h-5 text-gray-500" />;
+  };
+
+  const getStatusColor = () => {
+    if (isError) return "text-red-500";
+    if (isSuccess) return "text-green-500";
+    if (isPending || isFetching) return "text-blue-500";
+    return "text-gray-500";
+  };
+
+  const handleReset = () => {
+    // reset();
+    console.log("received data from tx", data.statusReceipt);
+    // if (onReset) onReset();
+  };
+
+  return (
+    <Card className="w-full">
+      <CardContent className="py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {getStatusIcon()}
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium">Transaction</span>
+                <span className={`text-sm font-medium ${getStatusColor()}`}>
+                  {status}
+                </span>
+              </div>
+              <span className="text-xs font-mono text-gray-500 truncate max-w-[200px]">
+                {hash}
+              </span>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="h-8 w-8 p-0"
+          >
+            <AlertCircle className="h-4 w-4" />
+          </Button>
+        </div>
+        {error && (
+          <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-600">
+            {error.message}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export const TransactionWidget: React.FC<TransactionWidgetProps> = ({
   hash,
   onReset,
 }) => {
@@ -342,7 +339,7 @@ const TransactionWidget: React.FC<TransactionWidgetProps> = ({
   );
 };
 
-export default TransactionWidget;
+// export default{ TransactionWidget ,SimpleTransactionWidget};
 
 // import React from "react";
 // import { useTransactionReceipt } from "@starknet-react/core";

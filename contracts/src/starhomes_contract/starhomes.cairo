@@ -100,7 +100,6 @@ pub mod StarhomesContract {
             let isRegistered = self.users_data.is_agent_registered(agent_id);
             assert(isRegistered, Errors::AGENT_NOT_REGISTERED);
             self.properties.list_property(property)
-            
         }
 
         fn list_investment_property(ref self: ContractState, investment_asset: InvestmentAsset) {
@@ -154,6 +153,7 @@ pub mod StarhomesContract {
 
             assert(investment.is_active, 'Investment not active');
             // let investment = self.get_investment(investment_id);
+            assert(amount >= investment.min_investment_amount, 'Minimum amount not met');
 
             // Initialize investment if not already done
             if !self.investments._is_investment_initialized(investment_id) {
@@ -248,7 +248,20 @@ pub mod StarhomesContract {
         }
 
         fn get_investment_properties(self: @ContractState) -> Array<InvestmentAsset> {
-            self.properties.get_investment_properties()
+            let mut investment_properties = array![];
+            for i in 0..self.properties.get_investment_properties().len() {
+                let investment: @InvestmentAsset = self
+                    .properties
+                    .get_investment_properties()
+                    .at(i);
+                let investors = self.get_investors_for_investment(investment.id.clone());
+
+                investment_properties
+                    .append(
+                        InvestmentAsset { investors: investors.len().into(), ..investment.clone() },
+                    );
+            };
+            investment_properties
         }
 
         fn get_investment(self: @ContractState, investment_id: felt252) -> InvestmentAsset {

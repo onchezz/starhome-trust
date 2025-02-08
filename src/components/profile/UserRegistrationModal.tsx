@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
 import { toast } from "sonner";
 import { User, Loader2 } from "lucide-react";
-import { useAccount } from "@starknet-react/core";
+import { useAccount, useTransactionReceipt } from "@starknet-react/core";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUserReadByAddress } from "@/hooks/contract_interactions/useUserRead";
@@ -19,10 +19,14 @@ import { User as UserType } from "@/types/user";
 import pinata from "@/hooks/services_hooks/pinata";
 import { Switch } from "@/components/ui/switch";
 import { useTransactionStatus } from "@/hooks/useTransactionStatus";
-import TransactionWidget from "../txmodal";
+import { TransactionWidget } from "../txmodal";
+import ImageUploader from "../property/form/ImageUploader";
+import { ProfileImageUploader } from "./profileUploader";
+import { useWalletConnect } from "@/hooks/useWalletConnect";
 
 export function UserRegistrationModal() {
   const { address } = useAccount();
+  const { connectWallet, isConnecting, error } = useWalletConnect();
   const { handleRegisterUser, handleEditUser, contractStatus } = useUserWrite();
   const { user: currentUser, isLoading: isLoadingUser } = useUserReadByAddress(
     address || ""
@@ -48,7 +52,16 @@ export function UserRegistrationModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [ipfsHash, setIpfsHash] = useState("");
   const [isUserRegistered, setIsUserRegistered] = useState(false);
-
+  const [selectedFile, setSelectedFile] = useState<File>();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const [tx, setTx] = useState<string>("");
+  const { data, error: txError } = useTransactionReceipt({
+    hash: tx,
+    watch: true,
+    enabled: true,
+    retry: 9000,
+  });
   useEffect(() => {
     if (!address) {
       toast.error("Please connect your wallet first");
@@ -120,8 +133,9 @@ export function UserRegistrationModal() {
     }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return;
+  const handleImageUpload = async () => {
+    if (!selectedFile) return;
+
     if (ipfsHash) {
       toast.error(
         "Image Already Uploaded. Please submit the form or reset to upload a new image"
@@ -131,17 +145,22 @@ export function UserRegistrationModal() {
 
     try {
       setUploadLoading(true);
-      const file = e.target.files[0];
+      // const file = e.target.files[0];
+      const file = selectedFile;
       const upload = await pinata.upload.file(file);
       const ipfsUrl = await pinata.gateways.convert(upload.IpfsHash);
+      setIpfsHash(ipfsUrl);
 
-      setFormData((prev) => ({
-        ...prev,
-        profile_image: ipfsUrl,
-      }));
-      setIpfsHash(upload.IpfsHash);
+      console.log("ipfs url", ipfsUrl);
+      console.log("setted ipfs url", ipfsHash);
+
+      // setFormData((prev) => ({
+      //   ...prev,
+      //   profile_image: ipfsUrl,
+      // }));
 
       toast.success("Image uploaded successfully");
+      return ipfsUrl;
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Failed to upload image. Please try again.");
@@ -150,9 +169,44 @@ export function UserRegistrationModal() {
     }
   };
 
+  const validateFile = (file: File): File | null => {
+    if (!file.type.startsWith("image/")) {
+      toast.error(`${file.name} is not an image file`);
+      return null;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(`${file.name} is too large (max 10MB)`);
+      return null;
+    }
+
+    return file;
+  };
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setIpfsHash("");
+
+    const validatedFile = validateFile(file);
+    if (validatedFile) {
+      setSelectedFile(validatedFile);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    const validatedFile = validateFile(file);
+    if (validatedFile) {
+      setSelectedFile(validatedFile);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address) {
+      connectWallet();
       toast.error("Please connect your wallet first");
       return;
     }
@@ -161,28 +215,41 @@ export function UserRegistrationModal() {
 
     try {
       setIsSubmitting(true);
+      const imageUrl = await handleImageUpload();
+      setIpfsHash(imageUrl);
+
+      console.log(`availbe ipfs url ${ipfsHash}`);
       const userData = {
         ...formData,
         id: address,
-        profile_image: formData.profile_image || "",
+        profile_image: !formData.profile_image
+          ? imageUrl
+          : formData.profile_image,
+
         timestamp: Math.floor(Date.now() / 1000),
       };
 
+      console.log(`sending user data ${userData}`);
       const response = isUserRegistered
         ? await handleEditUser(userData)
         : await handleRegisterUser(userData);
+      await setTx(response.transaction_hash);
 
       const tx = await checkTransaction(response.transaction_hash);
 
-      if (tx.receipt === "success") {
+      if (tx.isSuccess) {
         toast.success(
           isUserRegistered
             ? "Profile updated successfully!"
             : "Registration successful!"
         );
-        setIsOpen(false);
-        // Force reload the page and show shimmer while data is being fetched
-        window.location.reload();
+        if (data.isSuccess) {
+          window.location.reload();
+          setIsOpen(false);
+        }
+        // setIsOpen(false);
+        // // Force reload the page and show shimmer while data is being fetched
+        // window.location.reload();
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -205,13 +272,19 @@ export function UserRegistrationModal() {
       is_investor: false,
     });
     setIpfsHash("");
+    setSelectedFile(undefined);
   };
 
-  const handleSwitchChange = (type: "agent" | "investor", checked: boolean) => {
+  const handleSwitchChange = (
+    type: "agent" | "investor" | "authorized" | "verified",
+    checked: boolean
+  ) => {
     setFormData((prev) => ({
       ...prev,
       is_agent: type === "agent" ? checked : prev.is_agent,
       is_investor: type === "investor" ? checked : prev.is_investor,
+      is_authorized: type === "authorized" ? checked : prev.is_authorized,
+      is_verified: type === "verified" ? checked : prev.is_verified,
     }));
     console.log(`${type} switch changed to:`, checked);
   };
@@ -300,17 +373,49 @@ export function UserRegistrationModal() {
                 disabled={!address || isSubmitting}
               />
             </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="User-authorization">Verified user </Label>
+              <Switch
+                id="authorization-switch"
+                checked={formData.is_authorized}
+                onCheckedChange={(checked) =>
+                  handleSwitchChange("authorized", checked)
+                }
+                disabled={!address || isSubmitting}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="User-authorization">
+                Be an Authorize asset lister
+              </Label>
+              <Switch
+                id="investor-switch"
+                checked={formData.is_verified}
+                onCheckedChange={(checked) =>
+                  handleSwitchChange("verified", checked)
+                }
+                disabled={!address || isSubmitting}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="profile_image">Profile Image</Label>
-            <Input
+          <div className="">
+            {/* <Label htmlFor="profile_image">Profile Image</Label> */}
+            {/* <Input
               id="profile_image"
               name="profile_image"
               type="file"
               onChange={handleImageUpload}
               accept="image/*"
-              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-primary/10"
+              className="file:mr-2 file:my-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-primary/10"
               disabled={!address || isSubmitting || Boolean(ipfsHash)}
+            /> */}
+            <ProfileImageUploader
+              selectedFile={selectedFile}
+              isUploading={uploadLoading}
+              uploadProgress={uploadProgress}
+              handleFileSelect={handleFileSelect}
+              handleDrop={handleDrop}
+              setSelectedFile={setSelectedFile}
             />
             {formData.profile_image && (
               <img
@@ -320,13 +425,15 @@ export function UserRegistrationModal() {
               />
             )}
           </div>
-          {isChecking ? <TransactionWidget hash={txStatus.receipt} /> : <></>}
+          {tx === "" ? <></> : <TransactionWidget hash={tx} />}
 
           <div className="flex gap-4">
             <Button
               type="submit"
               className="flex-1"
-              disabled={!address || isSubmitting || uploadLoading || isChecking}
+              disabled={
+                isConnecting || isSubmitting || uploadLoading || isChecking
+              }
             >
               {(isSubmitting || uploadLoading) && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

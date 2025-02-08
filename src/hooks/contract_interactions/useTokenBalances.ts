@@ -84,7 +84,7 @@ export function useTokenBalances() {
   } = useBalance({
     address,
     token: tokenAddresses.ETH,
-    watch: false,
+    watch: true,
     enabled: !!address && shouldRefetch(),
   });
 

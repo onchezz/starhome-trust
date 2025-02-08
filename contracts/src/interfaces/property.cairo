@@ -14,7 +14,7 @@ pub trait IPropertyComponentTrait<TContractState> {
     fn get_sale_properties_by_agent(
         self: @TContractState, agent_id: ContractAddress,
     ) -> Array<Property>;
-    fn get_investment_properties(self: @TContractState) -> Array<InvestmentAsset>;
+    fn get_investment_properties(self: @TContractState,) -> Array<InvestmentAsset>;
     fn get_investment_by_id(self: @TContractState, investment_id: felt252) -> InvestmentAsset;
     fn get_investment_properties_by_lister(
         self: @TContractState, lister_id: ContractAddress,

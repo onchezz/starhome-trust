@@ -13,40 +13,54 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useAccount } from "@starknet-react/core";
-import { memo, useCallback } from "react";
+import { useAccount, useTransactionReceipt } from "@starknet-react/core";
+import { memo, useCallback, useState } from "react";
 
 interface InvestmentCardProps {
   property: InvestmentAsset;
   expandedCardId: string | null;
   setExpandedCardId: (id: string | null) => void;
-  handleConnectWallet: () => void;
+  // handleConnectWallet: () => void;
 }
 
 const InvestmentCardComponent = ({
   property,
   expandedCardId,
   setExpandedCardId,
-  handleConnectWallet,
-}: InvestmentCardProps) => {
+}: // handleConnectWallet,
+InvestmentCardProps) => {
+  const {
+    connectWallet: handleConnectWallet,
+    isConnecting,
+    error: walletError,
+  } = useWalletConnect();
   const { address } = useAccount();
   const {
     investmentAmount,
+    contractStatus,
     setInvestmentAmount,
     handleInvest,
     allowance,
     refreshTokenData,
-    transactionStatus,
+    transactionHash,
+    txData,
     isWaitingApproval,
     isWaitingTransactionExecution,
   } = useInvestment(property.investment_token);
-
+  const { data: transactionStatus, error: txError } = useTransactionReceipt({
+    hash: transactionHash,
+    watch: true,
+    enabled: true,
+    retry: 9000,
+  });
   const handleInvestClick = useCallback(async () => {
     if (!address) {
       handleConnectWallet();
       return;
     }
+
     await handleInvest(property.id);
+    console.log("from use data", txData);
   }, [address, handleConnectWallet, handleInvest, property.id]);
 
   const handleExpandClick = useCallback(
@@ -92,9 +106,9 @@ const InvestmentCardComponent = ({
     if (isWaitingTransactionExecution) {
       return "Waiting for investment transaction...";
     }
-    if (transactionStatus?.isLoading) {
-      return "Processing transaction...";
-    }
+    // if (transactionStatus?.isLoading) {
+    //   return "Processing transaction...";
+    // }
     if (transactionStatus?.isSuccess) {
       return "Transaction successful!";
     }
@@ -133,7 +147,7 @@ const InvestmentCardComponent = ({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-gray-500">Number of Investors</p>
-              <p className="font-semibold">0</p>
+              <p className="font-semibold">{property.investors}</p>
             </div>
             <div>
               <p className="text-gray-500">Minimum Investment</p>
@@ -192,30 +206,33 @@ const InvestmentCardComponent = ({
                   className="w-full bg-primary hover:bg-primary/90"
                   onClick={handleInvestClick}
                   disabled={
-                    transactionStatus?.isLoading ||
+                    isConnecting ||
+                    // transactionStatus?.isLoading ||
                     isWaitingApproval ||
                     isWaitingTransactionExecution
                   }
                 >
-                  {transactionStatus?.isLoading ||
-                  isWaitingApproval ||
-                  isWaitingTransactionExecution ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {isWaitingApproval
-                        ? "Waiting for Approval..."
-                        : "Processing..."}
+                  {
+                    // transactionStatus?.isLoading ||
+                    isWaitingApproval || isWaitingTransactionExecution ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {isWaitingApproval
+                          ? "Waiting for Approval..."
+                          : "Processing..."}
 
-                      {isWaitingTransactionExecution
-                        ? "Waiting for transaction..."
-                        : "Processing..."}
-                    </>
-                  ) : (
-                    <>
-                      <Wallet className="mr-2 h-4 w-4" />
-                      {address ? "Invest" : "Connect Wallet"}
-                    </>
-                  )}
+                        {isWaitingTransactionExecution
+                          ? "Waiting for transaction..."
+                          : "Processing..."}
+                      </>
+                    ) : 
+                    (
+                      <>
+                        <Wallet className="mr-2 h-4 w-4" />
+                        {address ? "Invest" : "Connect Wallet"}
+                      </>
+                    )
+                  }
                 </Button>
                 {statusMessage && (
                   <p
@@ -230,6 +247,7 @@ const InvestmentCardComponent = ({
                     {statusMessage}
                   </p>
                 )}
+                <SimpleTransactionWidget hash={transactionHash} />
               </CollapsibleContent>
             </Collapsible>
             <Link
@@ -260,6 +278,9 @@ InvestmentCard.displayName = "InvestmentCard";
 
 import { useLocation, Navigate } from "react-router-dom";
 import InvestmentDetails from "@/pages/InvestmentDetails";
+import { SimpleTransactionWidget } from "../txmodal";
+import { useSetTx } from "@/hooks/useTransactionStatus";
+import { useWalletConnect } from "@/hooks/useWalletConnect";
 // import { InvestmentDetails } from "./InvestmentDetails";
 
 const InvestmentDetailsPage = () => {

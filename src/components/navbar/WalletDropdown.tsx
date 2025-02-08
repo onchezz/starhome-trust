@@ -11,6 +11,7 @@ import { useTokenBalances } from "@/hooks/contract_interactions/useTokenBalances
 import { Link } from "react-router-dom";
 import ErrorBoundary from "../errrorBoundary";
 import { toast } from "sonner";
+import { formatBalance } from "@/utils/formatBalance";
 
 interface WalletDropdownProps {
   address: string | undefined;
@@ -86,15 +87,27 @@ const WalletDropdown = ({
             <div className="p-2 space-y-2">
               <div className="flex justify-between text-sm">
                 <span>ETH</span>
-                <span>{Number(balances.ETH?.formatted || 0).toFixed(4)}</span>
+                {/* <span>{Number(balances.ETH?.formatted || 0).toFixed(4)}</span> */}
+                <span>{formatBalance(Number(balances.ETH?.formatted))}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>USDT</span>
-                <span>{Number(balances.USDT?.formatted || 0).toFixed(4)}</span>
+                {/* <span>{Number(balances.USDT?.formatted || 0).toFixed(4)}</span> */}
+                <span>
+                  {formatBalance(Number(balances.USDT?.formatted || 0))}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>STRK</span>
-                <span>{Number(balances.STRK?.formatted || 0).toFixed(4)}</span>
+                <span>
+                  {formatBalance(Number(balances.STRK?.formatted || 0))}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>USDC</span>
+                <span>
+                  {formatBalance(Number(balances.USDC?.formatted || 0))}
+                </span>
               </div>
             </div>
           )}

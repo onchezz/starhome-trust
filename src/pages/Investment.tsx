@@ -1,26 +1,28 @@
 import { InvestmentCard } from "@/components/investment/InvestmentCard";
 import { EmptyInvestmentState } from "@/components/investment/EmptyInvestmentState";
 import { PageLoader } from "@/components/ui/page-loader";
-import { useState } from "react";
-import { useConnect } from "@starknet-react/core";
+import { useEffect, useState } from "react";
+import { useAccount, useConnect } from "@starknet-react/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shimmer } from "@/components/ui/shimmer";
 import { formatCurrency } from "@/utils/utils";
 import { inView } from "framer-motion";
 import { Building, Users, TrendingUp, DollarSign } from "lucide-react";
 import { useInvestmentAssetsRead } from "@/hooks/contract_interactions/useInvestmentReads";
+import { useWalletConnect } from "@/hooks/useWalletConnect";
 
 export const Investment = () => {
-  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const { investmentProperties, isLoading, error } = useInvestmentAssetsRead();
+  const { connectWallet } = useWalletConnect();
 
-  const handleConnectWallet = () => {
-    const connector = connectors[0];
-    if (connector) {
-      connect({ connector });
+  useEffect(() => {
+    if (!address) {
+      connectWallet();
     }
-  };
+    // Set initial loading to false after properties are fetched
+  }, []);
 
   if (isLoading) {
     return (
@@ -40,7 +42,10 @@ export const Investment = () => {
   }
   const totalStats = {
     totalInvestors:
-      investmentProperties?.reduce((acc, property) => acc + 0, 0) || 0,
+      investmentProperties?.reduce(
+        (acc, property) => acc + Number(property.investors || 0),
+        0
+      ) || 0,
     averageROI:
       investmentProperties?.reduce(
         (acc, property) => acc + Number(property.expected_roi || 0),
@@ -136,7 +141,7 @@ export const Investment = () => {
             property={property}
             expandedCardId={expandedCardId}
             setExpandedCardId={setExpandedCardId}
-            handleConnectWallet={handleConnectWallet}
+            // handleConnectWallet={handleConnectWallet}
           />
         ))}
       </div>

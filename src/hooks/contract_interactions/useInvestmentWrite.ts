@@ -17,7 +17,9 @@ export const useInvestmentWrite = () => {
       ]);
 
       if (response?.status?.isSuccess) {
+       
         toast.success("Successfully withdrawn funds");
+        return  response;
       } else if (response?.status?.isError) {
         toast.error("Failed to withdraw funds");
         console.error("Withdrawal error:", response?.status?.error);
@@ -30,6 +32,30 @@ export const useInvestmentWrite = () => {
       throw error;
     }
   };
+  const handleMakeInvestment = async (investmentId: string, amount: number) => {
+    try {
+      console.log("Initiating Investment:", { investmentId, amount });
+      
+      const response = await execute("invest_in_property", [
+        investmentId,
+        amount
+      ]);
+
+      if (response?.status?.isSuccess) {
+        toast.success("Successfully Invested funds");
+      } else if (response?.status?.isError) {
+        toast.error("Failed to Invest funds");
+        console.error("Investing error:", response?.status?.error);
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Investing error", error);
+      toast.error("Failed to Invest funds");
+      throw error;
+    }
+  };
+
 
    const handleListInvestmentProperty = async (investment: InvestmentAsset) => {
     try {
@@ -67,6 +93,7 @@ export const useInvestmentWrite = () => {
   };
 
   return {
+    handleMakeInvestment,
     handleWithdraw,
     handleListInvestmentProperty,
     handleEditInvestmentProperty,

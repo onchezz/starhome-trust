@@ -12,10 +12,10 @@ export const ProfileShimmer = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  if (!address) {
-    toast.error("Wallet disconnected. Redirecting to home page...");
-    navigate("/");
-  }
+  // if (!address) {
+  //   toast.error("Wallet disconnected. Redirecting to home page...");
+  //   navigate("/");
+  // }
 
   return (
     <div

@@ -69,14 +69,14 @@ export const useToken = (tokenAddress: string) => {
       }
 
       // If no cache or expired, fetch fresh data
-      const [name, symbol, decimals, balance, allowance] = await Promise.all([
+      const [name, symbol, decimals, balance,allowance ] = await Promise.all([
         contract.name(),
         contract.symbol(),
         contract.decimals(),
         contract.balance_of(formattedOwner),
         contract.allowance(formattedOwner, formattedSpender),
       ]);
-
+     
       const newData = {
         name:shortString.decodeShortString(name.toString()) ,
         symbol:shortString.decodeShortString(symbol.toString()),
@@ -110,12 +110,20 @@ export const useToken = (tokenAddress: string) => {
       }
 
       try {
+
+        const [ allowance] = await Promise.all([contract.allowance(formattedOwner, formattedSpender)]);
+        console.log(`fetched  allowance ${allowance}`)
+
         const tokenDecimals = tokenData.decimals || 18;
         const amountInToken = Number(amount * Math.pow(10, tokenDecimals));
-        const currentAllowance = tokenData.allowance ? Number(tokenData.allowance) : Number(0);
+        const currentAllowance = allowance ? Number(allowance): Number(0);
         const currentBalance = tokenData.balance ? Number(tokenData.balance) : Number(0);
 
-        console.log("Allowances and balance:", {
+        console.log(`converted   allowance ${currentAllowance}`)
+        console.log(`converted   balance  ${currentBalance}`)
+        console.log(`converted   token amount   ${amountInToken}`)
+
+           console.log("Allowances and balance:", {
           tokenDecimals,
           amountInToken,
           currentAllowance,
@@ -123,8 +131,11 @@ export const useToken = (tokenAddress: string) => {
         });
 
         if (currentBalance < amount) {
+          await fetchAndCacheTokenData();
+          
           console.log(`Balance ${currentBalance} is less than token amount ${amountInToken}`);
-          throw new Error('Insufficient balance');
+          // throw new Error('Insufficient balance');
+          toast.error('Insufficient balance')
         }
 
         if (currentAllowance >= amountInToken) {
@@ -175,7 +186,7 @@ export const useToken = (tokenAddress: string) => {
         throw error;
       }
     },
-    [contract, formattedOwner, tokenData.decimals, tokenData.allowance, tokenData.balance, formattedSpender, sendTransaction, checkTransaction, fetchAndCacheTokenData]
+    [contract,  formattedOwner, tokenData.decimals, tokenData.balance, formattedSpender, sendTransaction, checkTransaction, fetchAndCacheTokenData]
   );
 
   return {
@@ -184,6 +195,7 @@ export const useToken = (tokenAddress: string) => {
     allowance: tokenData.allowance,
     refreshTokenData: fetchAndCacheTokenData,
     isWaitingApproval,
+    setIsWaitingTransactionExecution,
     isWaitingTransactionExecution
   };
 };

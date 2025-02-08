@@ -85,6 +85,7 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({
       images: "",
       investment_token: tokenOptions[1].address,
       min_investment_amount: 0,
+      investors: 0,
     }
   );
 

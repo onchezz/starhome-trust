@@ -11,9 +11,6 @@ pub mod PropertyComponent {
         VecTrait, StoragePathEntry, MutableVecTrait,
     };
     use core::option::Option;
-    #[allow(unused_imports)]
-    use core::panics::{panic, Panic, PanicResult};
-
     // use starhomes::messages::errors::Errors;
     // use starhomes::messages::success::Messages;
     use starknet::ContractAddress;
@@ -153,7 +150,9 @@ pub mod PropertyComponent {
             let mut investment_properties = array![];
             for i in 0..self.listed_investment_properties_ids.len() {
                 let id = self.listed_investment_properties_ids.at(i).read();
-                investment_properties.append(self.investments_properties.entry(id).read());
+                let investment: InvestmentAsset = self.investments_properties.entry(id).read();
+
+                investment_properties.append(investment);
             };
             investment_properties
         }
@@ -197,7 +196,7 @@ pub mod PropertyComponent {
         }
     }
 
-   
+
     #[generate_trait]
     pub impl PropertyFunctions<
         TContractState, +HasComponent<TContractState>,

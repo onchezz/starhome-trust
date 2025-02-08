@@ -66,6 +66,7 @@ export const useInvestorBalance = (investmentId: string, investorAddress?: strin
 
 export const useInvestmentAssetsRead = () => {
   const { address } = useAccount();
+   
   const { data: rawInvestmentProperties, isLoading: isLoadingProperties } = useStarHomeReadContract({
     functionName: "get_investment_properties",
     options: {
@@ -110,6 +111,7 @@ export const useInvestmentAssetsRead = () => {
 
   // Update with fresh data from contract
   useEffect(() => {
+
     const updateInvestments = async () => {
       if (rawInvestmentProperties) {
         console.log("[Contract] Received raw investment properties:", rawInvestmentProperties);

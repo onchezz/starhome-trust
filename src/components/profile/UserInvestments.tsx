@@ -79,9 +79,6 @@ export const UserInvestments = () => {
       approveAndInvest,
       allowance,
       refreshTokenData,
-      transactionStatus,
-      isWaitingApproval,
-      isWaitingTransactionExecution,
     } = useInvestment(matchingToken.address);
 
     const inputRef = useRef<HTMLInputElement>(null);

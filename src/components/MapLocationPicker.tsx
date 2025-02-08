@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import useSearchLoacation from "@/hooks/useSearchLocation";
+import { convertToAscii } from "@/utils/formatToAscii";
 
 // Set your Mapbox token here
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -117,15 +118,15 @@ const MapLocationPicker: React.FC<MapPickerProps> = ({
           context.find((c: any) => c.id.startsWith("region"))?.text || "";
         const country =
           context.find((c: any) => c.id.startsWith("country"))?.text || "";
-
-        onLocationSelect({
-          latitude: lngLat.lat.toString(),
-          longitude: lngLat.lng.toString(),
-          address,
-          city,
-          state,
-          country,
-        });
+   const convertAddress=convertToAscii(address)
+    onLocationSelect({
+      latitude: lngLat.lat.toString(),
+      longitude: lngLat.lng.toString(),
+      address: convertAddress,
+      city,
+      state,
+      country,
+    });
       }
     } catch (error) {
       console.error("Error getting location details:", error);
