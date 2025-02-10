@@ -167,20 +167,53 @@ scarb test
 ## Project Structure
 
 ```
-project/
+<!-- project/
 ├── src/              # Frontend application code
 │   ├── components/   # React components
 │   ├── pages/        # Page components
 │   └── providers/    # Context providers
 └── contracts/        # Smart contract code
     ├── src/          # Contract source files
-    └── tests/        # Contract test files
+    └── tests/        # Contract test files -->
+    contracts/
+├── src/
+│   ├── components/
+│   │   ├── blogs_component.cairo
+│   │   ├── investment_component.cairo
+│   │   ├── property_component.cairo
+│   │   └── user_component.cairo
+│   └── interfaces/
+│       ├── asset_staking.cairo
+│       ├── blogs_interface.cairo
+│       ├── investment_interface.cairo
+│       ├── iStarhomes.cairo
+│       ├── property.cairo
+│       └── user_interface.cairo
+├── messages/
+├── models/
+├── starhomes_contract/
+│   ├── starhomes.cairo
+│   └── lib.cairo
+└── tests/
+src/
+├── components/
+├── data/
+├── hooks/
+├── lib/
+├── pages/
+├── providers/
+├── types/
+├── utils/
+├── App.css
+├── App.tsx
+├── index.css
+└──main.tsx
 ```
 
 ## Contact
 
 For inquiries and support, contact us at:
-- Email: brianonchezz@gmail.com
+- Email: starhomes.trust@gmail.com
 
 ## License
 
