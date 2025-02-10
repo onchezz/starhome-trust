@@ -32,9 +32,9 @@ const Properties = () => {
   });
 
   useEffect(() => {
-    if (!address) {
-      handleConnectWallet();
-    }
+    // if (!address) {
+    //   handleConnectWallet();
+    // }
     // Set initial loading to false after properties are fetched
     if (!isLoading && properties) {
       setIsInitialLoading(false);
