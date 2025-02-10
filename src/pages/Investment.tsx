@@ -17,13 +17,6 @@ export const Investment = () => {
   const { investmentProperties, isLoading, error } = useInvestmentAssetsRead();
   const { connectWallet } = useWalletConnect();
 
-  // useEffect(() => {
-  //   if (!address) {
-  //     connectWallet();
-  //   }
-  //   // Set initial loading to false after properties are fetched
-  // }, []);
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

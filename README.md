@@ -28,20 +28,67 @@ The Starhomes smart contract (`StarhomesContract`) is built on StarkNet using Ca
 ### Contract Functions
 
 ```cairo
-// List a new property for investment
-fn list_property(price: u256, total_shares: u256, payment_token: ContractAddress) -> u256
+// Lists a property with details like price, location etc
+list_property(property: Property) -> felt252 
+// Input: Property struct with details
+// Output: property_id (felt252)
 
-// Invest in an existing property
-fn invest_in_property(property_id: u256, shares_to_buy: u256)
+// Gets all visit requests for a property
+read_visit_requests(property_id: felt252) -> Array<UserVisitRequest>
+// Input: property_id
+// Output: Array of visit requests
 
-// Query property details
-fn get_property(property_id: u256) -> Property
+// Gets investors for property
+get_investors_for_investment(investment_id: felt252) -> Array<ContractAddress>
+// Input: investment_id
+// Output: Array of investor addresses
 
-// Query investment details
-fn get_investment(property_id: u256, investor: ContractAddress) -> Investment
+// Gets investor's balance
+get_investor_balance_in_investment(investment_id: felt252, investor_address: ContractAddress) -> u256
+// Input: investment_id, investor address
+// Output: Balance amount (u256)
 
-// Upgrade contract implementation
-fn upgrade(new_class_hash: ClassHash)
+// Gets investment manager address
+get_investment_manager(investment_id: felt252) -> ContractAddress
+// Input: investment_id
+// Output: Manager address
+
+// Gets property details
+get_property(property_id: felt252) -> Property
+// Input: property_id 
+// Output: Property struct
+
+// Gets all properties for sale
+get_sale_properties() -> Array<Property>
+// Output: Array of Property structs
+
+// Gets properties by agent
+get_sale_properties_by_agent(agent_id: ContractAddress) -> Array<Property>
+// Input: agent address
+// Output: Array of Property structs
+
+// Gets all investment properties  
+get_investment_properties() -> Array<InvestmentAsset>
+// Output: Array of InvestmentAsset structs
+
+// Gets investment details
+get_investment(investment_id: felt252) -> InvestmentAsset
+// Input: investment_id
+// Output: InvestmentAsset struct
+
+// Gets investor returns
+read_investor_returns(investment_id: felt252, investor: ContractAddress) -> u256
+// Input: investment_id, investor address
+// Output: Returns amount (u256)
+
+// Gets latest update timestamp
+read_update() -> u256
+// Output: Timestamp (u256)
+
+// Gets contract version
+version() -> u64
+// Output: Version number (u64)
+
 ```
 
 ## Web Features
@@ -120,20 +167,53 @@ scarb test
 ## Project Structure
 
 ```
-project/
+<!-- project/
 ├── src/              # Frontend application code
 │   ├── components/   # React components
 │   ├── pages/        # Page components
 │   └── providers/    # Context providers
 └── contracts/        # Smart contract code
     ├── src/          # Contract source files
-    └── tests/        # Contract test files
+    └── tests/        # Contract test files -->
+    contracts/
+├── src/
+│   ├── components/
+│   │   ├── blogs_component.cairo
+│   │   ├── investment_component.cairo
+│   │   ├── property_component.cairo
+│   │   └── user_component.cairo
+│   └── interfaces/
+│       ├── asset_staking.cairo
+│       ├── blogs_interface.cairo
+│       ├── investment_interface.cairo
+│       ├── iStarhomes.cairo
+│       ├── property.cairo
+│       └── user_interface.cairo
+├── messages/
+├── models/
+├── starhomes_contract/
+│   ├── starhomes.cairo
+│   └── lib.cairo
+└── tests/
+src/
+├── components/
+├── data/
+├── hooks/
+├── lib/
+├── pages/
+├── providers/
+├── types/
+├── utils/
+├── App.css
+├── App.tsx
+├── index.css
+└──main.tsx
 ```
 
 ## Contact
 
 For inquiries and support, contact us at:
-- Email: brianonchezz@gmail.com
+- Email: starhomes.trust@gmail.com
 
 ## License
 
