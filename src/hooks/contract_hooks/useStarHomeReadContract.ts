@@ -31,6 +31,7 @@ export const useStarHomeReadContract = ({
     args, 
     address: starhomesContract,
     abi: starhomes_abi as Abi,
+    
     ...options
   });
  

@@ -76,15 +76,30 @@
 //     </StarknetConfig>
 //   );
 // }
+// sepoliaInfura;
+
 import { InjectedConnector } from "starknetkit/injected";
 import {
   ArgentMobileConnector,
   isInArgentMobileAppBrowser,
 } from "starknetkit/argentMobile";
 import { WebWalletConnector } from "starknetkit/webwallet";
-import { mainnet, sepolia } from "@starknet-react/chains";
-import { StarknetConfig, publicProvider } from "@starknet-react/core";
+import { Chain, mainnet, sepolia } from "@starknet-react/chains";
+import {
+  StarknetConfig,
+  jsonRpcProvider,
+  publicProvider,
+  useProvider,
+} from "@starknet-react/core";
+import { sepoliaInfura } from "@/utils/constants";
 
+function rpc(chain: Chain) {
+  return {
+    nodeUrl: sepoliaInfura,
+  };
+}
+
+const provider = jsonRpcProvider({ rpc });
 export default function StarknetProvider({
   children,
 }: {
@@ -119,7 +134,7 @@ export default function StarknetProvider({
   return (
     <StarknetConfig
       chains={chains}
-      provider={publicProvider()}
+      provider={provider}
       connectors={connectors}
       autoConnect={true}
     >

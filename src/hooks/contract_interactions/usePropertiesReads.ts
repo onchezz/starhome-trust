@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useStarHomeReadContract } from "../contract_hooks/useStarHomeReadContract";
 import { Property, PropertyConverter } from "@/types/property";
 import { openDB } from "@/utils/indexedDb";
+import { Abi, useCall } from "@starknet-react/core";
+import { starhomes_abi } from "@/data/starhomes_abi";
+import { starhomesContract } from "@/utils/constants";
 
 const PROPERTIES_CACHE_KEY = 'properties';
 
@@ -154,3 +157,9 @@ export const useAgentProperties = (agentId?: string) => {
 
 //   return { property, isLoading, error };
 // };
+//   const { data: propertiesData, isLoading, error } = useCall({
+//   abi: starhomes_abi as Abi,
+//   functionName: "get_sale_properties",
+//  address: starhomesContract,
+//   args: [],
+// });
