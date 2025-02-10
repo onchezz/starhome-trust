@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ImageGallery } from "../investment/ImageGallery";
 
 export interface PropertyCardProps {
   id: string;
@@ -14,7 +15,7 @@ export interface PropertyCardProps {
   askingPrice: number;
   interestedClients: number;
   annualGrowthRate: number;
-  imagesUrl: string[];
+  imagesUrl: string;
   propertyType: string;
   status: string;
   showUpdateButton?: boolean;
@@ -38,7 +39,8 @@ export const PropertyCard = ({
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-48 overflow-hidden">
-        <img
+         <ImageGallery imagesId={imagesUrl} />
+        {/* <img
           src={imagesUrl?.[0] || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
@@ -46,7 +48,7 @@ export const PropertyCard = ({
             const target = e.target as HTMLImageElement;
             target.src = "/placeholder.svg";
           }}
-        />
+        /> */}
         <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
           {status}
         </div>

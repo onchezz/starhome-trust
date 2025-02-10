@@ -138,7 +138,7 @@ const Properties = () => {
             askingPrice={property.asking_price}
             interestedClients={property.interestedClients}
             annualGrowthRate={property.annualGrowthRate}
-            imagesUrl={imageUrls}
+            imagesUrl={property.imagesId}
             propertyType={property.propertyType}
             status={property.status}
           />
