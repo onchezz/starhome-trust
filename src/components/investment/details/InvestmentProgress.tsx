@@ -24,7 +24,7 @@ export const InvestmentProgress = ({
   setInvestmentAmount,
   handleInvest,
 }: InvestmentProgressProps) => {
-  const progress = (assetValue - availableStakingAmount) / assetValue * 100;
+  const progress = ((assetValue - availableStakingAmount) / assetValue) * 100;
 
   return (
     <Card>
@@ -49,11 +49,15 @@ export const InvestmentProgress = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-500">Available for Investment</p>
-              <p className="font-semibold">{formatCurrency(availableStakingAmount)}</p>
+              <p className="font-semibold">
+                {formatCurrency(availableStakingAmount)}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Minimum Investment</p>
-              <p className="font-semibold">{formatCurrency(minInvestmentAmount)}</p>
+              <p className="font-semibold">
+                {formatCurrency(minInvestmentAmount)}
+              </p>
             </div>
           </div>
           <div>
@@ -66,7 +70,11 @@ export const InvestmentProgress = ({
               min={minInvestmentAmount}
             />
           </div>
-          <Button onClick={handleInvest} className="w-full">
+          <Button
+            disabled={Number(investmentAmount) < minInvestmentAmount}
+            onClick={handleInvest}
+            className="w-full"
+          >
             Invest Now
           </Button>
         </div>

@@ -21,7 +21,7 @@ export const useToken = (tokenAddress: string) => {
   const fetchInProgress = useRef(false);
   const { checkTransaction } = useTransactionStatus();
   const [isWaitingApproval, setIsWaitingApproval] = useState(false);
-  const [isWaitingTransactionExecution, setIsWaitingTransactionExecution] = useState(false);
+  
 
   const { contract } = useContract({
     abi: universalErc20Abi,
@@ -139,9 +139,9 @@ export const useToken = (tokenAddress: string) => {
         }
 
         if (currentAllowance >= amountInToken) {
-           setIsWaitingTransactionExecution(true)
+        
           await investCallback(investmentId, Number(amountInToken));
-          setIsWaitingTransactionExecution(false)
+       
           return;
         }
 
@@ -171,17 +171,17 @@ export const useToken = (tokenAddress: string) => {
           await fetchAndCacheTokenData();
           console.log('Token data refreshed, proceeding with investment');
           // Only proceed with investment if approval was successful
-          setIsWaitingTransactionExecution(true)
+        
           await investCallback(investmentId, Number(amountInToken));
-          setIsWaitingTransactionExecution(false)
+       
         } else {
-           setIsWaitingTransactionExecution(false)
+         
           toast.error("Transaction failed");
           throw new Error('Transaction failed');
         }
       } catch (error) {
         setIsWaitingApproval(false);
-         setIsWaitingTransactionExecution(false)
+       
         console.error('Error in approveAndInvest:', error);
         throw error;
       }
@@ -195,7 +195,5 @@ export const useToken = (tokenAddress: string) => {
     allowance: tokenData.allowance,
     refreshTokenData: fetchAndCacheTokenData,
     isWaitingApproval,
-    setIsWaitingTransactionExecution,
-    isWaitingTransactionExecution
   };
 };

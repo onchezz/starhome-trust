@@ -54,7 +54,8 @@
     {
       "id": "P002",
       "title": "Beachfront Luxury Villa",
-      "description": "Stunning beachfront villa with private beach access, infinity pool, and guest house. Features include smart home technology, wine cellar, and outdoor kitchen.",
+      "description":
+       "Stunning beachfront villa with private beach access, infinity pool, and guest house. Features include smart home technology, wine cellar, and outdoor kitchen.",
       "location": {
         "address": "123 Ocean Drive",
         "city": "Miami",

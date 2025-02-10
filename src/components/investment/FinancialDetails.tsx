@@ -23,9 +23,9 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
 }) => {
   // Update Available Staking Amount when Asset Value changes
   useEffect(() => {
-    if (formData.available_staking_amount) {
-      return;
-    }
+    // if (formData.available_staking_amount) {
+    //   return;
+    // }
     if (formData.asset_value) {
       handleInputChange("available_staking_amount", formData.asset_value);
     }

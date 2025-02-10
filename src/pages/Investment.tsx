@@ -17,12 +17,12 @@ export const Investment = () => {
   const { investmentProperties, isLoading, error } = useInvestmentAssetsRead();
   const { connectWallet } = useWalletConnect();
 
-  useEffect(() => {
-    if (!address) {
-      connectWallet();
-    }
-    // Set initial loading to false after properties are fetched
-  }, []);
+  // useEffect(() => {
+  //   if (!address) {
+  //     connectWallet();
+  //   }
+  //   // Set initial loading to false after properties are fetched
+  // }, []);
 
   if (isLoading) {
     return (

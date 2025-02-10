@@ -10,7 +10,9 @@ import { useTransactionReceipt } from "@starknet-react/core";
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const {handleMakeInvestment, handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
-  const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval,isWaitingTransactionExecution ,setIsWaitingTransactionExecution } = useToken(tokenAddress);
+  const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval, } = useToken(tokenAddress);
+  const [isWaitingTransactionExecution, setIsWaitingTransactionExecution] = useState(false);
+
   // const { execute } = useStarHomeWriteContract();
   // const { status: transactionStatus, checkTransaction } = useTransactionStatus();
   const {transactionHash,waitForTransaction} =  useSetTx();
@@ -22,9 +24,11 @@ export const useInvestment = (tokenAddress?: string) => {
   });
 
   const handleInvest = async (investmentId: string) => {
+console.error("Investment tx status :", isWaitingTransactionExecution);
     try {
       if (!investmentAmount) {
         toast.error("Please enter an investment amount");
+        setIsWaitingTransactionExecution(false)
         return;
       }
 
@@ -32,6 +36,7 @@ export const useInvestment = (tokenAddress?: string) => {
         investmentId,
         amount: investmentAmount
       });
+      setIsWaitingTransactionExecution(true)
 
       // First approve the token spend
       await approveAndInvest(
@@ -40,18 +45,22 @@ export const useInvestment = (tokenAddress?: string) => {
         async (id: string, amount: number) => {
           console.log("Investment callback triggered with:", { id, amount });
         const tx =  await handleMakeInvestment(id,amount)
+        setIsWaitingTransactionExecution(false)
       await waitForTransaction(tx.response.transaction_hash)
-      setIsWaitingTransactionExecution(false)
- 
-  
+      
         // checkTransaction((tx.response.transaction_hash))
           
         }
       );
+      setIsWaitingTransactionExecution(false)
     } catch (error) {
+  console.error("Investment tx status :", isWaitingTransactionExecution);
       console.error("Investment error:", error);
+           console.error("Investment tx status :", isWaitingTransactionExecution);
       toast.error("Investment failed");
     }
+    console.error("Investment tx status :", isWaitingTransactionExecution);
+        setIsWaitingTransactionExecution(false)
   };
 
   return {
@@ -67,7 +76,8 @@ export const useInvestment = (tokenAddress?: string) => {
     refreshTokenData,
     txData,
     isWaitingApproval,
-    isWaitingTransactionExecution
+    isWaitingTransactionExecution,
+    setIsWaitingTransactionExecution
 
   };
 };

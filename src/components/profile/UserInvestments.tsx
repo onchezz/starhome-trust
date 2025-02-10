@@ -34,6 +34,14 @@ export const UserInvestments = () => {
     isLoading,
   });
 
+  useEffect(() => {
+    const getPropertied = async () => {
+      const userInvest = await userInvestments;
+      console.log(`user fetched investments  =  ${userInvest}`);
+    };
+    getPropertied();
+  }, []);
+
   const handleWithdrawClick = async (
     investmentId: string,
     inputValue: string
@@ -93,6 +101,9 @@ export const UserInvestments = () => {
 
       await handleInvest(investmentId);
     };
+    if (balance == 0){
+      return (<div></div>)
+    }
 
     return (
       <Card className="overflow-hidden transform transition-all duration-300 hover:shadow-xl">
@@ -277,17 +288,41 @@ export const UserInvestments = () => {
           </TabsList>
           <TabsContent value="owned">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              {userInvestments?.map((investment) => (
+              {/* {userInvestments?.map((investment) => ( */}
+              {investmentProperties?.map((investment) => (
+                
                 <InvestmentCard key={investment.id} investment={investment} />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="listed">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              {investmentProperties?.map((investment) => (
-                <InvestmentListingCard key={investment.id} {...investment} />
-              ))}
-            </div>
+            {(!userInvestments.flatMap)? (
+              <div>
+                <Card
+                  className={cn(
+                    "backdrop-blur-xl border transition-all duration-300",
+                    theme === "dark"
+                      ? "bg-black/40 border-white/10"
+                      : "bg-white"
+                  )}
+                >
+                  <CardHeader>
+                    <CardTitle>Your Investments</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      No investments found.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                {userInvestments?.map((investment) => (
+                  <InvestmentListingCard key={investment.id} {...investment} />
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>

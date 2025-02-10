@@ -74,7 +74,8 @@ const EditProperty = () => {
       setFormData({
         ...property,
         agentId: address,
-        assetToken: matchingToken?.address || "", // Use the matched token address or empty string as fallback
+        assetToken: matchingToken?.address || "",
+        // Use the matched token address or empty string as fallback
       });
 
       if (property.imagesId) {
@@ -109,7 +110,7 @@ const EditProperty = () => {
     }) => {
       setFormData((prev) => ({
         ...prev,
-       
+
         latitude: location.latitude,
         longitude: location.longitude,
         locationAddress: location.address,

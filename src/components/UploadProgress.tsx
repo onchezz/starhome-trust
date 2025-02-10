@@ -37,6 +37,7 @@ const UploadProgress: React.FC<UploadProgressProps> = ({
   onCancel,
   status = "uploading",
   uploadStatus,
+ 
 }) => {
   const formatSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -64,55 +65,67 @@ const UploadProgress: React.FC<UploadProgressProps> = ({
 
   return (
     <div className="w-full space-y-4">
-      {/* Images Upload Progress */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {getStatusIcon("images")}
-            <span className="text-sm font-medium">Images</span>
+      {uploadStatus.images.isUploading ? (
+        <>
+          {/* Images Upload Progress */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                {getStatusIcon("images")}
+                <span className="text-sm font-medium">Images</span>
+              </div>
+              <span className="text-sm text-gray-500">
+                {uploadStatus.images.progress}%
+              </span>
+            </div>
+            <Progress.Root
+              className="relative overflow-hidden bg-gray-200 rounded-full w-full h-2"
+              value={uploadStatus.images.progress}
+            >
+              <Progress.Indicator
+                className={`h-full transition-transform duration-500 ease-out ${getStatusColor(
+                  "images"
+                )}`}
+                style={{
+                  transform: `translateX(-${
+                    100 - uploadStatus.images.progress
+                  }%)`,
+                }}
+              />
+            </Progress.Root>
           </div>
-          <span className="text-sm text-gray-500">
-            {uploadStatus.images.progress}%
-          </span>
-        </div>
-        <Progress.Root
-          className="relative overflow-hidden bg-gray-200 rounded-full w-full h-2"
-          value={uploadStatus.images.progress}
-        >
-          <Progress.Indicator
-            className={`h-full transition-transform duration-500 ease-out ${getStatusColor(
-              "images"
-            )}`}
-            style={{ transform: `translateX(-${100 - uploadStatus.images.progress}%)` }}
-          />
-        </Progress.Root>
-      </div>
-
-      {/* Documents Upload Progress */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {getStatusIcon("documents")}
-            <span className="text-sm font-medium">Documents</span>
+        </>
+      ) : (
+        <>
+          {/* Documents Upload Progress */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                {getStatusIcon("documents")}
+                <span className="text-sm font-medium">Documents</span>
+              </div>
+              <span className="text-sm text-gray-500">
+                {uploadStatus.documents.progress}%
+              </span>
+            </div>
+            <Progress.Root
+              className="relative overflow-hidden bg-gray-200 rounded-full w-full h-2"
+              value={uploadStatus.documents.progress}
+            >
+              <Progress.Indicator
+                className={`h-full transition-transform duration-500 ease-out ${getStatusColor(
+                  "documents"
+                )}`}
+                style={{
+                  transform: `translateX(-${
+                    100 - uploadStatus.documents.progress
+                  }%)`,
+                }}
+              />
+            </Progress.Root>
           </div>
-          <span className="text-sm text-gray-500">
-            {uploadStatus.documents.progress}%
-          </span>
-        </div>
-        <Progress.Root
-          className="relative overflow-hidden bg-gray-200 rounded-full w-full h-2"
-          value={uploadStatus.documents.progress}
-        >
-          <Progress.Indicator
-            className={`h-full transition-transform duration-500 ease-out ${getStatusColor(
-              "documents"
-            )}`}
-            style={{
-              transform: `translateX(-${100 - uploadStatus.documents.progress}%)`,
-            }}
-          />
-        </Progress.Root>
-      </div>
+        </>
+      )}
 
       <div className="flex justify-between text-xs text-gray-500">
         <span>{formatSize(totalSize - uploadedSize)} remaining</span>

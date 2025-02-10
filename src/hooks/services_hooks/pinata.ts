@@ -31,6 +31,22 @@ export async function readImages( ipfsHash:string) {
     console.log(error);
   }
 }
+export async function unpinImaged( ipfsHash:string) {
+  try {
+   const unpin = await pinata.unpin([
+  ipfsHash
+])
+ 
+
+    console.log("files deleted  :"+ unpin);
+
+    
+    // fetchIPFSData()
+    return unpin;
+  } catch (error) {
+    console.log(error);
+  }
+}
 interface IPFSResponse {
     data: any;
     status: number;

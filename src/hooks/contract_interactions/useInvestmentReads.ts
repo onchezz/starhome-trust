@@ -84,7 +84,7 @@ export const useInvestmentAssetsRead = () => {
       staleTime: 30000,
       cacheTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
-      enabled: !!address,
+      enabled: true,
 
     }
   });

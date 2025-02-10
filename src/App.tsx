@@ -33,7 +33,10 @@ function App() {
               <Route path="/property/create" element={<AddProperty />} />
               <Route path="/properties/:id/edit" element={<EditProperty />} />
               <Route path="/investment" element={<Investment />} />
-              <Route path="/investment/:id"element={<InvestmentDetailsPage />}/>
+              <Route
+                path="/investment/:id"
+                element={<InvestmentDetailsPage />}
+              />
               <Route path="/investment/create" element={<AddInvestment />} />
               <Route path="/investment/:id/edit" element={<EditInvestment />} />
               <Route path="/profile" element={<Profile />} />
