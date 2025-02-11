@@ -31,8 +31,8 @@ const ImageGalleryComponent = ({ imagesId }: ImageGalleryProps) => {
 
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-          <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
-        </div>
+          {/* <Loader2 className="w-8 h-8 animate-spin text-gray-500" /> */}   
+      <Shimmer  className="w-full h-full object-cover rounded-t-lg" /> </div>
       )}
 
       {imageUrls.length > 1 && (
