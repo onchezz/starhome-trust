@@ -8,18 +8,10 @@ import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Building, AlertCircle } from "lucide-react";
-import { parseImagesData } from "@/utils/imageUtils";
-import { useAccount, useConnect } from "@starknet-react/core";
+
 
 const Properties = () => {
-  const { address } = useAccount();
-  const { connect, connectors } = useConnect();
-  const handleConnectWallet = () => {
-    const connector = connectors[0];
-    if (connector) {
-      connect({ connector });
-    }
-  };
+  
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { saleProperties: properties, isLoading, error } = usePropertyRead();
 
@@ -32,9 +24,7 @@ const Properties = () => {
   });
 
   useEffect(() => {
-    // if (!address) {
-    //   handleConnectWallet();
-    // }
+ 
     // Set initial loading to false after properties are fetched
     if (!isLoading && properties) {
       setIsInitialLoading(false);
@@ -123,7 +113,7 @@ const Properties = () => {
   const PropertiesList = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredProperties.map((property: Property) => {
-        const { imageUrls } = parseImagesData(property.imagesId);
+        // const { imageUrls } = parseImagesData(property.imagesId);
         return (
           <PropertyCard
             key={property.id}

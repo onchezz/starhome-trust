@@ -17,7 +17,7 @@ import { parseImagesData } from "@/utils/imageUtils";
 
 const PropertyDetailsShimmer = () => {
   return (
-    <div className="min-h-screen bg-background animate-pulse">
+    <div className="min-h-screen bg-background animate-pulse container mx-auto pt-24 px-4">
       <div className="h-[400px] bg-gray-200 w-full" />
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
