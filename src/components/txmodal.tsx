@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface TransactionWidgetProps {
   hash: string;
@@ -80,7 +81,11 @@ export const SimpleTransactionWidget = ({ hash }) => {
                 </span>
               </div>
               <span className="text-xs font-mono text-gray-500 truncate max-w-[200px]">
-                {hash}
+              <a href={`https://sepolia.voyager.online/tx/${hash}`} target={'_blank'} rel='noreferrer'>
+          {hash}
+        </a>
+       
+               
               </span>
             </div>
           </div>
