@@ -63,8 +63,10 @@ export const SimpleTransactionWidget = ({ hash }) => {
 
   const handleReset = () => {
     // reset();
+   
     console.log("received data from tx", data.statusReceipt);
     // if (onReset) onReset();
+  
   };
 
   return (
