@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Property } from "@/types/property";
 import { useProperty } from "@/hooks/useProperty";
 
-
 interface PropertyInvestmentProps {
   property: Property;
   handlePayForProperty;
@@ -17,7 +16,6 @@ export const PropertyInvestment = ({
   property,
   handlePayForProperty,
   isLoadingTx,
-
 }: PropertyInvestmentProps) => {
   // const { handlePayForProperty } = useProperty();
 
@@ -59,7 +57,27 @@ export const PropertyInvestment = ({
             {property.annualGrowthRate}%
           </span>
         </div>
-        <Button
+        {property.status === "sold" ? (
+          <Button
+            className="w-full flex items-center justify-center gap-2"
+            size="lg"
+            disabled={true}
+          >
+            {/* <ShoppingCart className="h-4 w-4" /> */}
+            Sold
+          </Button>
+        ) : (
+          <Button
+            className="w-full flex items-center justify-center gap-2"
+            size="lg"
+            onClick={handleBuyNow}
+            disabled={isLoadingTx}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {isLoadingTx ? "Loading transaction ..." : "Buy Now"}
+          </Button>
+        )}
+        {/* <Button
           className="w-full flex items-center justify-center gap-2"
           size="lg"
           onClick={handleBuyNow}
@@ -67,7 +85,7 @@ export const PropertyInvestment = ({
         >
           <ShoppingCart className="h-4 w-4" />
           {isLoadingTx ? "Loading transaction ..." : "Buy Now"}
-        </Button>
+        </Button> */}
       </div>
     </Card>
   );

@@ -26,16 +26,6 @@ export interface PropertyCardProps {
 
 export const PropertyCard = ({
   property,
-  // id,
-  // title,
-  // location,
-  // price,
-  // askingPrice,
-  // interestedClients,
-  // annualGrowthRate,
-  // imagesUrl,
-  // propertyType,
-  // status,
   showUpdateButton,
 }: PropertyCardProps) => {
   console.log("PropertyCard imagesUrl:", property.imagesId);
@@ -44,15 +34,7 @@ export const PropertyCard = ({
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-48 overflow-hidden">
         <ImageGallery imagesId={property.imagesId} />
-        {/* <img
-          src={imagesUrl?.[0] || "/placeholder.svg"}
-          alt={title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
-          }}
-        /> */}
+    
         <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
           {property.status}
         </div>
