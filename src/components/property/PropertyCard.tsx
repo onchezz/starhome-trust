@@ -4,37 +4,26 @@ import { Button } from "@/components/ui/button";
 import { ImageGallery } from "../investment/ImageGallery";
 import { ExternalLink, ShoppingCart } from "lucide-react";
 import { Property } from "@/types/property";
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 
 export interface PropertyCardProps {
   property: Property;
-  // id: string;
-  // title: string;
-  // location: {
-  //   city: string;
-  //   state: string;
-  //   country: string;
-  // };
-  // price: number;
-  // askingPrice: number;
-  // interestedClients: number;
-  // annualGrowthRate: number;
-  // imagesUrl: string;
-  // propertyType: string;
-  // status: string;
+  withdraw;
   showUpdateButton?: boolean;
 }
 
 export const PropertyCard = ({
   property,
+  withdraw,
   showUpdateButton,
 }: PropertyCardProps) => {
   console.log("PropertyCard imagesUrl:", property.imagesId);
-
+  const { withdrawPropertyPayment, contractStatus } = usePropertyWrite();
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-48 overflow-hidden">
         <ImageGallery imagesId={property.imagesId} />
-    
+
         <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
           {property.status}
         </div>
@@ -64,17 +53,7 @@ export const PropertyCard = ({
             </p>
           </div>
         </div>
-        {showUpdateButton ? (
-          <div className="p-1">
-            <Link to={`/properties/${property.id}/edit`}>
-              <Button className="w-full" variant="outline">
-                Update Property
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div></div>
-        )}
+
         <div className="p-1">
           <Link to={`/properties/${property.id}`} state={{ property }}>
             <Button className="w-full" variant="outline">
@@ -85,16 +64,39 @@ export const PropertyCard = ({
         </div>
 
         {showUpdateButton ? (
-          <div className="p-1">
-            <Link
-              to={`/properties/${property.id}/requests`}
-              state={{ id: property.id }}
-            >
-              <Button className="w-full" variant="outline">
-                View Visit Requests
-              </Button>
-            </Link>
-          </div>
+          <>
+            <div className="p-1">
+              <Link
+                to={`/properties/${property.id}/requests`}
+                state={{ id: property.id }}
+              >
+                <Button className="w-full" variant="outline">
+                  View Visit Requests
+                </Button>
+              </Link>
+            </div>
+            <div className="p-1">
+              <Link to={`/properties/${property.id}/edit`}>
+                <Button className="w-full" variant="outline">
+                  Update Property
+                </Button>
+              </Link>
+            </div>
+
+            {property.status === "sold" ? (
+              <div className="p-1">
+                <Button
+                  className="w-full flex items-center justify-center gap-2"
+                  // variant="outline"
+                  onClick={() => withdrawPropertyPayment(property.id)}
+                >
+                  Withdraw Payments
+                </Button>
+              </div>
+            ) : (
+              <></>
+            )}
+          </>
         ) : (
           <div></div>
         )}

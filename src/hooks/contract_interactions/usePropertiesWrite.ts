@@ -57,11 +57,21 @@ import { PropertyConverter } from "@/types/property";
       throw error;
     }
   };
+   const withdrawPropertyPayment = async (property_id:string, ) => {
+    try {
+      const response = await execute("withdraw_from_property", [property_id]);
+      return { status: response };
+    } catch (error) {
+      console.error("Error sending payments:", error);
+      throw error;
+    }
+  };
 
   return {
     handleListSaleProperty,
     handleEditProperty,
   sendVisitPropertyRequest,
+  withdrawPropertyPayment,
   payForProperty,
     contractStatus
   };

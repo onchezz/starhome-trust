@@ -14,9 +14,13 @@ pub trait IStarhomesContract<TContractState> {
     fn send_visit_request(ref self: TContractState, visit_request: UserVisitRequest);
     fn read_visit_requests(self: @TContractState, property_id: felt252) -> Array<UserVisitRequest>;
 
-    fn invest_in_investment_property(ref self: TContractState, investment_id: felt252, amount: u256);
+    fn invest_in_investment_property(
+        ref self: TContractState, investment_id: felt252, amount: u256,
+    );
     fn get_property_balance(self: @TContractState, property_id: felt252) -> u256;
-    fn withdraw_from_investment_property(ref self: TContractState, investment_id: felt252, amount: u256);
+    fn withdraw_from_investment_property(
+        ref self: TContractState, investment_id: felt252, amount: u256,
+    );
     fn pay_property(ref self: TContractState, property_id: felt252, amount: u256);
     fn withdraw_from_property(ref self: TContractState, property_id: felt252);
     fn get_investors_for_investment(

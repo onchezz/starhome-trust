@@ -4,10 +4,12 @@ import { PropertyCard } from "@/components/property/PropertyCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseImagesData } from "@/utils/imageUtils";
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 
 export const AgentProperties = () => {
   const { address } = useAccount();
   const { properties, isLoading, error } = useAgentProperties(address || "");
+
 
   console.log("[AgentProperties] Current address:", address);
   console.log("[AgentProperties] Properties:", properties);
@@ -69,22 +71,8 @@ export const AgentProperties = () => {
               <PropertyCard
                 key={property.id}
                 property={property}
-                // id={property.id}
-                // title={property.title}
-                // location={{
-                //   city: property.city,
-                //   state: property.state,
-                //   country: property.country,
-                // }}
-                // price={property.price}
-                // askingPrice={property.asking_price}
-                // interestedClients={property.interestedClients}
-                // annualGrowthRate={property.annualGrowthRate}
-                // imagesUrl={property.imagesId}
-                // propertyType={property.propertyType}
-                // status={property.status}
                 showUpdateButton={true}
-              />
+                 withdraw={undefined}              />
             );
           })}
         </div>

@@ -60,16 +60,6 @@ const CreateProperty = () => {
     currency: "USD",
   });
 
-  // useEffect(() => {
-  //   if (id && existingProperty) {
-  //     setFormData(existingProperty);
-  //     setUrl(existingProperty.imagesId || "");
-  //   }
-  //   if (status === "connected") {
-  //     setOwnerAddress(address);
-  //     setFormData((prev) => ({ ...prev, agent_id: address }));
-  //   }
-  // }, [id, existingProperty, address, status]);
 
   const handleInputChange = (field: keyof Property, value: any) => {
     if (["price", "interested_clients", "asking_price"].includes(field)) {

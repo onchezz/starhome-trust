@@ -277,22 +277,24 @@ pub mod PropertyComponent {
                 property_id, property_agent: user, property_owner: user,
             };
             // let payment = self.property_payments.entry(owner).read();
-             let payment: PropertyPayment = self.property_payments.read(owner.clone());
-            assert(payment.available_amount < 0, 'no balance available');
+            let payment: PropertyPayment = self.property_payments.read(owner.clone());
+            assert(payment.available_amount > 0, 'no balance available');
             assert(
                 user == payment.property_owner || get_caller_address() == payment.property_agent,
                 'not authorized for withdrawal',
             );
-           
+
             let token = IERC20Dispatcher { contract_address: payment.asset_token };
-            let property: Property = self.get_property_by_id(payment.property_id);
-            if (get_caller_address() == payment.property_owner) {
-                let amount = property.price - payment.payed_amount;
-                token.transfer(payment.property_owner, amount);
-            } else {
-                let amount = property.asking_price - payment.payed_amount;
-                token.transfer(payment.property_owner, amount);
-            }
+            // let property: Property = self.get_property_by_id(payment.property_id);
+            // if (get_caller_address() == payment.property_owner) {
+            //     let amount = property.price - payment.payed_amount;
+            //     token.approve(get_contract_address(), amount);
+            //     token.transfer(payment.property_owner, amount);
+            // } else {
+            // let amount = property.asking_price - payment.payed_amount;
+
+            // }
+            token.transfer(payment.property_owner, payment.payed_amount);
         }
         fn _edit_listed_investment(
             ref self: ComponentState<TContractState>,

@@ -148,7 +148,7 @@ pub mod StarhomesContract {
         fn pay_property(ref self: ContractState, property_id: felt252, amount: u256) {
             self.properties._pay_property(property_id, amount)
         }
-        fn withdraw_from_property(ref self: ContractState, property_id: felt252,) {
+        fn withdraw_from_property(ref self: ContractState, property_id: felt252) {
             self.properties._withdraw_payment(property_id)
         }
 
@@ -157,7 +157,9 @@ pub mod StarhomesContract {
         ) -> felt252 {
             self.properties.edit_listed_investment_property(investment_id, investment)
         }
-        fn get_property_balance(self: @ContractState, property_id: felt252) -> u256 {
+        fn get_property_balance(
+            self: @ContractState, property_id: felt252,
+        ) -> u256 {
             self.properties._property_balance(property_id)
         }
 
