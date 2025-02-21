@@ -54,7 +54,7 @@ export const PropertyCard = ({
           }}
         /> */}
         <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
-          {status}
+          {property.status}
         </div>
       </div>
       <CardContent className="p-4">

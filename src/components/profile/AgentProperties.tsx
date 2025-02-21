@@ -68,20 +68,21 @@ export const AgentProperties = () => {
             return (
               <PropertyCard
                 key={property.id}
-                id={property.id}
-                title={property.title}
-                location={{
-                  city: property.city,
-                  state: property.state,
-                  country: property.country,
-                }}
-                price={property.price}
-                askingPrice={property.asking_price}
-                interestedClients={property.interestedClients}
-                annualGrowthRate={property.annualGrowthRate}
-                imagesUrl={property.imagesId}
-                propertyType={property.propertyType}
-                status={property.status}
+                property={property}
+                // id={property.id}
+                // title={property.title}
+                // location={{
+                //   city: property.city,
+                //   state: property.state,
+                //   country: property.country,
+                // }}
+                // price={property.price}
+                // askingPrice={property.asking_price}
+                // interestedClients={property.interestedClients}
+                // annualGrowthRate={property.annualGrowthRate}
+                // imagesUrl={property.imagesId}
+                // propertyType={property.propertyType}
+                // status={property.status}
                 showUpdateButton={true}
               />
             );
