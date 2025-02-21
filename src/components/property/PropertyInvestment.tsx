@@ -77,15 +77,6 @@ export const PropertyInvestment = ({
             {isLoadingTx ? "Loading transaction ..." : "Buy Now"}
           </Button>
         )}
-        {/* <Button
-          className="w-full flex items-center justify-center gap-2"
-          size="lg"
-          onClick={handleBuyNow}
-          disabled={isLoadingTx}
-        >
-          <ShoppingCart className="h-4 w-4" />
-          {isLoadingTx ? "Loading transaction ..." : "Buy Now"}
-        </Button> */}
       </div>
     </Card>
   );
