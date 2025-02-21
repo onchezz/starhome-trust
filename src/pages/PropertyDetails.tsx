@@ -181,7 +181,7 @@ const PropertyDetails = () => {
 
           <div className="space-y-6">
             <PropertyInvestment propertyId={property.id.toString()} />
-            <PropertySchedule />
+            <PropertySchedule property_id={property.id} agent_id={property.agentId} />
           </div>
         </div>
 

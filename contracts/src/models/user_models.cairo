@@ -46,7 +46,7 @@ pub struct UserVisitRequest {
     pub email: felt252,
     pub agent_id: ContractAddress,
     pub message: ByteArray, // IPFS CID for the profile image
-    pub visit_date: felt252,
+    pub visit_date: u64,
     pub timestamp: u64,
 }
 

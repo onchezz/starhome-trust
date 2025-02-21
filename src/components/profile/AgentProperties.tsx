@@ -80,7 +80,7 @@ export const AgentProperties = () => {
                 askingPrice={property.asking_price}
                 interestedClients={property.interestedClients}
                 annualGrowthRate={property.annualGrowthRate}
-                imagesUrl={imageUrls}
+                imagesUrl={property.imagesId}
                 propertyType={property.propertyType}
                 status={property.status}
                 showUpdateButton={true}

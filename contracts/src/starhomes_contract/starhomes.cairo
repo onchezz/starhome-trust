@@ -124,7 +124,7 @@ pub mod StarhomesContract {
             self.users_data._send_visit_request(visit_request);
         }
         fn read_visit_requests(
-            ref self: ContractState, property_id: felt252,
+            self: @ContractState, property_id: felt252,
         ) -> Array<UserVisitRequest> {
             let caller = get_caller_address();
             assert(self.users_data.is_user_registered(caller), Errors::USER_NOT_REGISTERED);

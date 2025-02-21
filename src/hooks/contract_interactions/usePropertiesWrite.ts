@@ -1,3 +1,4 @@
+import { VisitRequest, VisitRequestConverter } from './../../types/visit_request';
 import { useStarHomeWriteContract } from "../contract_hooks/useStarHomeWriteContract";
 import { Property } from "@/types/property";
 import { InvestmentAsset } from "@/types/investment";
@@ -36,12 +37,23 @@ export const usePropertyCreate = () => {
     }
   };
 
-
+ const sendVisitPropertyRequest = async ( visitRequest: Partial<VisitRequest>) => {
+    try {
+      const  sendVisitRequest  = VisitRequestConverter.convertToStarknetVisitRequest(visitRequest);
+      const response = await execute("send_visit_request", [
+        sendVisitRequest
+      ]);
+      return { status: response };
+    } catch (error) {
+      console.error("Error sending request property visit:", error);
+      throw error;
+    }
+  };
 
   return {
     handleListSaleProperty,
     handleEditProperty,
-  
+  sendVisitPropertyRequest,
     contractStatus
   };
 };
