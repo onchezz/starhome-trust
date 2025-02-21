@@ -190,8 +190,9 @@ export const useToken = (tokenAddress: string) => {
   );
 
   return {
-    ...tokenData,
+  ...tokenData,
     approveAndInvest,
+    balances:tokenData,
     allowance: tokenData.allowance,
     refreshTokenData: fetchAndCacheTokenData,
     isWaitingApproval,

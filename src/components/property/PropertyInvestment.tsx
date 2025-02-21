@@ -5,14 +5,19 @@ import { toast } from "sonner";
 import { Property } from "@/types/property";
 import { useProperty } from "@/hooks/useProperty";
 
+
 interface PropertyInvestmentProps {
   property: Property;
   handlePayForProperty;
+  isLoadingTx: boolean;
+  status;
 }
 
 export const PropertyInvestment = ({
   property,
   handlePayForProperty,
+  isLoadingTx,
+
 }: PropertyInvestmentProps) => {
   // const { handlePayForProperty } = useProperty();
 
@@ -25,8 +30,9 @@ export const PropertyInvestment = ({
   };
 
   const handleBuyNow = async () => {
-    await handlePayForProperty(property.id, property.asking_price);
-    toast.success("Proceeding to payment...");
+    const tx = await handlePayForProperty(property.id, property.asking_price);
+
+    toast.success("Proceeding to ", tx);
   };
 
   if (!property) {
@@ -57,9 +63,10 @@ export const PropertyInvestment = ({
           className="w-full flex items-center justify-center gap-2"
           size="lg"
           onClick={handleBuyNow}
+          disabled={isLoadingTx}
         >
           <ShoppingCart className="h-4 w-4" />
-          Buy Now
+          {isLoadingTx ? "Loading transaction ..." : "Buy Now"}
         </Button>
       </div>
     </Card>

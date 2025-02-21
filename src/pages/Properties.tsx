@@ -9,9 +9,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Building, AlertCircle } from "lucide-react";
 
-
 const Properties = () => {
-  
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { saleProperties: properties, isLoading, error } = usePropertyRead();
 
@@ -24,7 +22,6 @@ const Properties = () => {
   });
 
   useEffect(() => {
- 
     // Set initial loading to false after properties are fetched
     if (!isLoading && properties) {
       setIsInitialLoading(false);
@@ -114,25 +111,8 @@ const Properties = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredProperties.map((property: Property) => {
         // const { imageUrls } = parseImagesData(property.imagesId);
-        return (
-          <PropertyCard
-            key={property.id}
-            id={property.id}
-            title={property.title}
-            location={{
-              city: property.city,
-              state: property.state,
-              country: property.country,
-            }}
-            price={property.price}
-            askingPrice={property.asking_price}
-            interestedClients={property.interestedClients}
-            annualGrowthRate={property.annualGrowthRate}
-            imagesUrl={property.imagesId}
-            propertyType={property.propertyType}
-            status={property.status}
-          />
-        );
+
+        return <PropertyCard key={property.id} property={property} />;
       })}
     </div>
   );

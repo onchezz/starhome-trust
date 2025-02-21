@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import StarknetProvider from "@/providers/StarknetProvider";
 import Index from "@/pages/Index";
 import Properties from "@/pages/Properties";
-import PropertyDetails from "@/pages/PropertyDetails";
+import { PropertyDetailsPage } from "./pages/PropertyDetails";
 import AddProperty from "@/pages/AddProperty";
 import EditProperty from "@/pages/EditProperty";
 import Investment from "@/pages/Investment";
@@ -21,6 +21,7 @@ import InvestmentDetailsPage from "./components/investment/InvestmentCard";
 import { VisitRequestsCard } from "./components/profile/UserPropertiesVisitRequests";
 import VisitRequestsPage from "./pages/VisitRequestsPage";
 
+
 function App() {
   return (
     <StarknetProvider>
@@ -31,7 +32,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/properties" element={<Properties />} />
-              <Route path="/properties/:id" element={<PropertyDetails />} />
+              <Route path="/properties/:id" element={<PropertyDetailsPage />} />
               <Route path="/property/create" element={<AddProperty />} />
               <Route path="/properties/:id/edit" element={<EditProperty />} />
               <Route path="/investment" element={<Investment />} />

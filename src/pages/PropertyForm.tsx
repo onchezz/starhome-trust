@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
+// import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { usePropertyRead } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesReads";
 import { useTransactionStatus } from "@/hooks/useTransactionStatus";
@@ -21,6 +21,7 @@ import { parseImagesData } from "@/utils/imageUtils";
 import { tokenOptions } from "@/utils/constants";
 import { findMatchingToken } from "@/utils/tokenMatching";
 import { unpinImaged } from "@/hooks/services_hooks/pinata";
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 
 const generateShortUUID = () => {
   const fullUUID = uuidv4();
@@ -31,7 +32,7 @@ const PropertyForm = () => {
   const { id } = useParams();
   const { address, status } = useAccount();
   const { handleListSaleProperty, handleEditProperty, contractStatus } =
-    usePropertyCreate();
+    usePropertyWrite();
   const { saleProperties, isLoading: isLoadingProperty } = usePropertyRead();
   const { properties: agentProperties } = useAgentProperties(address || "");
   const { checkTransaction } = useTransactionStatus();

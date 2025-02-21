@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PropertyHero } from "@/components/property/PropertyHero";
 import { PropertyMap } from "@/components/property/PropertyMap";
 import { PropertyInvestment } from "@/components/property/PropertyInvestment";
@@ -16,6 +16,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { parseImagesData } from "@/utils/imageUtils";
 import { useProperty } from "@/hooks/useProperty";
 import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
+import { Property } from "@/types/property";
 
 const PropertyDetailsShimmer = () => {
   return (
@@ -48,22 +49,38 @@ const PropertyDetailsShimmer = () => {
   );
 };
 
-const PropertyDetails = () => {
+interface PropertyDetailsProps {
+  property: Property;
+  // isLoading: boolean;
+  // error: string;
+}
+
+// const InvestmentDetails = ({ pro }: PropertyDetailsProps
+const PropertyDetails = ({
+  property,
+}: // isLoading,
+// error,
+PropertyDetailsProps) => {
   const { id } = useParams<{ id: string }>();
   const { sendVisitPropertyRequest, contractStatus } = usePropertyWrite();
-  const { handlePayForProperty } = useProperty();
+  const [tokenAddresses, setTokenAddress] = useState<string>("");
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   console.log("Property ID:", id);
-  const { property, isLoading, error } = usePropertyReadById(id || "");
+  // const { property, isLoading, error } = usePropertyReadById(id || "");
   const { user: agent, isLoading: isLoadingAgent } = useUserReadByAddress(
     property?.agentId || ""
   );
-
   // Parse images data using our utility
   const { imageUrls } = parseImagesData(property?.imagesId || "");
   console.log("Parsed image URLs:", imageUrls);
-
+  const {
+    handlePayForProperty,
+    isWaitingApproval,
+    isWaitingTransactionExecution,
+    contractStatus: buyingStatus,
+  } = useProperty(property.assetToken || "");
   const handleCopyAddress = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -73,12 +90,12 @@ const PropertyDetails = () => {
     }
   };
 
-  if (isLoading || isLoadingAgent) {
+  if (isLoadingAgent) {
     return <PropertyDetailsShimmer />;
   }
 
-  if (error || !property) {
-    console.error("Error loading property:", error);
+  if (!property) {
+    // console.error("Error loading property:", error);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -187,6 +204,8 @@ const PropertyDetails = () => {
             <PropertyInvestment
               property={property}
               handlePayForProperty={handlePayForProperty}
+              isLoadingTx={isWaitingApproval || isWaitingTransactionExecution}
+              status={buyingStatus}
             />
             <PropertySchedule
               property_id={property.id}
@@ -220,4 +239,18 @@ const PropertyDetails = () => {
   );
 };
 
-export default PropertyDetails;
+// export default PropertyDetails;
+
+import { useLocation, Navigate } from "react-router-dom";
+// import { InvestmentDetails } from "./InvestmentDetails";
+
+export const PropertyDetailsPage = () => {
+  const location = useLocation();
+  const property = location.state?.property;
+
+  if (!property) {
+    return <Navigate to="/" replace />; // Redirect if no investment data
+  }
+
+  return <PropertyDetails property={property} />;
+};

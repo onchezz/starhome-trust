@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSetTx, useTransactionStatus } from "./useTransactionStatus";
 import { useTransactionReceipt } from "@starknet-react/core";
 import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
-// import { usePropertyWrite } from "./contract_interactions/usePropertiesWrite";
+
 
 export const useProperty = (tokenAddress?: string) => {
   
