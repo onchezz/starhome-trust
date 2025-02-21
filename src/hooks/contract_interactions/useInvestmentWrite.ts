@@ -36,7 +36,7 @@ export const useInvestmentWrite = () => {
     try {
       console.log("Initiating Investment:", { investmentId, amount });
       
-      const response = await execute("invest_in_property", [
+      const response = await execute("invest_in_investment_property", [
         investmentId,
         amount
       ]);

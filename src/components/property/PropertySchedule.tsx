@@ -11,12 +11,14 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { VisitRequest } from "@/types/visit_request";
 import { useAccount } from "@starknet-react/core";
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 
 interface PropertyScheduleProps {
   property_id: string;
+  sendVisitPropertyRequest;
+  contractStatus;
   agent_id: string;
   user_id?: string; // Optional as the user might not be logged in
 }
@@ -24,12 +26,13 @@ interface PropertyScheduleProps {
 export const PropertySchedule = ({
   property_id,
   agent_id,
+  sendVisitPropertyRequest, contractStatus,
   user_id = "",
 }: PropertyScheduleProps) => {
   const [date, setDate] = useState<Date>();
   const { account } = useAccount();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { sendVisitPropertyRequest, contractStatus } = usePropertyCreate();
+  // const { sendVisitPropertyRequest, contractStatus } = usePropertyWrite();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

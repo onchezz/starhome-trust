@@ -3,23 +3,29 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Property } from "@/types/property";
+import { useProperty } from "@/hooks/useProperty";
 
 interface PropertyInvestmentProps {
-  property:Property ;
+  property: Property;
+  handlePayForProperty;
 }
 
-export const PropertyInvestment = ({ property }: PropertyInvestmentProps) => {
- 
-  
+export const PropertyInvestment = ({
+  property,
+  handlePayForProperty,
+}: PropertyInvestmentProps) => {
+  // const { handlePayForProperty } = useProperty();
+
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       maximumFractionDigits: 0,
     }).format(price);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
+    await handlePayForProperty(property.id, property.asking_price);
     toast.success("Proceeding to payment...");
   };
 
@@ -33,7 +39,9 @@ export const PropertyInvestment = ({ property }: PropertyInvestmentProps) => {
       <div className="space-y-4">
         <div className="flex justify-between">
           <span className="text-gray-600">Asking Price</span>
-          <span className="font-semibold">{formatPrice(property.asking_price)}</span>
+          <span className="font-semibold">
+            {formatPrice(property.asking_price)}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Interested Clients</span>
@@ -41,10 +49,12 @@ export const PropertyInvestment = ({ property }: PropertyInvestmentProps) => {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Annual Growth Rate</span>
-          <span className="font-semibold text-green-600">{property.annualGrowthRate}%</span>
+          <span className="font-semibold text-green-600">
+            {property.annualGrowthRate}%
+          </span>
         </div>
-        <Button 
-          className="w-full flex items-center justify-center gap-2" 
+        <Button
+          className="w-full flex items-center justify-center gap-2"
           size="lg"
           onClick={handleBuyNow}
         >

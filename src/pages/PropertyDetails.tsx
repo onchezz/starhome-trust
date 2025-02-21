@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { parseImagesData } from "@/utils/imageUtils";
+import { useProperty } from "@/hooks/useProperty";
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 
 const PropertyDetailsShimmer = () => {
   return (
@@ -48,6 +50,8 @@ const PropertyDetailsShimmer = () => {
 
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
+  const { sendVisitPropertyRequest, contractStatus } = usePropertyWrite();
+  const { handlePayForProperty } = useProperty();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   console.log("Property ID:", id);
@@ -180,10 +184,15 @@ const PropertyDetails = () => {
           </div>
           {/* <PropertyInvestment property={property} /> */}
           <div className="space-y-6">
-            <PropertyInvestment property={property} />
+            <PropertyInvestment
+              property={property}
+              handlePayForProperty={handlePayForProperty}
+            />
             <PropertySchedule
               property_id={property.id}
               agent_id={property.agentId}
+              sendVisitPropertyRequest={sendVisitPropertyRequest}
+              contractStatus={contractStatus}
             />
           </div>
         </div>

@@ -9,7 +9,6 @@ import { Loader2, LoaderCircle } from "lucide-react";
 import BasicInformation from "@/components/investment/BasicInformation";
 import FinancialDetails from "@/components/investment/FinancialDetails";
 import { InvestmentAsset } from "@/types/investment";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
 import InvestmentFormHeader from "@/components/investment/InvestmentFormHeader";
 import UploadGrid from "@/components/investment/UploadGrid";
 import BulletPointsGrid from "@/components/investment/BulletPointsGrid";

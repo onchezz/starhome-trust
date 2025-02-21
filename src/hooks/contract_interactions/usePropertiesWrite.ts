@@ -1,10 +1,9 @@
 import { VisitRequest, VisitRequestConverter } from './../../types/visit_request';
 import { useStarHomeWriteContract } from "../contract_hooks/useStarHomeWriteContract";
 import { Property } from "@/types/property";
-import { InvestmentAsset } from "@/types/investment";
 import { PropertyConverter } from "@/types/property";
 
-export const usePropertyCreate = () => {
+ export   const usePropertyWrite = () => {
   const { execute, status: contractStatus } = useStarHomeWriteContract();
 
   const handleListSaleProperty = async (property: Partial<Property>) => {

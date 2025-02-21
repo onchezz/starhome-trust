@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useAgentProperties } from "@/hooks/contract_interactions/usePropertiesReads";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
+// import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 import { Property } from "@/types/property";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,12 @@ import { useAccount } from "@starknet-react/core";
 import { tokenOptions } from "@/utils/constants";
 import { findMatchingToken } from "@/utils/tokenMatching";
 
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 const EditProperty = () => {
   const { id } = useParams();
   const { address } = useAccount();
   const { properties } = useAgentProperties(address || "");
-  const { handleEditProperty, contractStatus } = usePropertyCreate();
+  const { handleEditProperty, contractStatus } = usePropertyWrite();
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
-import { usePropertyCreate } from "@/hooks/contract_interactions/usePropertiesWrite";
+// import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
 import BasicInformation from "@/components/property/form/BasicInformation";
 import PricingInformation from "@/components/property/form/PricingInformation";
 import PropertyFeatures from "@/components/property/form/PropertyFeatures";
@@ -19,6 +19,8 @@ import { handleImageUpload } from "@/utils/uploadUtils";
 import { tokenOptions } from "@/utils/constants";
 import { useTransactionStatus } from "@/hooks/useTransactionStatus";
 
+import { usePropertyWrite } from "@/hooks/contract_interactions/usePropertiesWrite";
+
 const generateShortUUID = () => {
   const fullUUID = uuidv4();
   return fullUUID.replace(/-/g, "").substring(0, 21);
@@ -27,7 +29,7 @@ const generateShortUUID = () => {
 const CreateProperty = () => {
   const { id } = useParams();
   const { address, status } = useAccount();
-  const { handleListSaleProperty, contractStatus } = usePropertyCreate();
+  const { handleListSaleProperty, contractStatus } = usePropertyWrite();
   const { saleProperties: properties, isLoading: isLoadingProperty } =
     usePropertyRead();
   const { checkTransaction } = useTransactionStatus();
