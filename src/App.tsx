@@ -18,6 +18,8 @@ import Blogs from "@/pages/Blogs";
 import BlogDetails from "@/pages/BlogDetails";
 import EditInvestment from "./pages/EditInvestment";
 import InvestmentDetailsPage from "./components/investment/InvestmentCard";
+import { VisitRequestsCard } from "./components/profile/UserPropertiesVisitRequests";
+import VisitRequestsPage from "./pages/VisitRequestsPage";
 
 function App() {
   return (
@@ -36,6 +38,10 @@ function App() {
               <Route
                 path="/investment/:id"
                 element={<InvestmentDetailsPage />}
+              />
+              <Route
+                path="/properties/:id/requests"
+                element={<VisitRequestsPage />}
               />
               <Route path="/investment/create" element={<AddInvestment />} />
               <Route path="/investment/:id/edit" element={<EditInvestment />} />

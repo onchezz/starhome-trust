@@ -101,7 +101,7 @@ const PropertyDetails = () => {
         title={property.title.toString()}
         location={`${property.locationAddress}, ${property.city}, ${property.state}`}
         images={imageUrls.length > 0 ? imageUrls : ["/placeholder.svg"]}
-        totalInvestment={Number(property.price)}
+        totalInvestment={Number(property.asking_price)}
       />
 
       <div className="container mx-auto px-4 py-8">
@@ -178,10 +178,13 @@ const PropertyDetails = () => {
               onImageClick={setSelectedImage}
             />
           </div>
-
+          {/* <PropertyInvestment property={property} /> */}
           <div className="space-y-6">
-            <PropertyInvestment propertyId={property.id.toString()} />
-            <PropertySchedule property_id={property.id} agent_id={property.agentId} />
+            <PropertyInvestment property={property} />
+            <PropertySchedule
+              property_id={property.id}
+              agent_id={property.agentId}
+            />
           </div>
         </div>
 

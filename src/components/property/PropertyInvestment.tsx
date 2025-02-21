@@ -2,16 +2,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import propertiesData from "@/data/properties.json";
-import investmentsData from "@/data/investments.json";
+import { Property } from "@/types/property";
 
 interface PropertyInvestmentProps {
-  propertyId: string;
+  property:Property ;
 }
 
-export const PropertyInvestment = ({ propertyId }: PropertyInvestmentProps) => {
-  // Find the property data
-  const property = propertiesData.properties.find(p => p.id === propertyId);
+export const PropertyInvestment = ({ property }: PropertyInvestmentProps) => {
+ 
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -35,7 +33,7 @@ export const PropertyInvestment = ({ propertyId }: PropertyInvestmentProps) => {
       <div className="space-y-4">
         <div className="flex justify-between">
           <span className="text-gray-600">Asking Price</span>
-          <span className="font-semibold">{formatPrice(property.askingPrice)}</span>
+          <span className="font-semibold">{formatPrice(property.asking_price)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Interested Clients</span>

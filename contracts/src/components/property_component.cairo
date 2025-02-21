@@ -1,7 +1,8 @@
 #[starknet::component]
 pub mod PropertyComponent {
+    use starknet::storage::StorageMapReadAccess;
     use starhomes::interfaces::property::IPropertyComponentTrait;
-    use starhomes::models::property_models::{Property};
+    use starhomes::models::property_models::{Property, PropertyOwner, PropertyPayment};
     use starhomes::models::contract_events::{
         PropertyListed, PropertySold, InvestmentMade, InvestmentListed,
     };
@@ -10,10 +11,11 @@ pub mod PropertyComponent {
         Map, StorageMapWriteAccess, StoragePointerReadAccess, StoragePointerWriteAccess, Vec,
         VecTrait, StoragePathEntry, MutableVecTrait,
     };
+    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use core::option::Option;
+    use starknet::{ContractAddress, get_caller_address, get_block_timestamp, get_contract_address};
     // use starhomes::messages::errors::Errors;
     // use starhomes::messages::success::Messages;
-    use starknet::ContractAddress;
     // use starknet::{get_caller_address, get_block_timestamp};
     use core::array::ArrayTrait;
     use core::traits::Into;
@@ -41,6 +43,7 @@ pub mod PropertyComponent {
         property_investments_by_investor: Map::<ContractAddress, Vec<u256>>,
         property_sale_count: u256,
         property_investment_count: u256,
+        property_payments: Map::<PropertyOwner, PropertyPayment>,
     }
 
 
@@ -221,6 +224,75 @@ pub mod PropertyComponent {
         }
         fn _add_investment_asset(ref self: ComponentState<TContractState>, asset: InvestmentAsset) {
             self.investments_properties.write(asset.id.clone(), asset.clone());
+        }
+        fn _pay_property(
+            ref self: ComponentState<TContractState>,
+            property_id: felt252, // asset_token: ContractAddress,
+            payed_amount: u256,
+            // paid_by: ContractAddress,
+        // property_owner: ContractAddress,
+        // property_agent: ContractAddress,
+        ) {
+            let property: Property = self.get_property_by_id(property_id);
+            // assert(paid_by == get_caller_address(), 'payer not caller');
+            let payment = PropertyPayment {
+                property_id,
+                asset_token: property.asset_token,
+                payed_amount,
+                paid_by: get_caller_address(),
+                property_owner: property.agent_id,
+                property_agent: property.agent_id,
+                available_amount: payed_amount,
+                timestamp: get_block_timestamp(),
+            };
+
+            self._edit_property(property.id, Property { status: 'sold', ..property });
+            let owner_details: PropertyOwner = PropertyOwner {
+                property_id: payment.property_id,
+                property_agent: payment.property_agent,
+                property_owner: payment.property_owner,
+            };
+            // Transfer tokens
+            let token = IERC20Dispatcher { contract_address: payment.asset_token };
+            token.transfer_from(payment.paid_by, get_contract_address(), payment.payed_amount);
+
+            self.property_payments.write(owner_details, payment);
+            let sale_cont = self.property_sale_count.read();
+            self.property_sale_count.write(sale_cont + 1);
+        }
+        fn _property_balance(self: @ComponentState<TContractState>, property_id: felt252) -> u256 {
+            let property: Property = self.get_property_by_id(property_id);
+            let owner_details: PropertyOwner = PropertyOwner {
+                property_id, property_agent: property.agent_id, property_owner: property.agent_id,
+            };
+            let payment = self.property_payments.entry(owner_details).read();
+            payment.available_amount
+        }
+
+
+        fn _withdraw_payment(ref self: ComponentState<TContractState>, property_id: felt252) {
+            let user = get_caller_address();
+
+            let owner: PropertyOwner = PropertyOwner {
+                property_id, property_agent: user, property_owner: user,
+            };
+            // let payment = self.property_payments.entry(owner).read();
+             let payment: PropertyPayment = self.property_payments.read(owner.clone());
+            assert(payment.available_amount < 0, 'no balance available');
+            assert(
+                user == payment.property_owner || get_caller_address() == payment.property_agent,
+                'not authorized for withdrawal',
+            );
+           
+            let token = IERC20Dispatcher { contract_address: payment.asset_token };
+            let property: Property = self.get_property_by_id(payment.property_id);
+            if (get_caller_address() == payment.property_owner) {
+                let amount = property.price - payment.payed_amount;
+                token.transfer(payment.property_owner, amount);
+            } else {
+                let amount = property.asking_price - payment.payed_amount;
+                token.transfer(payment.property_owner, amount);
+            }
         }
         fn _edit_listed_investment(
             ref self: ComponentState<TContractState>,

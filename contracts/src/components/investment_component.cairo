@@ -39,6 +39,7 @@ pub mod InvestmentComponent {
         pub earned_returns: Map<
             (ContractAddress, felt252), u256,
         >, // Earned returns per investor per investment
+       
         pub total_invested_amount: Map<
             felt252, u256,
         >, // Total amount ever invested in each investment
@@ -322,6 +323,7 @@ pub mod InvestmentComponent {
             self.initialized_investments.read(investment_id)
         }
        
+
 
         fn _calculate_returns(
             self: @ComponentState<TContractState>,

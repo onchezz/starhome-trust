@@ -121,6 +121,15 @@ pub mod StarhomesContract {
                 self.users_data.is_user_registered(visit_request.user_id.clone()),
                 Errors::USER_NOT_REGISTERED,
             );
+            // _edit_property
+
+            let requests: u64 = self.read_visit_requests(visit_request.property_id).len().into();
+            let property = self.get_property(visit_request.property_id);
+            self
+                .properties
+                ._edit_property(
+                    property.id, Property { interested_clients: requests + 1, ..property },
+                );
             self.users_data._send_visit_request(visit_request);
         }
         fn read_visit_requests(
@@ -136,14 +145,25 @@ pub mod StarhomesContract {
         ) -> felt252 {
             self.properties.edit_property(property_id, property)
         }
+        fn pay_property(ref self: ContractState, property_id: felt252, amount: u256) {
+            self.properties._pay_property(property_id, amount)
+        }
+        fn withdraw_from_property(ref self: ContractState, property_id: felt252,) {
+            self.properties._withdraw_payment(property_id)
+        }
 
         fn edit_listed_investment_property(
             ref self: ContractState, investment_id: felt252, investment: InvestmentAsset,
         ) -> felt252 {
             self.properties.edit_listed_investment_property(investment_id, investment)
         }
+        fn get_property_balance(self: @ContractState, property_id: felt252) -> u256 {
+            self.properties._property_balance(property_id)
+        }
 
-        fn invest_in_property(ref self: ContractState, investment_id: felt252, amount: u256) {
+        fn invest_in_investment_property(
+            ref self: ContractState, investment_id: felt252, amount: u256,
+        ) {
             // Verify user is registered
             let caller = starknet::get_caller_address();
             assert(self.users_data.is_investor_registered(caller), 'Not registered as investor');
@@ -182,7 +202,9 @@ pub mod StarhomesContract {
                 );
         }
 
-        fn withdraw_from_property(ref self: ContractState, investment_id: felt252, amount: u256) {
+        fn withdraw_from_investment_property(
+            ref self: ContractState, investment_id: felt252, amount: u256,
+        ) {
             // Verify user is registered
             let caller = starknet::get_caller_address();
             assert(self.users_data.is_investor_registered(caller), 'Not registered as investor');

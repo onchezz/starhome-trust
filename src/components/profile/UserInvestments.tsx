@@ -94,7 +94,7 @@ export const UserInvestments = () => {
 
     const handleInvestClick = async (investmentId: string) => {
       if (!address) {
-        handleConnectWallet();
+        // handleConnectWallet();
         return;
       }
       await refreshTokenData();
@@ -329,10 +329,4 @@ export const UserInvestments = () => {
     </Card>
   );
 };
-function useCallback(arg0: () => Promise<void>, arg1: any[]) {
-  throw new Error("Function not implemented.");
-}
 
-function handleConnectWallet() {
-  throw new Error("Function not implemented.");
-}

@@ -5,6 +5,7 @@ import { openDB } from "@/utils/indexedDb";
 import { Abi, useCall } from "@starknet-react/core";
 import { starhomes_abi } from "@/data/starhomes_abi";
 import { starhomesContract } from "@/utils/constants";
+import { VisitRequestConverter } from "@/types/visit_request";
 
 const PROPERTIES_CACHE_KEY = 'properties';
 
@@ -88,6 +89,22 @@ export const useAgentProperties = (agentId?: string) => {
   }, [data]);
 
   return { properties, isLoading, error };
+};
+export const usePropertiesVisitRequest = (propertyId?: string) => {
+  const { data, isLoading, error } = useStarHomeReadContract({
+    functionName: "read_visit_requests",
+    args: propertyId ? [propertyId] : [],
+  });
+
+  const propertiesVisit = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+    return data.map((propertyVisitsRequests: any) => ({
+      ...VisitRequestConverter.fromStarknetVisitRequest(propertyVisitsRequests),
+      agentId: propertyVisitsRequests.agentId,
+    }));
+  }, [data]);
+
+  return { propertiesVisit, isLoading, error };
 };
 
 

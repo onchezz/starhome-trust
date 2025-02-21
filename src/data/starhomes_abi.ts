@@ -354,7 +354,7 @@ export const starhomes_abi =[
       },
       {
         "name": "visit_date",
-        "type": "core::felt252"
+        "type": "core::integer::u64"
       },
       {
         "name": "timestamp",
@@ -420,11 +420,11 @@ export const starhomes_abi =[
             "type": "core::array::Array::<starhomes::models::user_models::UserVisitRequest>"
           }
         ],
-        "state_mutability": "external"
+        "state_mutability": "view"
       },
       {
         "type": "function",
-        "name": "invest_in_property",
+        "name": "invest_in_investment_property",
         "inputs": [
           {
             "name": "investment_id",
@@ -440,7 +440,23 @@ export const starhomes_abi =[
       },
       {
         "type": "function",
-        "name": "withdraw_from_property",
+        "name": "get_property_balance",
+        "inputs": [
+          {
+            "name": "property_id",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "withdraw_from_investment_property",
         "inputs": [
           {
             "name": "investment_id",
@@ -449,6 +465,34 @@ export const starhomes_abi =[
           {
             "name": "amount",
             "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "pay_property",
+        "inputs": [
+          {
+            "name": "property_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "withdraw_from_property",
+        "inputs": [
+          {
+            "name": "property_id",
+            "type": "core::felt252"
           }
         ],
         "outputs": [],

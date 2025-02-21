@@ -49,11 +49,21 @@ export const usePropertyCreate = () => {
       throw error;
     }
   };
+   const payForProperty = async (property_id:string,amount:number ) => {
+    try {
+      const response = await execute("pay_property", [property_id,amount]);
+      return { status: response };
+    } catch (error) {
+      console.error("Error sending payments:", error);
+      throw error;
+    }
+  };
 
   return {
     handleListSaleProperty,
     handleEditProperty,
   sendVisitPropertyRequest,
+  payForProperty,
     contractStatus
   };
 };

@@ -30,7 +30,7 @@ export class VisitRequestConverter {
             phone: this.feltToString(starknetVisitRequest.phone),
             email: this.feltToString(starknetVisitRequest.email),
             agent_id: this.addressToString(starknetVisitRequest.agent_id),
-            message: this.feltToString(starknetVisitRequest.message),
+            message: starknetVisitRequest.message,
             visit_date: new Date(Number(starknetVisitRequest.visit_date) * 1000),
             timestamp: new Date(Number(starknetVisitRequest.timestamp) * 1000)
         };

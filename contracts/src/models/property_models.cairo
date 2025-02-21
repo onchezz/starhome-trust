@@ -56,3 +56,20 @@ pub struct Property {
     pub asset_token: ContractAddress,
 }
 
+#[derive(Clone, Drop, Serde, starknet::Store)]
+pub struct PropertyPayment {
+    pub property_id: felt252,
+    pub asset_token: ContractAddress,
+    pub payed_amount: u256,
+    pub paid_by: ContractAddress,
+    pub property_owner: ContractAddress,
+    pub property_agent: ContractAddress,
+    pub available_amount:u256,
+    pub timestamp:u64,
+}
+#[derive(Clone, Drop, Serde, Hash, starknet::Store)]
+pub struct PropertyOwner {
+    pub property_id: felt252,
+    pub property_agent: ContractAddress,
+    pub property_owner: ContractAddress,
+}

@@ -70,7 +70,7 @@ export const PropertyHero = ({ title, location, images, totalInvestment }: Prope
             <div className="text-3xl font-bold text-primary">
               {formatPrice(totalInvestment)}
             </div>
-            <div className="text-sm text-gray-600">Investment Required</div>
+            <div className="text-sm text-gray-600">Property Price</div>
           </div>
         </div>
       </div>

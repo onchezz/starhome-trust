@@ -11,7 +11,7 @@ export const useInvestmentWrite = () => {
     try {
       console.log("Initiating withdrawal:", { investmentId, amount });
       
-      const response = await execute("withdraw_from_property", [
+      const response = await execute("withdraw_from_investment_property", [
         investmentId,
         amount*Math.pow(10,6)
       ]);

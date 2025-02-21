@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ImageGallery } from "../investment/ImageGallery";
+import { ExternalLink, ShoppingCart } from "lucide-react";
 
 export interface PropertyCardProps {
   id: string;
@@ -39,7 +40,7 @@ export const PropertyCard = ({
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-48 overflow-hidden">
-         <ImageGallery imagesId={imagesUrl} />
+        <ImageGallery imagesId={imagesUrl} />
         {/* <img
           src={imagesUrl?.[0] || "/placeholder.svg"}
           alt={title}
@@ -77,20 +78,39 @@ export const PropertyCard = ({
           </div>
         </div>
         {showUpdateButton ? (
-          <Link to={`/properties/${id}/edit`}>
-            <Button className="w-full" variant="outline">
-              update
-            </Button>
-          </Link>
+          <div className="p-1">
+            <Link to={`/properties/${id}/edit`}>
+              <Button className="w-full" variant="outline">
+                Update Property
+              </Button>
+            </Link>
+          </div>
         ) : (
           <div></div>
         )}
-
-        <Link to={`/properties/${id}`}>
-          <Button className="w-full" variant="outline">
-            View More
-          </Button>
-        </Link>
+        <div className="p-1">
+          <Link to={`/properties/${id}`}>
+            <Button className="w-full" variant="outline">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              More Details
+            </Button>
+          </Link>
+        </div>
+     
+        {showUpdateButton ? (
+          <div className="p-1">
+            <Link
+              to={`/properties/${id}/requests`}
+              state={{ propertyTitle: title }}
+            >
+              <Button className="w-full" variant="outline">
+                View Visit Requests
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </CardContent>
     </Card>
   );
