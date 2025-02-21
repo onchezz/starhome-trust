@@ -91,11 +91,12 @@ import {
   publicProvider,
   useProvider,
 } from "@starknet-react/core";
-import { sepoliaInfura } from "@/utils/constants";
+import { sepoliaBlast, sepoliaInfura } from "@/utils/constants";
 
 function rpc(chain: Chain) {
   return {
     nodeUrl: sepoliaInfura,
+    // nodeUrl: sepoliaBlast,
   };
 }
 

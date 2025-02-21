@@ -4,7 +4,7 @@ import {
   useAccount,
   useSendTransaction,
 } from "@starknet-react/core";
-import { rpcProvideUr, starhomesContract } from "@/utils/constants";
+import { sepoliaBlast, starhomesContract } from "@/utils/constants";
 import { universalErc20Abi } from "@/data/universalTokenabi";
 import { RpcProvider, shortString } from 'starknet';
 import { saveTokenData, getTokenData } from "@/utils/indexedDb";
@@ -12,7 +12,7 @@ import { useTransactionStatus } from "../useTransactionStatus";
 import { toast } from "sonner";
 
 export const useToken = (tokenAddress: string) => {
-  const provider = new RpcProvider({ nodeUrl: `${rpcProvideUr}` });
+  const provider = new RpcProvider({ nodeUrl: `${sepoliaBlast}` });
   const { address: owner } = useAccount();
   const spender = starhomesContract;
   const formattedTokenAddress = tokenAddress as `0x${string}`;
