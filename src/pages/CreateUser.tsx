@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { useUserWrite } from "@/hooks/contract_interactions/useUserWrite";
-import pinata from "@/hooks/services_hooks/pinata";
 import { Loader2 } from "lucide-react";
+import pinata from "@/hooks/services_hooks/pinata";
 
 const CreateUser = () => {
  const { address } = useAccount();

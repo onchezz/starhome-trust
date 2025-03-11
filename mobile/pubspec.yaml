@@ -1,0 +1,47 @@
+name: starhomes
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 0.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  water_drop_nav_bar: ^2.2.2
+  get: ^4.6.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Rubik
+      fonts:
+      
+        - asset: assets/Rubik/static/Rubik-Light.ttf
+        - asset: assets/Rubik/static/Rubik-Regular.ttf
+        - asset: assets/Rubik/static/Rubik-Bold.ttf
+          # weight: 800
+        - asset: assets/Rubik/static/Rubik-SemiBold.ttf 
+        - asset: assets/Rubik/Rubik-VariableFont_wght.ttf
+
+        # - asset: fonts/Schyler-Italic.ttf
+        #   style: italic
+   

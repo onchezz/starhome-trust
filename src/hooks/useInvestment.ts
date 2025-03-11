@@ -3,13 +3,14 @@ import { useToken } from "@/hooks/contract_interactions/usetokensHook";
 import { useStarHomeWriteContract } from "@/hooks/contract_hooks/useStarHomeWriteContract";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useInvestmentWrite } from "./contract_interactions/useInvestmentWrite";
+import {  useInvestmentWrite} from "./contract_interactions/useInvestmentWrite"; //useGaslessInvestmentWrite,
 import { useSetTx, useTransactionStatus } from "./useTransactionStatus";
 import { useTransactionReceipt } from "@starknet-react/core";
 
 export const useInvestment = (tokenAddress?: string) => {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const {handleMakeInvestment, handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useInvestmentWrite();
+    // const {handleMakeInvestment, handleListInvestmentProperty, handleEditInvestmentProperty, status:contractStatus } = useGaslessInvestmentWrite();
   const { approveAndInvest, allowance, refreshTokenData, isWaitingApproval, } = useToken(tokenAddress);
   const [isWaitingTransactionExecution, setIsWaitingTransactionExecution] = useState(false);
 

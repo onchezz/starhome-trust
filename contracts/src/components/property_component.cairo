@@ -294,6 +294,7 @@ pub mod PropertyComponent {
             // let amount = property.asking_price - payment.payed_amount;
 
             // }
+            assert(payment.available_amount < 0, 'no balance available');
             token.transfer(payment.property_owner, payment.payed_amount);
         }
         fn _edit_listed_investment(

@@ -22,6 +22,7 @@ export function useStarHomeWriteContract() {
   const { sendAsync, error, reset, status } = useSendTransaction({
     calls: undefined,
   });
+    
 
   const txStatus: TransactionStatus = useMemo(
     () => ({
